@@ -1,8 +1,17 @@
+(require 'deno-bridge)
+
+(defconst emmet2-backend-path (concat (file-name-directory (buffer-file-name)) "backend/main.ts"))
+(deno-bridge-start "emmet2" emmet2-backend-path "2222" "2223")
+;; (deno-bridge-exit)
+
+(defconst html-abbr-regex "") ;; #page>div.logo+ul#navigation>li*5>a{Item $}
+(defconst css-abbr-regex "[a-z0-9+!]+")
+
 (defun emmet2-expand ()
   (interactive)
-  (let* ((bounds (bounds-of-thing-at-point 'line)))
-    (when bounds
-      (let ((input (buffer-substring-no-properties (car bounds) (cdr bounds))))
-        (print input)
-        (delete-region (car bounds) (cdr bounds))
-        (insert "[TODO]")))))
+  (when (thing-at-point-looking-at css-abbr-regex)
+    (let* ((bounds-beginning (match-beginning 0))
+           (bounds-end (match-end 0))
+           (abbr (buffer-substring-no-properties bounds-beginning bounds-end)))
+      (delete-region bounds-beginning bounds-end)
+      (deno-bridge-call "emmet2" abbr))))
