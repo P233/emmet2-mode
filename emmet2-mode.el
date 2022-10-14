@@ -1,6 +1,6 @@
 (require 'deno-bridge)
 
-(defconst emmet2-backend-path (concat (file-name-directory (buffer-file-name)) "backend/main.ts"))
+(defconst emmet2-backend-path (concat (file-name-directory (buffer-file-name)) "src/index.ts"))
 (deno-bridge-start "emmet2" emmet2-backend-path)
 ;; (deno-bridge-exit)
 
