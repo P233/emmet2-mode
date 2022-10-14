@@ -1,7 +1,7 @@
 (require 'deno-bridge)
 
 (defconst emmet2-backend-path (concat (file-name-directory (buffer-file-name)) "backend/main.ts"))
-(deno-bridge-start "emmet2" emmet2-backend-path "2222" "2223")
+(deno-bridge-start "emmet2" emmet2-backend-path)
 ;; (deno-bridge-exit)
 
 (defconst html-abbr-regex "") ;; #page>div.logo+ul#navigation>li*5>a{Item $}
@@ -14,4 +14,4 @@
            (bounds-end (match-end 0))
            (abbr (buffer-substring-no-properties bounds-beginning bounds-end)))
       (delete-region bounds-beginning bounds-end)
-      (deno-bridge-call "emmet2" abbr))))
+      (deno-bridge-call "emmet2" "expand-css" abbr))))
