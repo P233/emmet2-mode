@@ -29,6 +29,11 @@ Deno.test("all8!", () =>
   )
 );
 
+// use "," as an alias of "+"
+Deno.test("t0,r0,b0,l0", () => assertEquals(expandCSS("t0,r0,b0,l0"), "top: 0;\nright: 0;\nbottom: 0;\nleft: 0;"));
+Deno.test("fz(1),t(2)!", () => assertEquals(expandCSS("fz(1),t(2)!"), "font-size: ms(1);\ntop: rhythm(2) !important;"));
+Deno.test("fz(1)!,lh2", () => assertEquals(expandCSS("fz(1)!,lh2"), "font-size: ms(1) !important;\nline-height: 2;"));
+
 // pseudo class and pseudo element abbreviations
 // Deno.test(":fo", () => assertEquals(expandCSS(":fo"), "&:focus {\n\t\n}"));
 // Deno.test("_:fo", () => assertEquals(expandCSS("_:fo"), ":focus {\n\t\n}"));

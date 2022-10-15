@@ -42,7 +42,7 @@ function opinionatedExpand(abbr: string): string {
 }
 
 export default function expandCSS(abbrOrAlias: string): string {
-  const abbr = replaceAlias(abbrOrAlias);
+  const abbr = replaceAlias(abbrOrAlias).replace(/,/g, "+");
   if (isOpinionated(abbr)) return opinionatedExpand(abbr);
   return emmet.default(abbr, { type: "stylesheet" });
 }
