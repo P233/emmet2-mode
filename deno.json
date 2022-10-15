@@ -1,0 +1,9 @@
+{
+  "tasks": {
+    "test": "deno test ./src/expand-css.test.ts --unstable",
+    "lint": "deno lint"
+  },
+  "githooks": {
+    "pre-commit": "lint"
+  }
+}
