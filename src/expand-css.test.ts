@@ -22,12 +22,7 @@ Deno.test("posa", () => assertEquals(expandCSS("posa"), "position: absolute;\nz-
 Deno.test("posf", () => assertEquals(expandCSS("posf"), "position: fixed;\nz-index: ;"));
 Deno.test("all0", () => assertEquals(expandCSS("all0"), "top: 0;\nright: 0;\nbottom: 0;\nleft: 0;"));
 Deno.test("all8", () => assertEquals(expandCSS("all8"), "top: 8px;\nright: 8px;\nbottom: 8px;\nleft: 8px;"));
-Deno.test("all8!", () =>
-  assertEquals(
-    expandCSS("all8!"),
-    "top: 8px !important;\nright: 8px !important;\nbottom: 8px !important;\nleft: 8px !important;"
-  )
-);
+Deno.test("all8!", () => assertEquals(expandCSS("all8!"), "top: 8px !important;\nright: 8px !important;\nbottom: 8px !important;\nleft: 8px !important;"));
 
 // use "," as an alias of "+"
 Deno.test("t0,r0,b0,l0", () => assertEquals(expandCSS("t0,r0,b0,l0"), "top: 0;\nright: 0;\nbottom: 0;\nleft: 0;"));

@@ -1,4 +1,12 @@
 {
   "printWidth": 120,
-  "trailingComma": "none"
+  "trailingComma": "none",
+  "overrides": [
+    {
+      "files": "*.test.ts",
+      "options": {
+        "printWidth": 500
+      }
+    }
+  ]
 }
