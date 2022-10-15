@@ -10,10 +10,12 @@ Deno.test("t$abc", () => assertEquals(expandCSS("t$abc"), "top: $abc;"));
 Deno.test("t0+r0+b0+l0", () => assertEquals(expandCSS("t0+r0+b0+l0"), "top: 0;\nright: 0;\nbottom: 0;\nleft: 0;"));
 
 // personal opinionated css abbreviations
-// Deno.test("t(2)", () => assertEquals(expandCSS("t(2)"), "top: rhythm(2);"));
-// Deno.test("t(2)!", () => assertEquals(expandCSS("t(2)"), "top: rhythm(2) !important;"));
-// Deno.test("fz(1)", () => assertEquals(expandCSS("fz(1)"), "font-size: ms(1);"));
-// Deno.test("fz(1)!", () => assertEquals(expandCSS("fz(1)"), "font-size: ms(1) !important;"));
+Deno.test("t(2)", () => assertEquals(expandCSS("t(2)"), "top: rhythm(2);"));
+Deno.test("t(2)!", () => assertEquals(expandCSS("t(2)!"), "top: rhythm(2) !important;"));
+Deno.test("fz(1)", () => assertEquals(expandCSS("fz(1)"), "font-size: ms(1);"));
+Deno.test("fz(1)!", () => assertEquals(expandCSS("fz(1)!"), "font-size: ms(1) !important;"));
+Deno.test("fz(1)+t(2)!", () => assertEquals(expandCSS("fz(1)+t(2)!"), "font-size: ms(1);\ntop: rhythm(2) !important;"));
+Deno.test("fz(1)!+lh2", () => assertEquals(expandCSS("fz(1)!+lh2"), "font-size: ms(1) !important;\nline-height: 2;"));
 
 // property alias abbreviations
 Deno.test("posa", () => assertEquals(expandCSS("posa"), "position: absolute;\nz-index: ;"));
