@@ -1,48 +1,35 @@
 import emmet from "npm:emmet";
 
-const PROPERTY_ALIAS_MAP: Record<string, string | ((value: string, unit?: string, important?: string) => string)> = {
-  all: (value: string, unit?: string, important?: string) => {
-    return ["t", "r", "b", "l"].map((property) => `${property}${value}${unit || ""}${important || ""}`).join("+");
-  },
-  posa: "posa+z",
-  posf: "posf+z"
-};
+function expandProperties(abbrs: string): string {
+  return abbrs
+    .replace(/\bpos(a|f)(.+?)?(?=,|\+|$)/g, "pos$1+z$2") // posa => posa+z, posf => posf+z
+    .replace(/\ball(.+?)?(?=,|\+|$)/g, "t$1+r$1+b$1+l$1") // all => t+r+b+l
+    .split(/[,+]/)
+    .reduce((a: string[], c: string) => {
+      // Opinionated Rules
+      if (/^-?[a-z]+(\(-?\d*\.?\d+\)|--\w+|\[.+?\])!?$/.test(c)) {
+        const [_, property, functionParam, customProperty, rawProperty, flag] = c.match(
+          /^(-?[a-z]+)(\(-?\d*\.?\d+\))?(--\w+)?(\[.+?\])?(!)?/
+        )!;
 
-function replaceAlias(abbrOrAlias: string): string {
-  const _propertyMatchResult = abbrOrAlias.match(/^[a-z]+/);
-  if (!_propertyMatchResult) return abbrOrAlias; // let emmet handle invalid abbr
+        let value = "";
+        if (functionParam) value = property === "fz" ? `ms${functionParam}` : `rhythm${functionParam}`;
+        else if (customProperty) value = `var(${customProperty})`;
+        else if (rawProperty) value = rawProperty.slice(1, -1); // remove "[" and "]"
 
-  const abbr = PROPERTY_ALIAS_MAP[_propertyMatchResult[0]];
-  if (typeof abbr === "string") return abbr;
-  if (typeof abbr === "function") {
-    const [_, __, value, unit, important] = abbrOrAlias.match(/([a-z]+)(\d+)?([a-z]+)?(!)?/)!;
-    return abbr(value, unit, important);
-  }
-  return abbrOrAlias;
+        a.push(emmet.default(property, { type: "stylesheet" }).slice(0, -1) + value + (flag ? " !important;" : ";"));
+        return a;
+      }
+
+      // Convert camelCase
+      if (/^-?[a-z]+[A-Z]/.test(c)) c = c.replace(/([A-Z])/, ":$1").toLowerCase();
+
+      a.push(emmet.default(c, { type: "stylesheet" }));
+      return a;
+    }, [])
+    .join("\n");
 }
 
-function isOpinionated(abbr: string): boolean {
-  return /\(\d+\)/.test(abbr);
-}
-
-function opinionatedExpand(abbr: string): string {
-  return abbr.split("+").reduce((a, c, idx) => {
-    if (isOpinionated(c)) {
-      const _abbrMatchResult = c.match(/^([a-z]+)(\(\d+\)?)(!?)/);
-      if (!_abbrMatchResult) return a; // skip invalid abbr
-      const [_, property, value, important] = _abbrMatchResult;
-      return (a +=
-        (idx === 0 ? "" : "\n") +
-        emmet.default(property, { type: "stylesheet" }).slice(0, -1) + // remove ";" from emmet
-        (property === "fz" ? `ms${value}` : `rhythm${value}`) +
-        (important ? " !important;" : ";"));
-    }
-    return (a += (idx === 0 ? "" : "\n") + emmet.default(c, { type: "stylesheet" }));
-  }, "");
-}
-
-export default function expandCSS(abbrOrAlias: string): string {
-  const abbr = replaceAlias(abbrOrAlias).replace(/,/g, "+");
-  if (isOpinionated(abbr)) return opinionatedExpand(abbr);
-  return emmet.default(abbr, { type: "stylesheet" });
+export default function expandCSS(abbrs: string): string {
+  return expandProperties(abbrs);
 }
