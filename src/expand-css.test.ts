@@ -8,9 +8,15 @@ Deno.test("t1", () => assertEquals(expandCSS("t1"), "top: 1px;"));
 Deno.test("t1p", () => assertEquals(expandCSS("t1p"), "top: 1%;"));
 Deno.test("t1!", () => assertEquals(expandCSS("t1!"), "top: 1px !important;"));
 Deno.test("t$abc", () => assertEquals(expandCSS("t$abc"), "top: $abc;"));
+Deno.test("t1r", () => assertEquals(expandCSS("t1r"), "top: 1rem;"));
 Deno.test("t0+r0+b0+l0", () => assertEquals(expandCSS("t0+r0+b0+l0"), "top: 0;\nright: 0;\nbottom: 0;\nleft: 0;"));
 Deno.test("t:a", () => assertEquals(expandCSS("t:a"), "top: auto;"));
 Deno.test("t-a", () => assertEquals(expandCSS("t-a"), "top: auto;"));
+Deno.test("bd1#2s", () => assertEquals(expandCSS("bd1#2s"), "border: 1px #222 solid;"));
+Deno.test("p1px2px3px", () => assertEquals(expandCSS("p1px2px3px"), "padding: 1px 2px 3px;"));
+Deno.test("p1px2px3px!", () => assertEquals(expandCSS("p1px2px3px!"), "padding: 1px 2px 3px !important;"));
+Deno.test("p$a$b$c", () => assertEquals(expandCSS("p$a$b$c"), "padding: $a $b $c;"));
+Deno.test("p$a$b$c+m:a", () => assertEquals(expandCSS("p$a$b$c+m:a"), "padding: $a $b $c;\nmargin: auto;"));
 
 // Opinionated SCSS function abbreviations
 Deno.test("t(2)", () => assertEquals(expandCSS("t(2)"), "top: rhythm(2);"));
@@ -29,8 +35,7 @@ Deno.test("m--gutter!", () => assertEquals(expandCSS("m--gutter!"), "margin: var
 
 // Opinionated raw property value abbreviations
 Deno.test("p[1px 2px 3px]", () => assertEquals(expandCSS("p[1px 2px 3px]"), "padding: 1px 2px 3px;"));
-Deno.test("p[1px 2px 3px]!", () => assertEquals(expandCSS("p[1px 2px 3px]!"), "padding: 1px 2px 3px !important;"));
-Deno.test("p[1px 2px 3px]+m:a", () => assertEquals(expandCSS("p[1px 2px 3px]+m:a"), "padding: 1px 2px 3px;\nmargin: auto;"));
+Deno.test("p[var(--a) var(--b) var(--c)]", () => assertEquals(expandCSS("p[var(--a) var(--b) var(--c)]"), "padding: var(--a) var(--b) var(--c);"));
 
 // Opinionated alias abbreviations
 Deno.test("posa", () => assertEquals(expandCSS("posa"), "position: absolute;\nz-index: ;"));
