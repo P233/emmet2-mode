@@ -4,10 +4,11 @@ import expandCSS from "./expand-css.ts";
 const bridge = new DenoBridge(Deno.args[0], Deno.args[1], Deno.args[2], messageDispatcher);
 
 function messageDispatcher(message: string) {
-  const [funcName, funcArgs] = JSON.parse(message)[1];
+  const [syntax, abbr, boundsBeginning] = JSON.parse(message)[1];
 
-  if (funcName === "expand-css") {
-    const snippet = expandCSS(funcArgs);
+  if (syntax === "css") {
+    const snippet = expandCSS(abbr);
     bridge.evalInEmacs(`(insert "${snippet}")`);
+    bridge.evalInEmacs(`(indent-region ${boundsBeginning} (point))`);
   }
 }

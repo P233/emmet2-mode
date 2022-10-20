@@ -20,7 +20,7 @@
            (bounds-end (match-end 0))
            (abbr (buffer-substring-no-properties bounds-beginning bounds-end)))
       (delete-region bounds-beginning bounds-end)
-      (deno-bridge-call "emmet2" "expand-css" abbr))))
+      (deno-bridge-call "emmet2" "css" abbr bounds-beginning))))
 
 (defun emmet2-expand ()
   (interactive)
