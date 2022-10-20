@@ -1,7 +1,7 @@
 import emmet from "npm:emmet";
 
-function expandProperties(abbrs: string): string {
-  return abbrs
+function expandProperties(abbr: string): string {
+  return abbr
     .replace(/\bpos(a|f)(.+?)?(?=,|\+|$)/g, "pos$1+z$2") // posa => posa+z, posf => posf+z
     .replace(/\ball(.+?)?(?=,|\+|$)/g, "t$1+r$1+b$1+l$1") // all => t+r+b+l
     .split(/[,+]/)
@@ -30,6 +30,6 @@ function expandProperties(abbrs: string): string {
     .join("\n");
 }
 
-export default function expandCSS(abbrs: string): string {
-  return expandProperties(abbrs);
+export default function expandCSS(abbr: string): string {
+  return expandProperties(abbr);
 }
