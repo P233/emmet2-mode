@@ -9,7 +9,7 @@ function messageDispatcher(message: string) {
 
   let snippet = "";
   if (syntax === "css") snippet = expandCSS(abbr);
-  if (syntax === "html") snippet = expandHTML(abbr);
+  else if (syntax === "html") snippet = expandHTML(abbr);
 
   bridge.evalInEmacs(`(insert "${snippet}")`);
   bridge.evalInEmacs(`(indent-region ${boundsBeginning} (point))`);

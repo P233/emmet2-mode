@@ -16,7 +16,7 @@
       (deno-bridge-call "emmet2" "css" abbr bounds-beginning))))
 
 (defun emmet2-expand-html ()
-  (when (thing-at-point-looking-at "[a-zA-Z0-9_#./>~+]+")
+  (when (thing-at-point-looking-at "[a-zA-Z0-9_#./>~+-]+")
     (let* ((bounds-beginning (match-beginning 0))
            (bounds-end (match-end 0))
            (abbr (buffer-substring-no-properties bounds-beginning bounds-end)))
