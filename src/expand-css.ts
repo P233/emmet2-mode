@@ -7,15 +7,15 @@ function expandProperties(abbr: string): string {
     .split(/[,+]/)
     .reduce((a: string[], c: string) => {
       // Opinionated Rules
-      if (/^-?[a-z]+(\(-?\d*\.?\d+\)|--\w+|\[.+?\])!?$/.test(c)) {
-        const [_, property, functionParam, customProperty, rawProperty, flag] = c.match(
-          /^(-?[a-z]+)(\(-?\d*\.?\d+\))?(--\w+)?(\[.+?\])?(!)?/
+      if (/^-?[a-z]+(\(-?\d*\.?\d+\)|--[\w-]+|\[.+?\])!?$/.test(c)) {
+        const [_, property, functionParam, cpValue, rawValue, flag] = c.match(
+          /^(-?[a-z]+)(\(-?\d*\.?\d+\))?(--[\w-]+)?(\[.+?\])?(!)?/
         )!;
 
         let value = "";
         if (functionParam) value = property === "fz" ? `ms${functionParam}` : `rhythm${functionParam}`;
-        else if (customProperty) value = `var(${customProperty})`;
-        else if (rawProperty) value = rawProperty.slice(1, -1); // remove "[" and "]"
+        else if (cpValue) value = cpValue.replace(/(--\w+)/g, " var($1)").trim();
+        else if (rawValue) value = rawValue.slice(1, -1); // remove "[" and "]"
 
         a.push(emmet.default(property, { type: "stylesheet" }).slice(0, -1) + value + (flag ? " !important;" : ";"));
         return a;
