@@ -7,10 +7,14 @@ const bridge = new DenoBridge(Deno.args[0], Deno.args[1], Deno.args[2], messageD
 function messageDispatcher(message: string) {
   const [syntax, abbr, boundsBeginning] = JSON.parse(message)[1];
 
-  let snippet = "";
-  if (syntax === "css") snippet = expandCSS(abbr);
-  else if (syntax === "html") snippet = expandHTML(abbr);
-
-  bridge.evalInEmacs(`(insert "${snippet}")`);
-  bridge.evalInEmacs(`(indent-region ${boundsBeginning} (point))`);
+  try {
+    let snippet = "";
+    if (syntax === "css") snippet = expandCSS(abbr);
+    else if (syntax === "html") snippet = expandHTML(abbr);
+    bridge.evalInEmacs(`(insert "${snippet}")`);
+    bridge.evalInEmacs(`(indent-region ${boundsBeginning} (point))`);
+  } catch (err) {
+    console.error(err);
+    bridge.evalInEmacs(`(message "Something wrong with expanding ${abbr}")`);
+  }
 }
