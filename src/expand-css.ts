@@ -1,4 +1,16 @@
 import emmet from "npm:emmet";
+import Flexsearch from "npm:flexsearch";
+import cssData from "../data/css-data.json" assert { type: "json" };
+
+const atRulesIndex = new Flexsearch.Index({ tokenize: "full" });
+cssData.atRules.forEach((i, idx) => atRulesIndex.add(idx, i));
+
+function expandAtRules(abbr: string): string {
+  const searchResult = atRulesIndex.search(abbr, 1);
+  if (!searchResult.length) return abbr;
+  return cssData.atRules[searchResult[0]];
+}
+
 
 function expandProperties(abbr: string): string {
   return abbr
@@ -31,5 +43,6 @@ function expandProperties(abbr: string): string {
 }
 
 export default function expandCSS(abbr: string): string {
+  if (abbr.startsWith("@")) return expandAtRules(abbr);
   return expandProperties(abbr);
 }

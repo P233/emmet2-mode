@@ -8,16 +8,10 @@
     "@keyframes",
     "@layer",
     "@media",
-    "@-moz-document",
-    "@-moz-keyframes",
-    "@-ms-viewport",
     "@namespace",
-    "@-o-keyframes",
-    "@-o-viewport",
     "@page",
     "@property",
-    "@supports",
-    "@-webkit-keyframes"
+    "@supports"
   ],
   "pseudoFunctions": [
     ":host()",
