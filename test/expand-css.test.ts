@@ -1,5 +1,5 @@
 import { assertEquals } from "https://deno.land/std@0.159.0/testing/asserts.ts";
-import expandCSS from "./expand-css.ts";
+import expandCSS from "../src/expand-css.ts";
 
 // Default emmet css abbreviations
 Deno.test("t", () => assertEquals(expandCSS("t"), "top: ;"));

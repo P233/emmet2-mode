@@ -1,6 +1,7 @@
 {
   "tasks": {
-    "test": "deno test ./src/expand-css.test.ts ./src/expand-html.test.ts --unstable",
+    "test:flexsearch": "deno test ./test/flexsearch.test.ts --unstable",
+    "test": "deno test ./test/expand-css.test.ts ./test/expand-html.test.ts --unstable",
     "lint": "deno lint",
     "web-data": "deno run ./data/_convert-web-data.ts"
   },
