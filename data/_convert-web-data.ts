@@ -4,7 +4,7 @@ const pseudos = [...CSS_DATA.pseudoClasses, ...CSS_DATA.pseudoElements].map((i) 
 
 const slimedCSSData = {
   atRules: CSS_DATA.atDirectives.map((i) => i.name).filter((i) => !i.startsWith("@-")),
-  pseudoFunctions: pseudos.filter((i) => i.endsWith("()")),
+  pseudoFunctions: pseudos.filter((i) => i.endsWith("()")).map((i) => i.slice(0, -2)),
   pseudoSelectors: pseudos.filter((i) => !i.endsWith("()"))
 };
 

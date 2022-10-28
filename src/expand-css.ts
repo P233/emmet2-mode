@@ -2,7 +2,12 @@ import emmet from "npm:emmet";
 import Flexsearch from "npm:flexsearch";
 import cssData from "../data/css-data.json" assert { type: "json" };
 
-const atRulesIndex = new Flexsearch.Index({ tokenize: "full" });
+const flexsearchOptions = {
+  tokenize: "forward"
+};
+
+// Expand at rules
+const atRulesIndex = new Flexsearch.Index(flexsearchOptions);
 cssData.atRules.forEach((i, idx) => atRulesIndex.add(idx, i));
 
 function expandAtRules(abbr: string): string {
@@ -11,7 +16,50 @@ function expandAtRules(abbr: string): string {
   return cssData.atRules[searchResult[0]];
 }
 
+// Expand selectors
+const pseudoSelectorsIndex = new Flexsearch.Index(flexsearchOptions);
+cssData.pseudoSelectors.forEach((i, idx) => pseudoSelectorsIndex.add(idx, i));
 
+function searchPseudoSelector(s: string): string {
+  const searchResult = pseudoSelectorsIndex.search(s, 1);
+  if (!searchResult.length) return s;
+  return cssData.pseudoSelectors[searchResult[0]];
+}
+
+const pseudoFunctionsIndex = new Flexsearch.Index(flexsearchOptions);
+cssData.pseudoFunctions.forEach((i, idx) => pseudoFunctionsIndex.add(idx, i));
+
+function searchPseudoFunction(s: string): string {
+  const searchResult = pseudoFunctionsIndex.search(s, 1);
+  if (!searchResult.length) return s;
+  return cssData.pseudoFunctions[searchResult[0]];
+}
+
+function expandSelector(abbr: string): string {
+  if (!/^[\w.#-]*:[\w-]+(\(.+\))?$/.test(abbr)) return abbr;
+
+  let [_, prefix, pseudoSelector, __, pseudoFunction, pseudoParams] = abbr.match(
+    /^([\w.#-]*)(:[\w-]+)?((:[\w-]+)\((.+)\))?$/
+  )!;
+
+  if (!prefix) prefix = "&";
+  else if (prefix === "_") prefix = "";
+
+  if (pseudoSelector) {
+    pseudoSelector = searchPseudoSelector(pseudoSelector);
+    return prefix + pseudoSelector;
+  }
+
+  pseudoFunction = searchPseudoFunction(pseudoFunction);
+  return pseudoParams.split(",").reduce((a, c) => {
+    c = c.trim();
+    if (c.startsWith(":")) a += `${pseudoFunction}(${searchPseudoSelector(c)})`;
+    else a += `${pseudoFunction}(${c})`;
+    return a;
+  }, prefix);
+}
+
+// Expand properties
 function expandProperties(abbr: string): string {
   return abbr
     .replace(/\bpos(a|f)(.+?)?(?=,|\+|$)/g, "pos$1+z$2") // posa => posa+z, posf => posf+z
@@ -42,7 +90,9 @@ function expandProperties(abbr: string): string {
     .join("\n");
 }
 
+// main
 export default function expandCSS(abbr: string): string {
   if (abbr.startsWith("@")) return expandAtRules(abbr);
+  if (abbr.includes(":")) return expandSelector(abbr);
   return expandProperties(abbr);
 }
