@@ -41,22 +41,25 @@ function expandSelector(abbr: string): string {
   let [_, prefix, pseudoSelector, __, pseudoFunction, pseudoParams] = abbr.match(
     /^([\w.#-]*)(:[\w-]+)?((:[\w-]+)\((.+)\))?$/
   )!;
+  const suffix = " {\n\t\n}";
 
   if (!prefix) prefix = "&";
   else if (prefix === "_") prefix = "";
 
   if (pseudoSelector) {
     pseudoSelector = searchPseudoSelector(pseudoSelector);
-    return prefix + pseudoSelector;
+    return prefix + pseudoSelector + suffix;
   }
 
   pseudoFunction = searchPseudoFunction(pseudoFunction);
-  return pseudoParams.split(",").reduce((a, c) => {
-    c = c.trim();
-    if (c.startsWith(":")) a += `${pseudoFunction}(${searchPseudoSelector(c)})`;
-    else a += `${pseudoFunction}(${c})`;
-    return a;
-  }, prefix);
+  return (
+    pseudoParams.split(",").reduce((a, c) => {
+      c = c.trim();
+      if (c.startsWith(":")) a += `${pseudoFunction}(${searchPseudoSelector(c)})`;
+      else a += `${pseudoFunction}(${c})`;
+      return a;
+    }, prefix) + suffix
+  );
 }
 
 // Expand properties
