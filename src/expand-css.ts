@@ -40,19 +40,27 @@ function searchPseudoFunction(s: string): string {
 }
 
 function expandSelector(abbr: string): string {
-  if (!/^[\w.#-]*:[\w-]+(\(.+\))?$/.test(abbr)) return abbr;
+  if (!/^[\w.#-]*:[\w-]+(\(.+\))?(:.+)?$/.test(abbr)) return abbr;
 
-  let [_, prefix, pseudoSelector, __, pseudoFunction, pseudoParams] = abbr.match(
-    /^([\w.#-]*)(:[\w-]+)?((:[\w-]+)\((.+)\))?$/
-  )!;
   const suffix = " {\n\t\n}";
+
+  let [_, prefix, pseudoSelector, __, pseudoFunction, pseudoParams, chainedPseudos] = abbr.match(
+    /^([\w.#-]*)(:[\w-]+)?((:[\w-]+)\((.+)\))?(:.+)?$/
+  )!;
 
   if (!prefix) prefix = "&";
   else if (prefix === "_") prefix = "";
 
+  if (chainedPseudos) {
+    chainedPseudos = chainedPseudos
+      .split(/(?=:)/g)
+      .map((i) => searchPseudoSelector(i))
+      .join("");
+  }
+
   if (pseudoSelector) {
     pseudoSelector = searchPseudoSelector(pseudoSelector);
-    return prefix + pseudoSelector + suffix;
+    return prefix + pseudoSelector + (chainedPseudos || "") + suffix;
   }
 
   pseudoFunction = searchPseudoFunction(pseudoFunction);
@@ -62,7 +70,9 @@ function expandSelector(abbr: string): string {
       if (c.startsWith(":")) a += `${pseudoFunction}(${searchPseudoSelector(c)})`;
       else a += `${pseudoFunction}(${c})`;
       return a;
-    }, prefix) + suffix
+    }, prefix) +
+    (chainedPseudos || "") +
+    suffix
   );
 }
 

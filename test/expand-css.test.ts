@@ -80,12 +80,15 @@ Deno.test("@us", () => assertEquals(expandCSS("@su"), "@supports"));
 
 // Pseudo class and pseudo element abbreviations
 Deno.test(":fo", () => assertEquals(expandCSS(":fo"), "&:focus {\n\t\n}"));
+Deno.test(":hov:af", () => assertEquals(expandCSS(":hov:af"), "&:hover::after {\n\t\n}"));
 Deno.test("_:fo", () => assertEquals(expandCSS("_:fo"), ":focus {\n\t\n}"));
 Deno.test(".c:fo", () => assertEquals(expandCSS(".c:fo"), ".c:focus {\n\t\n}"));
 Deno.test(".c:f-l", () => assertEquals(expandCSS(".c:f-l"), ".c::first-letter {\n\t\n}"));
 Deno.test("a.c1.c2#id:fo", () => assertEquals(expandCSS("a.c1.c2#id:fo"), "a.c1.c2#id:focus {\n\t\n}"));
 Deno.test("a.c1.c2#id:f-c", () => assertEquals(expandCSS("a.c1.c2#id:f-c"), "a.c1.c2#id:first-child {\n\t\n}"));
 Deno.test(":n(:f-c)", () => assertEquals(expandCSS(":n(:f-c)"), "&:not(:first-child) {\n\t\n}"));
+Deno.test(":n(:f-c):af", () => assertEquals(expandCSS(":n(:f-c):af"), "&:not(:first-child)::after {\n\t\n}"));
 Deno.test(":n(:f-c,:l-c)", () => assertEquals(expandCSS(":n(:f-c,:l-c)"), "&:not(:first-child):not(:last-child) {\n\t\n}"));
+Deno.test(":n(:f-c,:l-c):be", () => assertEquals(expandCSS(":n(:f-c,:l-c):be"), "&:not(:first-child):not(:last-child)::before {\n\t\n}"));
 Deno.test(":n-c(2n-1)", () => assertEquals(expandCSS(":n-c(2n-1)"), "&:nth-child(2n-1) {\n\t\n}"));
 // Deno.test(":h(+p)", () => assertEquals(expandCSS(":h(+p)"), "&:has(+ p) {\n\t\n}"));
