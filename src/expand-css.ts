@@ -6,6 +6,10 @@ const flexsearchOptions = {
   tokenize: "forward"
 };
 
+const emmetOptions = {
+  type: "stylesheet"
+};
+
 // Expand at rules
 const atRulesIndex = new Flexsearch.Index(flexsearchOptions);
 cssData.atRules.forEach((i, idx) => atRulesIndex.add(idx, i));
@@ -77,17 +81,17 @@ function expandProperties(abbr: string): string {
 
         let value = "";
         if (functionParam) value = property === "fz" ? `ms${functionParam}` : `rhythm${functionParam}`;
-        else if (cpValue) value = cpValue.replace(/(--\w+)/g, " var($1)").trim();
+        else if (cpValue) value = cpValue.replace(/(-(-?\w+)+)/g, " var($1)").trim();
         else if (rawValue) value = rawValue.slice(1, -1); // remove "[" and "]"
 
-        a.push(emmet.default(property, { type: "stylesheet" }).slice(0, -1) + value + (flag ? " !important;" : ";"));
+        a.push(emmet.default(property, emmetOptions).replace(/(#000)?;$/, "") + value + (flag ? " !important;" : ";"));
         return a;
       }
 
       // Convert camelCase
       if (/^-?[a-z]+[A-Z]/.test(c)) c = c.replace(/([A-Z])/, ":$1").toLowerCase();
 
-      a.push(emmet.default(c, { type: "stylesheet" }));
+      a.push(emmet.default(c, emmetOptions));
       return a;
     }, [])
     .join("\n");
