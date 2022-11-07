@@ -13,4 +13,4 @@ Deno.test(":n(:f-c,:l-c)", () => assertEquals(selectorRegex.test(":n(:f-c,:l-c)"
 Deno.test(":n-c(2n-1)", () => assertEquals(selectorRegex.test(":n-c(2n-1)"), true));
 Deno.test(":h(+p)", () => assertEquals(selectorRegex.test(":h(+p)"), true));
 Deno.test(":hov:af", () => assertEquals(selectorRegex.test(":hov:af"), true));
-Deno.test(":n(:l-c):af", () => assertEquals(selectorRegex.test(":hov:af"), true));
+Deno.test(":n(:l-c):af", () => assertEquals(selectorRegex.test(":n(:l-c):af"), true));
