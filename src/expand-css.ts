@@ -81,6 +81,7 @@ function expandProperties(abbr: string): string {
   return abbr
     .replace(/\bpos(a|f)(.+?)?(?=,|\+|$)/g, "pos$1+z$2") // posa => posa+z, posf => posf+z
     .replace(/\ball(.+?)?(?=,|\+|$)/g, "t$1+r$1+b$1+l$1") // all => t+r+b+l
+    .replace(/\bfw(\d)\b/g, "fw($1)00") // fw7 => fw700
     .split(/[,+]/)
     .reduce((a: string[], c: string) => {
       // Opinionated Rules

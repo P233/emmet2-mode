@@ -56,6 +56,10 @@ Deno.test("mA", () => assertEquals(expandCSS("mA"), "margin: auto;"));
 Deno.test("mA!", () => assertEquals(expandCSS("mA!"), "margin: auto !important;"));
 Deno.test("allA", () => assertEquals(expandCSS("allA"), "top: auto;\nright: auto;\nbottom: auto;\nleft: auto;"));
 
+// font weight alias
+Deno.test("fw7", () => assertEquals(expandCSS("fw700"), "font-weight: 700;"));
+Deno.test("fw700", () => assertEquals(expandCSS("fw700"), "font-weight: 700;"));
+
 // Use "," to split abbreviations
 Deno.test("t0,r0,b0,l0", () => assertEquals(expandCSS("t0,r0,b0,l0"), "top: 0;\nright: 0;\nbottom: 0;\nleft: 0;"));
 Deno.test("fz(1),t(2)!", () => assertEquals(expandCSS("fz(1),t(2)!"), "font-size: ms(1);\ntop: rhythm(2) !important;"));
