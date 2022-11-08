@@ -16,6 +16,10 @@ Deno.test("p1px2px3px", () => assertEquals(expandCSS("p1px2px3px"), "padding: 1p
 Deno.test("p1px2px3px!", () => assertEquals(expandCSS("p1px2px3px!"), "padding: 1px 2px 3px !important;"));
 Deno.test("p$a$b$c", () => assertEquals(expandCSS("p$a$b$c"), "padding: $a $b $c;"));
 
+// Remove default color #000
+Deno.test("c", () => assertEquals(expandCSS("c"), "color: ;"));
+Deno.test("bg", () => assertEquals(expandCSS("bg"), "background: ;"));
+
 // Opinionated SCSS function abbreviations
 Deno.test("t(2)", () => assertEquals(expandCSS("t(2)"), "top: rhythm(2);"));
 Deno.test("t(.5)", () => assertEquals(expandCSS("t(.5)"), "top: rhythm(.5);"));

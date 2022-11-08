@@ -103,7 +103,7 @@ function expandProperties(abbr: string): string {
       // Convert camelCase
       if (/^-?[a-z]+[A-Z]/.test(c)) c = c.replace(/([A-Z])/, ":$1").toLowerCase();
 
-      a.push(emmet.default(c, emmetOptions));
+      a.push(emmet.default(c, emmetOptions).replace(/#000/, ""));
       return a;
     }, [])
     .join("\n");
