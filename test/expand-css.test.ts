@@ -60,6 +60,14 @@ Deno.test("allA", () => assertEquals(expandCSS("allA"), "top: auto;\nright: auto
 Deno.test("fw7", () => assertEquals(expandCSS("fw700"), "font-weight: 700;"));
 Deno.test("fw700", () => assertEquals(expandCSS("fw700"), "font-weight: 700;"));
 
+// size alias
+Deno.test("wf", () => assertEquals(expandCSS("wf"), "width: 100%;"));
+Deno.test("mawf", () => assertEquals(expandCSS("mawf"), "max-width: 100%;"));
+Deno.test("miwf", () => assertEquals(expandCSS("miwf"), "min-width: 100%;"));
+Deno.test("hf", () => assertEquals(expandCSS("hf"), "height: 100%;"));
+Deno.test("mahf", () => assertEquals(expandCSS("mahf"), "max-height: 100%;"));
+Deno.test("mihf", () => assertEquals(expandCSS("mihf"), "min-height: 100%;"));
+
 // Use "," to split abbreviations
 Deno.test("t0,r0,b0,l0", () => assertEquals(expandCSS("t0,r0,b0,l0"), "top: 0;\nright: 0;\nbottom: 0;\nleft: 0;"));
 Deno.test("fz(1),t(2)!", () => assertEquals(expandCSS("fz(1),t(2)!"), "font-size: ms(1);\ntop: rhythm(2) !important;"));
