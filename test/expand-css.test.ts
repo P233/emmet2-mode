@@ -60,11 +60,11 @@ Deno.test("mA", () => assertEquals(expandCSS("mA"), "margin: auto;"));
 Deno.test("mA!", () => assertEquals(expandCSS("mA!"), "margin: auto !important;"));
 Deno.test("allA", () => assertEquals(expandCSS("allA"), "top: auto;\nright: auto;\nbottom: auto;\nleft: auto;"));
 
-// font weight alias
-Deno.test("fw7", () => assertEquals(expandCSS("fw700"), "font-weight: 700;"));
+// Font weight alias
+Deno.test("fw7", () => assertEquals(expandCSS("fw7"), "font-weight: 700;"));
 Deno.test("fw700", () => assertEquals(expandCSS("fw700"), "font-weight: 700;"));
 
-// size alias
+// Size alias
 Deno.test("wf", () => assertEquals(expandCSS("wf"), "width: 100%;"));
 Deno.test("mawf", () => assertEquals(expandCSS("mawf"), "max-width: 100%;"));
 Deno.test("miwf", () => assertEquals(expandCSS("miwf"), "min-width: 100%;"));
