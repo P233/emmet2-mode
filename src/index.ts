@@ -11,8 +11,10 @@ function messageDispatcher(message: string) {
     let snippet = "";
     if (syntax === "css") snippet = expandCSS(abbr);
     else if (syntax === "jsx") snippet = expandJSX(abbr);
-    else if (syntax === "solid") snippet = expandJSX(abbr, { className: false });
+    else if (syntax === "solid") snippet = expandJSX(abbr, { classAttr: true });
     else if (syntax === "html") snippet = expandHTML(abbr);
+
+    snippet = snippet.replace(/"/g, '\\"');
 
     bridge.evalInEmacs(`(insert "${snippet}")`);
     bridge.evalInEmacs(`(indent-region ${boundsBeginning} (point))`);
