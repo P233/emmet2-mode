@@ -86,13 +86,14 @@ function expandProperties(abbr: string): string {
     .split(/[,+]/)
     .reduce((a: string[], c: string) => {
       // Opinionated Rules
-      if (/^-?[a-z]+(\(-?\d*\.?\d+\)|--[\w-]+|\[.+?\])!?$/.test(c)) {
+      if (/^-?[a-z]+((\(-?\d*\.?\d+\))*|--[\w-]+|\[.+?\])!?$/.test(c)) {
         const [_, property, functionParam, cpValue, rawValue, flag] = c.match(
-          /^(-?[a-z]+)(\(-?\d*\.?\d+\))?(--[\w-]+)?(\[.+?\])?(!)?/
+          /^(-?[a-z]+)(\(.+\))?(--[\w-]+)?(\[.+?\])?(!)?/
         )!;
 
         let value = "";
-        if (functionParam) value = property === "fz" ? `ms${functionParam}` : `rhythm${functionParam}`;
+        // prettier-ignore
+        if (functionParam) value = property === "fz" ? `ms${functionParam}` : functionParam.match(/\([\d.]+\)/g)!.map((i) => `rhythm${i}`).join(" ");
         else if (cpValue) value = cpValue.replace(/(-(-?\w+)+)/g, " var($1)").trim();
         else if (rawValue) value = rawValue.slice(1, -1); // remove "[" and "]"
 
