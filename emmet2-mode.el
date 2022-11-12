@@ -52,6 +52,10 @@
         (emmet2/expand-css)
       (emmet2/expand-markup lang))))
 
+(defun emmet2/insert (snippet bounds-beginning)
+  (insert snippet)
+  (indent-region bounds-beginning (point)))
+
 ;;;###autoload
 (define-minor-mode emmet2-mode
   "Minor mode for expanding emmet html and css abbreviations with opinionated enhancements."

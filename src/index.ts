@@ -16,8 +16,7 @@ function messageDispatcher(message: string) {
 
     snippet = snippet.replace(/"/g, '\\"');
 
-    bridge.evalInEmacs(`(insert "${snippet}")`);
-    bridge.evalInEmacs(`(indent-region ${boundsBeginning} (point))`);
+    bridge.evalInEmacs(`(emmet2/insert "${snippet}" ${boundsBeginning})`);
   } catch (err) {
     console.error(err);
     bridge.evalInEmacs(`(message "Something wrong with expanding ${abbr}")`);
