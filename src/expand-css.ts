@@ -42,7 +42,7 @@ function searchPseudoFunction(s: string): string {
 function expandSelector(abbr: string): string {
   if (!/^[\w.#-]*:[\w-]+(\(.+\))?(:.+)?$/.test(abbr)) return abbr;
 
-  const suffix = " {\n\t\n}";
+  const suffix = " {\n\t|\n}";
 
   let [_, prefix, pseudoSelector, __, pseudoFunction, pseudoParams, chainedPseudos] = abbr.match(
     /^([\w.#-]*)(:[\w-]+)?((:[\w-]+)\((.+)\))?(:.+)?$/
@@ -107,7 +107,8 @@ function expandProperties(abbr: string): string {
       a.push(emmet.default(c, emmetOptions).replace(/#000/, ""));
       return a;
     }, [])
-    .join("\n");
+    .join("\n")
+    .replace(": ;", ": |;");
 }
 
 // main

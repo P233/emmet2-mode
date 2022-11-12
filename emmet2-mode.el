@@ -52,9 +52,12 @@
         (emmet2/expand-css)
       (emmet2/expand-markup lang))))
 
-(defun emmet2/insert (snippet bounds-beginning)
+(defun emmet2/insert (snippet bounds-beginning reposition)
   (insert snippet)
-  (indent-region bounds-beginning (point)))
+  (indent-region bounds-beginning (point))
+  (when (> reposition 0)
+    (re-search-backward "|" bounds-beginning t)
+    (delete-char 1)))
 
 ;;;###autoload
 (define-minor-mode emmet2-mode

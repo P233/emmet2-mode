@@ -14,9 +14,9 @@ function messageDispatcher(message: string) {
     else if (syntax === "solid") snippet = expandJSX(abbr, { classAttr: true });
     else if (syntax === "html") snippet = expandHTML(abbr);
 
-    snippet = snippet.replace(/"/g, '\\"');
-
-    bridge.evalInEmacs(`(emmet2/insert "${snippet}" ${boundsBeginning})`);
+    bridge.evalInEmacs(
+      `(emmet2/insert "${snippet.replace(/"/g, '\\"')}" ${boundsBeginning} ${snippet.includes("|") ? 1 : -1})`
+    );
   } catch (err) {
     console.error(err);
     bridge.evalInEmacs(`(message "Something wrong with expanding ${abbr}")`);
