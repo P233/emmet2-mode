@@ -78,7 +78,7 @@ function expandSelector(abbr: string): string {
 
 // Expand properties
 function expandProperties(abbr: string): string {
-  return abbr
+  const snippet = abbr
     .replace(/\bpos(a|f)(.+?)?(?=,|\+|$)/g, "pos$1+z$2") // posa => posa+z, posf => posf+z
     .replace(/\ball(.+?)?(?=,|\+|$)/g, "t$1+r$1+b$1+l$1") // all => t+r+b+l
     .replace(/\bfw(\d)\b/g, "fw$100") // fw7 => fw700
@@ -107,8 +107,10 @@ function expandProperties(abbr: string): string {
       a.push(emmet.default(c, emmetOptions).replace(/#000/, ""));
       return a;
     }, [])
-    .join("\n")
-    .replace(": ;", ": |;");
+    .join("\n");
+
+  if (snippet.includes("()")) return snippet.replace("()", "(|)");
+  return snippet.replace(": ;", ": |;");
 }
 
 // main

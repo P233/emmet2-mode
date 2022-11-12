@@ -15,6 +15,7 @@ Deno.test("bd1#2s", () => assertEquals(expandCSS("bd1#2s"), "border: 1px #222 so
 Deno.test("p1px2px3px", () => assertEquals(expandCSS("p1px2px3px"), "padding: 1px 2px 3px;"));
 Deno.test("p1px2px3px!", () => assertEquals(expandCSS("p1px2px3px!"), "padding: 1px 2px 3px !important;"));
 Deno.test("p$a$b$c", () => assertEquals(expandCSS("p$a$b$c"), "padding: $a $b $c;"));
+Deno.test("gtc", () => assertEquals(expandCSS("gtc"), "grid-template-columns: repeat(|);"));
 
 // Remove default color #000
 Deno.test("c", () => assertEquals(expandCSS("c"), "color: |;"));
