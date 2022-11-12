@@ -30,7 +30,7 @@
         (t "html")))
 
 (defun emmet2/expand-css ()
-  (when (thing-at-point-looking-at "[a-zA-Z0-9_#.:(+,)$!-]+")
+  (when (thing-at-point-looking-at "@?[a-zA-Z0-9_#.:(+,)$!-]+")
     (let* ((bounds-beginning (match-beginning 0))
            (bounds-end (match-end 0))
            (abbr (buffer-substring-no-properties bounds-beginning bounds-end)))

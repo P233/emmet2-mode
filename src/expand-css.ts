@@ -16,8 +16,8 @@ cssData.atRules.forEach((i, idx) => atRulesIndex.add(idx, i));
 
 function expandAtRules(abbr: string): string {
   const searchResult = atRulesIndex.search(abbr, 1);
-  if (!searchResult.length) return abbr;
-  return cssData.atRules[searchResult[0]];
+  if (!searchResult.length) return abbr + " ";
+  return cssData.atRules[searchResult[0]] + " ";
 }
 
 // Expand selectors
