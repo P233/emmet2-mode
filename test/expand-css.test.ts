@@ -46,6 +46,8 @@ Deno.test("p[var(--a) var(--b) var(--c)]", () => assertEquals(expandCSS("p[var(-
 // Opinionated alias abbreviations
 Deno.test("posa", () => assertEquals(expandCSS("posa"), "position: absolute;\nz-index: |;"));
 Deno.test("posa10", () => assertEquals(expandCSS("posa10"), "position: absolute;\nz-index: 10;"));
+Deno.test("posa--z", () => assertEquals(expandCSS("posa--z"), "position: absolute;\nz-index: var(--z);"));
+Deno.test("posa$z", () => assertEquals(expandCSS("posa$z"), "position: absolute;\nz-index: $z;"));
 Deno.test("posf", () => assertEquals(expandCSS("posf"), "position: fixed;\nz-index: |;"));
 Deno.test("posf100", () => assertEquals(expandCSS("posf100"), "position: fixed;\nz-index: 100;"));
 Deno.test("all", () => assertEquals(expandCSS("all"), "top: |;\nright: ;\nbottom: ;\nleft: ;"));
