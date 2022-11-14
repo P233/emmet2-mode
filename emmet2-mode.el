@@ -55,7 +55,7 @@
 (defun emmet2/insert (snippet bounds-beginning reposition)
   (insert snippet)
   (indent-region bounds-beginning (point))
-  (when (> reposition 0)
+  (when reposition
     (re-search-backward "|" bounds-beginning t)
     (delete-char 1)))
 

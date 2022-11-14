@@ -15,7 +15,7 @@ function messageDispatcher(message: string) {
     else if (syntax === "html") snippet = expandHTML(input);
 
     bridge.evalInEmacs(
-      `(emmet2/insert "${snippet.replace(/"/g, '\\"')}" ${boundsBeginning} ${snippet.includes("|") ? 1 : -1})`
+      `(emmet2/insert "${snippet.replace(/"/g, '\\"')}" ${boundsBeginning} ${snippet.includes("|") ? "t" : "nil"})`
     );
   } catch (err) {
     console.error(err);
