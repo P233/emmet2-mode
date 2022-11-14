@@ -44,8 +44,8 @@ function expandSelector(input: string): string {
 
   const suffix = " {\n\t|\n}";
 
-  let [_, prefix, pseudoSelector, __, pseudoFunction, pseudoParams, chainedPseudos] = input.match(
-    /^([\w.#-]*)(:[\w-]+)?((:[\w-]+)\((.+)\))?(:.+)?$/
+  let [_, prefix, pseudoSelector, pseudoFunction, pseudoParams, chainedPseudos] = input.match(
+    /^([\w.#-]*)(:[\w-]+)?(?:(:[\w-]+)\((.+)\))?(:.+)?$/
   )!;
 
   if (!prefix) prefix = "&";
