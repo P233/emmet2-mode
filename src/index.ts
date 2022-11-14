@@ -5,20 +5,20 @@ import { expandHTML, expandJSX } from "./expand-markup.ts";
 const bridge = new DenoBridge(Deno.args[0], Deno.args[1], Deno.args[2], messageDispatcher);
 
 function messageDispatcher(message: string) {
-  const [syntax, abbr, boundsBeginning] = JSON.parse(message)[1];
+  const [syntax, input, boundsBeginning] = JSON.parse(message)[1];
 
   try {
     let snippet = "";
-    if (syntax === "css") snippet = expandCSS(abbr);
-    else if (syntax === "jsx") snippet = expandJSX(abbr);
-    else if (syntax === "solid") snippet = expandJSX(abbr, { classAttr: true });
-    else if (syntax === "html") snippet = expandHTML(abbr);
+    if (syntax === "css") snippet = expandCSS(input);
+    else if (syntax === "jsx") snippet = expandJSX(input);
+    else if (syntax === "solid") snippet = expandJSX(input, { classAttr: true });
+    else if (syntax === "html") snippet = expandHTML(input);
 
     bridge.evalInEmacs(
       `(emmet2/insert "${snippet.replace(/"/g, '\\"')}" ${boundsBeginning} ${snippet.includes("|") ? 1 : -1})`
     );
   } catch (err) {
     console.error(err);
-    bridge.evalInEmacs(`(message "Something wrong with expanding ${abbr}")`);
+    bridge.evalInEmacs(`(message "Something wrong with expanding ${input}")`);
   }
 }

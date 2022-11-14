@@ -1,7 +1,25 @@
-import { assertEquals } from "https://deno.land/std@0.159.0/testing/asserts.ts";
-import { expandHTML, expandJSX } from "../src/expand-markup.ts";
+import { assertEquals, assertObjectMatch } from "https://deno.land/std@0.159.0/testing/asserts.ts";
+import { parseInput, expandHTML, expandJSX } from "../src/expand-markup.ts";
 
-// HTML
+// Parse markup line
+Deno.test("return (div", () => assertObjectMatch(parseInput("return (div"), { prefix: "return (", abbr: "div", suffix: "" }));
+Deno.test("return ( div", () => assertObjectMatch(parseInput("return ( div"), { prefix: "return (", abbr: "div", suffix: "" }));
+Deno.test("return ( div   ", () => assertObjectMatch(parseInput("return ( div"), { prefix: "return (", abbr: "div", suffix: "" }));
+Deno.test("return (div)", () => assertObjectMatch(parseInput("return (div)"), { prefix: "return (", abbr: "div", suffix: ")" }));
+Deno.test("return ( div );", () => assertObjectMatch(parseInput("return ( div );"), { prefix: "return (", abbr: "div", suffix: ");" }));
+Deno.test("div", () => assertObjectMatch(parseInput("div"), { prefix: "", abbr: "div", suffix: "" }));
+Deno.test("<div> div", () => assertObjectMatch(parseInput("<div> div"), { prefix: "<div>", abbr: "div", suffix: "" }));
+Deno.test("div</div>", () => assertObjectMatch(parseInput("div</div>"), { prefix: "", abbr: "div", suffix: "</div>" }));
+Deno.test("div </div>", () => assertObjectMatch(parseInput("div </div>"), { prefix: "", abbr: "div", suffix: "</div>" }));
+Deno.test("<div>div<div>", () => assertObjectMatch(parseInput("<div>div<div>"), { prefix: "<div>", abbr: "div", suffix: "<div>" }));
+Deno.test("<div> div <div>", () => assertObjectMatch(parseInput("<div> div <div>"), { prefix: "<div>", abbr: "div", suffix: "<div>" }));
+Deno.test("</div>div<div>", () => assertObjectMatch(parseInput("</div>div<div>"), { prefix: "</div>", abbr: "div", suffix: "<div>" }));
+Deno.test("</div> div <div>", () => assertObjectMatch(parseInput("</div> div <div>"), { prefix: "</div>", abbr: "div", suffix: "<div>" }));
+Deno.test("</div> div <div>  ", () => assertObjectMatch(parseInput("</div> div <div>  "), { prefix: "</div>", abbr: "div", suffix: "<div>" }));
+Deno.test("</span> </p> </div> div <div>  ", () => assertObjectMatch(parseInput("</span> </p> </div> div <div>  "), { prefix: "</span> </p> </div>", abbr: "div", suffix: "<div>" }));
+Deno.test("<span/> <p /> </div> div <div>  ", () => assertObjectMatch(parseInput("<span/> <p /> </div> div <div>  "), { prefix: "<span/> <p /> </div>", abbr: "div", suffix: "<div>" }));
+
+// HTML;
 Deno.test("br", () => assertEquals(expandHTML("br"), "<br>"));
 Deno.test(".", () => assertEquals(expandHTML("."), '<div class="">|</div>'));
 Deno.test(".class", () => assertEquals(expandHTML(".class"), '<div class="class">|</div>'));

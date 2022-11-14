@@ -38,9 +38,9 @@
       (deno-bridge-call "emmet2" "css" abbr bounds-beginning))))
 
 (defun emmet2/expand-markup (lang)
-  (when (thing-at-point-looking-at "[a-zA-Z0-9_#./>~+-]+")
-    (let* ((bounds-beginning (match-beginning 0))
-           (bounds-end (match-end 0))
+  (when (thing-at-point-looking-at "^[[:space:]]*\\(.+\\)$")
+    (let* ((bounds-beginning (match-beginning 1))
+           (bounds-end (match-end 1))
            (abbr (buffer-substring-no-properties bounds-beginning bounds-end)))
       (delete-region bounds-beginning bounds-end)
       (deno-bridge-call "emmet2" lang abbr bounds-beginning))))

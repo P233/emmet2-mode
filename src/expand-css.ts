@@ -14,9 +14,9 @@ const emmetOptions = {
 const atRulesIndex = new Flexsearch.Index(flexsearchOptions);
 cssData.atRules.forEach((i, idx) => atRulesIndex.add(idx, i));
 
-function expandAtRules(abbr: string): string {
-  const searchResult = atRulesIndex.search(abbr, 1);
-  if (!searchResult.length) return abbr + " ";
+function expandAtRules(input: string): string {
+  const searchResult = atRulesIndex.search(input, 1);
+  if (!searchResult.length) return input + " ";
   return cssData.atRules[searchResult[0]] + " ";
 }
 
@@ -39,12 +39,12 @@ function searchPseudoFunction(s: string): string {
   return cssData.pseudoFunctions[searchResult[0]];
 }
 
-function expandSelector(abbr: string): string {
-  if (!/^[\w.#-]*:[\w-]+(\(.+\))?(:.+)?$/.test(abbr)) return abbr;
+function expandSelector(input: string): string {
+  if (!/^[\w.#-]*:[\w-]+(\(.+\))?(:.+)?$/.test(input)) return input;
 
   const suffix = " {\n\t|\n}";
 
-  let [_, prefix, pseudoSelector, __, pseudoFunction, pseudoParams, chainedPseudos] = abbr.match(
+  let [_, prefix, pseudoSelector, __, pseudoFunction, pseudoParams, chainedPseudos] = input.match(
     /^([\w.#-]*)(:[\w-]+)?((:[\w-]+)\((.+)\))?(:.+)?$/
   )!;
 
@@ -77,8 +77,8 @@ function expandSelector(abbr: string): string {
 }
 
 // Expand properties
-function expandProperties(abbr: string): string {
-  const snippet = abbr
+function expandProperties(input: string): string {
+  const snippet = input
     .replace(/\bpos(a|f)(.+?)?(?=,|\+|$)/g, "pos$1+z$2") // posa => posa+z, posf => posf+z
     .replace(/\ball(.+?)?(?=,|\+|$)/g, "t$1+r$1+b$1+l$1") // all => t+r+b+l
     .replace(/\bfw(\d)\b/g, "fw$100") // fw7 => fw700
@@ -114,8 +114,8 @@ function expandProperties(abbr: string): string {
 }
 
 // main
-export default function expandCSS(abbr: string): string {
-  if (abbr.startsWith("@")) return expandAtRules(abbr);
-  if (abbr.includes(":")) return expandSelector(abbr);
-  return expandProperties(abbr);
+export default function expandCSS(input: string): string {
+  if (input.startsWith("@")) return expandAtRules(input);
+  if (input.includes(":")) return expandSelector(input);
+  return expandProperties(input);
 }
