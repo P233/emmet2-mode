@@ -1,4 +1,4 @@
-import { assertEquals } from "https://deno.land/std@0.159.0/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.164.0/testing/asserts.ts";
 import expandCSS from "../src/expand-css.ts";
 
 // Default emmet css abbreviations

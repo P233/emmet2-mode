@@ -1,4 +1,4 @@
-import { assertEquals, assertObjectMatch } from "https://deno.land/std@0.159.0/testing/asserts.ts";
+import { assertEquals, assertObjectMatch } from "https://deno.land/std@0.164.0/testing/asserts.ts";
 import { parseInput, expandHTML, expandJSX } from "../src/expand-markup.ts";
 
 // Parse markup line

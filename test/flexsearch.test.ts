@@ -1,5 +1,5 @@
 import Flexsearch from "npm:flexsearch";
-import { assertEquals } from "https://deno.land/std@0.159.0/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.164.0/testing/asserts.ts";
 
 const testIndex = new Flexsearch.Index({
   tokenize: "forward"
