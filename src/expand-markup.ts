@@ -1,7 +1,9 @@
 import emmet from "npm:emmet";
 
 type JSXOptions = {
-  classAttr?: true;
+  classAttr?: boolean;
+  cssModulesObject: string;
+  classNamesConstructor: string;
 };
 
 type ParsedInput = {
@@ -46,7 +48,7 @@ export function expandHTML(input: string): string {
   return prefix + snippet + suffix;
 }
 
-export function expandJSX(input: string, { classAttr }: JSXOptions = {}): string {
+export function expandJSX(input: string, options: JSXOptions): string {
   const { prefix, suffix, abbr } = parseInput(input);
 
   let snippet = emmet.default(abbr, {
@@ -60,15 +62,19 @@ export function expandJSX(input: string, { classAttr }: JSXOptions = {}): string
   if (classAttrList) {
     snippet = classAttrList.reduce((a: string, c: string) => {
       const idx = a.indexOf(c);
-      const prefix = a.slice(0, a.indexOf(c)) + (classAttr ? "class={" : "className={");
+      const prefix = a.slice(0, a.indexOf(c)) + (options.classAttr ? "class={" : "className={");
       const suffix = "}" + a.slice(idx + c.length);
 
       const rawClass = c.match(/"(.*)"/)![1];
       if (rawClass === "") return prefix + suffix;
 
       const classList = rawClass.split(" ");
-      if (classList.length === 1) return prefix + `css.${classList[0]}` + suffix;
-      return prefix + "clsx(" + classList.map((i) => `css.${i}`).join(", ") + ")" + suffix;
+      const { cssModulesObject, classNamesConstructor } = options;
+      if (classList.length === 1) return prefix + `${cssModulesObject}.${classList[0]}` + suffix;
+
+      return (
+        prefix + `${classNamesConstructor}(${classList.map((i) => cssModulesObject + "." + i).join(", ")})` + suffix
+      );
     }, snippet);
   }
 

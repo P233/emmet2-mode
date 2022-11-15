@@ -5,17 +5,17 @@ import { expandHTML, expandJSX } from "./expand-markup.ts";
 const bridge = new DenoBridge(Deno.args[0], Deno.args[1], Deno.args[2], messageDispatcher);
 
 function messageDispatcher(message: string) {
-  const [syntax, input, boundsBeginning] = JSON.parse(message)[1];
+  const [lang, input, bounds, cssModulesObject, classNamesConstructor] = JSON.parse(message)[1];
 
   try {
     let snippet = "";
-    if (syntax === "css") snippet = expandCSS(input);
-    else if (syntax === "jsx") snippet = expandJSX(input);
-    else if (syntax === "solid") snippet = expandJSX(input, { classAttr: true });
-    else if (syntax === "html") snippet = expandHTML(input);
+    if (lang === "css") snippet = expandCSS(input);
+    else if (lang === "jsx") snippet = expandJSX(input, { cssModulesObject, classNamesConstructor });
+    else if (lang === "solid") snippet = expandJSX(input, { classAttr: true, cssModulesObject, classNamesConstructor });
+    else if (lang === "html") snippet = expandHTML(input);
 
     bridge.evalInEmacs(
-      `(emmet2/insert "${snippet.replace(/"/g, '\\"')}" ${boundsBeginning} ${snippet.includes("|") ? "t" : "nil"})`
+      `(emmet2/insert "${snippet.replace(/"/g, '\\"')}" ${bounds} ${snippet.includes("|") ? "t" : "nil"})`
     );
   } catch (err) {
     console.error(err);
