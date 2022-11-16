@@ -2,7 +2,7 @@
 
 Emmet2-mode is an opinionated enhanced [Emmet](https://emmet.io/) minor mode I have eagerly desired to have in Emacs. Special thanks to [@manateelazycat](https://github.com/manateelazycat) for creating the [deno-bridge](https://github.com/manateelazycat/deno-bridge), which is the key to making this package come true.
 
-Emmet2-mode supports all the features of Emmet but with the following improvements:
+Emmet2-mode is both of a pre-processor and a post-processor for Emmet. It supports all the features of Emmet but with the following improvements:
 
 - Expanding markup with CSS modules object and JSX class names constructor
 - Automatically detecting markup abbreviations (Beta)
@@ -23,7 +23,7 @@ When emmet2-mode is enabled, press `C-j` (which is the default expand key, same 
 
 When editing markup files, emmet2-mode detects if the cursor is in between `<style></style>` tag or `style=""` attribute, if it is, then expands CSS instead. CSS in JS syntax in between `style={{}}` is planned.
 
-The [Solid](https://www.solidjs.com/) JSX syntax is also supported, which is quite the same as the React JSX, both of them use `.tsx` or `.jsx` file extension, but Solid uses `class=` instead of `className=`. To let emmet2-mode work with Solid, you'll need to set `emmet2-markup-variant` to `solid`; see [Custom Options](#custom-options).
+[Solid](https://www.solidjs.com/) JSX syntax is also supported, which is quite the same as the React JSX, both of them use `.tsx` or `.jsx` file extension, but Solid uses `class=` instead of `className=`. To let emmet2-mode work with Solid, you'll need to set `emmet2-markup-variant` to `solid`; see [Custom Options](#custom-options).
 
 ## Installation
 
@@ -44,11 +44,11 @@ Emmet2-mode is built on top of the deno-bridge; thus, you need to install it fir
 
 ## Usage
 
-If you are not familiar with Emmet, check https://docs.emmet.io/cheat-sheet/ first. New added features are listed below:
+If you are not familiar with Emmet, check https://docs.emmet.io/cheat-sheet/ first. New added features are listed below, and see the `test/` folder for more deatils.
 
 ### Custom Options
 
-Emmet2-mode has there custom options:
+Emmet2-mode has three custom options:
 
 1. `emmet2-markup-variant` the only value is `"solid"`, let emmet2-mode output `class=` instead of `className=`
 2. `emmet2-css-modules-object` set the CSS Modules object convention for your project
@@ -75,8 +75,6 @@ After that, `a.link.active` will be expanded to `<a href="" class={classnames(st
 
 #### React JSX
 
-_Note: Subcomponent must be capitalised._
-
 ```
 Component                     => <Component>|</Component>
 Component/                    => <Component />
@@ -96,7 +94,143 @@ Component.class => <Component class={css.class}>|</Component>
 
 #### Automatically detect markup abbreviations
 
+When expanding markups, the entire line will be processed, which means you could expand at any position of the abbreviation. This is helpful if you are working on a super complex abbr and want to tweak something. However, it's a bit tricky to detect the correct abbr from the line. Currently, it works in the following circumstances:
+
+- `return(xxx)`
+- `<div>xxx`
+- `xxx</div>`
+- `<div>xxx</div>`
+
+If you encounter any issues with regard to this, please fill an issue.
+
 ### Expand CSS
+
+#### Remove default color
+
+```
+c  => color: |;         // instead of color: #000;
+bg => background: |;    // instead of background: #000;
+```
+
+#### [Modular scale](https://github.com/modularscale/modularscale-sass) and vertical rhythm functions
+
+Only `fw` triggers the `ms()` function, the other properties will expand with the `rhythm()` function.
+
+```
+fz(1)      => font-size: ms(1);
+```
+
+```
+t(2)       => top: rhythm(2);
+p(1)(2)(3) => padding: rhythm(1) rhythm(2) rhythm(3);
+```
+
+#### Custom properties
+
+```
+m--gutter  => margin: var(--gutter);
+p--a--b--c => padding: var(--a) var(--b) var(--c);
+```
+
+#### Raw property value brackets
+
+```
+p[1px 2px 3px] => padding: 1px 2px 3px;
+```
+
+#### Opinionated alias
+
+```
+posa =>
+position: absolute;
+z-index: |;
+
+posa1000 =>
+position: absolute;
+z-index: 1000;
+
+all =>
+top: |;
+right: ;
+bottom: ;
+left: ;
+
+all8 =>
+top: 8px;
+right: 8px;
+bottom: 8px;
+left: 8px;
+
+fw2 => font-weight: 200;
+fw7 => font-weight: 700;
+
+wf  => width: 100%;
+hf  => height: 100%;
+```
+
+#### camelCase alias
+
+Emmet use `:` and `-` for separating property and value; for example `m:a` expands `margin: auto;`. But emmet2-mode use `:` for expanding pseudo selectors. So, why not use camelCase? `mA` is now equal to `m:a` and `m-a`.
+
+```
+mA   => margin: auto;
+allA =>
+top: auto;
+right: auto;
+bottom: auto;
+left: auto;
+```
+
+#### `,` as abbreviations spliter
+
+As a Dvorak keybord layout user, `,` is much more easier to press than `+`.
+
+```
+t0,r0,b0,l0 === t0+r0+b0+l0
+```
+
+#### At rules
+
+Use the first two or three letters to search CSS at-rules. SCSS at-rules will be added shortly.
+
+```
+@ch => @charset
+@ke => @keyframes
+@me => @media
+```
+
+#### Pseudo class and pseudo element
+
+Use the first two or three letters to search pseudo classes or pseudo elements. If the target pseudo contains `-`, it is required, for example `:f-c` represents `:first-child`. The `-` will be removed latter.
+
+For pseudo elements, use only one `:`.
+
+```
+:fo =>
+&:focus {
+  |
+}
+
+_:fo =>
+:focus {
+  |
+}
+
+:hov:af =>
+&:hover::after {
+  |
+}
+
+:n(:f-c) =>
+&:not(:first-child) {
+  |
+}
+
+:n(:f-c,:l-c):be =>                    // Space is not allowed in between "()"
+&:not(:first-child):not(:last-child) {
+  |
+}
+```
 
 ## TODOs
 
@@ -104,7 +238,8 @@ Component.class => <Component class={css.class}>|</Component>
 2. [ ] Optimise automatically detecting markup abbreviations
 3. [ ] Add CSS-in-JS syntax support
 4. [ ] Expand class attribute standalone
-5. [ ] Maybe other markup syntaxes
+5. [ ] Incremental narrowing search for CSS at-rules and pseudos
+6. [ ] Maybe other markup syntaxes
 
 ## Credits
 
