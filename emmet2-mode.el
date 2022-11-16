@@ -4,13 +4,13 @@
 (deno-bridge-start "emmet2" emmet2-backend-path)
 
 (defvar emmet2-file-extension "")
-(defvar emmet2-markup-varient nil)
+(defvar emmet2-markup-variant nil)
 (defvar emmet2-css-modules-object "css")
 (defvar emmet2-class-names-constructor "clsx")
 
 (defun emmet2-after-hook ()
   (make-local-variable 'emmet2-file-extension)
-  (make-local-variable 'emmet2-markup-varient)
+  (make-local-variable 'emmet2-markup-variant)
   (make-local-variable 'emmet2-css-modules-object)
   (make-local-variable 'emmet2-class-names-constructor)
   (setq emmet2-file-extension (file-name-extension buffer-file-name)))
@@ -32,7 +32,7 @@
 (defun emmet2-detect-expand-lang ()
   (cond ((member emmet2-file-extension '("scss" "css")) "css")
         ((emmet2-detect-css-in-markup) "css")
-        ((stringp emmet2-markup-varient) emmet2-markup-varient)
+        ((stringp emmet2-markup-variant) emmet2-markup-variant)
         ((member emmet2-file-extension '("tsx" "jsx")) "jsx")
         (t "html")))
 
