@@ -59,10 +59,11 @@
         (emmet2-expand-css)
       (emmet2-expand-markup lang))))
 
-(defun emmet2-insert (snippet bounds-beginning reposition)
+(defun emmet2-insert (snippet bounds-beginning reposition? indent?)
   (insert snippet)
-  (indent-region bounds-beginning (point))
-  (when reposition
+  (when indent?
+    (indent-region bounds-beginning (point)))
+  (when reposition?
     (re-search-backward "|" bounds-beginning t)
     (delete-char 1)))
 

@@ -234,12 +234,11 @@ _:fo =>
 
 ## TODOs
 
-1. [ ] Remove "Indenting region...done" message
-2. [ ] Optimise automatically detecting markup abbreviations
-3. [ ] Add CSS-in-JS syntax support
-4. [ ] Expand class attribute standalone
-5. [ ] Incremental narrowing search for CSS at-rules and pseudos
-6. [ ] Maybe other markup syntaxes
+1. [ ] Optimise automatically detecting markup abbreviations
+2. [ ] Add CSS-in-JS syntax support
+3. [ ] Expand class attribute standalone
+4. [ ] Incremental narrowing search for CSS at-rules and pseudos
+5. [ ] Maybe other markup syntaxes
 
 ## Credits
 
