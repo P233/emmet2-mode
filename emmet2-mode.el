@@ -40,17 +40,15 @@
   (when (thing-at-point-looking-at "@?[a-zA-Z0-9_#.:(+,)$!-]+")
     (let* ((bounds-beginning (match-beginning 0))
            (bounds-end (match-end 0))
-           (abbr (buffer-substring-no-properties bounds-beginning bounds-end)))
-      (delete-region bounds-beginning bounds-end)
-      (deno-bridge-call "emmet2" "css" abbr bounds-beginning))))
+           (input (buffer-substring-no-properties bounds-beginning bounds-end)))
+      (deno-bridge-call "emmet2" "css" input bounds-beginning))))
 
 (defun emmet2-expand-markup (lang)
   (when (thing-at-point-looking-at "^[[:space:]]*\\(.+\\)$")
     (let* ((bounds-beginning (match-beginning 1))
            (bounds-end (match-end 1))
-           (abbr (buffer-substring-no-properties bounds-beginning bounds-end)))
-      (delete-region bounds-beginning bounds-end)
-      (deno-bridge-call "emmet2" lang abbr bounds-beginning emmet2-css-modules-object emmet2-class-names-constructor))))
+           (input (buffer-substring-no-properties bounds-beginning bounds-end)))
+      (deno-bridge-call "emmet2" lang input bounds-beginning (point) emmet2-css-modules-object emmet2-class-names-constructor))))
 
 (defun emmet2-expand ()
   (interactive)
@@ -59,7 +57,8 @@
         (emmet2-expand-css)
       (emmet2-expand-markup lang))))
 
-(defun emmet2-insert (snippet bounds-beginning reposition? indent?)
+(defun emmet2-insert (snippet bounds-beginning bounds-end reposition? indent?)
+  (delete-region bounds-beginning bounds-end)
   (insert snippet)
   (when indent?
     (indent-region bounds-beginning (point)))
