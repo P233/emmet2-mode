@@ -34,3 +34,32 @@ Deno.test("p--a--b--c", () => assertEquals(propertyRegex.test("p--a--b--c"), tru
 Deno.test("p--a--b--c!", () => assertEquals(propertyRegex.test("p--a--b--c!"), true));
 Deno.test("p[var(--a) var(--b) var(--c)]", () => assertEquals(propertyRegex.test("p[var(--a) var(--b) var(--c)]"), true));
 Deno.test("p[var(--a) var(--b) var(--c)]!", () => assertEquals(propertyRegex.test("p[var(--a) var(--b) var(--c)]!"), true));
+
+const htmlAbbrRegex = /[a-zA-Z.]+(\w*|>|-|#|:|@|\^|\$|\+|\.|\*|\/|\(.+\)|\[.+?\]|\{.+\})+\s?/;
+
+Deno.test("nav>ul>li", () => assertEquals(htmlAbbrRegex.test("nav>ul>li"), true));
+Deno.test("div+p+bq", () => assertEquals(htmlAbbrRegex.test("div+p+bq"), true));
+Deno.test("div+div>p>span+em^bq", () => assertEquals(htmlAbbrRegex.test("div+div>p>span+em^bq"), true));
+Deno.test("div+div>p>span+em^^bq", () => assertEquals(htmlAbbrRegex.test("div+div>p>span+em^^bq"), true));
+Deno.test("div>(header>ul>li*2>a)+footer>p", () => assertEquals(htmlAbbrRegex.test("div>(header>ul>li*2>a)+footer>p"), true));
+Deno.test("(div>dl>(dt+dd)*3)+footer>p", () => assertEquals(htmlAbbrRegex.test("(div>dl>(dt+dd)*3)+footer>p"), true));
+Deno.test("ul>li*5", () => assertEquals(htmlAbbrRegex.test("ul>li*5"), true));
+Deno.test("ul>li.item$*5", () => assertEquals(htmlAbbrRegex.test("ul>li.item$*5"), true));
+Deno.test("h$[title=item$]{Header $}*3", () => assertEquals(htmlAbbrRegex.test("h$[title=item$]{Header $}*3"), true));
+Deno.test("ul>li.item$$$*5", () => assertEquals(htmlAbbrRegex.test("ul>li.item$$$*5"), true));
+Deno.test("ul>li.item$@-*5", () => assertEquals(htmlAbbrRegex.test("ul>li.item$@-*5"), true));
+Deno.test("ul>li.item$@3*5", () => assertEquals(htmlAbbrRegex.test("ul>li.item$@3*5"), true));
+Deno.test("#header", () => assertEquals(htmlAbbrRegex.test("#header"), true));
+Deno.test(".title", () => assertEquals(htmlAbbrRegex.test(".title"), true));
+Deno.test("form#search.wide", () => assertEquals(htmlAbbrRegex.test("form#search.wide"), true));
+Deno.test("p.class1.class2.class3", () => assertEquals(htmlAbbrRegex.test("p.class1.class2.class3"), true));
+Deno.test('p[title="Hello world"]', () => assertEquals(htmlAbbrRegex.test('p[title="Hello world"]'), true));
+Deno.test("td[rowspan=2 colspan=3 title]", () => assertEquals(htmlAbbrRegex.test("td[rowspan=2 colspan=3 title]"), true));
+Deno.test('[a="value1" b="value2"]', () => assertEquals(htmlAbbrRegex.test('[a="value1" b="value2"]'), true));
+Deno.test("a{Click me}", () => assertEquals(htmlAbbrRegex.test("a{Click me}"), true));
+Deno.test("p>{Click }+a{here}+{ to continue}", () => assertEquals(htmlAbbrRegex.test("p>{Click }+a{here}+{ to continue}"), true));
+Deno.test(".class", () => assertEquals(htmlAbbrRegex.test(".class"), true));
+Deno.test("em>.class", () => assertEquals(htmlAbbrRegex.test("em>.class"), true));
+Deno.test("ul>.class", () => assertEquals(htmlAbbrRegex.test("ul>.class"), true));
+Deno.test("table>.row>.col", () => assertEquals(htmlAbbrRegex.test("table>.row>.col"), true));
+Deno.test("input:color", () => assertEquals(htmlAbbrRegex.test("input:color"), true));

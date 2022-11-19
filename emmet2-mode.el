@@ -44,10 +44,18 @@
       (deno-bridge-call "emmet2" "css" input bounds-beginning))))
 
 (defun emmet2-expand-markup (lang)
-  (when (thing-at-point-looking-at "^[[:space:]]*\\(.+\\)$")
-    (let* ((bounds-beginning (match-beginning 1))
-           (bounds-end (match-end 1))
-           (input (buffer-substring-no-properties bounds-beginning bounds-end)))
+  (let* ((bounds-beginning (save-excursion
+                             (re-search-backward "\\(?:<.*?>\\|/>\\|}>\\|return (\\|=> (\\|)}\\|^\\)[[:space:]]*\\(.?\\)" nil t)
+                             (match-beginning 1)))
+         (left-paren? (string-match "\\(return\\|=>\\) ($" (buffer-substring-no-properties (match-beginning 0) bounds-beginning)))
+         (bounds-end (save-excursion
+                       (re-search-forward "\\(.?\\)<\\|$" nil t)
+                       (match-beginning 0)))
+         (right-paren? (and left-paren? (string-equal ")" (buffer-substring-no-properties (- bounds-end 1) bounds-end))))
+         (bounds-end (if right-paren? (- bounds-end 1) bounds-end))
+         (input (buffer-substring-no-properties bounds-beginning bounds-end)))
+    (if (or (string-equal input "") (string-equal input ">"))
+        (message "There is no abbr under the point")
       (deno-bridge-call "emmet2" lang input bounds-beginning (point) emmet2-css-modules-object emmet2-class-names-constructor))))
 
 (defun emmet2-expand ()

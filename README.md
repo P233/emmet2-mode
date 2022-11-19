@@ -4,8 +4,8 @@ Emmet2-mode is an opinionated enhanced [Emmet](https://emmet.io/) minor mode I h
 
 Emmet2-mode is both of a pre-processor and a post-processor for Emmet. It supports all the features of Emmet but with the following improvements:
 
+- Expanding abbreviations at any position of it
 - Expanding markup with CSS modules object and JSX class names constructor
-- Automatically detecting markup abbreviations (Beta)
 - Automatically detecting style tags and attributes in markup and expanding CSS abbreviations within
 - Expanding CSS at-rules
 - Expanding CSS pseudo selectors
@@ -94,14 +94,7 @@ Component.class => <Component class={css.class}>|</Component>
 
 #### Automatically detect markup abbreviations
 
-When expanding markups, the entire line will be processed, which means you could expand at any position of the abbreviation. This is helpful if you are working on a super complex abbr and want to tweak something. However, it's a bit tricky to detect the correct abbr from the line. Currently, it works in the following circumstances:
-
-- `return(xxx)`
-- `<div>xxx`
-- `xxx</div>`
-- `<div>xxx</div>`
-
-If you encounter any issues with regard to this, please fill an issue.
+You are able to expand at any position of the abbreviation; this is helpful if you are working on a super complex abbr and want to tweak something. However, it's a bit tricky to detect the correct abbr. If you encounter any issues with regard to this, please fill an issue.
 
 ### Expand CSS
 
@@ -234,7 +227,7 @@ _:fo =>
 
 ## TODOs
 
-1. [ ] Optimise automatically detecting markup abbreviations
+1. [x] Optimise automatically detecting markup abbreviations
 2. [ ] Add CSS-in-JS syntax support
 3. [ ] Expand class attribute standalone
 4. [ ] Incremental narrowing search for CSS at-rules and pseudos

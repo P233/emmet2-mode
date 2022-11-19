@@ -5,25 +5,43 @@ import { expandHTML, expandJSX } from "./expand-markup.ts";
 const bridge = new DenoBridge(Deno.args[0], Deno.args[1], Deno.args[2], messageDispatcher);
 
 function messageDispatcher(message: string) {
-  const [lang, input, boundsBeginning, point, cssModulesObject, classNamesConstructor] = JSON.parse(message)[1];
+  const [lang, input, boundsBeginning, bufferPoint, cssModulesObject, classConstructor] = JSON.parse(message)[1];
 
   try {
     let snippet = "";
-    if (lang === "css") snippet = expandCSS(input);
-    else if (lang === "jsx") snippet = expandJSX(input, { cssModulesObject, classNamesConstructor });
-    else if (lang === "solid") snippet = expandJSX(input, { classAttr: true, cssModulesObject, classNamesConstructor });
-    else if (lang === "html") snippet = expandHTML(input);
+    let start = boundsBeginning;
+    let end = boundsBeginning + input.length;
+
+    if (lang === "css") {
+      snippet = expandCSS(input);
+    } else {
+      let offset, length;
+      const point = bufferPoint - boundsBeginning;
+
+      if (lang === "jsx") {
+        ({ snippet, offset, length } = expandJSX(input, { cssModulesObject, classConstructor, point }));
+      } else if (lang === "solid") {
+        const classAttr = true;
+        ({ snippet, offset, length } = expandJSX(input, { classAttr, cssModulesObject, classConstructor, point }));
+      } else {
+        ({ snippet, offset, length } = expandHTML(input, { point }));
+      }
+
+      start += offset;
+      end = start + length;
+    }
 
     snippet = snippet.replace(/"/g, '\\"');
-    const boundsEnd = boundsBeginning + input.length;
     const shouldReposition = snippet.includes("|") ? "t" : "nil";
     const shouldIndent = snippet.includes("\n") ? "t" : "nil";
 
-    bridge.evalInEmacs(
-      `(emmet2-insert "${snippet}" ${boundsBeginning} ${boundsEnd} ${shouldReposition} ${shouldIndent})`
-    );
+    bridge.evalInEmacs(`(emmet2-insert "${snippet}" ${start} ${end} ${shouldReposition} ${shouldIndent})`);
   } catch (err) {
-    console.error(err);
-    bridge.evalInEmacs(`(message "Something wrong with expanding ${input}")`);
+    if (/^\[\[.+\]\]$/.test(err.message)) {
+      bridge.evalInEmacs(`(message "${err.message.slice(2, -2).replace(/"/g, '\\"')}")`);
+    } else {
+      console.error(err);
+      bridge.evalInEmacs(`(message "Something wrong with expanding \\"${input}\\"")`);
+    }
   }
 }
