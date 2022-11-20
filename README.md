@@ -188,42 +188,44 @@ t0,r0,b0,l0 === t0+r0+b0+l0
 
 #### At rules
 
-Use the first two or three letters to search CSS at-rules. SCSS at-rules will be added shortly.
+Use two or three unique letters to do an incremental narrowing search for CSS at-rules. The first character must be `@`.
+
+SCSS at-rules will be added shortly.
 
 ```
-@ch => @charset
-@ke => @keyframes
-@me => @media
+@cs => @charset
+@kf => @keyframes
+@md => @media
 ```
 
 #### Pseudo class and pseudo element
 
-Use the first two or three letters to search pseudo classes or pseudo elements. If the target pseudo contains `-`, it is required, for example `:f-c` represents `:first-child`. The `-` will be removed latter.
+Use two or three unique letters to do an incremental narrowing search for pseudo classes or pseudo elements. The first two characters must be a `:` and the leading letter of your target pseudo selector. For pseudo elements, use `:` rather than `::`.
 
-For pseudo elements, use only one `:`.
+There is also a shorthand for pseudo functions, for example, `:n(:fc)` expands `&:not(:first-child) {|}`, and `:n(:fc,:lc)` expands `^:not(:first-child):not(:last-child) {|}`. Please note that space is not allowed in between `()`.
 
 ```
-:fo =>
+:fu =>
 &:focus {
   |
 }
 
-_:fo =>
+_:fu =>
 :focus {
   |
 }
 
-:hov:af =>
+:hv:af =>
 &:hover::after {
   |
 }
 
-:n(:f-c) =>
+:n(:fc) =>
 &:not(:first-child) {
   |
 }
 
-:n(:f-c,:l-c):be =>                    // Space is not allowed in between "()"
+:n(:fc,:lc):be =>
 &:not(:first-child):not(:last-child) {
   |
 }
@@ -232,10 +234,11 @@ _:fo =>
 ## TODOs
 
 1. [x] Optimise automatically detecting markup abbreviations
-2. [ ] Add CSS-in-JS syntax support
-3. [ ] Expand class attribute standalone
-4. [ ] Incremental narrowing search for CSS at-rules and pseudos
-5. [ ] Maybe other markup syntaxes
+2. [x] Incremental narrowing search for CSS at-rules and pseudos
+3. [ ] Add SCSS at-rules
+4. [ ] Expand class attribute standalone
+5. [ ] Add CSS-in-JS syntax support
+6. [ ] Maybe other markup syntaxes
 
 ## Credits
 

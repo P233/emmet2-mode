@@ -1,50 +1,41 @@
 import emmet from "npm:emmet";
-import Flexsearch from "npm:flexsearch";
 import cssData from "../data/css-data.json" assert { type: "json" };
-
-const flexsearchOptions = {
-  tokenize: "forward"
-};
 
 const emmetOptions = {
   type: "stylesheet"
 };
 
-// Expand at rules
-const atRulesIndex = new Flexsearch.Index(flexsearchOptions);
-cssData.atRules.forEach((i, idx) => atRulesIndex.add(idx, i));
+// Find functions
+function find(abbr: string, list: string[]) {
+  const regex = new RegExp(`${abbr.slice(0, 2)}.*?${abbr.slice(2).split("").join(".*?")}`);
 
-function expandAtRules(input: string): string {
-  const searchResult = atRulesIndex.search(input, 1);
-  if (!searchResult.length) return input + " ";
-  return cssData.atRules[searchResult[0]] + " ";
+  for (let i = 0; i < list.length; i++) {
+    if (regex.test(list[i])) {
+      return list[i];
+    }
+  }
+}
+
+// Expand at rules
+function expandAtRules(abbr: string): string {
+  return (find(abbr, cssData.atRules) || abbr) + " ";
 }
 
 // Expand selectors
-const pseudoSelectorsIndex = new Flexsearch.Index(flexsearchOptions);
-cssData.pseudoSelectors.forEach((i, idx) => pseudoSelectorsIndex.add(idx, i));
-
-function searchPseudoSelector(s: string): string {
-  const searchResult = pseudoSelectorsIndex.search(s, 1);
-  if (!searchResult.length) return s;
-  return cssData.pseudoSelectors[searchResult[0]];
+function findPseudoSelector(abbr: string): string {
+  return find(abbr, cssData.pseudoSelectors) || abbr;
 }
 
-const pseudoFunctionsIndex = new Flexsearch.Index(flexsearchOptions);
-cssData.pseudoFunctions.forEach((i, idx) => pseudoFunctionsIndex.add(idx, i));
-
-function searchPseudoFunction(s: string): string {
-  const searchResult = pseudoFunctionsIndex.search(s, 1);
-  if (!searchResult.length) return s;
-  return cssData.pseudoFunctions[searchResult[0]];
+function findPseudoFunction(abbr: string): string {
+  return find(abbr, cssData.pseudoFunctions) || abbr;
 }
 
-function expandSelector(input: string): string {
-  if (!/^[\w.#-]*:[\w-]+(\(.+\))?(:.+)?$/.test(input)) return input;
+function expandSelector(abbr: string): string {
+  if (!/^[\w.#-]*:[\w-]+(\(.+\))?(:.+)?$/.test(abbr)) return abbr;
 
   const suffix = " {\n\t|\n}";
 
-  let [_, prefix, pseudoSelector, pseudoFunction, pseudoParams, chainedPseudos] = input.match(
+  let [_, prefix, pseudoSelector, pseudoFunction, pseudoParams, chainedPseudos] = abbr.match(
     /^([\w.#-]*)(:[\w-]+)?(?:(:[\w-]+)\((.+)\))?(:.+)?$/
   )!;
 
@@ -54,20 +45,20 @@ function expandSelector(input: string): string {
   if (chainedPseudos) {
     chainedPseudos = chainedPseudos
       .split(/(?=:)/g)
-      .map((i) => searchPseudoSelector(i))
+      .map((i) => findPseudoSelector(i))
       .join("");
   }
 
   if (pseudoSelector) {
-    pseudoSelector = searchPseudoSelector(pseudoSelector);
+    pseudoSelector = findPseudoSelector(pseudoSelector);
     return prefix + pseudoSelector + (chainedPseudos || "") + suffix;
   }
 
-  pseudoFunction = searchPseudoFunction(pseudoFunction);
+  pseudoFunction = findPseudoFunction(pseudoFunction);
   return (
     pseudoParams.split(",").reduce((a, c) => {
       c = c.trim();
-      if (c.startsWith(":")) a += `${pseudoFunction}(${searchPseudoSelector(c)})`;
+      if (c.startsWith(":")) a += `${pseudoFunction}(${findPseudoSelector(c)})`;
       else a += `${pseudoFunction}(${c})`;
       return a;
     }, prefix) +
@@ -77,8 +68,8 @@ function expandSelector(input: string): string {
 }
 
 // Expand properties
-function expandProperties(input: string): string {
-  const snippet = input
+function expandProperties(abbr: string): string {
+  const snippet = abbr
     .replace(/\bpos(a|f)(.+?)?(?=,|\+|$)/g, "pos$1+z$2") // posa => posa+z, posf => posf+z
     .replace(/\ball(.+?)?(?=,|\+|$)/g, "t$1+r$1+b$1+l$1") // all => t+r+b+l
     .replace(/\bfw(\d)\b/g, "fw$100") // fw7 => fw700
@@ -114,8 +105,8 @@ function expandProperties(input: string): string {
 }
 
 // main
-export default function expandCSS(input: string): string {
-  if (input.startsWith("@")) return expandAtRules(input);
-  if (input.includes(":")) return expandSelector(input);
-  return expandProperties(input);
+export default function expandCSS(abbr: string): string {
+  if (abbr.startsWith("@")) return expandAtRules(abbr);
+  if (abbr.includes(":")) return expandSelector(abbr);
+  return expandProperties(abbr);
 }
