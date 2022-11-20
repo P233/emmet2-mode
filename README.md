@@ -27,7 +27,11 @@ When editing markup files, emmet2-mode detects if the cursor is in between `<sty
 
 ## Installation
 
-Emmet2-mode is built on top of the deno-bridge; thus, you need to install it first. Clone deno-bridge and emmet2-mode to your `.emacs.d` folder and add them to your configs. Here is an example of configuring them through [use-package](https://github.com/jwiegley/use-package):
+Emmet2-mode is built on top of the deno-bridge; thus, you need to install Deno and deno-bridge first.
+
+1. Follow the [official document](https://deno.land/manual/getting_started/installation) to install Deno.
+
+2. Clone deno-bridge and emmet2-mode to your `.emacs.d` folder and add them to your configs. Here is an example of configuring them through [use-package](https://github.com/jwiegley/use-package):
 
 ```elisp
 (use-package deno-bridge
