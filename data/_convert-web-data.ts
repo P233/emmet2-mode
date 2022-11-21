@@ -26,12 +26,15 @@ const pseudos = [...CSS_DATA.pseudoClasses, ...CSS_DATA.pseudoElements].map((i) 
 
 const slimedCSSData = {
   atRules: CSS_DATA.atDirectives
+    .filter((i) => !i.name.startsWith("@-") && i.name !== "@import")
     .map((i) => i.name + " ")
-    .filter((i) => !i.startsWith("@-"))
     .concat(SASS_AT_RULES)
     .reverse(),
-  pseudoFunctions: pseudos.filter((i) => i.endsWith("()")).map((i) => i.slice(0, -2)),
-  pseudoSelectors: pseudos.filter((i) => !i.endsWith("()"))
+  pseudoFunctions: pseudos
+    .filter((i) => i.endsWith("()"))
+    .map((i) => i.slice(0, -2))
+    .sort(),
+  pseudoSelectors: pseudos.filter((i) => !i.endsWith("()")).sort()
 };
 
 Deno.writeTextFileSync("./data/css-data.json", JSON.stringify(slimedCSSData, null, 2));

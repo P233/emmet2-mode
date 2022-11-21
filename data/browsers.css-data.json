@@ -75,7 +75,7 @@
         }
       ],
       "syntax": "normal | stretch | <baseline-position> | [ <overflow-position>? <self-position> ]",
-      "relevance": 85,
+      "relevance": 86,
       "references": [
         {
           "name": "MDN Reference",
@@ -151,7 +151,7 @@
         }
       ],
       "syntax": "normal | stretch | <baseline-position> | <overflow-position>? [ <self-position> | left | right ] | legacy | legacy && [ left | right | center ]",
-      "relevance": 52,
+      "relevance": 53,
       "references": [
         {
           "name": "MDN Reference",
@@ -264,7 +264,7 @@
         }
       ],
       "syntax": "auto | normal | stretch | <baseline-position> | <overflow-position>? <self-position>",
-      "relevance": 72,
+      "relevance": 73,
       "references": [
         {
           "name": "MDN Reference",
@@ -345,7 +345,7 @@
         }
       ],
       "syntax": "<single-animation>#",
-      "relevance": 82,
+      "relevance": 83,
       "references": [
         {
           "name": "MDN Reference",
@@ -359,7 +359,7 @@
       "name": "animation-delay",
       "browsers": ["E12", "FF16", "S9", "C43", "IE10", "O30"],
       "syntax": "<time>#",
-      "relevance": 64,
+      "relevance": 65,
       "references": [
         {
           "name": "MDN Reference",
@@ -391,7 +391,7 @@
         }
       ],
       "syntax": "<single-animation-direction>#",
-      "relevance": 59,
+      "relevance": 56,
       "references": [
         {
           "name": "MDN Reference",
@@ -405,7 +405,7 @@
       "name": "animation-duration",
       "browsers": ["E12", "FF16", "S9", "C43", "IE10", "O30"],
       "syntax": "<time>#",
-      "relevance": 70,
+      "relevance": 71,
       "references": [
         {
           "name": "MDN Reference",
@@ -457,7 +457,7 @@
         }
       ],
       "syntax": "<single-animation-iteration-count>#",
-      "relevance": 62,
+      "relevance": 63,
       "references": [
         {
           "name": "MDN Reference",
@@ -477,7 +477,7 @@
         }
       ],
       "syntax": "[ none | <keyframes-name> ]#",
-      "relevance": 70,
+      "relevance": 71,
       "references": [
         {
           "name": "MDN Reference",
@@ -501,7 +501,7 @@
         }
       ],
       "syntax": "<single-animation-play-state>#",
-      "relevance": 53,
+      "relevance": 54,
       "references": [
         {
           "name": "MDN Reference",
@@ -515,7 +515,7 @@
       "name": "animation-timing-function",
       "browsers": ["E12", "FF16", "S9", "C43", "IE10", "O30"],
       "syntax": "<easing-function>#",
-      "relevance": 71,
+      "relevance": 72,
       "references": [
         {
           "name": "MDN Reference",
@@ -539,7 +539,7 @@
         }
       ],
       "syntax": "visible | hidden",
-      "relevance": 60,
+      "relevance": 59,
       "references": [
         {
           "name": "MDN Reference",
@@ -698,7 +698,7 @@
       "name": "background-clip",
       "browsers": ["E12", "FF4", "S14", "C1", "IE9", "O10.5"],
       "syntax": "<box>#",
-      "relevance": 68,
+      "relevance": 66,
       "references": [
         {
           "name": "MDN Reference",
@@ -746,7 +746,7 @@
       "name": "background-origin",
       "browsers": ["E12", "FF4", "S3", "C1", "IE9", "O10.5"],
       "syntax": "<box>#",
-      "relevance": 53,
+      "relevance": 54,
       "references": [
         {
           "name": "MDN Reference",
@@ -760,7 +760,7 @@
       "name": "background-position",
       "browsers": ["E12", "FF1", "S1", "C1", "IE4", "O3.5"],
       "syntax": "<bg-position>#",
-      "relevance": 87,
+      "relevance": 88,
       "references": [
         {
           "name": "MDN Reference",
@@ -788,7 +788,7 @@
         }
       ],
       "syntax": "[ center | [ [ left | right | x-start | x-end ]? <length-percentage>? ]! ]#",
-      "relevance": 54,
+      "relevance": 55,
       "references": [
         {
           "name": "MDN Reference",
@@ -831,7 +831,7 @@
       "browsers": ["E12", "FF1", "S1", "C1", "IE4", "O3.5"],
       "values": [],
       "syntax": "<repeat-style>#",
-      "relevance": 85,
+      "relevance": 86,
       "references": [
         {
           "name": "MDN Reference",
@@ -859,7 +859,7 @@
         }
       ],
       "syntax": "<bg-size>#",
-      "relevance": 85,
+      "relevance": 86,
       "references": [
         {
           "name": "MDN Reference",
@@ -1040,7 +1040,7 @@
       "name": "border-bottom-color",
       "browsers": ["E12", "FF1", "S1", "C1", "IE4", "O3.5"],
       "syntax": "<'border-top-color'>",
-      "relevance": 70,
+      "relevance": 71,
       "references": [
         {
           "name": "MDN Reference",
@@ -1068,7 +1068,7 @@
       "name": "border-bottom-right-radius",
       "browsers": ["E12", "FF4", "S5", "C4", "IE9", "O10.5"],
       "syntax": "<length-percentage>{1,2}",
-      "relevance": 74,
+      "relevance": 75,
       "references": [
         {
           "name": "MDN Reference",
@@ -1096,7 +1096,7 @@
       "name": "border-bottom-width",
       "browsers": ["E12", "FF1", "S1", "C1", "IE4", "O3.5"],
       "syntax": "<line-width>",
-      "relevance": 62,
+      "relevance": 64,
       "references": [
         {
           "name": "MDN Reference",
@@ -1386,7 +1386,7 @@
       "name": "border-inline-end-width",
       "browsers": ["E79", "FF41", "S12.1", "C69", "O56"],
       "syntax": "<'border-top-width'>",
-      "relevance": 51,
+      "relevance": 50,
       "references": [
         {
           "name": "MDN Reference",
@@ -1428,7 +1428,7 @@
       "name": "border-left-color",
       "browsers": ["E12", "FF1", "S1", "C1", "IE4", "O3.5"],
       "syntax": "<color>",
-      "relevance": 66,
+      "relevance": 67,
       "references": [
         {
           "name": "MDN Reference",
@@ -1484,7 +1484,7 @@
       "name": "border-right",
       "browsers": ["E12", "FF1", "S1", "C1", "IE5.5", "O9.2"],
       "syntax": "<line-width> || <line-style> || <color>",
-      "relevance": 80,
+      "relevance": 81,
       "references": [
         {
           "name": "MDN Reference",
@@ -1498,7 +1498,7 @@
       "name": "border-right-color",
       "browsers": ["E12", "FF1", "S1", "C1", "IE4", "O3.5"],
       "syntax": "<color>",
-      "relevance": 65,
+      "relevance": 66,
       "references": [
         {
           "name": "MDN Reference",
@@ -1583,7 +1583,7 @@
       "name": "border-top-color",
       "browsers": ["E12", "FF1", "S1", "C1", "IE4", "O3.5"],
       "syntax": "<color>",
-      "relevance": 70,
+      "relevance": 71,
       "references": [
         {
           "name": "MDN Reference",
@@ -1597,7 +1597,7 @@
       "name": "border-top-left-radius",
       "browsers": ["E12", "FF4", "S5", "C4", "IE9", "O10.5"],
       "syntax": "<length-percentage>{1,2}",
-      "relevance": 75,
+      "relevance": 76,
       "references": [
         {
           "name": "MDN Reference",
@@ -1611,7 +1611,7 @@
       "name": "border-top-right-radius",
       "browsers": ["E12", "FF4", "S5", "C4", "IE9", "O10.5"],
       "syntax": "<length-percentage>{1,2}",
-      "relevance": 75,
+      "relevance": 76,
       "references": [
         {
           "name": "MDN Reference",
@@ -1639,7 +1639,7 @@
       "name": "border-top-width",
       "browsers": ["E12", "FF1", "S1", "C1", "IE4", "O3.5"],
       "syntax": "<line-width>",
-      "relevance": 60,
+      "relevance": 62,
       "references": [
         {
           "name": "MDN Reference",
@@ -1722,7 +1722,7 @@
         }
       ],
       "syntax": "none | <shadow>#",
-      "relevance": 89,
+      "relevance": 90,
       "references": [
         {
           "name": "MDN Reference",
@@ -1958,7 +1958,7 @@
         }
       ],
       "syntax": "none | left | right | both | inline-start | inline-end",
-      "relevance": 84,
+      "relevance": 85,
       "references": [
         {
           "name": "MDN Reference",
@@ -2006,7 +2006,7 @@
         }
       ],
       "syntax": "<clip-source> | [ <basic-shape> || <geometry-box> ] | none",
-      "relevance": 60,
+      "relevance": 61,
       "references": [
         {
           "name": "MDN Reference",
@@ -2037,7 +2037,7 @@
       "name": "color",
       "browsers": ["E12", "FF1", "S1", "C1", "IE3", "O3.5"],
       "syntax": "<color>",
-      "relevance": 94,
+      "relevance": 95,
       "references": [
         {
           "name": "MDN Reference",
@@ -2286,7 +2286,7 @@
         }
       ],
       "syntax": "none | strict | content | [ [ size || inline-size ] || layout || style || paint ]",
-      "relevance": 58,
+      "relevance": 59,
       "references": [
         {
           "name": "MDN Reference",
@@ -2569,7 +2569,7 @@
         }
       ],
       "syntax": "[ [ <url> [ <x> <y> ]? , ]* [ auto | default | none | context-menu | help | pointer | progress | wait | cell | crosshair | text | vertical-text | alias | copy | move | no-drop | not-allowed | e-resize | n-resize | ne-resize | nw-resize | s-resize | se-resize | sw-resize | w-resize | ew-resize | ns-resize | nesw-resize | nwse-resize | col-resize | row-resize | all-scroll | zoom-in | zoom-out | grab | grabbing ] ]",
-      "relevance": 91,
+      "relevance": 92,
       "references": [
         {
           "name": "MDN Reference",
@@ -2881,7 +2881,7 @@
           "description": "No paint is applied in this layer."
         }
       ],
-      "relevance": 76,
+      "relevance": 77,
       "description": "Paints the interior of the given graphical element.",
       "restrictions": ["color", "enum", "url"]
     },
@@ -2962,7 +2962,7 @@
         }
       ],
       "syntax": "none | <filter-function-list>",
-      "relevance": 66,
+      "relevance": 67,
       "references": [
         {
           "name": "MDN Reference",
@@ -2991,7 +2991,7 @@
         }
       ],
       "syntax": "none | [ <'flex-grow'> <'flex-shrink'>? || <'flex-basis'> ]",
-      "relevance": 79,
+      "relevance": 80,
       "references": [
         {
           "name": "MDN Reference",
@@ -3048,7 +3048,7 @@
         }
       ],
       "syntax": "row | row-reverse | column | column-reverse",
-      "relevance": 82,
+      "relevance": 83,
       "references": [
         {
           "name": "MDN Reference",
@@ -3120,7 +3120,7 @@
       "name": "flex-shrink",
       "browsers": ["E12", "FF20", "S9", "C29", "IE10", "O12.1"],
       "syntax": "<number>",
-      "relevance": 73,
+      "relevance": 75,
       "references": [
         {
           "name": "MDN Reference",
@@ -3148,7 +3148,7 @@
         }
       ],
       "syntax": "nowrap | wrap | wrap-reverse",
-      "relevance": 79,
+      "relevance": 80,
       "references": [
         {
           "name": "MDN Reference",
@@ -3897,7 +3897,7 @@
         }
       ],
       "syntax": "normal | <feature-tag-value>#",
-      "relevance": 58,
+      "relevance": 59,
       "references": [
         {
           "name": "MDN Reference",
@@ -4408,7 +4408,7 @@
         }
       ],
       "syntax": "normal | [ <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero ]",
-      "relevance": 50,
+      "relevance": 51,
       "references": [
         {
           "name": "MDN Reference",
@@ -4504,7 +4504,7 @@
         }
       ],
       "syntax": "<font-weight-absolute>{1,2}",
-      "relevance": 93,
+      "relevance": 94,
       "references": [
         {
           "name": "MDN Reference",
@@ -4715,7 +4715,7 @@
       "browsers": ["FF52", "C57", "S10.1", "O44"],
       "status": "obsolete",
       "syntax": "<length-percentage>",
-      "relevance": 2,
+      "relevance": 3,
       "description": "Specifies the gutters between grid columns. Replaced by 'column-gap' property.",
       "restrictions": ["length"]
     },
@@ -4790,7 +4790,7 @@
         }
       ],
       "syntax": "<grid-line>",
-      "relevance": 51,
+      "relevance": 50,
       "references": [
         {
           "name": "MDN Reference",
@@ -4805,7 +4805,7 @@
       "browsers": ["FF52", "C57", "S10.1", "O44"],
       "status": "obsolete",
       "syntax": "<length-percentage>",
-      "relevance": 1,
+      "relevance": 2,
       "description": "Specifies the gutters between grid rows. Replaced by 'row-gap' property.",
       "restrictions": ["length"]
     },
@@ -4887,7 +4887,7 @@
         }
       ],
       "syntax": "none | <string>+",
-      "relevance": 53,
+      "relevance": 54,
       "references": [
         {
           "name": "MDN Reference",
@@ -5263,7 +5263,7 @@
         }
       ],
       "syntax": "normal | <content-distribution> | <overflow-position>? [ <content-position> | left | right ]",
-      "relevance": 85,
+      "relevance": 86,
       "references": [
         {
           "name": "MDN Reference",
@@ -5295,7 +5295,7 @@
         }
       ],
       "syntax": "<length> | <percentage> | auto",
-      "relevance": 94,
+      "relevance": 95,
       "references": [
         {
           "name": "MDN Reference",
@@ -5315,7 +5315,7 @@
         }
       ],
       "syntax": "normal | <length>",
-      "relevance": 81,
+      "relevance": 82,
       "references": [
         {
           "name": "MDN Reference",
@@ -5358,7 +5358,7 @@
         }
       ],
       "syntax": "auto | loose | normal | strict | anywhere",
-      "relevance": 52,
+      "relevance": 51,
       "references": [
         {
           "name": "MDN Reference",
@@ -5458,7 +5458,7 @@
         }
       ],
       "syntax": "<'list-style-type'> || <'list-style-position'> || <'list-style-image'>",
-      "relevance": 84,
+      "relevance": 85,
       "references": [
         {
           "name": "MDN Reference",
@@ -5583,7 +5583,7 @@
         }
       ],
       "syntax": "<counter-style> | <string> | none",
-      "relevance": 74,
+      "relevance": 75,
       "references": [
         {
           "name": "MDN Reference",
@@ -5602,7 +5602,7 @@
         }
       ],
       "syntax": "[ <length> | <percentage> | auto ]{1,4}",
-      "relevance": 95,
+      "relevance": 96,
       "references": [
         {
           "name": "MDN Reference",
@@ -5621,7 +5621,7 @@
         }
       ],
       "syntax": "<'margin-left'>",
-      "relevance": 53,
+      "relevance": 54,
       "references": [
         {
           "name": "MDN Reference",
@@ -5640,7 +5640,7 @@
         }
       ],
       "syntax": "<'margin-left'>",
-      "relevance": 53,
+      "relevance": 54,
       "references": [
         {
           "name": "MDN Reference",
@@ -5716,7 +5716,7 @@
         }
       ],
       "syntax": "<length> | <percentage> | auto",
-      "relevance": 91,
+      "relevance": 92,
       "references": [
         {
           "name": "MDN Reference",
@@ -6019,7 +6019,7 @@
         }
       ],
       "syntax": "<viewport-length>",
-      "relevance": 85,
+      "relevance": 86,
       "references": [
         {
           "name": "MDN Reference",
@@ -6074,7 +6074,7 @@
         }
       ],
       "syntax": "<viewport-length>",
-      "relevance": 90,
+      "relevance": 91,
       "references": [
         {
           "name": "MDN Reference",
@@ -9473,7 +9473,7 @@
         }
       ],
       "syntax": "fill | contain | cover | none | scale-down",
-      "relevance": 69,
+      "relevance": 70,
       "references": [
         {
           "name": "MDN Reference",
@@ -9850,7 +9850,7 @@
     },
     {
       "name": "outline",
-      "browsers": ["E12", "FF1.5", "S1.2", "C1", "IE8", "O7"],
+      "browsers": ["E94", "FF88", "S1.2", "C94", "IE8", "O80"],
       "values": [
         {
           "name": "auto",
@@ -9858,7 +9858,7 @@
         },
         {
           "name": "invert",
-          "browsers": ["E12", "FF1.5", "S1.2", "C1", "IE8", "O7"],
+          "browsers": ["E94", "FF88", "S1.2", "C94", "IE8", "O80"],
           "description": "Performs a color inversion on the pixels on the screen."
         }
       ],
@@ -9898,7 +9898,7 @@
       "name": "outline-offset",
       "browsers": ["E15", "FF1.5", "S1.2", "C1", "O9.5"],
       "syntax": "<length>",
-      "relevance": 68,
+      "relevance": 69,
       "references": [
         {
           "name": "MDN Reference",
@@ -9918,7 +9918,7 @@
         }
       ],
       "syntax": "auto | <'border-style'>",
-      "relevance": 61,
+      "relevance": 62,
       "references": [
         {
           "name": "MDN Reference",
@@ -10057,7 +10057,7 @@
         }
       ],
       "syntax": "visible | hidden | clip | scroll | auto",
-      "relevance": 82,
+      "relevance": 83,
       "references": [
         {
           "name": "MDN Reference",
@@ -10150,7 +10150,7 @@
       "name": "padding-inline-start",
       "browsers": ["E87", "FF41", "S12.1", "C87", "O73"],
       "syntax": "<'padding-left'>",
-      "relevance": 52,
+      "relevance": 53,
       "references": [
         {
           "name": "MDN Reference",
@@ -10528,7 +10528,7 @@
         }
       ],
       "syntax": "none | both | horizontal | vertical | block | inline",
-      "relevance": 61,
+      "relevance": 60,
       "references": [
         {
           "name": "MDN Reference",
@@ -10808,7 +10808,7 @@
         }
       ],
       "syntax": "auto | smooth",
-      "relevance": 53,
+      "relevance": 54,
       "references": [
         {
           "name": "MDN Reference",
@@ -10906,7 +10906,7 @@
     },
     {
       "name": "scroll-snap-type",
-      "browsers": ["E79", "FF68", "S11", "C69", "IE10", "O56"],
+      "browsers": ["E79", "FF99", "S11", "C69", "IE10", "O56"],
       "values": [
         {
           "name": "none",
@@ -11033,7 +11033,7 @@
         }
       ],
       "syntax": "[ <url> [ format( <string># ) ]? | local( <family-name> ) ]#",
-      "relevance": 86,
+      "relevance": 87,
       "description": "@font-face descriptor. Specifies the resource containing font data. It is required, whether the font is downloadable or locally installed.",
       "restrictions": ["enum", "url", "identifier"]
     },
@@ -11061,7 +11061,7 @@
           "description": "No paint is applied in this layer."
         }
       ],
-      "relevance": 66,
+      "relevance": 67,
       "description": "Paints along the outline of the given graphical element.",
       "restrictions": ["color", "enum", "url"]
     },
@@ -11073,13 +11073,13 @@
           "description": "Indicates that no dashing is used."
         }
       ],
-      "relevance": 61,
+      "relevance": 62,
       "description": "Controls the pattern of dashes and gaps used to stroke paths.",
       "restrictions": ["length", "percentage", "number", "enum"]
     },
     {
       "name": "stroke-dashoffset",
-      "relevance": 61,
+      "relevance": 62,
       "description": "Specifies the distance into the dash pattern to start the dash.",
       "restrictions": ["percentage", "length"]
     },
@@ -11131,13 +11131,13 @@
     },
     {
       "name": "stroke-opacity",
-      "relevance": 51,
+      "relevance": 52,
       "description": "Specifies the opacity of the painting operation used to stroke the current object.",
       "restrictions": ["number(0-1)"]
     },
     {
       "name": "stroke-width",
-      "relevance": 63,
+      "relevance": 64,
       "description": "Specifies the width of the stroke on the current object.",
       "restrictions": ["percentage", "length"]
     },
@@ -11373,7 +11373,7 @@
         }
       ],
       "syntax": "<'text-decoration-line'> || <'text-decoration-style'> || <'text-decoration-color'> || <'text-decoration-thickness'>",
-      "relevance": 91,
+      "relevance": 92,
       "references": [
         {
           "name": "MDN Reference",
@@ -11387,7 +11387,7 @@
       "name": "text-decoration-color",
       "browsers": ["E79", "FF36", "S12.1", "C57", "O44"],
       "syntax": "<color>",
-      "relevance": 54,
+      "relevance": 55,
       "references": [
         {
           "name": "MDN Reference",
@@ -11474,7 +11474,7 @@
       "browsers": ["E12", "FF1", "S1", "C1", "IE3", "O3.5"],
       "values": [],
       "syntax": "<length-percentage> && hanging? && each-line?",
-      "relevance": 68,
+      "relevance": 69,
       "references": [
         {
           "name": "MDN Reference",
@@ -11574,7 +11574,7 @@
         }
       ],
       "syntax": "[ clip | ellipsis | <string> ]{1,2}",
-      "relevance": 81,
+      "relevance": 82,
       "references": [
         {
           "name": "MDN Reference",
@@ -11625,7 +11625,7 @@
         }
       ],
       "syntax": "none | <shadow-t>#",
-      "relevance": 75,
+      "relevance": 76,
       "references": [
         {
           "name": "MDN Reference",
@@ -11657,7 +11657,7 @@
         }
       ],
       "syntax": "none | capitalize | uppercase | lowercase | full-width | full-size-kana",
-      "relevance": 85,
+      "relevance": 86,
       "references": [
         {
           "name": "MDN Reference",
@@ -11756,7 +11756,7 @@
         }
       ],
       "syntax": "auto | none | [ [ pan-x | pan-left | pan-right ] || [ pan-y | pan-up | pan-down ] || pinch-zoom ] | manipulation",
-      "relevance": 69,
+      "relevance": 70,
       "references": [
         {
           "name": "MDN Reference",
@@ -11859,7 +11859,7 @@
         }
       ],
       "syntax": "none | <transform-list>",
-      "relevance": 90,
+      "relevance": 91,
       "references": [
         {
           "name": "MDN Reference",
@@ -11873,7 +11873,7 @@
       "name": "transform-origin",
       "browsers": ["E12", "FF16", "S9", "C36", "IE10", "O23"],
       "syntax": "[ <length-percentage> | left | center | right | top | bottom ] | [ [ <length-percentage> | left | center | right ] && [ <length-percentage> | top | center | bottom ] ] <length>?",
-      "relevance": 76,
+      "relevance": 77,
       "references": [
         {
           "name": "MDN Reference",
@@ -11922,7 +11922,7 @@
         }
       ],
       "syntax": "<single-transition>#",
-      "relevance": 88,
+      "relevance": 89,
       "references": [
         {
           "name": "MDN Reference",
@@ -11936,7 +11936,7 @@
       "name": "transition-delay",
       "browsers": ["E12", "FF16", "S9", "C26", "IE10", "O12.1"],
       "syntax": "<time>#",
-      "relevance": 62,
+      "relevance": 63,
       "references": [
         {
           "name": "MDN Reference",
@@ -11950,7 +11950,7 @@
       "name": "transition-duration",
       "browsers": ["E12", "FF16", "S9", "C26", "IE10", "O12.1"],
       "syntax": "<time>#",
-      "relevance": 66,
+      "relevance": 63,
       "references": [
         {
           "name": "MDN Reference",
@@ -11974,7 +11974,7 @@
         }
       ],
       "syntax": "none | <single-transition-property>#",
-      "relevance": 66,
+      "relevance": 67,
       "references": [
         {
           "name": "MDN Reference",
@@ -11988,7 +11988,7 @@
       "name": "transition-timing-function",
       "browsers": ["E12", "FF16", "S9", "C26", "IE10", "O12.1"],
       "syntax": "<easing-function>#",
-      "relevance": 65,
+      "relevance": 63,
       "references": [
         {
           "name": "MDN Reference",
@@ -12354,7 +12354,7 @@
         }
       ],
       "syntax": "<unicode-range>#",
-      "relevance": 71,
+      "relevance": 72,
       "description": "@font-face descriptor. Defines the set of Unicode codepoints that may be supported by the font face for which it is declared.",
       "restrictions": ["unicode-range"]
     },
@@ -12383,7 +12383,7 @@
         }
       ],
       "syntax": "auto | text | none | contain | all",
-      "relevance": 79,
+      "relevance": 81,
       "references": [
         {
           "name": "MDN Reference",
@@ -12439,7 +12439,7 @@
         }
       ],
       "syntax": "baseline | sub | super | text-top | text-bottom | middle | top | bottom | <percentage> | <length>",
-      "relevance": 91,
+      "relevance": 92,
       "references": [
         {
           "name": "MDN Reference",
@@ -12467,7 +12467,7 @@
         }
       ],
       "syntax": "visible | hidden | collapse",
-      "relevance": 87,
+      "relevance": 88,
       "references": [
         {
           "name": "MDN Reference",
@@ -14259,7 +14259,7 @@
         }
       ],
       "syntax": "normal | break-all | keep-all | break-word",
-      "relevance": 75,
+      "relevance": 76,
       "references": [
         {
           "name": "MDN Reference",
@@ -14302,7 +14302,7 @@
         }
       ],
       "syntax": "normal | break-word",
-      "relevance": 77,
+      "relevance": 78,
       "description": "Specifies whether the UA may break within a word to prevent overflow when an otherwise-unbreakable string is too long to fit.",
       "restrictions": ["enum"]
     },
@@ -14387,6 +14387,14 @@
       "name": "-ms-ime-align",
       "status": "nonstandard",
       "syntax": "auto | after",
+      "values": [
+        {
+          "name": "auto"
+        },
+        {
+          "name": "after"
+        }
+      ],
       "relevance": 0,
       "description": "Aligns the Input Method Editor (IME) candidate window box relative to the element on which the IME composition is active."
     },
@@ -14415,6 +14423,20 @@
       "name": "-moz-float-edge",
       "status": "obsolete",
       "syntax": "border-box | content-box | margin-box | padding-box",
+      "values": [
+        {
+          "name": "border-box"
+        },
+        {
+          "name": "content-box"
+        },
+        {
+          "name": "margin-box"
+        },
+        {
+          "name": "padding-box"
+        }
+      ],
       "relevance": 0,
       "browsers": ["FF1"],
       "references": [
@@ -14429,6 +14451,14 @@
       "name": "-moz-force-broken-image-icon",
       "status": "obsolete",
       "syntax": "0 | 1",
+      "values": [
+        {
+          "name": "0"
+        },
+        {
+          "name": "1"
+        }
+      ],
       "relevance": 0,
       "browsers": ["FF1"],
       "references": [
@@ -14457,6 +14487,20 @@
       "name": "-moz-orient",
       "status": "nonstandard",
       "syntax": "inline | block | horizontal | vertical",
+      "values": [
+        {
+          "name": "inline"
+        },
+        {
+          "name": "block"
+        },
+        {
+          "name": "horizontal"
+        },
+        {
+          "name": "vertical"
+        }
+      ],
       "relevance": 0,
       "browsers": ["FF6"],
       "references": [
@@ -14541,6 +14585,14 @@
       "name": "-moz-stack-sizing",
       "status": "nonstandard",
       "syntax": "ignore | stretch-to-fit",
+      "values": [
+        {
+          "name": "ignore"
+        },
+        {
+          "name": "stretch-to-fit"
+        }
+      ],
       "relevance": 0,
       "description": "-moz-stack-sizing is an extended CSS property. Normally, a stack will change its size so that all of its child elements are completely visible. For example, moving a child of the stack far to the right will widen the stack so the child remains visible."
     },
@@ -14548,6 +14600,14 @@
       "name": "-moz-text-blink",
       "status": "nonstandard",
       "syntax": "none | blink",
+      "values": [
+        {
+          "name": "none"
+        },
+        {
+          "name": "blink"
+        }
+      ],
       "relevance": 0,
       "description": "The -moz-text-blink non-standard Mozilla CSS extension specifies the blink mode."
     },
@@ -14555,6 +14615,20 @@
       "name": "-moz-user-input",
       "status": "obsolete",
       "syntax": "auto | none | enabled | disabled",
+      "values": [
+        {
+          "name": "auto"
+        },
+        {
+          "name": "none"
+        },
+        {
+          "name": "enabled"
+        },
+        {
+          "name": "disabled"
+        }
+      ],
       "relevance": 0,
       "browsers": ["FF1"],
       "references": [
@@ -14569,6 +14643,17 @@
       "name": "-moz-user-modify",
       "status": "nonstandard",
       "syntax": "read-only | read-write | write-only",
+      "values": [
+        {
+          "name": "read-only"
+        },
+        {
+          "name": "read-write"
+        },
+        {
+          "name": "write-only"
+        }
+      ],
       "relevance": 0,
       "description": "The -moz-user-modify property has no effect. It was originally planned to determine whether or not the content of an element can be edited by a user."
     },
@@ -14576,6 +14661,14 @@
       "name": "-moz-window-dragging",
       "status": "nonstandard",
       "syntax": "drag | no-drag",
+      "values": [
+        {
+          "name": "drag"
+        },
+        {
+          "name": "no-drag"
+        }
+      ],
       "relevance": 0,
       "description": "The -moz-window-dragging CSS property specifies whether a window is draggable or not. It only works in Chrome code, and only on Mac OS X."
     },
@@ -14583,6 +14676,23 @@
       "name": "-moz-window-shadow",
       "status": "nonstandard",
       "syntax": "default | menu | tooltip | sheet | none",
+      "values": [
+        {
+          "name": "default"
+        },
+        {
+          "name": "menu"
+        },
+        {
+          "name": "tooltip"
+        },
+        {
+          "name": "sheet"
+        },
+        {
+          "name": "none"
+        }
+      ],
       "relevance": 0,
       "description": "The -moz-window-shadow CSS property specifies whether a window will have a shadow. It only works on Mac OS X."
     },
@@ -14708,6 +14818,20 @@
       "name": "-webkit-mask-repeat-x",
       "status": "nonstandard",
       "syntax": "repeat | no-repeat | space | round",
+      "values": [
+        {
+          "name": "repeat"
+        },
+        {
+          "name": "no-repeat"
+        },
+        {
+          "name": "space"
+        },
+        {
+          "name": "round"
+        }
+      ],
       "relevance": 0,
       "browsers": ["E79", "S5", "C3", "O15"],
       "references": [
@@ -14722,6 +14846,20 @@
       "name": "-webkit-mask-repeat-y",
       "status": "nonstandard",
       "syntax": "repeat | no-repeat | space | round",
+      "values": [
+        {
+          "name": "repeat"
+        },
+        {
+          "name": "no-repeat"
+        },
+        {
+          "name": "space"
+        },
+        {
+          "name": "round"
+        }
+      ],
       "relevance": 0,
       "browsers": ["E79", "S5", "C3", "O15"],
       "references": [
@@ -14760,7 +14898,22 @@
       "description": "The align-tracks CSS property sets the alignment in the masonry axis for grid containers that have masonry in their block axis."
     },
     {
+      "name": "animation-composition",
+      "status": "experimental",
+      "syntax": "<single-animation-composition>#",
+      "relevance": 50,
+      "browsers": ["FF104", "S16"],
+      "references": [
+        {
+          "name": "MDN Reference",
+          "url": "https://developer.mozilla.org/docs/Web/CSS/animation-composition"
+        }
+      ],
+      "description": "The composite operation to use when multiple animations affect the same property."
+    },
+    {
       "name": "animation-timeline",
+      "status": "experimental",
       "syntax": "<single-animation-timeline>#",
       "relevance": 50,
       "browsers": ["FF97"],
@@ -14775,7 +14928,7 @@
     {
       "name": "appearance",
       "syntax": "none | auto | textfield | menulist-button | <compat-auto>",
-      "relevance": 62,
+      "relevance": 63,
       "browsers": ["E84", "FF80", "S15.4", "C84", "O70"],
       "references": [
         {
@@ -14788,7 +14941,7 @@
     {
       "name": "aspect-ratio",
       "syntax": "auto | <ratio>",
-      "relevance": 56,
+      "relevance": 57,
       "browsers": ["E88", "FF89", "S15", "C88", "O74"],
       "references": [
         {
@@ -14978,6 +15131,23 @@
       "name": "box-align",
       "status": "obsolete",
       "syntax": "start | center | end | baseline | stretch",
+      "values": [
+        {
+          "name": "start"
+        },
+        {
+          "name": "center"
+        },
+        {
+          "name": "end"
+        },
+        {
+          "name": "baseline"
+        },
+        {
+          "name": "stretch"
+        }
+      ],
       "relevance": 0,
       "browsers": ["E12", "FF49", "S3", "C1", "O15"],
       "references": [
@@ -14992,6 +15162,17 @@
       "name": "box-direction",
       "status": "obsolete",
       "syntax": "normal | reverse | inherit",
+      "values": [
+        {
+          "name": "normal"
+        },
+        {
+          "name": "reverse"
+        },
+        {
+          "name": "inherit"
+        }
+      ],
       "relevance": 0,
       "browsers": ["E12", "FF49", "S3", "C1", "O15"],
       "references": [
@@ -15034,6 +15215,14 @@
       "name": "box-lines",
       "status": "obsolete",
       "syntax": "single | multiple",
+      "values": [
+        {
+          "name": "single"
+        },
+        {
+          "name": "multiple"
+        }
+      ],
       "relevance": 0,
       "browsers": ["S3", "C1", "O15"],
       "references": [
@@ -15062,6 +15251,23 @@
       "name": "box-orient",
       "status": "obsolete",
       "syntax": "horizontal | vertical | inline-axis | block-axis | inherit",
+      "values": [
+        {
+          "name": "horizontal"
+        },
+        {
+          "name": "vertical"
+        },
+        {
+          "name": "inline-axis"
+        },
+        {
+          "name": "block-axis"
+        },
+        {
+          "name": "inherit"
+        }
+      ],
       "relevance": 0,
       "browsers": ["E12", "FF49", "S3", "C1", "O15"],
       "references": [
@@ -15076,6 +15282,20 @@
       "name": "box-pack",
       "status": "obsolete",
       "syntax": "start | center | end | justify",
+      "values": [
+        {
+          "name": "start"
+        },
+        {
+          "name": "center"
+        },
+        {
+          "name": "end"
+        },
+        {
+          "name": "justify"
+        }
+      ],
       "relevance": 0,
       "browsers": ["E12", "FF49", "S3", "C1", "O15"],
       "references": [
@@ -15087,8 +15307,42 @@
       "description": "The -moz-box-pack and -webkit-box-pack CSS properties specify how a -moz-box or -webkit-box packs its contents in the direction of its layout. The effect of this is only visible if there is extra space in the box."
     },
     {
+      "name": "caret",
+      "syntax": "<'caret-color'> || <'caret-shape'>",
+      "relevance": 50,
+      "description": "Shorthand for setting caret-color and caret-shape."
+    },
+    {
+      "name": "caret-shape",
+      "syntax": "auto | bar | block | underscore",
+      "values": [
+        {
+          "name": "auto"
+        },
+        {
+          "name": "bar"
+        },
+        {
+          "name": "block"
+        },
+        {
+          "name": "underscore"
+        }
+      ],
+      "relevance": 50,
+      "description": "Specifies the desired shape of the text insertion caret."
+    },
+    {
       "name": "print-color-adjust",
       "syntax": "economy | exact",
+      "values": [
+        {
+          "name": "economy"
+        },
+        {
+          "name": "exact"
+        }
+      ],
       "relevance": 50,
       "browsers": ["E79", "FF97", "S15.4", "C17", "O15"],
       "references": [
@@ -15113,9 +15367,90 @@
       "description": "The color-scheme CSS property allows an element to indicate which color schemes it can comfortably be rendered in."
     },
     {
+      "name": "contain-intrinsic-size",
+      "status": "experimental",
+      "syntax": "[ none | <length> | auto <length> ]{1,2}",
+      "relevance": 50,
+      "browsers": ["E83", "FF104", "C83", "O69"],
+      "references": [
+        {
+          "name": "MDN Reference",
+          "url": "https://developer.mozilla.org/docs/Web/CSS/contain-intrinsic-size"
+        }
+      ],
+      "description": "Size of an element when the element is subject to size containment."
+    },
+    {
+      "name": "contain-intrinsic-block-size",
+      "status": "experimental",
+      "syntax": "none | <length> | auto <length>",
+      "relevance": 50,
+      "browsers": ["E95", "FF104", "C95", "O81"],
+      "references": [
+        {
+          "name": "MDN Reference",
+          "url": "https://developer.mozilla.org/docs/Web/CSS/contain-intrinsic-contain-intrinsic-block-size"
+        }
+      ],
+      "description": "Block size of an element when the element is subject to size containment."
+    },
+    {
+      "name": "contain-intrinsic-height",
+      "status": "experimental",
+      "syntax": "none | <length> | auto <length>",
+      "relevance": 50,
+      "browsers": ["E83", "FF104", "C83", "O69"],
+      "references": [
+        {
+          "name": "MDN Reference",
+          "url": "https://developer.mozilla.org/docs/Web/CSS/contain-intrinsic-height"
+        }
+      ],
+      "description": "Height of an element when the element is subject to size containment."
+    },
+    {
+      "name": "contain-intrinsic-inline-size",
+      "status": "experimental",
+      "syntax": "none | <length> | auto <length>",
+      "relevance": 50,
+      "browsers": ["E95", "FF104", "C95", "O81"],
+      "references": [
+        {
+          "name": "MDN Reference",
+          "url": "https://developer.mozilla.org/docs/Web/CSS/contain-intrinsic-contain-intrinsic-inline-size"
+        }
+      ],
+      "description": "Inline size of an element when the element is subject to size containment."
+    },
+    {
+      "name": "contain-intrinsic-width",
+      "status": "experimental",
+      "syntax": "none | <length> | auto <length>",
+      "relevance": 50,
+      "browsers": ["E83", "FF104", "C83", "O69"],
+      "references": [
+        {
+          "name": "MDN Reference",
+          "url": "https://developer.mozilla.org/docs/Web/CSS/contain-intrinsic-width"
+        }
+      ],
+      "description": "Width of an element when the element is subject to size containment."
+    },
+    {
       "name": "content-visibility",
       "syntax": "visible | auto | hidden",
-      "relevance": 51,
+      "values": [
+        {
+          "name": "visible"
+        },
+        {
+          "name": "auto"
+        },
+        {
+          "name": "hidden"
+        }
+      ],
+      "relevance": 52,
       "browsers": ["E85", "C85", "O71"],
       "references": [
         {
@@ -15141,6 +15476,14 @@
     {
       "name": "font-optical-sizing",
       "syntax": "auto | none",
+      "values": [
+        {
+          "name": "auto"
+        },
+        {
+          "name": "none"
+        }
+      ],
       "relevance": 50,
       "browsers": ["E17", "FF62", "S11", "C79", "O66"],
       "references": [
@@ -15181,7 +15524,15 @@
     {
       "name": "forced-color-adjust",
       "syntax": "auto | none",
-      "relevance": 56,
+      "values": [
+        {
+          "name": "auto"
+        },
+        {
+          "name": "none"
+        }
+      ],
+      "relevance": 57,
       "browsers": ["E79", "C89", "IE10"],
       "references": [
         {
@@ -15194,7 +15545,7 @@
     {
       "name": "gap",
       "syntax": "<'row-gap'> <'column-gap'>?",
-      "relevance": 57,
+      "relevance": 58,
       "browsers": ["E16", "FF52", "S10.1", "C57", "O44"],
       "references": [
         {
@@ -15267,6 +15618,14 @@
     {
       "name": "input-security",
       "syntax": "auto | none",
+      "values": [
+        {
+          "name": "auto"
+        },
+        {
+          "name": "none"
+        }
+      ],
       "relevance": 50,
       "description": "Enables or disables the obscuring a sensitive test input."
     },
@@ -15338,7 +15697,7 @@
     {
       "name": "inset-inline-end",
       "syntax": "<'top'>",
-      "relevance": 51,
+      "relevance": 50,
       "browsers": ["E87", "FF63", "S14.1", "C87", "O73"],
       "references": [
         {
@@ -15351,7 +15710,7 @@
     {
       "name": "inset-inline-start",
       "syntax": "<'top'>",
-      "relevance": 51,
+      "relevance": 50,
       "browsers": ["E87", "FF63", "S14.1", "C87", "O73"],
       "references": [
         {
@@ -15426,6 +15785,17 @@
       "name": "margin-trim",
       "status": "experimental",
       "syntax": "none | in-flow | all",
+      "values": [
+        {
+          "name": "none"
+        },
+        {
+          "name": "in-flow"
+        },
+        {
+          "name": "all"
+        }
+      ],
       "relevance": 50,
       "references": [
         {
@@ -15464,6 +15834,14 @@
     {
       "name": "mask-border-mode",
       "syntax": "luminance | alpha",
+      "values": [
+        {
+          "name": "luminance"
+        },
+        {
+          "name": "alpha"
+        }
+      ],
       "relevance": 50,
       "description": "The mask-border-mode CSS property specifies the blending mode used in a mask border."
     },
@@ -15572,8 +15950,50 @@
       "description": "The masonry-auto-flow CSS property modifies how items are placed when using masonry in CSS Grid Layout."
     },
     {
+      "name": "math-depth",
+      "syntax": "auto-add | add(<integer>) | <integer>",
+      "relevance": 50,
+      "browsers": ["E87", "FF83", "C87", "O73"],
+      "references": [
+        {
+          "name": "MDN Reference",
+          "url": "https://developer.mozilla.org/docs/Web/CSS/math-depth"
+        }
+      ],
+      "description": "Describe a notion of \"depth\" for each element of a mathematical formula, with respect to the top-level container of that formula."
+    },
+    {
+      "name": "math-shift",
+      "syntax": "normal | compact",
+      "values": [
+        {
+          "name": "normal"
+        },
+        {
+          "name": "compact"
+        }
+      ],
+      "relevance": 50,
+      "browsers": ["E87", "C87", "O73"],
+      "references": [
+        {
+          "name": "MDN Reference",
+          "url": "https://developer.mozilla.org/docs/Web/CSS/math-shift"
+        }
+      ],
+      "description": "Used for positioning superscript during the layout of MathML scripted elements."
+    },
+    {
       "name": "math-style",
       "syntax": "normal | compact",
+      "values": [
+        {
+          "name": "normal"
+        },
+        {
+          "name": "compact"
+        }
+      ],
       "relevance": 50,
       "browsers": ["E83", "FF83", "S14.1", "C83", "O69"],
       "references": [
@@ -15672,6 +16092,14 @@
     {
       "name": "overflow-anchor",
       "syntax": "auto | none",
+      "values": [
+        {
+          "name": "auto"
+        },
+        {
+          "name": "none"
+        }
+      ],
       "relevance": 52,
       "browsers": ["E79", "FF66", "C56", "O43"],
       "references": [
@@ -15685,6 +16113,23 @@
     {
       "name": "overflow-block",
       "syntax": "visible | hidden | clip | scroll | auto",
+      "values": [
+        {
+          "name": "visible"
+        },
+        {
+          "name": "hidden"
+        },
+        {
+          "name": "clip"
+        },
+        {
+          "name": "scroll"
+        },
+        {
+          "name": "auto"
+        }
+      ],
       "relevance": 50,
       "browsers": ["FF69"],
       "references": [
@@ -15699,6 +16144,14 @@
       "name": "overflow-clip-box",
       "status": "nonstandard",
       "syntax": "padding-box | content-box",
+      "values": [
+        {
+          "name": "padding-box"
+        },
+        {
+          "name": "content-box"
+        }
+      ],
       "relevance": 0,
       "browsers": ["FF29"],
       "references": [
@@ -15725,6 +16178,23 @@
     {
       "name": "overflow-inline",
       "syntax": "visible | hidden | clip | scroll | auto",
+      "values": [
+        {
+          "name": "visible"
+        },
+        {
+          "name": "hidden"
+        },
+        {
+          "name": "clip"
+        },
+        {
+          "name": "scroll"
+        },
+        {
+          "name": "auto"
+        }
+      ],
       "relevance": 50,
       "browsers": ["FF69"],
       "references": [
@@ -15751,6 +16221,17 @@
     {
       "name": "overscroll-behavior-block",
       "syntax": "contain | none | auto",
+      "values": [
+        {
+          "name": "contain"
+        },
+        {
+          "name": "none"
+        },
+        {
+          "name": "auto"
+        }
+      ],
       "relevance": 50,
       "browsers": ["E79", "FF73", "S16", "C77", "O64"],
       "references": [
@@ -15764,6 +16245,17 @@
     {
       "name": "overscroll-behavior-inline",
       "syntax": "contain | none | auto",
+      "values": [
+        {
+          "name": "contain"
+        },
+        {
+          "name": "none"
+        },
+        {
+          "name": "auto"
+        }
+      ],
       "relevance": 50,
       "browsers": ["E79", "FF73", "S16", "C77", "O64"],
       "references": [
@@ -15777,6 +16269,17 @@
     {
       "name": "overscroll-behavior-x",
       "syntax": "contain | none | auto",
+      "values": [
+        {
+          "name": "contain"
+        },
+        {
+          "name": "none"
+        },
+        {
+          "name": "auto"
+        }
+      ],
       "relevance": 50,
       "browsers": ["E18", "FF59", "S16", "C63", "O50"],
       "references": [
@@ -15790,6 +16293,17 @@
     {
       "name": "overscroll-behavior-y",
       "syntax": "contain | none | auto",
+      "values": [
+        {
+          "name": "contain"
+        },
+        {
+          "name": "none"
+        },
+        {
+          "name": "auto"
+        }
+      ],
       "relevance": 50,
       "browsers": ["E18", "FF59", "S16", "C63", "O50"],
       "references": [
@@ -15842,7 +16356,7 @@
     {
       "name": "place-items",
       "syntax": "<'align-items'> <'justify-items'>?",
-      "relevance": 51,
+      "relevance": 50,
       "browsers": ["E79", "FF45", "S11", "C59", "O46"],
       "references": [
         {
@@ -15895,6 +16409,17 @@
       "name": "ruby-merge",
       "status": "experimental",
       "syntax": "separate | collapse | auto",
+      "values": [
+        {
+          "name": "separate"
+        },
+        {
+          "name": "collapse"
+        },
+        {
+          "name": "auto"
+        }
+      ],
       "relevance": 50,
       "description": "This property controls how ruby annotation boxes should be rendered when there are more than one in a ruby container box: whether each pair should be kept separate, the annotations should be collapsed and rendered as a group, or the separation should be determined based on the space available."
     },
@@ -15940,6 +16465,17 @@
     {
       "name": "scrollbar-width",
       "syntax": "auto | thin | none",
+      "values": [
+        {
+          "name": "auto"
+        },
+        {
+          "name": "thin"
+        },
+        {
+          "name": "none"
+        }
+      ],
       "relevance": 50,
       "browsers": ["FF64"],
       "references": [
@@ -16226,7 +16762,7 @@
     {
       "name": "scroll-padding-top",
       "syntax": "auto | <length-percentage>",
-      "relevance": 50,
+      "relevance": 51,
       "browsers": ["E79", "FF68", "S14.1", "C69", "O56"],
       "references": [
         {
@@ -16239,7 +16775,7 @@
     {
       "name": "scroll-snap-align",
       "syntax": "[ none | start | end | center ]{1,2}",
-      "relevance": 52,
+      "relevance": 53,
       "browsers": ["E79", "FF68", "S11", "C69", "O56"],
       "references": [
         {
@@ -16252,6 +16788,14 @@
     {
       "name": "scroll-snap-stop",
       "syntax": "normal | always",
+      "values": [
+        {
+          "name": "normal"
+        },
+        {
+          "name": "always"
+        }
+      ],
       "relevance": 50,
       "browsers": ["E79", "FF103", "S15", "C75", "O62"],
       "references": [
@@ -16266,6 +16810,17 @@
       "name": "scroll-snap-type-x",
       "status": "obsolete",
       "syntax": "none | mandatory | proximity",
+      "values": [
+        {
+          "name": "none"
+        },
+        {
+          "name": "mandatory"
+        },
+        {
+          "name": "proximity"
+        }
+      ],
       "relevance": 0,
       "browsers": ["FF39", "S9"],
       "references": [
@@ -16280,6 +16835,17 @@
       "name": "scroll-snap-type-y",
       "status": "obsolete",
       "syntax": "none | mandatory | proximity",
+      "values": [
+        {
+          "name": "none"
+        },
+        {
+          "name": "mandatory"
+        },
+        {
+          "name": "proximity"
+        }
+      ],
       "relevance": 0,
       "browsers": ["FF39"],
       "references": [
@@ -16289,6 +16855,62 @@
         }
       ],
       "description": "The scroll-snap-type-y CSS property defines how strictly snap points are enforced on the vertical axis of the scroll container in case there is one.\n\nSpecifying any precise animations or physics used to enforce those snap points is not covered by this property but instead left up to the user agent."
+    },
+    {
+      "name": "scroll-timeline",
+      "status": "experimental",
+      "syntax": "<scroll-timeline-name> || <scroll-timeline-axis>",
+      "relevance": 50,
+      "browsers": ["FF103"],
+      "references": [
+        {
+          "name": "MDN Reference",
+          "url": "https://developer.mozilla.org/docs/Web/CSS/scroll-timeline"
+        }
+      ],
+      "description": "Defines a name that can be used to identify the source element of a scroll timeline, along with the scrollbar axis that should provide the timeline."
+    },
+    {
+      "name": "scroll-timeline-axis",
+      "status": "experimental",
+      "syntax": "block | inline | vertical | horizontal",
+      "values": [
+        {
+          "name": "block"
+        },
+        {
+          "name": "inline"
+        },
+        {
+          "name": "vertical"
+        },
+        {
+          "name": "horizontal"
+        }
+      ],
+      "relevance": 50,
+      "browsers": ["FF103"],
+      "references": [
+        {
+          "name": "MDN Reference",
+          "url": "https://developer.mozilla.org/docs/Web/CSS/scroll-timeline-axis"
+        }
+      ],
+      "description": "Specifies the scrollbar that will be used to provide the timeline for a scroll-timeline animation"
+    },
+    {
+      "name": "scroll-timeline-name",
+      "status": "experimental",
+      "syntax": "none | <custom-ident>",
+      "relevance": 50,
+      "browsers": ["FF103"],
+      "references": [
+        {
+          "name": "MDN Reference",
+          "url": "https://developer.mozilla.org/docs/Web/CSS/scroll-timeline-name"
+        }
+      ],
+      "description": "Defines a name that can be used to identify an element as the source of a scroll-timeline."
     },
     {
       "name": "text-combine-upright",
@@ -16320,6 +16942,17 @@
     {
       "name": "text-decoration-skip-ink",
       "syntax": "auto | all | none",
+      "values": [
+        {
+          "name": "auto"
+        },
+        {
+          "name": "all"
+        },
+        {
+          "name": "none"
+        }
+      ],
       "relevance": 51,
       "browsers": ["E79", "FF70", "S15.4", "C64", "O50"],
       "references": [
@@ -16399,7 +17032,7 @@
       "name": "text-size-adjust",
       "status": "experimental",
       "syntax": "none | auto | <percentage>",
-      "relevance": 59,
+      "relevance": 60,
       "browsers": ["E79", "C54", "O41"],
       "references": [
         {
@@ -16425,6 +17058,23 @@
     {
       "name": "transform-box",
       "syntax": "content-box | border-box | fill-box | stroke-box | view-box",
+      "values": [
+        {
+          "name": "content-box"
+        },
+        {
+          "name": "border-box"
+        },
+        {
+          "name": "fill-box"
+        },
+        {
+          "name": "stroke-box"
+        },
+        {
+          "name": "view-box"
+        }
+      ],
       "relevance": 50,
       "browsers": ["E79", "FF55", "S11", "C64", "O51"],
       "references": [
@@ -16451,7 +17101,27 @@
     {
       "name": "white-space",
       "syntax": "normal | pre | nowrap | pre-wrap | pre-line | break-spaces",
-      "relevance": 89,
+      "values": [
+        {
+          "name": "normal"
+        },
+        {
+          "name": "pre"
+        },
+        {
+          "name": "nowrap"
+        },
+        {
+          "name": "pre-wrap"
+        },
+        {
+          "name": "pre-line"
+        },
+        {
+          "name": "break-spaces"
+        }
+      ],
+      "relevance": 90,
       "browsers": ["E12", "FF1", "S1", "C1", "IE5.5", "O4"],
       "references": [
         {
@@ -16485,7 +17155,7 @@
       "name": "font-display",
       "status": "experimental",
       "syntax": "[ auto | block | swap | fallback | optional ]",
-      "relevance": 71,
+      "relevance": 72,
       "description": "The font-display descriptor determines how a font face is displayed based on whether and when it is downloaded and ready to use."
     },
     {
@@ -16525,6 +17195,14 @@
       "name": "inherits",
       "status": "experimental",
       "syntax": "true | false",
+      "values": [
+        {
+          "name": "true"
+        },
+        {
+          "name": "false"
+        }
+      ],
       "relevance": 50,
       "description": "Specifies the inherit flag of the custom property registration represented by the @property rule, controlling whether or not the property inherits by default."
     },
@@ -16550,18 +17228,48 @@
     {
       "name": "orientation",
       "syntax": "auto | portrait | landscape",
+      "values": [
+        {
+          "name": "auto"
+        },
+        {
+          "name": "portrait"
+        },
+        {
+          "name": "landscape"
+        }
+      ],
       "relevance": 50,
       "description": "The orientation CSS @media media feature can be used to apply styles based on the orientation of the viewport (or the page box, for paged media)."
     },
     {
       "name": "user-zoom",
       "syntax": "zoom | fixed",
+      "values": [
+        {
+          "name": "zoom"
+        },
+        {
+          "name": "fixed"
+        }
+      ],
       "relevance": 50,
       "description": "The user-zoom CSS descriptor controls whether or not the user can change the zoom factor of a document defined by @viewport."
     },
     {
       "name": "viewport-fit",
       "syntax": "auto | contain | cover",
+      "values": [
+        {
+          "name": "auto"
+        },
+        {
+          "name": "contain"
+        },
+        {
+          "name": "cover"
+        }
+      ],
       "relevance": 50,
       "description": "The border-block-style CSS property defines the style of the logical block borders of an element, which maps to a physical border style depending on the element's writing mode, directionality, and text orientation."
     }
