@@ -1,13 +1,13 @@
-# emmet2-mode
+# emmet2-mode — boost productivity for web-developers
 
 Emmet2-mode is an opinionated enhanced [Emmet](https://emmet.io/) minor mode I have eagerly desired to have in Emacs. Special thanks to [@manateelazycat](https://github.com/manateelazycat) for creating the [deno-bridge](https://github.com/manateelazycat/deno-bridge), which is the key to making this package come true.
 
 Emmet2-mode is both of a pre-processor and a post-processor for Emmet. It supports all the features of Emmet but with the following improvements:
 
-- Expanding abbreviations at any position of it
-- Expanding markup with CSS modules object and JSX class names constructor
-- Automatically detecting style tags and attributes in markup and expanding CSS abbreviations within
-- Expanding CSS at-rules
+- Expanding abbreviations from any character of it
+- Expanding JSX class attribute with CSS modules object and class names constructor
+- Automatically detecting `<style></style>` tag and `style=""` attribute in markup and expanding CSS withinside
+- Expanding CSS and SCSS at-rules
 - Expanding CSS pseudo selectors
 - A lot, a lot of enhancements for Emmet CSS abbreviations
 
@@ -234,12 +234,8 @@ _:fu =>
 
 ## TODOs
 
-1. [x] Optimise automatically detecting markup abbreviations
-2. [x] Incremental narrowing search for CSS at-rules and pseudos
-3. [x] Add SCSS at-rules
-4. [ ] Expand class attribute standalone
-5. [ ] Add CSS-in-JS syntax support
-6. [ ] Maybe other markup syntaxes
+1. [ ] Add CSS-in-JS syntax support
+2. [ ] Maybe other markup syntaxes
 
 ## Credits
 
