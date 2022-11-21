@@ -188,14 +188,15 @@ t0,r0,b0,l0 === t0+r0+b0+l0
 
 #### At rules
 
-Use two or three unique letters to do an incremental narrowing search for CSS at-rules. The first character must be `@`.
-
-SCSS at-rules will be added shortly.
+Use two or three unique letters to do an incremental narrowing search for CSS at-rules. The first character must be `@`. SCSS at-rules are also supported.
 
 ```
 @cs => @charset
 @kf => @keyframes
 @md => @media
+
+@us => @use "|";
+@in => @if not | {}
 ```
 
 #### Pseudo class and pseudo element
@@ -235,7 +236,7 @@ _:fu =>
 
 1. [x] Optimise automatically detecting markup abbreviations
 2. [x] Incremental narrowing search for CSS at-rules and pseudos
-3. [ ] Add SCSS at-rules
+3. [x] Add SCSS at-rules
 4. [ ] Expand class attribute standalone
 5. [ ] Add CSS-in-JS syntax support
 6. [ ] Maybe other markup syntaxes

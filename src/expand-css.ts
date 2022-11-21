@@ -18,7 +18,7 @@ function find(abbr: string, list: string[]) {
 
 // Expand at rules
 function expandAtRules(abbr: string): string {
-  return (find(abbr, cssData.atRules) || abbr) + " ";
+  return find(abbr, cssData.atRules) || abbr;
 }
 
 // Expand selectors
