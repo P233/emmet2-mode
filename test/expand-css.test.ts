@@ -85,11 +85,10 @@ Deno.test("fz(1)!,lh2", () => assertEquals(expandCSS("fz(1)!,lh2"), "font-size: 
 Deno.test("posa,all0,fz(-1)!,lh(2.5)+mA,p[1px 2px 3px]!", () => assertEquals(expandCSS("posa,all0,fz(-1)!,lh(2.5)+mA,p[1px 2px 3px]!"), "position: absolute;\nz-index: |;\ntop: 0;\nright: 0;\nbottom: 0;\nleft: 0;\nfont-size: ms(-1) !important;\nline-height: rhythm(2.5);\nmargin: auto;\npadding: 1px 2px 3px !important;"));
 
 // At ruls abbreviations
-Deno.test("@cs", () => assertEquals(expandCSS("@cs"), "@charset "));
+Deno.test("@ch", () => assertEquals(expandCSS("@ch"), "@charset "));
 Deno.test("@co", () => assertEquals(expandCSS("@co"), "@counter-style "));
-Deno.test("@ff", () => assertEquals(expandCSS("@ff"), "@font-face "));
 Deno.test("@fv", () => assertEquals(expandCSS("@fv"), "@font-feature-values "));
-Deno.test("@im", () => assertEquals(expandCSS("@im"), "@import "));
+Deno.test("@im", () => assertEquals(expandCSS("@im"), '@import "|"'));
 Deno.test("@kf", () => assertEquals(expandCSS("@kf"), "@keyframes "));
 Deno.test("@ly", () => assertEquals(expandCSS("@ly"), "@layer "));
 Deno.test("@md", () => assertEquals(expandCSS("@md"), "@media "));
@@ -97,6 +96,7 @@ Deno.test("@ns", () => assertEquals(expandCSS("@ns"), "@namespace "));
 Deno.test("@pg", () => assertEquals(expandCSS("@pg"), "@page "));
 Deno.test("@pr", () => assertEquals(expandCSS("@pr"), "@property "));
 Deno.test("@us", () => assertEquals(expandCSS("@su"), "@supports "));
+Deno.test("@face", () => assertEquals(expandCSS("@face"), "@font-face "));
 
 // Pseudo class and pseudo element abbreviations
 Deno.test(":fu", () => assertEquals(expandCSS(":fu"), "&:focus {\n\t|\n}"));
