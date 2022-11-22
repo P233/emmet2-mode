@@ -1,5 +1,5 @@
 import { assertEquals } from "https://deno.land/std@0.164.0/testing/asserts.ts";
-import expandCSS from "../src/expand-css.ts";
+import { expandCSS, expandCSSinJS } from "../src/expand-css.ts";
 
 // Default emmet css abbreviations
 Deno.test("t", () => assertEquals(expandCSS("t"), "top: |;"));
@@ -83,6 +83,13 @@ Deno.test("fz(1)!,lh2", () => assertEquals(expandCSS("fz(1)!,lh2"), "font-size: 
 
 // Complex cases
 Deno.test("posa,all0,fz(-1)!,lh(2.5)+mA,p[1px 2px 3px]!", () => assertEquals(expandCSS("posa,all0,fz(-1)!,lh(2.5)+mA,p[1px 2px 3px]!"), "position: absolute;\nz-index: |;\ntop: 0;\nright: 0;\nbottom: 0;\nleft: 0;\nfont-size: ms(-1) !important;\nline-height: rhythm(2.5);\nmargin: auto;\npadding: 1px 2px 3px !important;"));
+
+// CSS in JS
+Deno.test("t", () => assertEquals(expandCSSinJS("t"), 'top: "|"'));
+Deno.test("tac", () => assertEquals(expandCSSinJS("tac"), 'textAlign: "center"'));
+Deno.test("all0", () => assertEquals(expandCSSinJS("all0"), "top: 0, right: 0, bottom: 0, left: 0"));
+Deno.test("hf", () => assertEquals(expandCSSinJS("hf"), 'height: "100%"'));
+Deno.test("fz16,lh24,tar", () => assertEquals(expandCSSinJS("fz16,lh24,tar"), 'fontSize: 16, lineHeight: 24, textAlign: "right"'));
 
 // At ruls abbreviations
 Deno.test("@ch", () => assertEquals(expandCSS("@ch"), "@charset "));

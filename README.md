@@ -6,7 +6,8 @@ Emmet2-mode is both of a pre-processor and a post-processor for Emmet. It suppor
 
 - Expanding abbreviations from any character of it
 - Expanding JSX class attribute with CSS modules object and class names constructor
-- Automatically detecting `<style></style>` tag and `style=""` attribute in markup and expanding CSS withinside
+- Automatically detecting `style={{}}` attribute and expanding CSS in JS withinside
+- Automatically detecting `<style></style>` tag and `style=""` attribute and expanding CSS withinside
 - Expanding CSS and SCSS at-rules
 - Expanding CSS pseudo selectors
 - A lot, a lot of enhancements for Emmet CSS abbreviations
@@ -21,7 +22,7 @@ When emmet2-mode is enabled, press `C-j` (which is the default expand key, same 
 2. `.scss` and `.css` are `SCSS` syntax (yes, CSS is also treated as `SCSS` syntax)
 3. the rest markup files are `HTML` syntax
 
-When editing markup files, emmet2-mode detects if the cursor is in between `<style></style>` tag or `style=""` attribute, if it is, then expands CSS instead. CSS in JS syntax in between `style={{}}` is planned.
+When editing markup files, emmet2-mode detects if the cursor is in between `<style></style>` tag or `style=""` attribute and expands CSS withinside; or detects if the cursor is in between `style={{}}` in JSX, and expands CSS in JS. CSS in JS only works in the JSX `style` attribute.
 
 [Solid](https://www.solidjs.com/) JSX syntax is also supported, which is quite the same as the React JSX, both of them use `.tsx` or `.jsx` file extension, but Solid uses `class=` instead of `className=`. To let emmet2-mode work with Solid, you'll need to set `emmet2-markup-variant` to `solid`; see [Custom Options](#custom-options).
 
@@ -231,11 +232,6 @@ _:fu =>
   |
 }
 ```
-
-## TODOs
-
-1. [ ] Add CSS-in-JS syntax support
-2. [ ] Maybe other markup syntaxes
 
 ## Credits
 

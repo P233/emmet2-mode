@@ -70,53 +70,72 @@ function expandSelector(abbr: string): string {
 }
 
 // Expand properties
-function expandProperties(abbr: string): string {
-  const snippet = abbr
+function expandProperties(abbr: string, isCSSinJS?: boolean): string {
+  let snippet = "";
+
+  snippet = abbr
     .replace(/\bpos(a|f)(.+?)?(?=,|\+|$)/g, "pos$1+z$2") // posa => posa+z, posf => posf+z
     .replace(/\ball(.+?)?(?=,|\+|$)/g, "t$1+r$1+b$1+l$1") // all => t+r+b+l
     .replace(/\bfw(\d)\b/g, "fw$100") // fw7 => fw700
     .replace(/\b(ma|mi)?(w|h)f\b/g, "$1$2100p") // wf => w100p, hf => h100p, etc.
     .split(/[,+]/)
     .reduce((a: string[], c: string) => {
-      // Opinionated Rules
+      let property = "";
+
       if (/^-?[a-z]+((\(-?\d*\.?\d+\))*|--[\w-]+|\[.+?\])!?$/.test(c)) {
-        const [_, property, functionParam, cpValue, rawValue, flag] = c.match(
-          /^(-?[a-z]+)(\(.+\))?(--[\w-]+)?(\[.+?\])?(!)?/
-        )!;
+        // Opinionated rules
+        // prettier-ignore
+        const [_, propertyName, functionParam, customProperty, rawValue, flag] = c.match(/^(-?[a-z]+)(\(.+\))?(--[\w-]+)?(\[.+?\])?(!)?/)!;
 
         let value = "";
         // prettier-ignore
-        if (functionParam) value = property === "fz" ? `ms${functionParam}` : functionParam.match(/\([\d.]+\)/g)!.map((i) => `rhythm${i}`).join(" ");
-        else if (cpValue) value = cpValue.replace(/(-(-?\w+)+)/g, " var($1)").trim();
+        if (functionParam) value = propertyName === "fz" ? `ms${functionParam}` : functionParam.match(/\([\d.]+\)/g)!.map((i) => `rhythm${i}`).join(" ");
+        else if (customProperty) value = customProperty.replace(/(-(-?\w+)+)/g, " var($1)").trim();
         else if (rawValue) value = rawValue.slice(1, -1); // remove "[" and "]"
 
-        // Remove default color
-        const snippet = emmet.default(property, emmetOptions).replace(/(#000)?;$/, "");
-
-        a.push(snippet + value + (flag ? " !important;" : ";"));
-        return a;
+        property = emmet.default(propertyName, emmetOptions).replace(/(#000)?;$/, "");
+        property = property + value + (flag ? " !important;" : ";");
+      } else {
+        // Default Emmet rules
+        // Convert camelCase to `property:value` format
+        if (/^-?[a-z]+[A-Z]/.test(c)) c = c.replace(/([A-Z])/, (g) => ":" + g.toLowerCase());
+        property = emmet.default(c, emmetOptions).replace(/#000/, "");
       }
 
-      // Convert camelCase
-      if (/^-?[a-z]+[A-Z]/.test(c)) c = c.replace(/([A-Z])/, (g) => ":" + g.toLowerCase());
-
-      // Remove default color
-      const snippet = emmet.default(c, emmetOptions).replace(/#000/, "");
-
-      a.push(snippet);
+      a.push(property);
       return a;
-    }, [])
-    .join("\n");
+    }, []);
 
-  if (snippet.includes("()")) {
-    return snippet.replace("()", "(|)");
+  if (isCSSinJS) {
+    snippet = snippet
+      .map((i) => {
+        let [property, value] = i.split(": ");
+        property = property.replace(/(-[a-z])/g, (g) => g.slice(1).toUpperCase());
+        value = value.slice(0, -1); // Remove trailing `;`
+        value = /^-?\d+\.?\d*(px)?$/.test(value) ? value.replace("px", "") : `"${value}"`;
+        return `${property}: ${value}`;
+      })
+      .join(", ");
+  } else {
+    snippet = snippet.join("\n");
   }
-  return snippet.replace(": ;", ": |;");
+
+  // Add | to represent the cursor position
+  if (/\(\)|""/.test(snippet)) {
+    snippet = snippet.replace(/(\(|")(\)|")/, "$1|$2");
+  } else {
+    snippet = snippet.replace(/: (;|,)/, ": |$1");
+  }
+
+  return snippet;
 }
 
-// main
-export default function expandCSS(abbr: string): string {
+export function expandCSS(abbr: string): string {
   if (abbr.startsWith("@")) return expandAtRules(abbr);
   if (abbr.includes(":")) return expandSelector(abbr);
   return expandProperties(abbr);
+}
+
+export function expandCSSinJS(abbr: string): string {
+  return expandProperties(abbr, true);
 }

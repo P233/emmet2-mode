@@ -29,8 +29,12 @@
    (emmet2-check-in-between "style=[\"']" "[^=][\"']")
    (emmet2-check-in-between "<style" "</style>")))
 
+(defun emmet2-detect-css-in-js ()
+  (emmet2-check-in-between "style=[{{]" "[^=][}}]"))
+
 (defun emmet2-detect-expand-lang ()
   (cond ((member emmet2-file-extension '("scss" "css")) "css")
+        ((emmet2-detect-css-in-js) "css-in-js")
         ((emmet2-detect-css-in-markup) "css")
         ((stringp emmet2-markup-variant) emmet2-markup-variant)
         ((member emmet2-file-extension '("tsx" "jsx")) "jsx")
@@ -42,6 +46,13 @@
            (bounds-end (match-end 0))
            (input (buffer-substring-no-properties bounds-beginning bounds-end)))
       (deno-bridge-call "emmet2" "css" input bounds-beginning))))
+
+(defun emmet2-expand-css-in-js ()
+  (when (thing-at-point-looking-at "\\b[a-zA-Z0-9_(+,)!-]+")
+    (let* ((bounds-beginning (match-beginning 0))
+           (bounds-end (match-end 0))
+           (input (buffer-substring-no-properties bounds-beginning bounds-end)))
+      (deno-bridge-call "emmet2" "css-in-js" input bounds-beginning))))
 
 (defun emmet2-expand-markup (lang)
   (let* ((bounds-beginning (save-excursion
@@ -61,9 +72,9 @@
 (defun emmet2-expand ()
   (interactive)
   (let ((lang (emmet2-detect-expand-lang)))
-    (if (string-equal lang "css")
-        (emmet2-expand-css)
-      (emmet2-expand-markup lang))))
+    (cond ((string-equal lang "css") (emmet2-expand-css))
+          ((string-equal lang "css-in-js") (emmet2-expand-css-in-js))
+          (t (emmet2-expand-markup lang)))))
 
 (defun emmet2-insert (snippet bounds-beginning bounds-end reposition? indent?)
   (delete-region bounds-beginning bounds-end)

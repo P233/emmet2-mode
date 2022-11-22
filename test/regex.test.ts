@@ -63,3 +63,13 @@ Deno.test("em>.class", () => assertEquals(htmlAbbrRegex.test("em>.class"), true)
 Deno.test("ul>.class", () => assertEquals(htmlAbbrRegex.test("ul>.class"), true));
 Deno.test("table>.row>.col", () => assertEquals(htmlAbbrRegex.test("table>.row>.col"), true));
 Deno.test("input:color", () => assertEquals(htmlAbbrRegex.test("input:color"), true));
+
+const objectNumberRegex = /^-?\d+\.?\d*(px)?$/;
+
+Deno.test("0", () => assertEquals(objectNumberRegex.test("0"), true));
+Deno.test("0.5", () => assertEquals(objectNumberRegex.test("0.5"), true));
+Deno.test("-100", () => assertEquals(objectNumberRegex.test("-100"), true));
+Deno.test("12px", () => assertEquals(objectNumberRegex.test("12px"), true));
+Deno.test("12px 12px", () => assertEquals(objectNumberRegex.test("12px 12px"), false));
+Deno.test("12px !important", () => assertEquals(objectNumberRegex.test("12px !important"), false));
+Deno.test("center", () => assertEquals(objectNumberRegex.test("center"), false));
