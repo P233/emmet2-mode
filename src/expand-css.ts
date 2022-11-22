@@ -6,15 +6,26 @@ const emmetOptions = {
 };
 
 // Find function
+// Sort candidates by the distance from 0 to the lastest searched character, the shortest win.
 function find(abbr: string, list: string[]) {
   const regex = new RegExp(`${abbr.slice(0, 2)}.*?${abbr.slice(2).split("").join(".*?")}`);
+  const candidates = [];
 
   for (let i = 0; i < list.length; i++) {
     if (regex.test(list[i])) {
-      return list[i];
+      const result = list[i];
+      candidates.push({
+        result,
+        score: abbr.indexOf(abbr.slice(-1))
+      });
     }
   }
-  return abbr;
+
+  if (!candidates.length) {
+    return abbr;
+  }
+
+  return candidates.sort((a, b) => a.score - b.score)[0].result;
 }
 
 // Expand at rules

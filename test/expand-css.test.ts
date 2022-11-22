@@ -94,6 +94,7 @@ Deno.test("fz16,lh24,tar", () => assertEquals(expandCSSinJS("fz16,lh24,tar"), 'f
 // At ruls abbreviations
 Deno.test("@ch", () => assertEquals(expandCSS("@ch"), "@charset "));
 Deno.test("@co", () => assertEquals(expandCSS("@co"), "@counter-style "));
+Deno.test("@fa", () => assertEquals(expandCSS("@fa"), "@font-face "));
 Deno.test("@fv", () => assertEquals(expandCSS("@fv"), "@font-feature-values "));
 Deno.test("@im", () => assertEquals(expandCSS("@im"), '@import "|"'));
 Deno.test("@kf", () => assertEquals(expandCSS("@kf"), "@keyframes "));
@@ -103,7 +104,6 @@ Deno.test("@ns", () => assertEquals(expandCSS("@ns"), "@namespace "));
 Deno.test("@pg", () => assertEquals(expandCSS("@pg"), "@page "));
 Deno.test("@pr", () => assertEquals(expandCSS("@pr"), "@property "));
 Deno.test("@us", () => assertEquals(expandCSS("@su"), "@supports "));
-Deno.test("@face", () => assertEquals(expandCSS("@face"), "@font-face "));
 
 // Pseudo class and pseudo element abbreviations
 Deno.test(":fu", () => assertEquals(expandCSS(":fu"), "&:focus {\n\t|\n}"));

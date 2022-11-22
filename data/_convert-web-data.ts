@@ -29,7 +29,7 @@ const slimedCSSData = {
     .filter((i) => !i.name.startsWith("@-") && i.name !== "@import")
     .map((i) => i.name + " ")
     .concat(SASS_AT_RULES)
-    .reverse(),
+    .sort(),
   pseudoFunctions: pseudos
     .filter((i) => i.endsWith("()"))
     .map((i) => i.slice(0, -2))
