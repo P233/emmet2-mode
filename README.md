@@ -227,7 +227,7 @@ _:fu =>
 }
 
 :n(:fc,:lc):be =>
-&:not(:first-child):not(:last-child) {
+&:not(:first-child):not(:last-child)::before {
   |
 }
 ```
