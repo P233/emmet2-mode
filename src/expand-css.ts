@@ -5,7 +5,7 @@ const emmetOptions = {
   type: "stylesheet"
 };
 
-// Find functions
+// Find function
 function find(abbr: string, list: string[]) {
   const regex = new RegExp(`${abbr.slice(0, 2)}.*?${abbr.slice(2).split("").join(".*?")}`);
 
@@ -14,26 +14,25 @@ function find(abbr: string, list: string[]) {
       return list[i];
     }
   }
+  return abbr;
 }
 
 // Expand at rules
 function expandAtRules(abbr: string): string {
-  return find(abbr, cssData.atRules) || abbr;
+  return find(abbr, cssData.atRules);
 }
 
 // Expand selectors
 function findPseudoSelector(abbr: string): string {
-  return find(abbr, cssData.pseudoSelectors) || abbr;
+  return find(abbr, cssData.pseudoSelectors);
 }
 
 function findPseudoFunction(abbr: string): string {
-  return find(abbr, cssData.pseudoFunctions) || abbr;
+  return find(abbr, cssData.pseudoFunctions);
 }
 
 function expandSelector(abbr: string): string {
   if (!/^[\w.#-]*:[\w-]+(\(.+\))?(:.+)?$/.test(abbr)) return abbr;
-
-  const suffix = " {\n\t|\n}";
 
   let [_, prefix, pseudoSelector, pseudoFunction, pseudoParams, chainedPseudos] = abbr.match(
     /^([\w.#-]*)(:[\w-]+)?(?:(:[\w-]+)\((.+)\))?(:.+)?$/
@@ -41,6 +40,8 @@ function expandSelector(abbr: string): string {
 
   if (!prefix) prefix = "&";
   else if (prefix === "_") prefix = "";
+
+  const suffix = " {\n\t|\n}";
 
   if (chainedPseudos) {
     chainedPseudos = chainedPseudos
@@ -55,6 +56,7 @@ function expandSelector(abbr: string): string {
   }
 
   pseudoFunction = findPseudoFunction(pseudoFunction);
+
   return (
     pseudoParams.split(",").reduce((a, c) => {
       c = c.trim();
@@ -88,19 +90,27 @@ function expandProperties(abbr: string): string {
         else if (cpValue) value = cpValue.replace(/(-(-?\w+)+)/g, " var($1)").trim();
         else if (rawValue) value = rawValue.slice(1, -1); // remove "[" and "]"
 
-        a.push(emmet.default(property, emmetOptions).replace(/(#000)?;$/, "") + value + (flag ? " !important;" : ";"));
+        // Remove default color
+        const snippet = emmet.default(property, emmetOptions).replace(/(#000)?;$/, "");
+
+        a.push(snippet + value + (flag ? " !important;" : ";"));
         return a;
       }
 
       // Convert camelCase
       if (/^-?[a-z]+[A-Z]/.test(c)) c = c.replace(/([A-Z])/, (g) => ":" + g.toLowerCase());
 
-      a.push(emmet.default(c, emmetOptions).replace(/#000/, ""));
+      // Remove default color
+      const snippet = emmet.default(c, emmetOptions).replace(/#000/, "");
+
+      a.push(snippet);
       return a;
     }, [])
     .join("\n");
 
-  if (snippet.includes("()")) return snippet.replace("()", "(|)");
+  if (snippet.includes("()")) {
+    return snippet.replace("()", "(|)");
+  }
   return snippet.replace(": ;", ": |;");
 }
 
