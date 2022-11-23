@@ -5,7 +5,7 @@ const SASS_AT_RULES = [
   '@forward "|";',
   '@import "|"',
   "@mixin | {\n\t\n}",
-  "@include |;",
+  "@include ",
   "@function | {\n\t@return \n}",
   "@extend |;",
   "@at-root | {\n\t\n}",

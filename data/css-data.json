@@ -18,7 +18,7 @@
     "@if not | {\n\t\n}",
     "@if | {\n\t\n}",
     "@import \"|\"",
-    "@include |;",
+    "@include ",
     "@keyframes ",
     "@layer ",
     "@media ",
