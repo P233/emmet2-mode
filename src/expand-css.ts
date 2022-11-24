@@ -123,7 +123,7 @@ function expandProperties(abbr: string, isCSSinJS?: boolean): string {
         let [property, value] = i.split(": ");
         property = property.replace(/(-[a-z])/g, (g) => g.slice(1).toUpperCase());
         value = value.slice(0, -1); // Remove trailing `;`
-        value = /^-?\d+\.?\d*(px)?$/.test(value) ? value.replace("px", "") : `"${value}"`;
+        value = /^-?\d+\.?\d*(px)?$/.test(value) ? value.replace("px", "") : value ? `"${value}"` : "";
         return `${property}: ${value}`;
       })
       .join(", ");
@@ -134,8 +134,10 @@ function expandProperties(abbr: string, isCSSinJS?: boolean): string {
   // Add | to represent the cursor position
   if (/\(\)|""/.test(snippet)) {
     snippet = snippet.replace(/(\(|")(\)|")/, "$1|$2");
+  } else if (isCSSinJS) {
+    snippet = snippet.replace(/\s("?,|"$)/, " |$1");
   } else {
-    snippet = snippet.replace(/: (;|,)/, ": |$1");
+    return snippet.replace(" ;", " |;");
   }
 
   return snippet;
