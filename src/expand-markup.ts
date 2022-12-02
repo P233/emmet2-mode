@@ -18,7 +18,7 @@ export function getAbbr(line: string, point: number): AbbrAndPositions {
   if (!abbrs) throw new Error(`[[Invalid abbreviation: "${line}"]]`);
 
   if (abbrs.length === 1) {
-    let abbr = abbrs[0].trim();
+    const abbr = abbrs[0].trim();
     const offset = line.indexOf(abbr);
     const end = offset + abbr.length - 1; // -1 convert length to index
 
@@ -53,13 +53,13 @@ export function getAbbr(line: string, point: number): AbbrAndPositions {
   throw new Error("[[There is no abbr under the point]]");
 }
 
-export function expandHTML(line: string, { point }: { point: number }): string {
+export function expandHTML(line: string, { point }: { point: number }) {
   const { abbr, offset, length } = getAbbr(line, point);
   const snippet = emmet.default(abbr).replace("><", ">|<");
   return { snippet, offset, length };
 }
 
-export function expandJSX(line: string, options: JSXOptions): string {
+export function expandJSX(line: string, options: JSXOptions) {
   const { abbr, offset, length } = getAbbr(line, options.point);
 
   let snippet = emmet.default(abbr, {

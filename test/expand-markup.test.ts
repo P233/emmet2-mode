@@ -1,4 +1,4 @@
-import { assertEquals, assertObjectMatch } from "https://deno.land/std@0.164.0/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.164.0/testing/asserts.ts";
 import { getAbbr, expandHTML, expandJSX } from "../src/expand-markup.ts";
 
 // Get Abbr and positions
