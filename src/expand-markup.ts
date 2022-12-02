@@ -55,7 +55,7 @@ export function getAbbr(line: string, point: number): AbbrAndPositions {
 
 export function expandHTML(line: string, { point }: { point: number }) {
   const { abbr, offset, length } = getAbbr(line, point);
-  const snippet = emmet.default(abbr).replace("><", ">|<");
+  const snippet = emmet.default(abbr).replace("></", ">|</");
   return { snippet, offset, length };
 }
 
@@ -87,7 +87,7 @@ export function expandJSX(line: string, options: JSXOptions) {
     }, snippet);
   }
 
-  if (snippet.includes("><")) snippet = snippet.replace("><", ">|<");
+  if (snippet.includes("></")) snippet = snippet.replace("></", ">|</");
   else snippet = snippet.replace(/("|\{)("|\})/, "$1|$2");
 
   return { snippet, offset, length };
