@@ -60,7 +60,7 @@
                              (match-beginning 1)))
          (left-paren? (string-match "\\(return\\|=>\\) ($" (buffer-substring-no-properties (match-beginning 0) bounds-beginning)))
          (bounds-end (save-excursion
-                       (re-search-forward "\\(.?\\)<\\|$" nil t)
+                       (re-search-forward "<\\|$" nil t)
                        (match-beginning 0)))
          (right-paren? (and left-paren? (string-equal ")" (buffer-substring-no-properties (- bounds-end 1) bounds-end))))
          (bounds-end (if right-paren? (- bounds-end 1) bounds-end))
