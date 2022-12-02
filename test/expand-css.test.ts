@@ -85,7 +85,7 @@ Deno.test("fz(1)!,lh2", () => assertEquals(expandCSS("fz(1)!,lh2"), "font-size: 
 Deno.test("posa,all0,fz(-1)!,lh(2.5)+mA,p[1px 2px 3px]!", () => assertEquals(expandCSS("posa,all0,fz(-1)!,lh(2.5)+mA,p[1px 2px 3px]!"), "position: absolute;\nz-index: |;\ntop: 0;\nright: 0;\nbottom: 0;\nleft: 0;\nfont-size: ms(-1) !important;\nline-height: rhythm(2.5);\nmargin: auto;\npadding: 1px 2px 3px !important;"));
 
 // CSS in JS
-Deno.test("t", () => assertEquals(expandCSSinJS("t"), 'top: "|"'));
+Deno.test("t", () => assertEquals(expandCSSinJS("t"), "top: "));
 Deno.test("tac", () => assertEquals(expandCSSinJS("tac"), 'textAlign: "center"'));
 Deno.test("all0", () => assertEquals(expandCSSinJS("all0"), "top: 0, right: 0, bottom: 0, left: 0"));
 Deno.test("hf", () => assertEquals(expandCSSinJS("hf"), 'height: "100%"'));
