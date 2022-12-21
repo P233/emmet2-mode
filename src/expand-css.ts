@@ -104,13 +104,13 @@ function expandProperties(abbr: string, isCSSinJS?: boolean): string {
         else if (customProperty) value = customProperty.replace(/(-(-?\w+)+)/g, " var($1)").trim();
         else if (rawValue) value = rawValue.slice(1, -1); // remove "[" and "]"
 
-        property = emmet.default(propertyName, emmetOptions).replace(/(#000)?;$/, "");
+        property = emmet.default(propertyName, emmetOptions).replace(/(#000|'\$\{0\}')?;$/, "");
         property = property + value + (flag ? " !important;" : ";");
       } else {
         // Default Emmet rules
         // Convert camelCase to `property:value` format
         if (/^-?[a-z]+[A-Z]/.test(c)) c = c.replace(/([A-Z])/, (g) => ":" + g.toLowerCase());
-        property = emmet.default(c, emmetOptions).replace(/#000/, "");
+        property = emmet.default(c, emmetOptions).replace(/#000|'\$\{0\}'/, "");
       }
 
       a.push(property);

@@ -21,6 +21,9 @@ Deno.test("gtc", () => assertEquals(expandCSS("gtc"), "grid-template-columns: re
 Deno.test("c", () => assertEquals(expandCSS("c"), "color: |;"));
 Deno.test("bg", () => assertEquals(expandCSS("bg"), "background: |;"));
 
+// Remove '${0}' from content property
+Deno.test("ct", () => assertEquals(expandCSS("ct"), "content: |;"));
+
 // Opinionated SCSS function abbreviations
 Deno.test("t(2)", () => assertEquals(expandCSS("t(2)"), "top: rhythm(2);"));
 Deno.test("t(.5)", () => assertEquals(expandCSS("t(.5)"), "top: rhythm(.5);"));
