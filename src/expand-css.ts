@@ -100,7 +100,7 @@ function expandProperties(abbr: string, isCSSinJS?: boolean): string {
 
         let value = "";
         // prettier-ignore
-        if (functionParam) value = propertyName === "fz" ? `ms${functionParam}` : functionParam.match(/\([\d.]+\)/g)!.map((i) => `rhythm${i}`).join(" ");
+        if (functionParam) value = propertyName === "fz" ? `ms${functionParam}` : functionParam.match(/\(-?[\d.]+\)/g)!.map((i) => `rhythm${i}`).join(" ");
         else if (customProperty) value = customProperty.replace(/(-(-?\w+)+)/g, " var($1)").trim();
         else if (rawValue) value = rawValue.slice(1, -1); // remove "[" and "]"
 
