@@ -14,7 +14,7 @@ type AbbrAndPositions = {
 };
 
 export function getAbbr(line: string, point: number): AbbrAndPositions {
-  const abbrs = line.match(/[a-zA-Z.]+(\w*|>|-|#|:|@|\^|\$|\+|\.|\*|\/|\(.+\)|\[.+?\]|\{.+\})+\s?/g);
+  const abbrs = line.match(/[a-zA-Z.]+(\w*|>|-|#|:|@|\^|\$|\+|\.|\*|\/|\([^\s]+\)|\[.+?\]|\{.+\})+\s?/g);
   if (!abbrs) throw new Error(`[[Invalid abbreviation: "${line}"]]`);
 
   if (abbrs.length === 1) {

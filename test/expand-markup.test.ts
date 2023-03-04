@@ -29,3 +29,6 @@ const solidOptions = { classAttr: true, cssModulesObject: "style", classConstruc
 Deno.test(".", () => assertEquals(expandJSX(".", solidOptions).snippet, "<div class={}>|</div>"));
 Deno.test(".class", () => assertEquals(expandJSX(".class", solidOptions).snippet, "<div class={style.class}>|</div>"));
 Deno.test(".a.b.c", () => assertEquals(expandJSX(".a.b.c", solidOptions).snippet, "<div class={classnames(style.a, style.b, style.c)}>|</div>"));
+
+// Special Cases
+Deno.test("{team.map(i => div)}", () => assertEquals(expandHTML("{team.map(i => div)}", { point: 15 }).snippet, "<div>|</div>"));
