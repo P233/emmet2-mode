@@ -5,7 +5,7 @@ import cssData from "../data/css-data.json" assert { type: "json" };
 // Sort candidates by the distance from 0 to the lastest searched character, the shortest win.
 function find(abbr: string, list: string[]) {
   const regex = new RegExp(`${abbr.slice(0, 2)}.*?${abbr.slice(2).split("").join(".*?")}`);
-  const candidates = [];
+  const candidates: { result: string; score: number }[] = [];
 
   for (let i = 0; i < list.length; i++) {
     if (regex.test(list[i])) {
