@@ -1,10 +1,6 @@
 import emmet from "npm:emmet";
 import cssData from "../data/css-data.json" assert { type: "json" };
 
-const emmetOptions = {
-  type: "stylesheet"
-};
-
 // Find function
 // Sort candidates by the distance from 0 to the lastest searched character, the shortest win.
 function find(abbr: string, list: string[]) {
@@ -81,10 +77,16 @@ function expandSelector(abbr: string): string {
 }
 
 // Expand properties
-function expandProperties(abbr: string, isCSSinJS?: boolean): string {
-  let snippet = "";
+const emmetOptions = {
+  type: "stylesheet",
+  options: {
+    "stylesheet.floatUnit": "rem",
+    "output.field": () => "" // remove placeholders
+  }
+};
 
-  snippet = abbr
+function expandProperties(abbr: string, isCSSinJS?: boolean): string {
+  const propertiesList = abbr
     .replace(/\bpos(a|f)(.+?)?(?=,|\+|$)/g, "pos$1+z$2") // posa => posa+z, posf => posf+z
     .replace(/\ball(.+?)?(?=,|\+|$)/g, "t$1+r$1+b$1+l$1") // all => t+r+b+l
     .replace(/\bfw(\d)\b/g, "fw$100") // fw7 => fw700
@@ -104,21 +106,21 @@ function expandProperties(abbr: string, isCSSinJS?: boolean): string {
         else if (customProperty) value = customProperty.replace(/(-(-?\w+)+)/g, " var($1)").trim();
         else if (rawValue) value = rawValue.slice(1, -1); // remove "[" and "]"
 
-        property = emmet.default(propertyName, emmetOptions).replace(/(#000|'\$\{0\}')?;$/, "");
-        property = property + value + (flag ? " !important;" : ";");
+        property = emmet.default(propertyName, emmetOptions).replace(/;$/, "") + value + (flag ? " !important;" : ";");
       } else {
         // Default Emmet rules
         // Convert camelCase to `property:value` format
         if (/^-?[a-z]+[A-Z]/.test(c)) c = c.replace(/([A-Z])/, (g) => ":" + g.toLowerCase());
-        property = emmet.default(c, emmetOptions).replace(/#000|'\$\{0\}'/, "");
+        property = emmet.default(c, emmetOptions);
       }
 
       a.push(property);
       return a;
     }, []);
 
+  let snippet = "";
   if (isCSSinJS) {
-    snippet = snippet
+    snippet = propertiesList
       .map((i) => {
         let [property, value] = i.split(": ");
         property = property.replace(/(-[a-z])/g, (g) => g.slice(1).toUpperCase());
@@ -128,7 +130,7 @@ function expandProperties(abbr: string, isCSSinJS?: boolean): string {
       })
       .join(", ");
   } else {
-    snippet = snippet.join("\n");
+    snippet = propertiesList.join("\n");
   }
 
   // Add | to represent the cursor position
