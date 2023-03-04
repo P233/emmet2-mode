@@ -1,42 +1,44 @@
 # emmet2-mode — boost productivity for web-developers
 
-Emmet2-mode is an opinionated enhanced [Emmet](https://emmet.io/) minor mode I have eagerly desired to have in Emacs. Special thanks to [@manateelazycat](https://github.com/manateelazycat) for creating the [deno-bridge](https://github.com/manateelazycat/deno-bridge), which is the key to making this package come true.
+Emmet2-mode is an enhanced Emacs minor mode for [Emmet](https://emmet.io/). The credit goes to [@manateelazycat](https://github.com/manateelazycat) for creating [deno-bridge](https://github.com/manateelazycat/deno-bridge).
 
-Emmet2-mode is both of a pre-processor and a post-processor for Emmet. It supports all the features of Emmet but with the following improvements:
+It acts as both a pre-processor and a post-processor for Emmet, incorporating all of its features along with several improvements. These include:
 
-- Expanding abbreviations from any character of it
-- Expanding JSX class attribute with CSS modules object and class names constructor
-- Automatically detecting `style={{}}` attribute and expanding CSS in JS withinside
-- Automatically detecting `<style></style>` tag and `style=""` attribute and expanding CSS withinside
-- Expanding CSS and SCSS at-rules
-- Expanding CSS pseudo selectors
-- A lot, a lot of enhancements for Emmet CSS abbreviations
+- Expand abbreviation from any character
+- Expand JSX class attribute with CSS modules object and class names constructor
+- Automatically detect `style={{}}` attribute and expand CSS in JS
+- Automatically detect `<style></style>` tag and `style=""` attribute and expand CSS
+- Expand CSS and SCSS at-rules
+- Expand CSS pseudo selectors
+- Numerous enhancements for Emmet CSS abbreviations
 
 ## How it works?
 
-This package has two parts: the elisp front-end and the deno back-end. The frond-end detects abbreviations and syntaxes, sends data to the deno back-end, injects snippets to buffer, re-format code, and re-positions cursor. The back-end expands abbreviations to snippets via the [Emmet NPM package](https://www.npmjs.com/package/emmet) and sends them back to the front-end; it pre-processes abbreviations before Emmet is involved and also modifies the output snippets; this is where the magic happens.
+This package has two parts: the elisp front-end and the deno back-end. The front-end detects abbreviations and syntaxes, sends data to the deno back-end, injects snippets to the buffer, reformats code and re-positions the cursor. The back-end expands abbreviations to snippets via the [Emmet NPM package](https://www.npmjs.com/package/emmet) and sends them back to the front-end. It pre-processes abbreviations before Emmet is involved and modifies the output snippets.
 
-When emmet2-mode is enabled, press `C-j` (which is the default expand key, same as [emmet-mode](https://github.com/smihica/emmet-mode)) to let emmet2-mode detect the abbreviation under the cursor and try to expand it. It uses file extensions to determine syntaxes:
+When enabled, emmet2-mode detects the abbreviation under the cursor and expands it when you press `C-j` (which is the default expansion key, same as [emmet-mode](https://github.com/smihica/emmet-mode)). It uses file extensions to determine syntaxes, as follows:
 
-1. `.tsx` and `.jsx` are `JSX` syntax
-2. `.scss` and `.css` are `SCSS` syntax (yes, CSS is also treated as `SCSS` syntax)
-3. the rest markup files are `HTML` syntax
+1. `.tsx` and `.jsx` are considered to have `JSX` syntax
+2. `.scss` and `.css` are considered to have `SCSS` syntax (even CSS is treated as `SCSS` syntax)
+3. all other markup files are considered to have `HTML` syntax
 
-When editing markup files, emmet2-mode detects if the cursor is in between `<style></style>` tag or `style=""` attribute and expands CSS withinside; or detects if the cursor is in between `style={{}}` in JSX, and expands CSS in JS. CSS in JS only works in the JSX `style` attribute.
+When editing markup files, emmet2-mode detects if the cursor is between `<style>|</style>` tags or in a `style="|"` attribute, and expands CSS withinside. It also detects if the cursor is within `style={{|}}` in JSX and expands CSS in JS.
 
-[Solid](https://www.solidjs.com/) JSX syntax is also supported, which is quite the same as the React JSX, both of them use `.tsx` or `.jsx` file extension, but Solid uses `class=` instead of `className=`. To let emmet2-mode work with Solid, you'll need to set `emmet2-markup-variant` to `solid`; see [Custom Options](#custom-options).
+In addition, Solid JSX syntax is supported, which is very similar to React JSX. Both use `.tsx` or `.jsx` file extensions, but Solid uses `class=` instead of `className=`. To work with Solid, you'll need to set `emmet2-markup-variant` to `solid`. See [Custom Options](#custom-options) for more information.
 
 ## Installation
 
-Emmet2-mode is built on top of the deno-bridge; thus, you need to install Deno and deno-bridge first.
+Emmet2-mode is built on top of the deno-bridge; therefore, you need to install [Deno](https://deno.land/) and [deno-bridge](https://github.com/manateelazycat/deno-bridge) first.
 
-1. Follow the [official document](https://deno.land/manual/getting_started/installation) to install Deno.
+To install Deno, follow the instructions provided in the [official document](https://deno.land/manual/getting_started/installation).
 
-2. Clone deno-bridge and emmet2-mode to your `.emacs.d` folder and add them to your configs. Here is an example of configuring them through [use-package](https://github.com/jwiegley/use-package):
+After installing Deno, clone deno-bridge and emmet2-mode to your `.emacs.d` folder and add them to your configuration file. Here's an example of how to configure them using [use-package](https://github.com/jwiegley/use-package):
 
 ```elisp
 (use-package deno-bridge
-  :load-path "path/to/deno-bridge")
+  :load-path "path/to/deno-bridge"
+  :config
+  (use-package websocket))
 
 (use-package emmet2-mode
   :after deno-bridge
@@ -49,17 +51,17 @@ Emmet2-mode is built on top of the deno-bridge; thus, you need to install Deno a
 
 ## Usage
 
-If you are not familiar with Emmet, check https://docs.emmet.io/cheat-sheet/ first. New added features are listed below, and see the `test/` folder for more deatils.
+If you're not familiar with Emmet, a great place to begin is by exploring the cheat sheet found at https://docs.emmet.io/cheat-sheet/. New added features are listed below, and see the `test/` folder for more usage examples.
 
 ### Custom Options
 
 Emmet2-mode has three custom options:
 
-1. `emmet2-markup-variant` the only value is `"solid"`, let emmet2-mode output `class=` instead of `className=`
-2. `emmet2-css-modules-object` set the CSS Modules object convention for your project
-3. `emmet2-class-names-constructor` set the JSX class names constructor convention for your project
+1. `emmet2-markup-variant`: This option has a single value, `"solid"`. When set, emmet2-mode outputs `class=` instead of `className=`.
+2. `emmet2-css-modules-object`: This option allows you to set the CSS Modules object for your project.
+3. `emmet2-class-names-constructor`: This option allows you to set the JSX class names constructor for your project.
 
-They only work for expanding markups, and all of them are project-based. So, if you need to custom any one of them, create a `.dir-locals.el` file at the root of your project, and add the following code:
+These options only work for expanding markups, and they are all project-based. If you need to customize any of them, create a `.dir-locals.el` file at the root of your project and add the following code:
 
 ```elisp
 ((web-mode . ((emmet2-markup-variant . "solid")
@@ -67,7 +69,9 @@ They only work for expanding markups, and all of them are project-based. So, if 
               (emmet2-class-names-constructor . "classnames"))))      ;; Default value is "clsx"
 ```
 
-After that, `a.link.active` will be expanded to `<a href="" class={classnames(style.link, style.active)}>|</a>` in this project.
+After configuring the custom options in `.dir-locals.el`, `a.link.active` will be expanded to `<a href="" class={classnames(style.link, style.active)}>|</a>` in this project.
+
+Note that the pipe symbol `|` represents the cursor position after expanding abbreviations.
 
 ### Expand Markups
 
@@ -99,7 +103,7 @@ Component.class => <Component class={css.class}>|</Component>
 
 #### Automatically detect markup abbreviations
 
-You are able to expand at any position of the abbreviation; this is helpful if you are working on a super complex abbr and want to tweak something. However, it's a bit tricky to detect the correct abbr. If you encounter any issues with regard to this, please fill an issue.
+Emmet2-mode allows you to expand abbreviations at any character of it, which can be helpful if you're working on a complex abbreviation and want to make tweaks. However, detecting the correct abbreviation under the cursor can be a bit tricky. If you encounter any issues related to this, please create an issue.
 
 ### Expand CSS
 
@@ -112,7 +116,7 @@ bg => background: |;    // instead of background: #000;
 
 #### [Modular scale](https://github.com/modularscale/modularscale-sass) and vertical rhythm functions
 
-Only `fw` triggers the `ms()` function, the other properties will expand with the `rhythm()` function.
+Only `fw` triggers the `ms()` function while the other properties will expand with the `rhythm()` function.
 
 ```
 fz(1)      => font-size: ms(1);
@@ -168,7 +172,7 @@ hf  => height: 100%;
 
 #### camelCase alias
 
-Emmet use `:` and `-` for separating property and value; for example `m:a` expands `margin: auto;`. But emmet2-mode use `:` for expanding pseudo selectors. So, why not use camelCase? `mA` is now equal to `m:a` and `m-a`.
+Emmet uses `:` and `-` to separate properties and values; for example, `m:a` expands to `margin: auto;`. However, in emmet2-mode, `:` is used to expand pseudo selectors. To avoid this conflict, consider using camelCase. For instance, `mA` is equivalent to `m:a` and `m-a`.
 
 ```
 mA   => margin: auto;
@@ -181,7 +185,7 @@ left: auto;
 
 #### `,` as abbreviations spliter
 
-As a Dvorak keybord layout user, `,` is much more easier to press than `+`.
+As a user of the Dvorak keyboard layout, I find it much easier to press the `,` key than the `+` key.
 
 ```
 t0,r0,b0,l0 === t0+r0+b0+l0
@@ -189,10 +193,10 @@ t0,r0,b0,l0 === t0+r0+b0+l0
 
 #### At rules
 
-Use two or three unique letters to do an incremental narrowing search for CSS at-rules. The first character must be `@`. SCSS at-rules are also supported.
+To perform an incremental narrowing search for CSS at-rules, use two or three distinct letters, with the first character being `@`. In addition, SCSS at-rules are also supported.
 
 ```
-@cs => @charset
+@Cs => @charset
 @kf => @keyframes
 @md => @media
 
@@ -202,9 +206,9 @@ Use two or three unique letters to do an incremental narrowing search for CSS at
 
 #### Pseudo class and pseudo element
 
-Use two or three unique letters to do an incremental narrowing search for pseudo classes or pseudo elements. The first two characters must be a `:` and the leading letter of your target pseudo selector. For pseudo elements, use `:` rather than `::`.
+To perform an incremental narrowing search for CSS pseudo classes or pseudo elements, use two or three distinct letters, with the first character being `:`. When dealing with pseudo elements, use `:` instead of `::`.
 
-There is also a shorthand for pseudo functions, for example, `:n(:fc)` expands `&:not(:first-child) {|}`, and `:n(:fc,:lc)` expands `^:not(:first-child):not(:last-child) {|}`. Please note that space is not allowed in between `()`.
+Additionally, there is a shorthand for pseudo functions such as `:n(:fc)` which expands to `&:not(:first-child) {|}`, while `:n(:fc,:lc)` expands to `^:not(:first-child):not(:last-child) {|}`. It's important to note that spaces are not allowed within the `()` parentheses.
 
 ```
 :fu =>
