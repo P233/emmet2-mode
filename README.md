@@ -37,7 +37,7 @@ After installing Deno, clone deno-bridge and emmet2-mode to your `.emacs.d` fold
 ```elisp
 (use-package deno-bridge
   :load-path "path/to/deno-bridge"
-  :config
+  :init
   (use-package websocket))
 
 (use-package emmet2-mode
