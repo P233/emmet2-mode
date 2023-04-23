@@ -1,4 +1,4 @@
-import emmet from "npm:emmet";
+import emmet from "npm:emmet@2.4.2";
 import cssData from "../data/css-data.json" assert { type: "json" };
 
 // Find function
@@ -106,12 +106,12 @@ function expandProperties(abbr: string, isCSSinJS?: boolean): string {
         else if (customProperty) value = customProperty.replace(/(-(-?\w+)+)/g, " var($1)").trim();
         else if (rawValue) value = rawValue.slice(1, -1); // remove "[" and "]"
 
-        property = emmet.default(propertyName, emmetOptions).replace(/;$/, "") + value + (flag ? " !important;" : ";");
+        property = emmet(propertyName, emmetOptions).replace(/;$/, "") + value + (flag ? " !important;" : ";");
       } else {
-        // Default Emmet rules
+        // Emmet rules
         // Convert camelCase to `property:value` format
         if (/^-?[a-z]+[A-Z]/.test(c)) c = c.replace(/([A-Z])/, (g) => ":" + g.toLowerCase());
-        property = emmet.default(c, emmetOptions);
+        property = emmet(c, emmetOptions);
       }
 
       a.push(property);

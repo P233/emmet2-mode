@@ -1,4 +1,4 @@
-import emmet from "npm:emmet";
+import emmet from "npm:emmet@2.4.2";
 
 type JSXOptions = {
   classAttr?: boolean;
@@ -55,21 +55,24 @@ export function getAbbr(line: string, point: number): AbbrAndPositions {
 
 export function expandHTML(line: string, { point }: { point: number }) {
   const { abbr, offset, length } = getAbbr(line, point);
-  const snippet = emmet.default(abbr).replace("></", ">|</");
+  const snippet = emmet(abbr).replace("></", ">|</");
   return { snippet, offset, length };
 }
 
 export function expandJSX(line: string, options: JSXOptions) {
   const { abbr, offset, length } = getAbbr(line, options.point);
 
-  let snippet = emmet.default(abbr, {
+  let snippet = emmet(abbr, {
     options: {
       "output.selfClosingStyle": "xhtml", // <br />
-      "jsx.enabled": true
+      "jsx.enabled": true,
+      "markup.attributes": {
+        class: "classList"
+      }
     }
   });
 
-  const classAttrList = snippet.match(/className=".*?"/g);
+  const classAttrList = snippet.match(/classList=".*?"/g);
   if (classAttrList) {
     snippet = classAttrList.reduce((a: string, c: string) => {
       const idx = a.indexOf(c);
