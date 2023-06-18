@@ -1,4 +1,4 @@
-import emmet from "npm:emmet@2.4.2";
+import emmet from "npm:emmet@2.4.4";
 import cssData from "../data/css-data.json" assert { type: "json" };
 
 // Find function

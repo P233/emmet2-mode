@@ -1,4 +1,4 @@
-import emmet from "npm:emmet@2.4.2";
+import emmet from "npm:emmet@2.4.4";
 
 type JSXOptions = {
   classAttr?: boolean;

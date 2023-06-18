@@ -37,7 +37,8 @@
   "npm": {
     "specifiers": {
       "emmet": "emmet@2.4.2",
-      "emmet@2.4.2": "emmet@2.4.2"
+      "emmet@2.4.2": "emmet@2.4.2",
+      "emmet@2.4.4": "emmet@2.4.4"
     },
     "packages": {
       "@emmetio/abbreviation@2.2.3": {
@@ -52,6 +53,12 @@
           "@emmetio/scanner": "@emmetio/scanner@1.0.2"
         }
       },
+      "@emmetio/abbreviation@2.3.3": {
+        "integrity": "sha512-mgv58UrU3rh4YgbE/TzgLQwJ3pFsHHhCLqY20aJq+9comytTXUDNGG/SMtSeMJdkpxgXSXunBGLD8Boka3JyVA==",
+        "dependencies": {
+          "@emmetio/scanner": "@emmetio/scanner@1.0.4"
+        }
+      },
       "@emmetio/css-abbreviation@2.1.4": {
         "integrity": "sha512-qk9L60Y+uRtM5CPbB0y+QNl/1XKE09mSO+AhhSauIfr2YOx/ta3NJw2d8RtCFxgzHeRqFRr8jgyzThbu+MZ4Uw==",
         "dependencies": {
@@ -64,12 +71,22 @@
           "@emmetio/scanner": "@emmetio/scanner@1.0.2"
         }
       },
+      "@emmetio/css-abbreviation@2.1.8": {
+        "integrity": "sha512-s9yjhJ6saOO/uk1V74eifykk2CBYi01STTK3WlXWGOepyKa23ymJ053+DNQjpFcy1ingpaO7AxCcwLvHFY9tuw==",
+        "dependencies": {
+          "@emmetio/scanner": "@emmetio/scanner@1.0.4"
+        }
+      },
       "@emmetio/scanner@1.0.0": {
         "integrity": "sha512-8HqW8EVqjnCmWXVpqAOZf+EGESdkR27odcMMMGefgKXtar00SoYNSryGv//TELI4T3QFsECo78p+0lmalk/CFA==",
         "dependencies": {}
       },
       "@emmetio/scanner@1.0.2": {
         "integrity": "sha512-1ESCGgXRgn1r29hRmz8K0G4Ywr5jDWezMgRnICComBCWmg3znLWU8+tmakuM1og1Vn4W/sauvlABl/oq2pve8w==",
+        "dependencies": {}
+      },
+      "@emmetio/scanner@1.0.4": {
+        "integrity": "sha512-IqRuJtQff7YHHBk4G8YZ45uB9BaAGcwQeVzgj/zj8/UdOhtQpEIupUhSk8dys6spFIWVZVeK20CzGEnqR5SbqA==",
         "dependencies": {}
       },
       "emmet@2.3.6": {
@@ -84,6 +101,13 @@
         "dependencies": {
           "@emmetio/abbreviation": "@emmetio/abbreviation@2.3.1",
           "@emmetio/css-abbreviation": "@emmetio/css-abbreviation@2.1.6"
+        }
+      },
+      "emmet@2.4.4": {
+        "integrity": "sha512-v8Mwpjym55CS3EjJgiCLWUB3J2HSR93jhzXW325720u8KvYxdI2voYLstW3pHBxFz54H6jFjayR9G4LfTG0q+g==",
+        "dependencies": {
+          "@emmetio/abbreviation": "@emmetio/abbreviation@2.3.3",
+          "@emmetio/css-abbreviation": "@emmetio/css-abbreviation@2.1.8"
         }
       }
     }
