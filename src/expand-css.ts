@@ -114,6 +114,8 @@ function expandProperties(abbr: string, isCSSinJS?: boolean): string {
         property = emmet(c, emmetOptions);
       }
 
+      property = property.replace(/\s+/, " ");
+
       a.push(property);
       return a;
     }, []);

@@ -11,6 +11,7 @@ Deno.test("t$abc", () => assertEquals(expandCSS("t$abc"), "top: $abc;"));
 Deno.test("t1r", () => assertEquals(expandCSS("t1r"), "top: 1rem;"));
 Deno.test("t0+r0+b0+l0", () => assertEquals(expandCSS("t0+r0+b0+l0"), "top: 0;\nright: 0;\nbottom: 0;\nleft: 0;"));
 Deno.test("t-a", () => assertEquals(expandCSS("t-a"), "top: auto;"));
+Deno.test("bd", () => assertEquals(expandCSS("bd"), "border: |;"));
 Deno.test("bd1#2s", () => assertEquals(expandCSS("bd1#2s"), "border: 1px #222 solid;"));
 Deno.test("p1px2px3px", () => assertEquals(expandCSS("p1px2px3px"), "padding: 1px 2px 3px;"));
 Deno.test("p1px2px3px!", () => assertEquals(expandCSS("p1px2px3px!"), "padding: 1px 2px 3px !important;"));
