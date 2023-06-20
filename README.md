@@ -93,6 +93,7 @@ Component.Subcomponent        => <Component.Subcomponent>|</Component.Subcompone
 Component.Subcomponent.class  => <Component.Subcomponent className={css.class}>|</Component.Subcomponent>
 Component.Subcomponent.a.b.c  => <Component.Subcomponent className={clsx(css.a, css.b, css.c)}>|</Component.Subcomponent>
 Component.Subcomponent.a.b.c/ => <Component.Subcomponent className={clsx(css.a, css.b, css.c)} />
+Component{{props.value}}      => <Component>{props.value}</Component>
 ```
 
 #### Solid JSX
