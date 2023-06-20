@@ -1,10 +1,10 @@
 import { assertEquals } from "https://deno.land/std@0.164.0/testing/asserts.ts";
-import { getAbbr, expandHTML, expandJSX } from "../src/expand-markup.ts";
+import { extractAbbr, expandHTML, expandJSX } from "../src/expand-markup.ts";
 
-// Get Abbr and positions
-Deno.test("lorem span", () => assertEquals(getAbbr("lorem span", 6), { abbr: "span", offset: 6, length: 4 }));
-Deno.test("atnoeuh otnoeuh span utnehu", () => assertEquals(getAbbr("atnoeuh otnoeuh span utnehu", 20), { abbr: "span", offset: 16, length: 4 }));
-Deno.test("atnoeuh otnoeuh span utnehu span", () => assertEquals(getAbbr("atnoeuh otnoeuh span utnehu span", 31), { abbr: "span", offset: 28, length: 4 }));
+// Extract Abbr and positions
+Deno.test("lorem span", () => assertEquals(extractAbbr("lorem span", 6), { abbr: "span", offset: 6, length: 4 }));
+Deno.test("atnoeuh otnoeuh span utnehu", () => assertEquals(extractAbbr("atnoeuh otnoeuh span utnehu", 20), { abbr: "span", offset: 16, length: 4 }));
+Deno.test("atnoeuh otnoeuh span utnehu span", () => assertEquals(extractAbbr("atnoeuh otnoeuh span utnehu span", 31), { abbr: "span", offset: 28, length: 4 }));
 
 // HTML;
 const htmlOptions = { point: 0 };

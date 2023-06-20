@@ -13,9 +13,11 @@ type AbbrAndPositions = {
   length: number;
 };
 
-export function getAbbr(line: string, point: number): AbbrAndPositions {
+export function extractAbbr(line: string, point: number): AbbrAndPositions {
   const abbrs = line.match(/[a-zA-Z.]+(\w*|>|-|#|:|@|\^|\$|\+|\.|\*|\/|\([^\s]+\)|\[.+?\]|\{.+\})+\s?/g);
-  if (!abbrs) throw new Error(`[[Invalid abbreviation: "${line}"]]`);
+  if (!abbrs) {
+    throw new Error(`[[Invalid abbreviation: "${line}"]]`);
+  }
 
   if (abbrs.length === 1) {
     const abbr = abbrs[0].trim();
@@ -54,20 +56,20 @@ export function getAbbr(line: string, point: number): AbbrAndPositions {
 }
 
 export function expandHTML(line: string, { point }: { point: number }) {
-  const { abbr, offset, length } = getAbbr(line, point);
-  const snippet = emmet(abbr).replace("></", ">|</");
+  const { abbr, offset, length } = extractAbbr(line, point);
+  const snippet = emmet(abbr).replace("></", ">|</"); // Add "|" to represent the cursor position; it will be replaced in the elisp code.
   return { snippet, offset, length };
 }
 
 export function expandJSX(line: string, options: JSXOptions) {
-  const { abbr, offset, length } = getAbbr(line, options.point);
+  const { abbr, offset, length } = extractAbbr(line, options.point);
 
   let snippet = emmet(abbr, {
     options: {
-      "output.selfClosingStyle": "xhtml", // <br />
+      "output.selfClosingStyle": "xhtml", // use the <br /> form
       "jsx.enabled": true,
       "markup.attributes": {
-        class: "classList"
+        class: "classList" // "classList" is a placeholder that will be replaced with either "class=" or "className=" later.
       }
     }
   });
@@ -80,18 +82,26 @@ export function expandJSX(line: string, options: JSXOptions) {
       const suffix = "}" + a.slice(idx + c.length);
 
       const rawClass = c.match(/"(.*)"/)![1];
-      if (rawClass === "") return prefix + suffix;
+      if (rawClass === "") {
+        return prefix + suffix;
+      }
 
       const classList = rawClass.split(" ");
       const { cssModulesObject, classConstructor } = options;
-      if (classList.length === 1) return prefix + `${cssModulesObject}.${classList[0]}` + suffix;
+      if (classList.length === 1) {
+        return prefix + `${cssModulesObject}.${classList[0]}` + suffix;
+      }
 
       return prefix + `${classConstructor}(${classList.map((i) => cssModulesObject + "." + i).join(", ")})` + suffix;
     }, snippet);
   }
 
-  if (snippet.includes("></")) snippet = snippet.replace("></", ">|</");
-  else snippet = snippet.replace(/("|\{)("|\})/, "$1|$2");
+  // Add "|" to represent the cursor position; it will be replaced in the elisp code.
+  if (snippet.includes("></")) {
+    snippet = snippet.replace("></", ">|</");
+  } else {
+    snippet = snippet.replace(/("|\{)("|\})/, "$1|$2");
+  }
 
   return { snippet, offset, length };
 }

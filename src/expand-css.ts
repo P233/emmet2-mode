@@ -1,8 +1,8 @@
 import emmet from "npm:emmet@2.4.4";
-import cssData from "../data/css-data.json" assert { type: "json" };
+import CSS_DATA from "../data/css-data.json" assert { type: "json" };
 
 // Find function
-// Sort candidates by the distance from 0 to the lastest searched character, the shortest win.
+// Sort candidates by the distance from 0 to the latest searched character; return the shortest distance candidate.
 function find(abbr: string, list: string[]) {
   const regex = new RegExp(`${abbr.slice(0, 2)}.*?${abbr.slice(2).split("").join(".*?")}`);
   const candidates: { result: string; score: number }[] = [];
@@ -26,27 +26,32 @@ function find(abbr: string, list: string[]) {
 
 // Expand at rules
 function expandAtRules(abbr: string): string {
-  return find(abbr, cssData.atRules);
+  return find(abbr, CSS_DATA.atRules);
 }
 
 // Expand selectors
 function findPseudoSelector(abbr: string): string {
-  return find(abbr, cssData.pseudoSelectors);
+  return find(abbr, CSS_DATA.pseudoSelectors);
 }
 
 function findPseudoFunction(abbr: string): string {
-  return find(abbr, cssData.pseudoFunctions);
+  return find(abbr, CSS_DATA.pseudoFunctions);
 }
 
 function expandSelector(abbr: string): string {
-  if (!/^[\w.#-]*:[\w-]+(\(.+\))?(:.+)?$/.test(abbr)) return abbr;
+  if (!/^[\w.#-]*:[\w-]+(\(.+\))?(:.+)?$/.test(abbr)) {
+    return abbr;
+  }
 
   let [_, prefix, pseudoSelector, pseudoFunction, pseudoParams, chainedPseudos] = abbr.match(
     /^([\w.#-]*)(:[\w-]+)?(?:(:[\w-]+)\((.+)\))?(:.+)?$/
   )!;
 
-  if (!prefix) prefix = "&";
-  else if (prefix === "_") prefix = "";
+  if (!prefix) {
+    prefix = "&";
+  } else if (prefix === "_") {
+    prefix = "";
+  }
 
   const suffix = " {\n\t|\n}";
 
@@ -67,8 +72,11 @@ function expandSelector(abbr: string): string {
   return (
     pseudoParams.split(",").reduce((a, c) => {
       c = c.trim();
-      if (c.startsWith(":")) a += `${pseudoFunction}(${findPseudoSelector(c)})`;
-      else a += `${pseudoFunction}(${c})`;
+      if (c.startsWith(":")) {
+        a += `${pseudoFunction}(${findPseudoSelector(c)})`;
+      } else {
+        a += `${pseudoFunction}(${c})`;
+      }
       return a;
     }, prefix) +
     (chainedPseudos || "") +
@@ -101,16 +109,27 @@ function expandProperties(abbr: string, isCSSinJS?: boolean): string {
         const [_, propertyName, functionParam, customProperty, rawValue, flag] = c.match(/^(-?[a-z]+)(\(.+\))?(--[\w-]+)?(\[.+?\])?(!)?/)!;
 
         let value = "";
-        // prettier-ignore
-        if (functionParam) value = propertyName === "fz" ? `ms${functionParam}` : functionParam.match(/\(-?[\d.]+\)/g)!.map((i) => `rhythm${i}`).join(" ");
-        else if (customProperty) value = customProperty.replace(/(-(-?\w+)+)/g, " var($1)").trim();
-        else if (rawValue) value = rawValue.slice(1, -1); // remove "[" and "]"
+        if (functionParam) {
+          value =
+            propertyName === "fz"
+              ? `ms${functionParam}`
+              : functionParam
+                  .match(/\(-?[\d.]+\)/g)!
+                  .map((i) => `rhythm${i}`)
+                  .join(" ");
+        } else if (customProperty) {
+          value = customProperty.replace(/(-(-?\w+)+)/g, " var($1)").trim();
+        } else if (rawValue) {
+          value = rawValue.slice(1, -1); // remove "[" and "]"
+        }
 
         property = emmet(propertyName, emmetOptions).replace(/;$/, "") + value + (flag ? " !important;" : ";");
       } else {
         // Emmet rules
-        // Convert camelCase to `property:value` format
-        if (/^-?[a-z]+[A-Z]/.test(c)) c = c.replace(/([A-Z])/, (g) => ":" + g.toLowerCase());
+        // Convert camelCase to `property:value` form
+        if (/^-?[a-z]+[A-Z]/.test(c)) {
+          c = c.replace(/([A-Z])/, (g) => ":" + g.toLowerCase());
+        }
         property = emmet(c, emmetOptions);
       }
 
@@ -135,7 +154,7 @@ function expandProperties(abbr: string, isCSSinJS?: boolean): string {
     snippet = propertiesList.join("\n");
   }
 
-  // Add | to represent the cursor position
+  // Add "|" to represent the cursor position; it will be replaced in the elisp code.
   if (/\(\)|""/.test(snippet)) {
     snippet = snippet.replace(/(\(|")(\)|")/, "$1|$2");
   } else if (isCSSinJS) {
@@ -148,8 +167,14 @@ function expandProperties(abbr: string, isCSSinJS?: boolean): string {
 }
 
 export function expandCSS(abbr: string): string {
-  if (abbr.startsWith("@")) return expandAtRules(abbr);
-  if (abbr.includes(":")) return expandSelector(abbr);
+  if (abbr.startsWith("@")) {
+    return expandAtRules(abbr);
+  }
+
+  if (abbr.includes(":")) {
+    return expandSelector(abbr);
+  }
+
   return expandProperties(abbr);
 }
 
