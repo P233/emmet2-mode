@@ -36,6 +36,7 @@ Deno.test("fz(1)!", () => assertEquals(expandCSS("fz(1)!"), "font-size: ms(1) !i
 Deno.test("fz(1)+t(2)!", () => assertEquals(expandCSS("fz(1)+t(2)!"), "font-size: ms(1);\ntop: rhythm(2) !important;"));
 Deno.test("fz(1)!+lh2", () => assertEquals(expandCSS("fz(1)!+lh2"), "font-size: ms(1) !important;\nline-height: 2;"));
 Deno.test("p(1)(2)(3)", () => assertEquals(expandCSS("p(1)(2)(3)"), "padding: rhythm(1) rhythm(2) rhythm(3);"));
+Deno.test("p(0)(2)(3)", () => assertEquals(expandCSS("p(0)(2)(3)"), "padding: 0 rhythm(2) rhythm(3);"));
 
 // Opinionated custom property abbreviations
 Deno.test("m--gutter", () => assertEquals(expandCSS("m--gutter"), "margin: var(--gutter);"));

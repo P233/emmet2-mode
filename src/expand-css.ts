@@ -115,7 +115,7 @@ function expandProperties(abbr: string, isCSSinJS?: boolean): string {
               ? `ms${functionParam}`
               : functionParam
                   .match(/\(-?[\d.]+\)/g)!
-                  .map((i) => `rhythm${i}`)
+                  .map((i) => (i === "(0)" ? "0" : `rhythm${i}`))
                   .join(" ");
         } else if (customProperty) {
           value = customProperty.replace(/(-(-?\w+)+)/g, " var($1)").trim();
