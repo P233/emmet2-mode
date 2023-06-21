@@ -5,7 +5,7 @@
     "test:regex": "deno test ./test/regex.test.ts --no-check",
     "test": "deno test ./test/expand-css.test.ts ./test/expand-markup.test.ts ./test/regex.test.ts --no-check",
     "lint": "deno lint",
-    "web-data": "deno run ./data/_convert-web-data.ts"
+    "update-web-data": "deno run ./data/update-web-data.ts"
   },
   "githooks": {
     "pre-commit": "lint"

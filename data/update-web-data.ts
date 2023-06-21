@@ -1,4 +1,10 @@
-import CSS_DATA from "./browsers.css-data.json" assert { type: "json" };
+// Web data reference:
+// https://github.com/microsoft/vscode-custom-data/tree/main/web-data
+
+const cssDataResponse = await fetch(
+  "https://raw.githubusercontent.com/microsoft/vscode-custom-data/main/web-data/data/browsers.css-data.json"
+);
+const CSS_DATA = await cssDataResponse.json();
 
 const SASS_AT_RULES = [
   '@use "|";',
