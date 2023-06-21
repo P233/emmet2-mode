@@ -1,4 +1,5 @@
 import emmet from "npm:emmet@2.4.4";
+import { MARKUP_ABBR_REGEX } from "./regex.ts";
 
 type JSXOptions = {
   classAttr?: boolean;
@@ -14,7 +15,7 @@ type AbbrAndPositions = {
 };
 
 export function extractAbbr(line: string, point: number): AbbrAndPositions {
-  const abbrs = line.match(/[a-zA-Z.]+(\w*|>|-|#|:|@|\^|\$|\+|\.|\*|\/|\([^\s]+\)|\[.+?\]|\{.+\})+\s?/g);
+  const abbrs = line.match(MARKUP_ABBR_REGEX);
   if (!abbrs) {
     throw new Error(`[[Invalid abbreviation: "${line}"]]`);
   }

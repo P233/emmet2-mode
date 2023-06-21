@@ -1,5 +1,12 @@
 import emmet from "npm:emmet@2.4.4";
 import CSS_DATA from "../data/css-data.json" assert { type: "json" };
+import {
+  SELECTOR_REGEX,
+  SELECTOR_ELEMENTS_REGEX,
+  OPINIONATED_PROPERTY_REGEX,
+  OPINIONATED_ELEMENTS_REGEX,
+  CSS_IN_JS_NUMBER_REGEX
+} from "./regex.ts";
 
 // Find function
 // Sort candidates by the distance from 0 to the latest searched character; return the shortest distance candidate.
@@ -39,13 +46,11 @@ function findPseudoFunction(abbr: string): string {
 }
 
 function expandSelector(abbr: string): string {
-  if (!/^[\w.#-]*:[\w-]+(\(.+\))?(:.+)?$/.test(abbr)) {
+  if (!SELECTOR_REGEX.test(abbr)) {
     return abbr;
   }
 
-  let [_, prefix, pseudoSelector, pseudoFunction, pseudoParams, chainedPseudos] = abbr.match(
-    /^([\w.#-]*)(:[\w-]+)?(?:(:[\w-]+)\((.+)\))?(:.+)?$/
-  )!;
+  let [_, prefix, pseudoSelector, pseudoFunction, pseudoParams, chainedPseudos] = abbr.match(SELECTOR_ELEMENTS_REGEX)!;
 
   if (!prefix) {
     prefix = "&";
@@ -103,10 +108,8 @@ function expandProperties(abbr: string, isCSSinJS?: boolean): string {
     .reduce((a: string[], c: string) => {
       let property = "";
 
-      if (/^-?[a-z]+((\(-?\d*\.?\d+\))*|--[\w-]+|\[.+?\])!?$/.test(c)) {
-        // Opinionated rules
-        // prettier-ignore
-        const [_, propertyName, functionParam, customProperty, rawValue, flag] = c.match(/^(-?[a-z]+)(\(.+\))?(--[\w-]+)?(\[.+?\])?(!)?/)!;
+      if (OPINIONATED_PROPERTY_REGEX.test(c)) {
+        const [_, propertyName, functionParam, customProperty, rawValue, flag] = c.match(OPINIONATED_ELEMENTS_REGEX)!;
 
         let value = "";
         if (functionParam) {
@@ -146,7 +149,7 @@ function expandProperties(abbr: string, isCSSinJS?: boolean): string {
         let [property, value] = i.split(": ");
         property = property.replace(/(-[a-z])/g, (g) => g.slice(1).toUpperCase());
         value = value.slice(0, -1); // Remove trailing `;`
-        value = /^-?\d+\.?\d*(px)?$/.test(value) ? value.replace("px", "") : value ? `"${value}"` : "";
+        value = CSS_IN_JS_NUMBER_REGEX.test(value) ? value.replace("px", "") : value ? `"${value}"` : "";
         return `${property}: ${value}`;
       })
       .join(", ");

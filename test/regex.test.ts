@@ -1,75 +1,137 @@
-import { assertEquals } from "https://deno.land/std@0.164.0/testing/asserts.ts";
+import { assertEquals, assertExists, assertMatch, assertNotMatch } from "https://deno.land/std@0.164.0/testing/asserts.ts";
+import { SELECTOR_REGEX, SELECTOR_ELEMENTS_REGEX, OPINIONATED_PROPERTY_REGEX, OPINIONATED_ELEMENTS_REGEX, MARKUP_ABBR_REGEX, CSS_IN_JS_NUMBER_REGEX } from "../src/regex.ts";
 
-const selectorRegex = /^[\w.#-]*:[\w-]+(\(.+\))?(:.+)?$/;
+// SELECTOR_REGEX
+Deno.test(":fo", () => assertMatch(":fo", SELECTOR_REGEX));
+Deno.test("_:fo", () => assertMatch("_:fo", SELECTOR_REGEX));
+Deno.test(".c:fo", () => assertMatch(".c:fo", SELECTOR_REGEX));
+Deno.test(".c:f-l", () => assertMatch(".c:f-l", SELECTOR_REGEX));
+Deno.test("a.c1.c2#id:fo", () => assertMatch("a.c1.c2#id:fo", SELECTOR_REGEX));
+Deno.test("a.c1.c2#id:f-c", () => assertMatch("a.c1.c2#id:f-c", SELECTOR_REGEX));
+Deno.test(":n(:f-c)", () => assertMatch(":n(:f-c)", SELECTOR_REGEX));
+Deno.test(":n(:f-c,:l-c)", () => assertMatch(":n(:f-c,:l-c)", SELECTOR_REGEX));
+Deno.test(":n-c(2n-1)", () => assertMatch(":n-c(2n-1)", SELECTOR_REGEX));
+Deno.test(":h(+p)", () => assertMatch(":h(+p)", SELECTOR_REGEX));
+Deno.test(":hov:af", () => assertMatch(":hov:af", SELECTOR_REGEX));
+Deno.test(":n(:l-c):af", () => assertMatch(":n(:l-c):af", SELECTOR_REGEX));
 
-Deno.test(":fo", () => assertEquals(selectorRegex.test(":fo"), true));
-Deno.test("_:fo", () => assertEquals(selectorRegex.test("_:fo"), true));
-Deno.test(".c:fo", () => assertEquals(selectorRegex.test(".c:fo"), true));
-Deno.test(".c:f-l", () => assertEquals(selectorRegex.test(".c:f-l"), true));
-Deno.test("a.c1.c2#id:fo", () => assertEquals(selectorRegex.test("a.c1.c2#id:fo"), true));
-Deno.test("a.c1.c2#id:f-c", () => assertEquals(selectorRegex.test("a.c1.c2#id:f-c"), true));
-Deno.test(":n(:f-c)", () => assertEquals(selectorRegex.test(":n(:f-c)"), true));
-Deno.test(":n(:f-c,:l-c)", () => assertEquals(selectorRegex.test(":n(:f-c,:l-c)"), true));
-Deno.test(":n-c(2n-1)", () => assertEquals(selectorRegex.test(":n-c(2n-1)"), true));
-Deno.test(":h(+p)", () => assertEquals(selectorRegex.test(":h(+p)"), true));
-Deno.test(":hov:af", () => assertEquals(selectorRegex.test(":hov:af"), true));
-Deno.test(":n(:l-c):af", () => assertEquals(selectorRegex.test(":n(:l-c):af"), true));
+// SELECTOR_ELEMENTS_REGEX
+Deno.test(":be", () => {
+  const [_, prefix, pseudoSelector, pseudoFunction, pseudoParams, chainedPseudos] = ":be".match(SELECTOR_ELEMENTS_REGEX)!;
+  assertExists(prefix, "");
+  assertEquals(pseudoSelector, ":be");
+  assertEquals(pseudoFunction, undefined);
+  assertEquals(pseudoParams, undefined);
+  assertEquals(chainedPseudos, undefined);
+});
+Deno.test("_:fc:be", () => {
+  const [_, prefix, pseudoSelector, pseudoFunction, pseudoParams, chainedPseudos] = ":fc:be".match(SELECTOR_ELEMENTS_REGEX)!;
+  assertExists(prefix, "_");
+  assertEquals(pseudoSelector, ":fc");
+  assertEquals(pseudoFunction, undefined);
+  assertEquals(pseudoParams, undefined);
+  assertEquals(chainedPseudos, ":be");
+});
+Deno.test(":n(.a,.b):be", () => {
+  const [_, prefix, pseudoSelector, pseudoFunction, pseudoParams, chainedPseudos] = ":n(.a,.b):be".match(SELECTOR_ELEMENTS_REGEX)!;
+  assertEquals(prefix, "");
+  assertEquals(pseudoSelector, undefined);
+  assertEquals(pseudoFunction, ":n");
+  assertEquals(pseudoParams, ".a,.b");
+  assertEquals(chainedPseudos, ":be");
+});
+// TODO: ":ntc(2n-1):n(body)::be"
 
-const propertyRegex = /^-?[a-z]+((\(-?\d*\.?\d+\))*|--[\w-]+|\[.+?\])!?$/;
+// OPINIONATED_PROPERTY_REGEX
+Deno.test("!", () => assertNotMatch("!", OPINIONATED_PROPERTY_REGEX));
+Deno.test("t0", () => assertNotMatch("t0", OPINIONATED_PROPERTY_REGEX));
+Deno.test("t1p", () => assertNotMatch("t1p", OPINIONATED_PROPERTY_REGEX));
+Deno.test("p1px2px3px", () => assertNotMatch("p1px2px3px", OPINIONATED_PROPERTY_REGEX));
+Deno.test("t$abc", () => assertNotMatch("t$abc", OPINIONATED_PROPERTY_REGEX));
+Deno.test("p$a$b$c", () => assertNotMatch("p$a$b$c", OPINIONATED_PROPERTY_REGEX));
+Deno.test("p$a$b$c!", () => assertNotMatch("p$a$b$c!", OPINIONATED_PROPERTY_REGEX));
 
-Deno.test("!", () => assertEquals(propertyRegex.test("!"), false));
-Deno.test("t0", () => assertEquals(propertyRegex.test("t0"), false));
-Deno.test("t1p", () => assertEquals(propertyRegex.test("t1p"), false));
-Deno.test("p1px2px3px", () => assertEquals(propertyRegex.test("p1px2px3px"), false));
-Deno.test("t$abc", () => assertEquals(propertyRegex.test("t$abc"), false));
-Deno.test("p$a$b$c", () => assertEquals(propertyRegex.test("p$a$b$c"), false));
-Deno.test("p$a$b$c!", () => assertEquals(propertyRegex.test("p$a$b$c!"), false));
+Deno.test("t(0.5)", () => assertMatch("t(0.5)", OPINIONATED_PROPERTY_REGEX));
+Deno.test("p(1)(2)(3)", () => assertMatch("p(1)(2)(3)", OPINIONATED_PROPERTY_REGEX));
+Deno.test("p(1)(2)(3)!", () => assertMatch("p(1)(2)(3)!", OPINIONATED_PROPERTY_REGEX));
+Deno.test("all--gutter", () => assertMatch("all--gutter", OPINIONATED_PROPERTY_REGEX));
+Deno.test("all--gutter!", () => assertMatch("all--gutter!", OPINIONATED_PROPERTY_REGEX));
+Deno.test("p--a--b--c", () => assertMatch("p--a--b--c", OPINIONATED_PROPERTY_REGEX));
+Deno.test("p--a--b--c!", () => assertMatch("p--a--b--c!", OPINIONATED_PROPERTY_REGEX));
+Deno.test("p[var(--a) var(--b) var(--c)]", () => assertMatch("p[var(--a) var(--b) var(--c)]", OPINIONATED_PROPERTY_REGEX));
+Deno.test("p[var(--a) var(--b) var(--c)]!", () => assertMatch("p[var(--a) var(--b) var(--c)]!", OPINIONATED_PROPERTY_REGEX));
 
-Deno.test("t(0.5)", () => assertEquals(propertyRegex.test("t(0.5)"), true));
-Deno.test("p(1)(2)(3)", () => assertEquals(propertyRegex.test("p(1)(2)(3)"), true));
-Deno.test("p(1)(2)(3)!", () => assertEquals(propertyRegex.test("p(1)(2)(3)!"), true));
-Deno.test("all--gutter", () => assertEquals(propertyRegex.test("all--gutter"), true));
-Deno.test("all--gutter!", () => assertEquals(propertyRegex.test("all--gutter!"), true));
-Deno.test("p--a--b--c", () => assertEquals(propertyRegex.test("p--a--b--c"), true));
-Deno.test("p--a--b--c!", () => assertEquals(propertyRegex.test("p--a--b--c!"), true));
-Deno.test("p[var(--a) var(--b) var(--c)]", () => assertEquals(propertyRegex.test("p[var(--a) var(--b) var(--c)]"), true));
-Deno.test("p[var(--a) var(--b) var(--c)]!", () => assertEquals(propertyRegex.test("p[var(--a) var(--b) var(--c)]!"), true));
+// OPINIONATED_ELEMENTS_REGEX
+Deno.test("p!", () => {
+  const [_, propertyName, functionParam, customProperty, rawValue, flag] = "p!".match(OPINIONATED_ELEMENTS_REGEX)!;
+  assertExists(propertyName, "p");
+  assertEquals(functionParam, undefined);
+  assertEquals(customProperty, undefined);
+  assertEquals(rawValue, undefined);
+  assertEquals(flag, "!");
+});
+Deno.test("p(1)(2)(3)", () => {
+  const [_, propertyName, functionParam, customProperty, rawValue, flag] = "p(1)(2)(3)".match(OPINIONATED_ELEMENTS_REGEX)!;
+  assertExists(propertyName, "p");
+  assertEquals(functionParam, "(1)(2)(3)");
+  assertEquals(customProperty, undefined);
+  assertEquals(rawValue, undefined);
+  assertEquals(flag, undefined);
+});
+Deno.test("p--p", () => {
+  const [_, propertyName, functionParam, customProperty, rawValue, flag] = "p--p".match(OPINIONATED_ELEMENTS_REGEX)!;
+  assertExists(propertyName, "p");
+  assertEquals(functionParam, undefined);
+  assertEquals(customProperty, "--p");
+  assertEquals(rawValue, undefined);
+  assertEquals(flag, undefined);
+});
+Deno.test("p[0 2px]", () => {
+  const [_, propertyName, functionParam, customProperty, rawValue, flag] = "p[0 2px]".match(OPINIONATED_ELEMENTS_REGEX)!;
+  assertExists(propertyName, "p");
+  assertEquals(functionParam, undefined);
+  assertEquals(customProperty, undefined);
+  assertEquals(rawValue, "[0 2px]");
+  assertEquals(flag, undefined);
+});
 
-const htmlAbbrRegex = /[a-zA-Z.]+(\w*|>|-|#|:|@|\^|\$|\+|\.|\*|\/|\(.+\)|\[.+?\]|\{.+\})+\s?/;
+// MARKUP_ABBR_REGEX
+Deno.test("Empty string", () => assertEquals("".match(MARKUP_ABBR_REGEX), null));
+Deno.test("()", () => assertEquals("()".match(MARKUP_ABBR_REGEX), null));
 
-Deno.test("nav>ul>li", () => assertEquals(htmlAbbrRegex.test("nav>ul>li"), true));
-Deno.test("div+p+bq", () => assertEquals(htmlAbbrRegex.test("div+p+bq"), true));
-Deno.test("div+div>p>span+em^bq", () => assertEquals(htmlAbbrRegex.test("div+div>p>span+em^bq"), true));
-Deno.test("div+div>p>span+em^^bq", () => assertEquals(htmlAbbrRegex.test("div+div>p>span+em^^bq"), true));
-Deno.test("div>(header>ul>li*2>a)+footer>p", () => assertEquals(htmlAbbrRegex.test("div>(header>ul>li*2>a)+footer>p"), true));
-Deno.test("(div>dl>(dt+dd)*3)+footer>p", () => assertEquals(htmlAbbrRegex.test("(div>dl>(dt+dd)*3)+footer>p"), true));
-Deno.test("ul>li*5", () => assertEquals(htmlAbbrRegex.test("ul>li*5"), true));
-Deno.test("ul>li.item$*5", () => assertEquals(htmlAbbrRegex.test("ul>li.item$*5"), true));
-Deno.test("h$[title=item$]{Header $}*3", () => assertEquals(htmlAbbrRegex.test("h$[title=item$]{Header $}*3"), true));
-Deno.test("ul>li.item$$$*5", () => assertEquals(htmlAbbrRegex.test("ul>li.item$$$*5"), true));
-Deno.test("ul>li.item$@-*5", () => assertEquals(htmlAbbrRegex.test("ul>li.item$@-*5"), true));
-Deno.test("ul>li.item$@3*5", () => assertEquals(htmlAbbrRegex.test("ul>li.item$@3*5"), true));
-Deno.test("#header", () => assertEquals(htmlAbbrRegex.test("#header"), true));
-Deno.test(".title", () => assertEquals(htmlAbbrRegex.test(".title"), true));
-Deno.test("form#search.wide", () => assertEquals(htmlAbbrRegex.test("form#search.wide"), true));
-Deno.test("p.class1.class2.class3", () => assertEquals(htmlAbbrRegex.test("p.class1.class2.class3"), true));
-Deno.test('p[title="Hello world"]', () => assertEquals(htmlAbbrRegex.test('p[title="Hello world"]'), true));
-Deno.test("td[rowspan=2 colspan=3 title]", () => assertEquals(htmlAbbrRegex.test("td[rowspan=2 colspan=3 title]"), true));
-Deno.test('[a="value1" b="value2"]', () => assertEquals(htmlAbbrRegex.test('[a="value1" b="value2"]'), true));
-Deno.test("a{Click me}", () => assertEquals(htmlAbbrRegex.test("a{Click me}"), true));
-Deno.test("p>{Click }+a{here}+{ to continue}", () => assertEquals(htmlAbbrRegex.test("p>{Click }+a{here}+{ to continue}"), true));
-Deno.test(".class", () => assertEquals(htmlAbbrRegex.test(".class"), true));
-Deno.test("em>.class", () => assertEquals(htmlAbbrRegex.test("em>.class"), true));
-Deno.test("ul>.class", () => assertEquals(htmlAbbrRegex.test("ul>.class"), true));
-Deno.test("table>.row>.col", () => assertEquals(htmlAbbrRegex.test("table>.row>.col"), true));
-Deno.test("input:color", () => assertEquals(htmlAbbrRegex.test("input:color"), true));
+Deno.test("nav>ul>li", () => assertExists("nav>ul>li".match(MARKUP_ABBR_REGEX)));
+Deno.test("div+p+bq", () => assertExists("div+p+bq".match(MARKUP_ABBR_REGEX)));
+Deno.test("div+div>p>span+em^bq", () => assertExists("div+div>p>span+em^bq".match(MARKUP_ABBR_REGEX)));
+Deno.test("div+div>p>span+em^^bq", () => assertExists("div+div>p>span+em^^bq".match(MARKUP_ABBR_REGEX)));
+Deno.test("div>(header>ul>li*2>a)+footer>p", () => assertExists("div>(header>ul>li*2>a)+footer>p".match(MARKUP_ABBR_REGEX)));
+Deno.test("(div>dl>(dt+dd)*3)+footer>p", () => assertExists("(div>dl>(dt+dd)*3)+footer>p".match(MARKUP_ABBR_REGEX)));
+Deno.test("ul>li*5", () => assertExists("ul>li*5".match(MARKUP_ABBR_REGEX)));
+Deno.test("ul>li.item$*5", () => assertExists("ul>li.item$*5".match(MARKUP_ABBR_REGEX)));
+Deno.test("h$[title=item$]{Header $}*3", () => assertExists("h$[title=item$]{Header $}*3".match(MARKUP_ABBR_REGEX)));
+Deno.test("ul>li.item$$$*5", () => assertExists("ul>li.item$$$*5".match(MARKUP_ABBR_REGEX)));
+Deno.test("ul>li.item$@-*5", () => assertExists("ul>li.item$@-*5".match(MARKUP_ABBR_REGEX)));
+Deno.test("ul>li.item$@3*5", () => assertExists("ul>li.item$@3*5".match(MARKUP_ABBR_REGEX)));
+Deno.test("#header", () => assertExists("#header".match(MARKUP_ABBR_REGEX)));
+Deno.test(".title", () => assertExists(".title".match(MARKUP_ABBR_REGEX)));
+Deno.test("form#search.wide", () => assertExists("form#search.wide".match(MARKUP_ABBR_REGEX)));
+Deno.test("p.class1.class2.class3", () => assertExists("p.class1.class2.class3".match(MARKUP_ABBR_REGEX)));
+Deno.test('p[title="Hello world"]', () => assertExists('p[title="Hello world"]'.match(MARKUP_ABBR_REGEX)));
+Deno.test("td[rowspan=2 colspan=3 title]", () => assertExists("td[rowspan=2 colspan=3 title]".match(MARKUP_ABBR_REGEX)));
+Deno.test('[a="value1" b="value2"]', () => assertExists('[a="value1" b="value2"]'.match(MARKUP_ABBR_REGEX)));
+Deno.test("a{Click me}", () => assertExists("a{Click me}".match(MARKUP_ABBR_REGEX)));
+Deno.test("p>{Click }+a{here}+{ to continue}", () => assertExists("p>{Click }+a{here}+{ to continue}".match(MARKUP_ABBR_REGEX)));
+Deno.test(".class", () => assertExists(".class".match(MARKUP_ABBR_REGEX)));
+Deno.test("em>.class", () => assertExists("em>.class".match(MARKUP_ABBR_REGEX)));
+Deno.test("ul>.class", () => assertExists("ul>.class".match(MARKUP_ABBR_REGEX)));
+Deno.test("table>.row>.col", () => assertExists("table>.row>.col".match(MARKUP_ABBR_REGEX)));
+Deno.test("input:color", () => assertExists("input:color".match(MARKUP_ABBR_REGEX)));
 
-const objectNumberRegex = /^-?\d+\.?\d*(px)?$/;
+// CSS_IN_JS_NUMBER_REGEX
+Deno.test("12px 12px", () => assertNotMatch("12px 12px", CSS_IN_JS_NUMBER_REGEX));
+Deno.test("12px !important", () => assertNotMatch("12px !important", CSS_IN_JS_NUMBER_REGEX));
+Deno.test("center", () => assertNotMatch("center", CSS_IN_JS_NUMBER_REGEX));
 
-Deno.test("0", () => assertEquals(objectNumberRegex.test("0"), true));
-Deno.test("0.5", () => assertEquals(objectNumberRegex.test("0.5"), true));
-Deno.test("-100", () => assertEquals(objectNumberRegex.test("-100"), true));
-Deno.test("12px", () => assertEquals(objectNumberRegex.test("12px"), true));
-Deno.test("12px 12px", () => assertEquals(objectNumberRegex.test("12px 12px"), false));
-Deno.test("12px !important", () => assertEquals(objectNumberRegex.test("12px !important"), false));
-Deno.test("center", () => assertEquals(objectNumberRegex.test("center"), false));
+Deno.test("0", () => assertMatch("0", CSS_IN_JS_NUMBER_REGEX));
+Deno.test("0.5", () => assertMatch("0.5", CSS_IN_JS_NUMBER_REGEX));
+Deno.test("-100", () => assertMatch("-100", CSS_IN_JS_NUMBER_REGEX));
+Deno.test("12px", () => assertMatch("12px", CSS_IN_JS_NUMBER_REGEX));
