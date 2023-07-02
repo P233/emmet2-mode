@@ -59,10 +59,10 @@
 (defun emmet2-detect-css-in-markup ()
   (or
    (emmet2-check-in-between "style=[\"']" "[^=][\"']")
-   (emmet2-check-in-between "<style" "</style>")))
+   (emmet2-check-in-between "<style.*>" "</style>")))
 
 (defun emmet2-detect-css-in-js ()
-  (emmet2-check-in-between "style=[{{]" "[^=][}}]"))
+  (emmet2-check-in-between "style={{" "}}"))
 
 (defun emmet2-detect-expand-lang ()
   (cond ((member emmet2-file-extension '("scss" "css")) "css")
