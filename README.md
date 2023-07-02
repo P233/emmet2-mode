@@ -76,28 +76,28 @@ After configuring the custom options, the abbreviation `a.link.active` will be e
 #### HTML
 
 ```
-.                             =>   <div class="">|</div>
-.class                        =>   <div class="class">|</div>
+.                             ->  <div class="">|</div>
+.class                        ->  <div class="class">|</div>
 ```
 
 #### React JSX
 
 ```
-Component                     =>   <Component>|</Component>
-Component/                    =>   <Component />
-Component./                   =>   <Component className={|} />
-Component.class               =>   <Component className={css.class}>|</Component>
-Component.Subcomponent        =>   <Component.Subcomponent>|</Component.Subcomponent>
-Component.Subcomponent.class  =>   <Component.Subcomponent className={css.class}>|</Component.Subcomponent>
-Component.Subcomponent.a.b.c  =>   <Component.Subcomponent className={clsx(css.a, css.b, css.c)}>|</Component.Subcomponent>
-Component.Subcomponent.a.b.c/ =>   <Component.Subcomponent className={clsx(css.a, css.b, css.c)} />
-Component{{props.value}}      =>   <Component>{props.value}</Component>
+Component                     ->  <Component>|</Component>
+Component/                    ->  <Component />
+Component./                   ->  <Component className={|} />
+Component.class               ->  <Component className={css.class}>|</Component>
+Component.Subcomponent        ->  <Component.Subcomponent>|</Component.Subcomponent>
+Component.Subcomponent.class  ->  <Component.Subcomponent className={css.class}>|</Component.Subcomponent>
+Component.Subcomponent.a.b.c  ->  <Component.Subcomponent className={clsx(css.a, css.b, css.c)}>|</Component.Subcomponent>
+Component.Subcomponent.a.b.c/ ->  <Component.Subcomponent className={clsx(css.a, css.b, css.c)} />
+Component{{props.value}}      ->  <Component>{props.value}</Component>
 ```
 
 #### Solid JSX
 
 ```
-Component.class               =>   <Component class={css.class}>|</Component>
+Component.class               ->  <Component class={css.class}>|</Component>
 ```
 
 #### Automatically detect markup abbreviations
@@ -109,8 +109,8 @@ Emmet2-mode allows you to expand abbreviations at any character within them, whi
 #### Remove default color
 
 ```
-c                =>   color: |;         // instead of color: #000;
-bg               =>   background: |;    // instead of background: #000;
+c               ->  color: |;         // instead of color: #000;
+bg              ->  background: |;    // instead of background: #000;
 ```
 
 #### [Modular Scale](https://github.com/modularscale/modularscale-sass) and vertical rhythm functions
@@ -118,55 +118,55 @@ bg               =>   background: |;    // instead of background: #000;
 Only `fw` triggers the `ms()` function while the other properties will expand with the `rhythm()` function.
 
 ```
-fz(1)            =>   font-size: ms(1);
+fz(1)           ->  font-size: ms(1);
 ```
 
 ```
-t(2)             =>   top: rhythm(2);
-p(1)(2)(3)       =>   padding: rhythm(1) rhythm(2) rhythm(3);
+t(2)            ->  top: rhythm(2);
+p(1)(2)(3)      ->  padding: rhythm(1) rhythm(2) rhythm(3);
 ```
 
 #### Custom properties
 
 ```
-m--gutter        =>   margin: var(--gutter);
-p--a--b--c       =>   padding: var(--a) var(--b) var(--c);
+m--gutter       ->  margin: var(--gutter);
+p--a--b--c      ->  padding: var(--a) var(--b) var(--c);
 ```
 
 #### Raw property value brackets
 
 ```
-p[1px 2px 3px]   =>   padding: 1px 2px 3px;
+p[1px 2px 3px]  ->  padding: 1px 2px 3px;
 ```
 
 #### Opinionated alias
 
 ```
-posa =>
+posa ->
 position: absolute;
 z-index: |;
 
-posa1000 =>
+posa1000  ->
 position: absolute;
 z-index: 1000;
 
-all =>
+all  ->
 top: |;
 right: ;
 bottom: ;
 left: ;
 
-all8 =>
+all8 ->
 top: 8px;
 right: 8px;
 bottom: 8px;
 left: 8px;
 
-fw2 => font-weight: 200;
-fw7 => font-weight: 700;
+fw2  ->  font-weight: 200;
+fw7  ->  font-weight: 700;
 
-wf  => width: 100%;
-hf  => height: 100%;
+wf   ->  width: 100%;
+hf   ->  height: 100%;
 ```
 
 #### camelCase alias
@@ -174,20 +174,20 @@ hf  => height: 100%;
 In Emmet, `:` and `-` are used to separate properties and values. For example, `m:a` expands to `margin: auto;`. However, in emmet2-mode, `:` is designed to expand pseudo-selectors. To avoid this conflict, consider using camelCase instead. For instance, `mA` is equivalent to both `m:a` and `m-a`.
 
 ```
-mA   => margin: auto;
-allA =>
+mA   ->  margin: auto;
+allA ->
 top: auto;
 right: auto;
 bottom: auto;
 left: auto;
 ```
 
-#### `,` as abbreviations spliter
+#### Comma as abbreviations spliter
 
 As a user of the Dvorak keyboard layout, I find it much easier to press the `,` key than the `+` key.
 
 ```
-t0,r0,b0,l0 === t0+r0+b0+l0
+t0,r0,b0,l0 == t0+r0+b0+l0
 ```
 
 #### At rules
@@ -195,43 +195,48 @@ t0,r0,b0,l0 === t0+r0+b0+l0
 To expand CSS at-rules, start with the `@` symbol, followed by two or three distinct letters. SCSS at-rules are also supported.
 
 ```
-@cs => @charset
-@kf => @keyframes
-@md => @media
+@cs  ->  @charset
+@kf  ->  @keyframes
+@md  ->  @media
 
-@us => @use "|";
-@in => @if not | {}
+@us  ->  @use "|";
+@in  ->  @if not | {}
 ```
 
-#### Pseudo class and pseudo element
+#### Pseudo-class and pseudo-element
 
 To expand CSS pseudo-classes or pseudo-elements, start with the `:` symbol, followed by two or three distinct letters. When dealing with pseudo-elements, use `:` instead of `::`.
 
 There is a shorthand for pseudo-functions like `:n(:fc)`, which expands to `&:not(:first-child) {|}`, and `:n(:fc,:lc)` expands to `&:not(:first-child):not(:last-child) {|}`. It's important to note that spaces are not allowed within the `()` parentheses.
 
 ```
-:fu =>
+:fu  ->
 &:focus {
   |
 }
 
-_:fu =>
+_:fu  ->
 :focus {
   |
 }
 
-:hv:af =>
+:hv:af  ->
 &:hover::after {
   |
 }
 
-:n(:fc) =>
+:n(:fc)  ->
 &:not(:first-child) {
   |
 }
 
-:n(:fc,:lc):be =>
+:n(:fc,:lc):be  ->
 &:not(:first-child):not(:last-child)::before {
+  |
+}
+
+:nc(2n-1)  ->
+&:nth-child(2n-1) {
   |
 }
 ```
