@@ -1,5 +1,86 @@
 {
-  "version": "2",
+  "version": "4",
+  "specifiers": {
+    "npm:emmet@*": "2.4.2",
+    "npm:emmet@2.4.11": "2.4.11",
+    "npm:emmet@2.4.2": "2.4.2",
+    "npm:emmet@2.4.4": "2.4.4"
+  },
+  "npm": {
+    "@emmetio/abbreviation@2.2.3": {
+      "integrity": "sha512-87pltuCPt99aL+y9xS6GPZ+Wmmyhll2WXH73gG/xpGcQ84DRnptBsI2r0BeIQ0EB/SQTOe2ANPqFqj3Rj5FOGA==",
+      "dependencies": [
+        "@emmetio/scanner@1.0.0"
+      ]
+    },
+    "@emmetio/abbreviation@2.3.1": {
+      "integrity": "sha512-QXgYlXZGprqb6aCBJPPWVBN/Jb69khJF73GGJkOk//PoMgSbPGuaHn1hCRolctnzlBHjCIC6Om97Pw46/1A23g==",
+      "dependencies": [
+        "@emmetio/scanner@1.0.2"
+      ]
+    },
+    "@emmetio/abbreviation@2.3.3": {
+      "integrity": "sha512-mgv58UrU3rh4YgbE/TzgLQwJ3pFsHHhCLqY20aJq+9comytTXUDNGG/SMtSeMJdkpxgXSXunBGLD8Boka3JyVA==",
+      "dependencies": [
+        "@emmetio/scanner@1.0.4"
+      ]
+    },
+    "@emmetio/css-abbreviation@2.1.4": {
+      "integrity": "sha512-qk9L60Y+uRtM5CPbB0y+QNl/1XKE09mSO+AhhSauIfr2YOx/ta3NJw2d8RtCFxgzHeRqFRr8jgyzThbu+MZ4Uw==",
+      "dependencies": [
+        "@emmetio/scanner@1.0.0"
+      ]
+    },
+    "@emmetio/css-abbreviation@2.1.6": {
+      "integrity": "sha512-bvuPogt0OvwcILRg+ZD/oej1H72xwOhUDPWOmhCWLJrZZ8bMTazsWnvw8a8noaaVqUhOE9PsC0tYgGVv5N7fsw==",
+      "dependencies": [
+        "@emmetio/scanner@1.0.2"
+      ]
+    },
+    "@emmetio/css-abbreviation@2.1.8": {
+      "integrity": "sha512-s9yjhJ6saOO/uk1V74eifykk2CBYi01STTK3WlXWGOepyKa23ymJ053+DNQjpFcy1ingpaO7AxCcwLvHFY9tuw==",
+      "dependencies": [
+        "@emmetio/scanner@1.0.4"
+      ]
+    },
+    "@emmetio/scanner@1.0.0": {
+      "integrity": "sha512-8HqW8EVqjnCmWXVpqAOZf+EGESdkR27odcMMMGefgKXtar00SoYNSryGv//TELI4T3QFsECo78p+0lmalk/CFA=="
+    },
+    "@emmetio/scanner@1.0.2": {
+      "integrity": "sha512-1ESCGgXRgn1r29hRmz8K0G4Ywr5jDWezMgRnICComBCWmg3znLWU8+tmakuM1og1Vn4W/sauvlABl/oq2pve8w=="
+    },
+    "@emmetio/scanner@1.0.4": {
+      "integrity": "sha512-IqRuJtQff7YHHBk4G8YZ45uB9BaAGcwQeVzgj/zj8/UdOhtQpEIupUhSk8dys6spFIWVZVeK20CzGEnqR5SbqA=="
+    },
+    "emmet@2.3.6": {
+      "integrity": "sha512-pLS4PBPDdxuUAmw7Me7+TcHbykTsBKN/S9XJbUOMFQrNv9MoshzyMFK/R57JBm94/6HSL4vHnDeEmxlC82NQ4A==",
+      "dependencies": [
+        "@emmetio/abbreviation@2.2.3",
+        "@emmetio/css-abbreviation@2.1.4"
+      ]
+    },
+    "emmet@2.4.11": {
+      "integrity": "sha512-23QPJB3moh/U9sT4rQzGgeyyGIrcM+GH5uVYg2C6wZIxAIJq7Ng3QLT79tl8FUwDXhyq9SusfknOrofAKqvgyQ==",
+      "dependencies": [
+        "@emmetio/abbreviation@2.3.3",
+        "@emmetio/css-abbreviation@2.1.8"
+      ]
+    },
+    "emmet@2.4.2": {
+      "integrity": "sha512-YgmsMkhUgzhJMgH5noGudfxqrQn1bapvF0y7C1e7A0jWFImsRrrvVslzyZz0919NED/cjFOpVWx7c973V+2S/w==",
+      "dependencies": [
+        "@emmetio/abbreviation@2.3.1",
+        "@emmetio/css-abbreviation@2.1.6"
+      ]
+    },
+    "emmet@2.4.4": {
+      "integrity": "sha512-v8Mwpjym55CS3EjJgiCLWUB3J2HSR93jhzXW325720u8KvYxdI2voYLstW3pHBxFz54H6jFjayR9G4LfTG0q+g==",
+      "dependencies": [
+        "@emmetio/abbreviation@2.3.3",
+        "@emmetio/css-abbreviation@2.1.8"
+      ]
+    }
+  },
   "remote": {
     "https://deno.land/std@0.164.0/fmt/colors.ts": "9e36a716611dcd2e4865adea9c4bec916b5c60caad4cdcdc630d4974e6bb8bd4",
     "https://deno.land/std@0.164.0/testing/_diff.ts": "a23e7fc2b4d8daa3e158fa06856bedf5334ce2a2831e8bf9e509717f455adb2c",
@@ -33,83 +114,5 @@
     "https://deno.land/x/websocket@v0.1.4/lib/errors.ts": "efb2251dac1ac2036809b0bfb520d737aee70e362eba1e287c84d5299fb211e8",
     "https://deno.land/x/websocket@v0.1.4/lib/websocket.ts": "3363e0a8f59284de5439f5f3bd8831b65a2cfba047113fbc72e32934ebec3208",
     "https://deno.land/x/websocket@v0.1.4/mod.ts": "6b24e14dd1c5d64c1671dd678ca545cce9e2ebc91f67e8be864069808b948267"
-  },
-  "npm": {
-    "specifiers": {
-      "emmet": "emmet@2.4.2",
-      "emmet@2.4.2": "emmet@2.4.2",
-      "emmet@2.4.4": "emmet@2.4.4"
-    },
-    "packages": {
-      "@emmetio/abbreviation@2.2.3": {
-        "integrity": "sha512-87pltuCPt99aL+y9xS6GPZ+Wmmyhll2WXH73gG/xpGcQ84DRnptBsI2r0BeIQ0EB/SQTOe2ANPqFqj3Rj5FOGA==",
-        "dependencies": {
-          "@emmetio/scanner": "@emmetio/scanner@1.0.0"
-        }
-      },
-      "@emmetio/abbreviation@2.3.1": {
-        "integrity": "sha512-QXgYlXZGprqb6aCBJPPWVBN/Jb69khJF73GGJkOk//PoMgSbPGuaHn1hCRolctnzlBHjCIC6Om97Pw46/1A23g==",
-        "dependencies": {
-          "@emmetio/scanner": "@emmetio/scanner@1.0.2"
-        }
-      },
-      "@emmetio/abbreviation@2.3.3": {
-        "integrity": "sha512-mgv58UrU3rh4YgbE/TzgLQwJ3pFsHHhCLqY20aJq+9comytTXUDNGG/SMtSeMJdkpxgXSXunBGLD8Boka3JyVA==",
-        "dependencies": {
-          "@emmetio/scanner": "@emmetio/scanner@1.0.4"
-        }
-      },
-      "@emmetio/css-abbreviation@2.1.4": {
-        "integrity": "sha512-qk9L60Y+uRtM5CPbB0y+QNl/1XKE09mSO+AhhSauIfr2YOx/ta3NJw2d8RtCFxgzHeRqFRr8jgyzThbu+MZ4Uw==",
-        "dependencies": {
-          "@emmetio/scanner": "@emmetio/scanner@1.0.0"
-        }
-      },
-      "@emmetio/css-abbreviation@2.1.6": {
-        "integrity": "sha512-bvuPogt0OvwcILRg+ZD/oej1H72xwOhUDPWOmhCWLJrZZ8bMTazsWnvw8a8noaaVqUhOE9PsC0tYgGVv5N7fsw==",
-        "dependencies": {
-          "@emmetio/scanner": "@emmetio/scanner@1.0.2"
-        }
-      },
-      "@emmetio/css-abbreviation@2.1.8": {
-        "integrity": "sha512-s9yjhJ6saOO/uk1V74eifykk2CBYi01STTK3WlXWGOepyKa23ymJ053+DNQjpFcy1ingpaO7AxCcwLvHFY9tuw==",
-        "dependencies": {
-          "@emmetio/scanner": "@emmetio/scanner@1.0.4"
-        }
-      },
-      "@emmetio/scanner@1.0.0": {
-        "integrity": "sha512-8HqW8EVqjnCmWXVpqAOZf+EGESdkR27odcMMMGefgKXtar00SoYNSryGv//TELI4T3QFsECo78p+0lmalk/CFA==",
-        "dependencies": {}
-      },
-      "@emmetio/scanner@1.0.2": {
-        "integrity": "sha512-1ESCGgXRgn1r29hRmz8K0G4Ywr5jDWezMgRnICComBCWmg3znLWU8+tmakuM1og1Vn4W/sauvlABl/oq2pve8w==",
-        "dependencies": {}
-      },
-      "@emmetio/scanner@1.0.4": {
-        "integrity": "sha512-IqRuJtQff7YHHBk4G8YZ45uB9BaAGcwQeVzgj/zj8/UdOhtQpEIupUhSk8dys6spFIWVZVeK20CzGEnqR5SbqA==",
-        "dependencies": {}
-      },
-      "emmet@2.3.6": {
-        "integrity": "sha512-pLS4PBPDdxuUAmw7Me7+TcHbykTsBKN/S9XJbUOMFQrNv9MoshzyMFK/R57JBm94/6HSL4vHnDeEmxlC82NQ4A==",
-        "dependencies": {
-          "@emmetio/abbreviation": "@emmetio/abbreviation@2.2.3",
-          "@emmetio/css-abbreviation": "@emmetio/css-abbreviation@2.1.4"
-        }
-      },
-      "emmet@2.4.2": {
-        "integrity": "sha512-YgmsMkhUgzhJMgH5noGudfxqrQn1bapvF0y7C1e7A0jWFImsRrrvVslzyZz0919NED/cjFOpVWx7c973V+2S/w==",
-        "dependencies": {
-          "@emmetio/abbreviation": "@emmetio/abbreviation@2.3.1",
-          "@emmetio/css-abbreviation": "@emmetio/css-abbreviation@2.1.6"
-        }
-      },
-      "emmet@2.4.4": {
-        "integrity": "sha512-v8Mwpjym55CS3EjJgiCLWUB3J2HSR93jhzXW325720u8KvYxdI2voYLstW3pHBxFz54H6jFjayR9G4LfTG0q+g==",
-        "dependencies": {
-          "@emmetio/abbreviation": "@emmetio/abbreviation@2.3.3",
-          "@emmetio/css-abbreviation": "@emmetio/css-abbreviation@2.1.8"
-        }
-      }
-    }
   }
 }

@@ -1,4 +1,4 @@
-import emmet from "npm:emmet@2.4.4";
+import emmet from "npm:emmet@2.4.11";
 import { MARKUP_ABBR_REGEX } from "./regex.ts";
 
 type JSXOptions = {

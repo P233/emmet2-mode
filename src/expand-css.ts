@@ -1,4 +1,4 @@
-import emmet from "npm:emmet@2.4.4";
+import emmet from "npm:emmet@2.4.11";
 import CSS_DATA from "../data/css-data.json" with { type: "json" };
 import {
   SELECTOR_REGEX,
