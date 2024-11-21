@@ -1,5 +1,5 @@
 import emmet from "npm:emmet@2.4.4";
-import CSS_DATA from "../data/css-data.json" assert { type: "json" };
+import CSS_DATA from "../data/css-data.json" with { type: "json" };
 import {
   SELECTOR_REGEX,
   SELECTOR_ELEMENTS_REGEX,
