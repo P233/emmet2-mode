@@ -28,7 +28,7 @@ Additionally, [Solid.js](https://www.solidjs.com/) is supported, which is very s
 
 ## Installation
 
-Emmet2-mode is built on top of the [deno-bridge](https://github.com/manateelazycat/deno-bridge); therefore, you will need to install [Deno](https://deno.land/) and deno-bridge as dependencies.
+Emmet2-mode is built on top of the [deno-bridge](https://github.com/manateelazycat/deno-bridge); therefore, you will need to install [Deno](https://deno.land/) and deno-bridge as dependencies. As of now, Deno 2.0 or higher is required.
 
 To install Deno, follow the instructions provided in the [official documentation](https://deno.land/manual/getting_started/installation).
 
