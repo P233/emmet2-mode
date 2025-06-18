@@ -64,7 +64,8 @@
 (defun emmet2-detect-css-in-js ()
   (or
    (emmet2-check-in-between "style={" "}")
-   (emmet2-check-in-between "StyleSheet.create({" "})")))
+   (emmet2-check-in-between "StyleSheet.create({" "})")
+   (emmet2-check-in-between "createTheme({" "})")))
 
 (defun emmet2-detect-expand-lang ()
   (cond ((member emmet2-file-extension '("scss" "css")) "css")
