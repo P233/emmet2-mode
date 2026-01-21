@@ -5,7 +5,26 @@ import { expandHTML, expandJSX } from "./expand-markup.ts";
 const bridge = new DenoBridge(Deno.args[0], Deno.args[1], Deno.args[2], messageDispatcher);
 
 function messageDispatcher(message: string) {
-  const [lang, input, boundsBeginning, bufferPoint, cssModulesObject, classConstructor] = JSON.parse(message)[1];
+  let parsedMessage: unknown[];
+  try {
+    const parsed = JSON.parse(message);
+    if (!Array.isArray(parsed) || !Array.isArray(parsed[1])) {
+      throw new Error("Invalid message format");
+    }
+    parsedMessage = parsed[1];
+  } catch {
+    console.error("Failed to parse message:", message);
+    return;
+  }
+
+  const [lang, input, boundsBeginning, bufferPoint, cssModulesObject = "styles", classConstructor = "clsx"] = parsedMessage as [
+    string,
+    string,
+    number,
+    number,
+    string?,
+    string?
+  ];
 
   try {
     let snippet = "";
@@ -17,7 +36,8 @@ function messageDispatcher(message: string) {
     } else if (lang === "css-in-js") {
       snippet = expandCSSinJS(input);
     } else {
-      let offset, length;
+      let offset: number;
+      let length: number;
       const point = bufferPoint - boundsBeginning;
 
       if (lang === "jsx") {
@@ -33,17 +53,17 @@ function messageDispatcher(message: string) {
       end = start + length;
     }
 
-    snippet = snippet.replace(/"/g, '\\"');
+    snippet = snippet.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
     const shouldReposition = snippet.includes("|") ? "t" : "nil";
-    const shouldIndent = snippet.includes("\n") ? "t" : "nil";
+    const shouldIndent = snippet.includes("\\n") ? "t" : "nil";
 
     bridge.evalInEmacs(`(emmet2-insert "${snippet}" ${start} ${end} ${shouldReposition} ${shouldIndent})`);
   } catch (err) {
-    if (/^\[\[.+\]\]$/.test(err.message)) {
-      bridge.evalInEmacs(`(message "${err.message.slice(2, -2).replace(/"/g, '\\"')}")`);
+    if (err instanceof Error && /^\[\[.+\]\]$/.test(err.message)) {
+      bridge.evalInEmacs(`(message "${err.message.slice(2, -2).replace(/\\/g, "\\\\").replace(/"/g, '\\"')}")`);
     } else {
       console.error(err);
-      bridge.evalInEmacs(`(message "Something wrong with expanding \\"${input}\\"")`);
+      bridge.evalInEmacs(`(message "Something wrong with expanding \\"${input.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}\\"")`);
     }
   }
 }

@@ -12,23 +12,14 @@ import {
 // Sort candidates by the distance from 0 to the latest searched character; return the shortest distance candidate.
 function find(abbr: string, list: string[]) {
   const regex = new RegExp(`${abbr.slice(0, 2)}.*?${abbr.slice(2).split("").join(".*?")}`);
-  const candidates: { result: string; score: number }[] = [];
 
   for (let i = 0; i < list.length; i++) {
     if (regex.test(list[i])) {
-      const result = list[i];
-      candidates.push({
-        result,
-        score: abbr.indexOf(abbr.slice(-1))
-      });
+      return list[i];
     }
   }
 
-  if (!candidates.length) {
-    return abbr;
-  }
-
-  return candidates.sort((a, b) => a.score - b.score)[0].result;
+  return abbr;
 }
 
 // Expand at rules
@@ -50,7 +41,12 @@ function expandSelector(abbr: string): string {
     return abbr;
   }
 
-  let [_, prefix, pseudoSelector, pseudoFunction, pseudoParams, chainedPseudos] = abbr.match(SELECTOR_ELEMENTS_REGEX)!;
+  const match = abbr.match(SELECTOR_ELEMENTS_REGEX);
+  if (!match) {
+    return abbr;
+  }
+
+  let [_, prefix, pseudoSelector, pseudoFunction, pseudoParams, chainedPseudos] = match;
 
   if (!prefix) {
     prefix = "&";
@@ -91,7 +87,7 @@ function expandSelector(abbr: string): string {
 
 // Expand properties
 const emmetOptions = {
-  type: "stylesheet",
+  type: "stylesheet" as const,
   options: {
     "stylesheet.floatUnit": "rem",
     "output.field": () => "" // remove placeholders
@@ -109,17 +105,23 @@ function expandProperties(abbr: string, isCSSinJS?: boolean): string {
       let property = "";
 
       if (OPINIONATED_PROPERTY_REGEX.test(c)) {
-        const [_, propertyName, functionParam, customProperty, rawValue, flag] = c.match(OPINIONATED_ELEMENTS_REGEX)!;
+        const elementsMatch = c.match(OPINIONATED_ELEMENTS_REGEX);
+        if (!elementsMatch) {
+          a.push(emmet(c, emmetOptions));
+          return a;
+        }
+
+        const [_, propertyName, functionParam, customProperty, rawValue, flag] = elementsMatch;
 
         let value = "";
         if (functionParam) {
+          const rhythmMatches = functionParam.match(/\(-?[\d.]+\)/g);
           value =
             propertyName === "fz"
               ? `ms${functionParam}`
-              : functionParam
-                  .match(/\(-?[\d.]+\)/g)!
-                  .map((i) => (i === "(0)" ? "0" : `rhythm${i}`))
-                  .join(" ");
+              : rhythmMatches
+                  ? rhythmMatches.map((i) => (i === "(0)" ? "0" : `rhythm${i}`)).join(" ")
+                  : "";
         } else if (customProperty) {
           value = customProperty.replace(/(-(-?\w+)+)/g, " var($1)").trim();
         } else if (rawValue) {

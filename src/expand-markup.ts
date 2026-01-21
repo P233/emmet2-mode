@@ -48,9 +48,12 @@ export function extractAbbr(line: string, point: number): AbbrAndPositions {
       return { abbr, offset, length: abbr.length };
     }
 
-    const nextAbbrIdx = _line.indexOf(abbrs[i + 1]);
-    offset += nextAbbrIdx;
-    _line = _line.slice(nextAbbrIdx);
+    // Skip updating offset for the last iteration since we won't need it
+    if (i < abbrs.length - 1) {
+      const nextAbbrIdx = _line.indexOf(abbrs[i + 1]);
+      offset += nextAbbrIdx;
+      _line = _line.slice(nextAbbrIdx);
+    }
   }
 
   throw new Error("[[There is no abbr under the point]]");
@@ -79,10 +82,14 @@ export function expandJSX(line: string, options: JSXOptions) {
   if (classAttrList) {
     snippet = classAttrList.reduce((a: string, c: string) => {
       const idx = a.indexOf(c);
-      const prefix = a.slice(0, a.indexOf(c)) + (options.classAttr ? "class={" : "className={");
+      if (idx === -1) {
+        return a;
+      }
+      const prefix = a.slice(0, idx) + (options.classAttr ? "class={" : "className={");
       const suffix = "}" + a.slice(idx + c.length);
 
-      const rawClass = c.match(/"(.*)"/)![1];
+      const classMatch = c.match(/"(.*)"/);
+      const rawClass = classMatch ? classMatch[1] : "";
       if (rawClass === "") {
         return prefix + suffix;
       }
