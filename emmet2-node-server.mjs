@@ -23,6 +23,7 @@ for await (const line of input) {
   try {
     response = { id: request.id, result: expand(request.abbreviation, {
       preset: request.preset, indent: request.indent, baseIndent: request.baseIndent,
+      jsx: request.jsx,
     }) };
   } catch (error) {
     response = { id: request.id, error: error instanceof EmmetParseError

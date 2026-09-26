@@ -1,0 +1,107 @@
+[
+  {
+    "id": "markup-004",
+    "abbreviation": "br",
+    "jsx": false,
+    "solid": false,
+    "text": "<br>"
+  },
+  {
+    "id": "markup-005",
+    "abbreviation": ".",
+    "jsx": false,
+    "solid": false,
+    "text": "<div class=\"\"></div>"
+  },
+  {
+    "id": "markup-006",
+    "abbreviation": ".class",
+    "jsx": false,
+    "solid": false,
+    "text": "<div class=\"class\"></div>"
+  },
+  {
+    "id": "markup-007",
+    "abbreviation": ".",
+    "jsx": true,
+    "solid": false,
+    "text": "<div className={}></div>"
+  },
+  {
+    "id": "markup-008",
+    "abbreviation": ".class",
+    "jsx": true,
+    "solid": false,
+    "text": "<div className={css.class}></div>"
+  },
+  {
+    "id": "markup-009",
+    "abbreviation": "ABC.XYZ",
+    "jsx": true,
+    "solid": false,
+    "text": "<ABC.XYZ></ABC.XYZ>"
+  },
+  {
+    "id": "markup-010",
+    "abbreviation": "ABC.XYZ/",
+    "jsx": true,
+    "solid": false,
+    "text": "<ABC.XYZ />"
+  },
+  {
+    "id": "markup-011",
+    "abbreviation": "Abc.Xyz/",
+    "jsx": true,
+    "solid": false,
+    "text": "<Abc.Xyz />"
+  },
+  {
+    "id": "markup-012",
+    "abbreviation": "ABC.XYZ.class",
+    "jsx": true,
+    "solid": false,
+    "text": "<ABC.XYZ className={css.class}></ABC.XYZ>"
+  },
+  {
+    "id": "markup-013",
+    "abbreviation": "ABC.XYZ.class/",
+    "jsx": true,
+    "solid": false,
+    "text": "<ABC.XYZ className={css.class} />"
+  },
+  {
+    "id": "markup-014",
+    "abbreviation": "ABC.XYZ.a.b.c/",
+    "jsx": true,
+    "solid": false,
+    "text": "<ABC.XYZ className={clsx(css.a, css.b, css.c)} />"
+  },
+  {
+    "id": "markup-015",
+    "abbreviation": "ABC./",
+    "jsx": true,
+    "solid": false,
+    "text": "<ABC className={} />"
+  },
+  {
+    "id": "markup-016",
+    "abbreviation": ".",
+    "jsx": true,
+    "solid": true,
+    "text": "<div class={}></div>"
+  },
+  {
+    "id": "markup-017",
+    "abbreviation": ".class",
+    "jsx": true,
+    "solid": true,
+    "text": "<div class={style.class}></div>"
+  },
+  {
+    "id": "markup-018",
+    "abbreviation": ".a.b.c",
+    "jsx": true,
+    "solid": true,
+    "text": "<div class={classnames(style.a, style.b, style.c)}></div>"
+  }
+]

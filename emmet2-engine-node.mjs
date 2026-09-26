@@ -1,9 +1,12 @@
 // Fixed-version result adapter shared by the offline oracle and Node IPC.
 import expandAbbreviation, {
   parseStylesheet,
+  parseMarkup,
   resolveConfig,
+  stringifyMarkup,
   stringifyStylesheet,
 } from "./vendor/emmet-2.4.11.mjs";
+import { transformClasses } from "./emmet2-jsx.mjs";
 
 export class EmmetParseError extends Error {
   constructor(error, abbreviation) {
@@ -49,6 +52,7 @@ export function expand(abbreviation, {
   preset = "html",
   indent = "\t",
   baseIndent = "",
+  jsx,
 } = {}) {
   if (typeof abbreviation !== "string" ||
       typeof indent !== "string" || typeof baseIndent !== "string") {
@@ -57,6 +61,7 @@ export function expand(abbreviation, {
   if (!["html", "jsx", "stylesheet"].includes(preset)) {
     throw new TypeError(`Unknown preset: ${preset}`);
   }
+  if (jsx && preset !== "jsx") throw new TypeError("JSX extensions require the JSX preset");
 
   let localFields = [];
   const options = {
@@ -71,7 +76,7 @@ export function expand(abbreviation, {
     Object.assign(options, {
       "output.selfClosingStyle": "xhtml",
       "jsx.enabled": true,
-      "markup.attributes": { class: "classList" },
+      "markup.attributes": { class: jsx ? jsx.classAttribute : "classList" },
     });
   } else if (preset === "stylesheet") {
     options["stylesheet.floatUnit"] = "rem";
@@ -103,7 +108,12 @@ export function expand(abbreviation, {
       }
       text = parts.join(separator);
     } else {
-      text = expandAbbreviation(abbreviation, { type: "markup", options });
+      if (jsx) {
+        const config = resolveConfig({ type: "markup", options });
+        text = stringifyMarkup(transformClasses(parseMarkup(abbreviation, config), jsx), config);
+      } else {
+        text = expandAbbreviation(abbreviation, { type: "markup", options });
+      }
       renumber(localFields, 1);
       fields = localFields;
     }

@@ -35,15 +35,16 @@
 
 (autoload 'emmet2-engine-node-expand "emmet2-engine-node")
 
-(cl-defun emmet2-engine-expand (abbreviation &key (preset 'html) (indent "\t") (base-indent ""))
+(cl-defun emmet2-engine-expand (abbreviation &key (preset 'html) (indent "\t") (base-indent "") jsx)
   "Expand ABBREVIATION with PRESET and the internal rendering parameters.
 PRESET is html, jsx or stylesheet.  INDENT and BASE-INDENT are literal strings.
+JSX is nil or the internal structured JSX extension options.
 Return a canonical result.  The Node backend is temporary until S6/S7 pass."
   (unless (and (stringp abbreviation) (memq preset '(html jsx stylesheet))
                (stringp indent) (stringp base-indent))
     (signal 'emmet2-error '("Invalid abbreviation, preset or indentation")))
   (emmet2-engine-with-expansion
-    (emmet2-engine-node-expand abbreviation preset indent base-indent)))
+    (emmet2-engine-node-expand abbreviation preset indent base-indent jsx)))
 
 (defun emmet2-result-create (text &optional fields)
   "Create a canonical result from TEXT and FIELDS.

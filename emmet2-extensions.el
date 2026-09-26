@@ -281,5 +281,21 @@ rendering strings.  Generated layout uses them; literal raw text is preserved."
                 (push (if css-in-js (emmet2-extensions--js-property result) result) parts))))
           (apply #'emmet2-result-concat (nreverse parts))))))))
 
+(cl-defun emmet2-extensions-markup (abbreviation &key jsx variant
+                                                (css-modules-object "css")
+                                                (class-names-constructor "clsx")
+                                                (indent "\t") (base-indent ""))
+  "Expand markup ABBREVIATION, optionally with JSX project semantics.
+VARIANT equal to \"solid\" emits class instead of className.  CSS-MODULES-OBJECT
+and CLASS-NAMES-CONSTRUCTOR are authored JavaScript references.  INDENT and
+BASE-INDENT affect generated layout only.  Until S6, JSX transformation lives
+beside the Node AST because rendered attribute text loses quoting boundaries."
+  (emmet2-engine-with-expansion
+    (emmet2-engine-expand
+     abbreviation :preset (if jsx 'jsx 'html) :indent indent :base-indent base-indent
+     :jsx (and jsx (list :classAttribute (if (equal variant "solid") "class" "className")
+                        :cssModulesObject css-modules-object
+                        :classConstructor class-names-constructor)))))
+
 (provide 'emmet2-extensions)
 ;;; emmet2-extensions.el ends here

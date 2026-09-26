@@ -123,8 +123,8 @@ Return (result . RESULT) or (parse MESSAGE POSITION); protocol faults signal."
     (emmet2-backend-error (signal (car error) (cdr error)))
     (error (signal 'emmet2-backend-error (list (concat "Invalid Node response: " (error-message-string error)))))))
 
-(defun emmet2-engine-node-expand (abbreviation preset indent base-indent)
-  "Expand ABBREVIATION using PRESET, INDENT and BASE-INDENT over owned stdio.
+(defun emmet2-engine-node-expand (abbreviation preset indent base-indent &optional jsx)
+  "Expand ABBREVIATION using PRESET, INDENT, BASE-INDENT and JSX over owned stdio.
 Called by `emmet2-engine-expand' with an active expansion deadline."
   (when emmet2-node--busy (signal 'emmet2-backend-error '("Reentrant Node expansion")))
   (let ((emmet2-node--busy t) process request complete)
@@ -141,7 +141,7 @@ Called by `emmet2-engine-expand' with an active expansion deadline."
                 (process-send-string
                  process (concat (json-serialize
                                   `(:id ,id :abbreviation ,abbreviation :preset ,(symbol-name preset)
-                                        :indent ,indent :baseIndent ,base-indent)) "\n"))
+                                        :indent ,indent :baseIndent ,base-indent :jsx ,(or jsx :null))) "\n"))
                 (while (and (not (emmet2-node--request-response request))
                             (not (emmet2-node--request-failure request)))
                   (emmet2-engine--check-deadline)

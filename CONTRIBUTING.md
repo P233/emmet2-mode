@@ -121,7 +121,7 @@ rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps emacs --batch -Q -L . -l te
 ```
 
 Run setup after changing the lock. `EMMET2_TEST_SUITE` selects `contracts` (the
-default), `results`, `node`, `fuzzy` or `css-extensions`; unknown suites fail explicitly. Missing
+default), `results`, `node`, `fuzzy`, `css-extensions` or `markup-extensions`; unknown suites fail explicitly. Missing
 packages or local grammars fail bootstrap instead of skipping integration or
 falling back to a grammar in the user's configuration.
 
@@ -328,9 +328,57 @@ Local validation on 2026-09-26: all 102 CSS ERT tests passed on the pinned GNU
 30.2 and 31.1 builds. The hand-written cases cover default collapse, distant
 mirrors, explicit replacement, raw nesting/Unicode, CSS-in-JS escaping/numbers,
 functions/aliases/fallback, layout and a deterministic whole-expansion deadline.
-Runtime command/completion behavior is not switched by this module; JSX
-extensions and the S2 total gate remain open.
+Runtime command/completion behavior is not switched by this module. JSX
+extension completion and the revised ownership are recorded below.
 
 ```sh
 rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_SUITE=css-extensions emacs --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit
 ```
+
+## Structured JSX extension boundary
+
+`emmet2-extensions-markup` accepts markup plus `:jsx`, `:variant`,
+`:css-modules-object`, `:class-names-constructor`, `:indent` and `:base-indent`.
+It passes explicit JSX settings through the existing single-request channel;
+omitted settings serialize as JSON null, not an empty object. Core presets
+without settings keep exactly the committed oracle output.
+
+The original plan placed all JSX conversion after core rendering. A concrete
+counterexample, `[class='a" title="b']`, renders indistinguishably from two
+attributes in unmodified Emmet. Post-render regex parsing cannot recover the
+class value, and can corrupt text that merely resembles an attribute. Therefore
+`emmet2-jsx.mjs` temporarily owns JSX class conversion **before** serialization,
+on a copied AST. No marker protocol, output parser, cache or second request is
+introduced. S6 must port this contract beside the Elisp markup formatter; S8
+retires the temporary JS module with the Node runtime. The final pure Elisp
+objective and canonical text/fields/cursor result are unchanged.
+
+Literal class names use dot access for identifiers and escaped bracket access
+otherwise. Their fields retain numeric priority and real mirrors; multiword
+field defaults cover the corresponding expression span. Whitespace-only fields
+remain separate editable arguments, so mirrors cannot collapse into adjacent
+fields at one position. Authored class expressions are renamed for React/Solid
+without interpreting them; explicit classList/className and body text stay as
+authored. Project reference strings are emitted as source, never evaluated.
+
+`markup-legacy.json` preserves the 15 baseline expansion text cases; 4 extraction
+cases remain S3 work. All 150 S2 baseline IDs now map to executed ERT assertions.
+Initial cursor/field behavior deliberately follows the canonical result, not
+the previous single pipe marker. Actual yas/undo/completion remain S4/S5 gates.
+
+Local evidence (2026-09-26): 18 markup ERT tests and the 12 Node protocol tests
+(including 494 core oracle cases) passed on both pinned Emacs builds; selected
+CSS contracts remained green. Seven JSX tests (including 36 field/whitespace boundary combinations) and nine adapter tests passed in
+Node; fixed core oracle check has no changes. Both warning-free compilations,
+scoped Deno lint and actionlint passed. MCP ESLint still has no config and
+Wallaby has no data. Hosted CI, editor integration and performance acceptance
+remain open; this completes S2's local functional scope only.
+
+```sh
+rtk proxy node --test test/jsx.test.mjs
+rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_SUITE=markup-extensions emacs --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit
+```
+
+Primary review found and fixed duplicate class emission when a nonempty field
+starts at a preceding word end; the half-open intersection rule and boundary
+matrix now cover that case. No core oracle or baseline expected text changed.
