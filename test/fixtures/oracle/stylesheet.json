@@ -1,0 +1,4202 @@
+[
+  {
+    "id": "stylesheet-snippet:@f",
+    "result": {
+      "text": "@font-face {\n\tfont-family: ;\n\tsrc: url();\n}",
+      "fields": [
+        [
+          27,
+          27,
+          1,
+          ""
+        ],
+        [
+          39,
+          39,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "stylesheet-snippet:@ff",
+    "result": {
+      "text": "@font-face {\n\tfont-family: 'FontName';\n\tsrc: url('FileName.eot');\n\tsrc: url('FileName.eot?#iefix') format('embedded-opentype'),\n\t\t url('FileName.woff') format('woff'),\n\t\t url('FileName.ttf') format('truetype'),\n\t\t url('FileName.svg#FontName') format('svg');\n\tfont-style: normal;\n\tfont-weight: normal;\n}",
+      "fields": [
+        [
+          28,
+          36,
+          1,
+          "FontName"
+        ],
+        [
+          50,
+          58,
+          2,
+          "FileName"
+        ],
+        [
+          77,
+          85,
+          2,
+          "FileName"
+        ],
+        [
+          136,
+          144,
+          2,
+          "FileName"
+        ],
+        [
+          176,
+          184,
+          2,
+          "FileName"
+        ],
+        [
+          219,
+          227,
+          2,
+          "FileName"
+        ],
+        [
+          232,
+          240,
+          1,
+          "FontName"
+        ],
+        [
+          271,
+          277,
+          3,
+          "normal"
+        ],
+        [
+          293,
+          299,
+          4,
+          "normal"
+        ]
+      ],
+      "cursor": 28
+    }
+  },
+  {
+    "id": "stylesheet-snippet:@i",
+    "result": {
+      "text": "@import url();",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:@import",
+    "result": {
+      "text": "@import url();",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:@kf",
+    "result": {
+      "text": "@keyframes identifier {\n\t\n}",
+      "fields": [
+        [
+          11,
+          21,
+          1,
+          "identifier"
+        ],
+        [
+          25,
+          25,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 11
+    }
+  },
+  {
+    "id": "stylesheet-snippet:@m",
+    "result": {
+      "text": "@media screen {\n\t\n}",
+      "fields": [
+        [
+          7,
+          13,
+          1,
+          "screen"
+        ],
+        [
+          17,
+          17,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 7
+    }
+  },
+  {
+    "id": "stylesheet-snippet:@media",
+    "result": {
+      "text": "@media screen {\n\t\n}",
+      "fields": [
+        [
+          7,
+          13,
+          1,
+          "screen"
+        ],
+        [
+          17,
+          17,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 7
+    }
+  },
+  {
+    "id": "stylesheet-snippet:ac",
+    "result": {
+      "text": "align-content: start;",
+      "fields": [
+        [
+          15,
+          20,
+          1,
+          "start"
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-snippet:ai",
+    "result": {
+      "text": "align-items: start;",
+      "fields": [
+        [
+          13,
+          18,
+          1,
+          "start"
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-snippet:anim",
+    "result": {
+      "text": "animation: name duration timing-function delay iteration-count direction fill-mode;",
+      "fields": [
+        [
+          11,
+          15,
+          1,
+          "name"
+        ],
+        [
+          16,
+          24,
+          2,
+          "duration"
+        ],
+        [
+          25,
+          40,
+          3,
+          "timing-function"
+        ],
+        [
+          41,
+          46,
+          4,
+          "delay"
+        ],
+        [
+          47,
+          62,
+          5,
+          "iteration-count"
+        ],
+        [
+          63,
+          72,
+          6,
+          "direction"
+        ],
+        [
+          73,
+          82,
+          7,
+          "fill-mode"
+        ]
+      ],
+      "cursor": 11
+    }
+  },
+  {
+    "id": "stylesheet-snippet:animdel",
+    "result": {
+      "text": "animation-delay: time;",
+      "fields": [],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "stylesheet-snippet:animdir",
+    "result": {
+      "text": "animation-direction: normal;",
+      "fields": [
+        [
+          21,
+          27,
+          1,
+          "normal"
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "stylesheet-snippet:animdur",
+    "result": {
+      "text": "animation-duration: 0 s;",
+      "fields": [
+        [
+          20,
+          21,
+          1,
+          "0"
+        ]
+      ],
+      "cursor": 20
+    }
+  },
+  {
+    "id": "stylesheet-snippet:animfm",
+    "result": {
+      "text": "animation-fill-mode: both;",
+      "fields": [
+        [
+          21,
+          25,
+          1,
+          "both"
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "stylesheet-snippet:animic",
+    "result": {
+      "text": "animation-iteration-count: 1;",
+      "fields": [
+        [
+          27,
+          28,
+          1,
+          "1"
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "stylesheet-snippet:animn",
+    "result": {
+      "text": "animation-name: ;",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "stylesheet-snippet:animps",
+    "result": {
+      "text": "animation-play-state: running;",
+      "fields": [
+        [
+          22,
+          29,
+          1,
+          "running"
+        ]
+      ],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "stylesheet-snippet:animtf",
+    "result": {
+      "text": "animation-timing-function: linear;",
+      "fields": [
+        [
+          27,
+          33,
+          1,
+          "linear"
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "stylesheet-snippet:ap",
+    "result": {
+      "text": "appearance: none;",
+      "fields": [],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "stylesheet-snippet:as",
+    "result": {
+      "text": "align-self: start;",
+      "fields": [
+        [
+          12,
+          17,
+          1,
+          "start"
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:b",
+    "result": {
+      "text": "bottom: ;",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bd",
+    "result": {
+      "text": "border: 1px solid #000;",
+      "fields": [
+        [
+          8,
+          11,
+          1,
+          "1px"
+        ],
+        [
+          12,
+          17,
+          2,
+          "solid"
+        ],
+        [
+          18,
+          22,
+          3,
+          "#000"
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdb",
+    "result": {
+      "text": "border-bottom: 1px solid #000;",
+      "fields": [
+        [
+          15,
+          18,
+          1,
+          "1px"
+        ],
+        [
+          19,
+          24,
+          2,
+          "solid"
+        ],
+        [
+          25,
+          29,
+          3,
+          "#000"
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdbc",
+    "result": {
+      "text": "border-bottom-color: #000;",
+      "fields": [
+        [
+          21,
+          25,
+          1,
+          "#000"
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdbi",
+    "result": {
+      "text": "border-bottom-image: url();",
+      "fields": [
+        [
+          25,
+          25,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdbk",
+    "result": {
+      "text": "border-break: close;",
+      "fields": [],
+      "cursor": 20
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdbli",
+    "result": {
+      "text": "border-bottom-left-image: url();",
+      "fields": [
+        [
+          30,
+          30,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 30
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdblrs",
+    "result": {
+      "text": "border-bottom-left-radius: ;",
+      "fields": [
+        [
+          27,
+          27,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdbri",
+    "result": {
+      "text": "border-bottom-right-image: url();",
+      "fields": [
+        [
+          31,
+          31,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 31
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdbrrs",
+    "result": {
+      "text": "border-bottom-right-radius: ;",
+      "fields": [
+        [
+          28,
+          28,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 28
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdbs",
+    "result": {
+      "text": "border-bottom-style: ;",
+      "fields": [
+        [
+          21,
+          21,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdbw",
+    "result": {
+      "text": "border-bottom-width: ;",
+      "fields": [
+        [
+          21,
+          21,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdc",
+    "result": {
+      "text": "border-color: #000;",
+      "fields": [
+        [
+          14,
+          18,
+          1,
+          "#000"
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdci",
+    "result": {
+      "text": "border-corner-image: url();",
+      "fields": [
+        [
+          25,
+          25,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdcl",
+    "result": {
+      "text": "border-collapse: collapse;",
+      "fields": [
+        [
+          17,
+          25,
+          1,
+          "collapse"
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdf",
+    "result": {
+      "text": "border-fit: repeat;",
+      "fields": [
+        [
+          12,
+          18,
+          1,
+          "repeat"
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdi",
+    "result": {
+      "text": "border-image: url();",
+      "fields": [
+        [
+          18,
+          18,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdl",
+    "result": {
+      "text": "border-left: 1px solid #000;",
+      "fields": [
+        [
+          13,
+          16,
+          1,
+          "1px"
+        ],
+        [
+          17,
+          22,
+          2,
+          "solid"
+        ],
+        [
+          23,
+          27,
+          3,
+          "#000"
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdlc",
+    "result": {
+      "text": "border-left-color: #000;",
+      "fields": [
+        [
+          19,
+          23,
+          1,
+          "#000"
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdlen",
+    "result": {
+      "text": "border-length: ;",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdli",
+    "result": {
+      "text": "border-left-image: url();",
+      "fields": [
+        [
+          23,
+          23,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 23
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdls",
+    "result": {
+      "text": "border-left-style: ;",
+      "fields": [
+        [
+          19,
+          19,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdlw",
+    "result": {
+      "text": "border-left-width: ;",
+      "fields": [
+        [
+          19,
+          19,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdr",
+    "result": {
+      "text": "border-right: 1px solid #000;",
+      "fields": [
+        [
+          14,
+          17,
+          1,
+          "1px"
+        ],
+        [
+          18,
+          23,
+          2,
+          "solid"
+        ],
+        [
+          24,
+          28,
+          3,
+          "#000"
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdrc",
+    "result": {
+      "text": "border-right-color: #000;",
+      "fields": [
+        [
+          20,
+          24,
+          1,
+          "#000"
+        ]
+      ],
+      "cursor": 20
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdri",
+    "result": {
+      "text": "border-right-image: url();",
+      "fields": [
+        [
+          24,
+          24,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 24
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdrs",
+    "result": {
+      "text": "border-radius: ;",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdrst",
+    "result": {
+      "text": "border-right-style: ;",
+      "fields": [
+        [
+          20,
+          20,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 20
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdrw",
+    "result": {
+      "text": "border-right-width: ;",
+      "fields": [
+        [
+          20,
+          20,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 20
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bds",
+    "result": {
+      "text": "border-style: none;",
+      "fields": [
+        [
+          14,
+          18,
+          1,
+          "none"
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdsp",
+    "result": {
+      "text": "border-spacing: ;",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdt",
+    "result": {
+      "text": "border-top: 1px solid #000;",
+      "fields": [
+        [
+          12,
+          15,
+          1,
+          "1px"
+        ],
+        [
+          16,
+          21,
+          2,
+          "solid"
+        ],
+        [
+          22,
+          26,
+          3,
+          "#000"
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdtc",
+    "result": {
+      "text": "border-top-color: #000;",
+      "fields": [
+        [
+          18,
+          22,
+          1,
+          "#000"
+        ]
+      ],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdti",
+    "result": {
+      "text": "border-top-image: url();",
+      "fields": [
+        [
+          22,
+          22,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdtli",
+    "result": {
+      "text": "border-top-left-image: url();",
+      "fields": [
+        [
+          27,
+          27,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdtlrs",
+    "result": {
+      "text": "border-top-left-radius: ;",
+      "fields": [
+        [
+          24,
+          24,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 24
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdtri",
+    "result": {
+      "text": "border-top-right-image: url();",
+      "fields": [
+        [
+          28,
+          28,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 28
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdtrrs",
+    "result": {
+      "text": "border-top-right-radius: ;",
+      "fields": [
+        [
+          25,
+          25,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdts",
+    "result": {
+      "text": "border-top-style: ;",
+      "fields": [
+        [
+          18,
+          18,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdtw",
+    "result": {
+      "text": "border-top-width: ;",
+      "fields": [
+        [
+          18,
+          18,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bdw",
+    "result": {
+      "text": "border-width: ;",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bbs",
+    "result": {
+      "text": "border-block-start: ;",
+      "fields": [
+        [
+          20,
+          20,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 20
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bbe",
+    "result": {
+      "text": "border-block-end: ;",
+      "fields": [
+        [
+          18,
+          18,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bis",
+    "result": {
+      "text": "border-inline-start: ;",
+      "fields": [
+        [
+          21,
+          21,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bie",
+    "result": {
+      "text": "border-inline-end: ;",
+      "fields": [
+        [
+          19,
+          19,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bfv",
+    "result": {
+      "text": "backface-visibility: hidden;",
+      "fields": [
+        [
+          21,
+          27,
+          1,
+          "hidden"
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bg",
+    "result": {
+      "text": "background: #000;",
+      "fields": [
+        [
+          12,
+          16,
+          1,
+          "#000"
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bg:n",
+    "result": {
+      "text": "background: none;",
+      "fields": [],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bga",
+    "result": {
+      "text": "background-attachment: fixed;",
+      "fields": [
+        [
+          23,
+          28,
+          1,
+          "fixed"
+        ]
+      ],
+      "cursor": 23
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bgbk",
+    "result": {
+      "text": "background-break: bounding-box;",
+      "fields": [
+        [
+          18,
+          30,
+          1,
+          "bounding-box"
+        ]
+      ],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bgc",
+    "result": {
+      "text": "background-color: #fff;",
+      "fields": [
+        [
+          18,
+          22,
+          1,
+          "#fff"
+        ]
+      ],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bgcp",
+    "result": {
+      "text": "background-clip: padding-box;",
+      "fields": [
+        [
+          17,
+          28,
+          1,
+          "padding-box"
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bgi",
+    "result": {
+      "text": "background-image: url();",
+      "fields": [
+        [
+          22,
+          22,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bgo",
+    "result": {
+      "text": "background-origin: padding-box;",
+      "fields": [
+        [
+          19,
+          30,
+          1,
+          "padding-box"
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bgp",
+    "result": {
+      "text": "background-position: 0 0;",
+      "fields": [
+        [
+          21,
+          22,
+          1,
+          "0"
+        ],
+        [
+          23,
+          24,
+          2,
+          "0"
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bgpx",
+    "result": {
+      "text": "background-position-x: ;",
+      "fields": [
+        [
+          23,
+          23,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 23
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bgpy",
+    "result": {
+      "text": "background-position-y: ;",
+      "fields": [
+        [
+          23,
+          23,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 23
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bgr",
+    "result": {
+      "text": "background-repeat: no-repeat;",
+      "fields": [
+        [
+          19,
+          28,
+          1,
+          "no-repeat"
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bgsz",
+    "result": {
+      "text": "background-size: contain;",
+      "fields": [
+        [
+          17,
+          24,
+          1,
+          "contain"
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bs",
+    "result": {
+      "text": "block-size: ;",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bxsh",
+    "result": {
+      "text": "box-shadow: inset hoff voff blur #000;",
+      "fields": [
+        [
+          12,
+          18,
+          1,
+          "inset "
+        ],
+        [
+          18,
+          22,
+          2,
+          "hoff"
+        ],
+        [
+          23,
+          27,
+          3,
+          "voff"
+        ],
+        [
+          28,
+          32,
+          4,
+          "blur"
+        ],
+        [
+          33,
+          37,
+          5,
+          "#000"
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:bxsz",
+    "result": {
+      "text": "box-sizing: border-box;",
+      "fields": [
+        [
+          12,
+          22,
+          1,
+          "border-box"
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:c",
+    "result": {
+      "text": "color: #000;",
+      "fields": [
+        [
+          7,
+          11,
+          1,
+          "#000"
+        ]
+      ],
+      "cursor": 7
+    }
+  },
+  {
+    "id": "stylesheet-snippet:cg",
+    "result": {
+      "text": "column-gap: ;",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:cr",
+    "result": {
+      "text": "color: rgb(0, 0, 0);",
+      "fields": [
+        [
+          11,
+          12,
+          1,
+          "0"
+        ],
+        [
+          14,
+          15,
+          2,
+          "0"
+        ],
+        [
+          17,
+          18,
+          3,
+          "0"
+        ]
+      ],
+      "cursor": 11
+    }
+  },
+  {
+    "id": "stylesheet-snippet:cra",
+    "result": {
+      "text": "color: rgba(0, 0, 0, .5);",
+      "fields": [
+        [
+          12,
+          13,
+          1,
+          "0"
+        ],
+        [
+          15,
+          16,
+          2,
+          "0"
+        ],
+        [
+          18,
+          19,
+          3,
+          "0"
+        ],
+        [
+          21,
+          23,
+          4,
+          ".5"
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:cl",
+    "result": {
+      "text": "clear: both;",
+      "fields": [
+        [
+          7,
+          11,
+          1,
+          "both"
+        ]
+      ],
+      "cursor": 7
+    }
+  },
+  {
+    "id": "stylesheet-snippet:cm",
+    "result": {
+      "text": "/*  */",
+      "fields": [
+        [
+          3,
+          3,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 3
+    }
+  },
+  {
+    "id": "stylesheet-snippet:cnt",
+    "result": {
+      "text": "content: '${0}';",
+      "fields": [
+        [
+          9,
+          15,
+          1,
+          "'${0}'"
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "stylesheet-snippet:coi",
+    "result": {
+      "text": "counter-increment: ;",
+      "fields": [
+        [
+          19,
+          19,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-snippet:colm",
+    "result": {
+      "text": "columns: ;",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "stylesheet-snippet:colmc",
+    "result": {
+      "text": "column-count: ;",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-snippet:colmf",
+    "result": {
+      "text": "column-fill: ;",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-snippet:colmg",
+    "result": {
+      "text": "column-gap: ;",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:colmr",
+    "result": {
+      "text": "column-rule: ;",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-snippet:colmrc",
+    "result": {
+      "text": "column-rule-color: ;",
+      "fields": [
+        [
+          19,
+          19,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-snippet:colmrs",
+    "result": {
+      "text": "column-rule-style: ;",
+      "fields": [
+        [
+          19,
+          19,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-snippet:colmrw",
+    "result": {
+      "text": "column-rule-width: ;",
+      "fields": [
+        [
+          19,
+          19,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-snippet:colms",
+    "result": {
+      "text": "column-span: ;",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-snippet:colmw",
+    "result": {
+      "text": "column-width: ;",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-snippet:cor",
+    "result": {
+      "text": "counter-reset: ;",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-snippet:cp",
+    "result": {
+      "text": "clip: auto;",
+      "fields": [
+        [
+          6,
+          10,
+          1,
+          "auto"
+        ]
+      ],
+      "cursor": 6
+    }
+  },
+  {
+    "id": "stylesheet-snippet:cps",
+    "result": {
+      "text": "caption-side: top;",
+      "fields": [
+        [
+          14,
+          17,
+          1,
+          "top"
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-snippet:cur",
+    "result": {
+      "text": "cursor: pointer;",
+      "fields": [
+        [
+          8,
+          15,
+          1,
+          "pointer"
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-snippet:d",
+    "result": {
+      "text": "display: block;",
+      "fields": [
+        [
+          9,
+          14,
+          1,
+          "block"
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "stylesheet-snippet:ec",
+    "result": {
+      "text": "empty-cells: show;",
+      "fields": [
+        [
+          13,
+          17,
+          1,
+          "show"
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-snippet:f",
+    "result": {
+      "text": "font: 1em sans-serif;",
+      "fields": [
+        [
+          6,
+          9,
+          1,
+          "1em"
+        ],
+        [
+          10,
+          20,
+          2,
+          "sans-serif"
+        ]
+      ],
+      "cursor": 6
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fd",
+    "result": {
+      "text": "font-display: auto;",
+      "fields": [
+        [
+          14,
+          18,
+          1,
+          "auto"
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fef",
+    "result": {
+      "text": "font-effect: none;",
+      "fields": [
+        [
+          13,
+          17,
+          1,
+          "none"
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fem",
+    "result": {
+      "text": "font-emphasize: ;",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "stylesheet-snippet:femp",
+    "result": {
+      "text": "font-emphasize-position: before;",
+      "fields": [
+        [
+          25,
+          31,
+          1,
+          "before"
+        ]
+      ],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fems",
+    "result": {
+      "text": "font-emphasize-style: none;",
+      "fields": [
+        [
+          22,
+          26,
+          1,
+          "none"
+        ]
+      ],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "stylesheet-snippet:ff",
+    "result": {
+      "text": "font-family: serif;",
+      "fields": [
+        [
+          13,
+          18,
+          1,
+          "serif"
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fft",
+    "result": {
+      "text": "font-family: \"Times New Roman\", Times, Baskerville, Georgia, serif;",
+      "fields": [],
+      "cursor": 67
+    }
+  },
+  {
+    "id": "stylesheet-snippet:ffa",
+    "result": {
+      "text": "font-family: Arial, \"Helvetica Neue\", Helvetica, sans-serif;",
+      "fields": [],
+      "cursor": 60
+    }
+  },
+  {
+    "id": "stylesheet-snippet:ffv",
+    "result": {
+      "text": "font-family: Verdana, Geneva, sans-serif;",
+      "fields": [],
+      "cursor": 41
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fl",
+    "result": {
+      "text": "float: left;",
+      "fields": [
+        [
+          7,
+          11,
+          1,
+          "left"
+        ]
+      ],
+      "cursor": 7
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fs",
+    "result": {
+      "text": "font-style: italic;",
+      "fields": [
+        [
+          12,
+          18,
+          1,
+          "italic"
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fsm",
+    "result": {
+      "text": "font-smoothing: antialiased;",
+      "fields": [
+        [
+          16,
+          27,
+          1,
+          "antialiased"
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fst",
+    "result": {
+      "text": "font-stretch: normal;",
+      "fields": [
+        [
+          14,
+          20,
+          1,
+          "normal"
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fv",
+    "result": {
+      "text": "font-variant: normal;",
+      "fields": [
+        [
+          14,
+          20,
+          1,
+          "normal"
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fvs",
+    "result": {
+      "text": "font-variation-settings: normal;",
+      "fields": [
+        [
+          25,
+          31,
+          1,
+          "normal"
+        ]
+      ],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fw",
+    "result": {
+      "text": "font-weight: normal;",
+      "fields": [
+        [
+          13,
+          19,
+          1,
+          "normal"
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fx",
+    "result": {
+      "text": "flex: ;",
+      "fields": [
+        [
+          6,
+          6,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 6
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fxb",
+    "result": {
+      "text": "flex-basis: fill;",
+      "fields": [
+        [
+          12,
+          16,
+          1,
+          "fill"
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fxd",
+    "result": {
+      "text": "flex-direction: row;",
+      "fields": [
+        [
+          16,
+          19,
+          1,
+          "row"
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fxf",
+    "result": {
+      "text": "flex-flow: ;",
+      "fields": [
+        [
+          11,
+          11,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 11
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fxg",
+    "result": {
+      "text": "flex-grow: ;",
+      "fields": [
+        [
+          11,
+          11,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 11
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fxsh",
+    "result": {
+      "text": "flex-shrink: ;",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fxw",
+    "result": {
+      "text": "flex-wrap: nowrap;",
+      "fields": [
+        [
+          11,
+          17,
+          1,
+          "nowrap"
+        ]
+      ],
+      "cursor": 11
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fsz",
+    "result": {
+      "text": "font-size: ;",
+      "fields": [
+        [
+          11,
+          11,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 11
+    }
+  },
+  {
+    "id": "stylesheet-snippet:fsza",
+    "result": {
+      "text": "font-size-adjust: ;",
+      "fields": [
+        [
+          18,
+          18,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-snippet:g",
+    "result": {
+      "text": "gap: ;",
+      "fields": [
+        [
+          5,
+          5,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "stylesheet-snippet:gtc",
+    "result": {
+      "text": "grid-template-columns: repeat();",
+      "fields": [
+        [
+          30,
+          30,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 30
+    }
+  },
+  {
+    "id": "stylesheet-snippet:gtr",
+    "result": {
+      "text": "grid-template-rows: repeat();",
+      "fields": [
+        [
+          27,
+          27,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "stylesheet-snippet:gta",
+    "result": {
+      "text": "grid-template-areas: ;",
+      "fields": [
+        [
+          21,
+          21,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "stylesheet-snippet:gt",
+    "result": {
+      "text": "grid-template: ;",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-snippet:gg",
+    "result": {
+      "text": "grid-gap: ;",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "stylesheet-snippet:gcg",
+    "result": {
+      "text": "grid-column-gap: ;",
+      "fields": [
+        [
+          17,
+          17,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "stylesheet-snippet:grg",
+    "result": {
+      "text": "grid-row-gap: ;",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-snippet:gac",
+    "result": {
+      "text": "grid-auto-columns: auto;",
+      "fields": [
+        [
+          19,
+          23,
+          1,
+          "auto"
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-snippet:gar",
+    "result": {
+      "text": "grid-auto-rows: auto;",
+      "fields": [
+        [
+          16,
+          20,
+          1,
+          "auto"
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "stylesheet-snippet:gaf",
+    "result": {
+      "text": "grid-auto-flow: row;",
+      "fields": [
+        [
+          16,
+          19,
+          1,
+          "row"
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "stylesheet-snippet:gd",
+    "result": {
+      "text": "grid: ;",
+      "fields": [
+        [
+          6,
+          6,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 6
+    }
+  },
+  {
+    "id": "stylesheet-snippet:gc",
+    "result": {
+      "text": "grid-column: ;",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-snippet:gcs",
+    "result": {
+      "text": "grid-column-start: ;",
+      "fields": [
+        [
+          19,
+          19,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-snippet:gce",
+    "result": {
+      "text": "grid-column-end: ;",
+      "fields": [
+        [
+          17,
+          17,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "stylesheet-snippet:gr",
+    "result": {
+      "text": "grid-row: ;",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "stylesheet-snippet:grs",
+    "result": {
+      "text": "grid-row-start: ;",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "stylesheet-snippet:gre",
+    "result": {
+      "text": "grid-row-end: ;",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-snippet:ga",
+    "result": {
+      "text": "grid-area: ;",
+      "fields": [
+        [
+          11,
+          11,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 11
+    }
+  },
+  {
+    "id": "stylesheet-snippet:h",
+    "result": {
+      "text": "height: ;",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-snippet:is",
+    "result": {
+      "text": "inline-size: ;",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-snippet:jc",
+    "result": {
+      "text": "justify-content: start;",
+      "fields": [
+        [
+          17,
+          22,
+          1,
+          "start"
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "stylesheet-snippet:ji",
+    "result": {
+      "text": "justify-items: start;",
+      "fields": [
+        [
+          15,
+          20,
+          1,
+          "start"
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-snippet:js",
+    "result": {
+      "text": "justify-self: start;",
+      "fields": [
+        [
+          14,
+          19,
+          1,
+          "start"
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-snippet:l",
+    "result": {
+      "text": "left: ;",
+      "fields": [
+        [
+          6,
+          6,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 6
+    }
+  },
+  {
+    "id": "stylesheet-snippet:lg",
+    "result": {
+      "text": "background-image: linear-gradient();",
+      "fields": [
+        [
+          34,
+          34,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 34
+    }
+  },
+  {
+    "id": "stylesheet-snippet:lh",
+    "result": {
+      "text": "line-height: ;",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-snippet:lis",
+    "result": {
+      "text": "list-style: ;",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:lisi",
+    "result": {
+      "text": "list-style-image: ;",
+      "fields": [
+        [
+          18,
+          18,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-snippet:lisp",
+    "result": {
+      "text": "list-style-position: inside;",
+      "fields": [
+        [
+          21,
+          27,
+          1,
+          "inside"
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "stylesheet-snippet:list",
+    "result": {
+      "text": "list-style-type: disc;",
+      "fields": [
+        [
+          17,
+          21,
+          1,
+          "disc"
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "stylesheet-snippet:lts",
+    "result": {
+      "text": "letter-spacing: normal;",
+      "fields": [],
+      "cursor": 23
+    }
+  },
+  {
+    "id": "stylesheet-snippet:m",
+    "result": {
+      "text": "margin: ;",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-snippet:mah",
+    "result": {
+      "text": "max-height: ;",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:mar",
+    "result": {
+      "text": "max-resolution: ;",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "stylesheet-snippet:maw",
+    "result": {
+      "text": "max-width: ;",
+      "fields": [
+        [
+          11,
+          11,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 11
+    }
+  },
+  {
+    "id": "stylesheet-snippet:mb",
+    "result": {
+      "text": "margin-bottom: ;",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-snippet:mih",
+    "result": {
+      "text": "min-height: ;",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:mir",
+    "result": {
+      "text": "min-resolution: ;",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "stylesheet-snippet:miw",
+    "result": {
+      "text": "min-width: ;",
+      "fields": [
+        [
+          11,
+          11,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 11
+    }
+  },
+  {
+    "id": "stylesheet-snippet:ml",
+    "result": {
+      "text": "margin-left: ;",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-snippet:mr",
+    "result": {
+      "text": "margin-right: ;",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-snippet:mt",
+    "result": {
+      "text": "margin-top: ;",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:mbs",
+    "result": {
+      "text": "margin-block-start: ;",
+      "fields": [
+        [
+          20,
+          20,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 20
+    }
+  },
+  {
+    "id": "stylesheet-snippet:mbe",
+    "result": {
+      "text": "margin-block-end: ;",
+      "fields": [
+        [
+          18,
+          18,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-snippet:mis",
+    "result": {
+      "text": "margin-inline-start: ;",
+      "fields": [
+        [
+          21,
+          21,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "stylesheet-snippet:mie",
+    "result": {
+      "text": "margin-inline-end: ;",
+      "fields": [
+        [
+          19,
+          19,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-snippet:ol",
+    "result": {
+      "text": "outline: ;",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "stylesheet-snippet:olc",
+    "result": {
+      "text": "outline-color: #000;",
+      "fields": [
+        [
+          15,
+          19,
+          1,
+          "#000"
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-snippet:olo",
+    "result": {
+      "text": "outline-offset: ;",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "stylesheet-snippet:ols",
+    "result": {
+      "text": "outline-style: none;",
+      "fields": [
+        [
+          15,
+          19,
+          1,
+          "none"
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-snippet:olw",
+    "result": {
+      "text": "outline-width: thin;",
+      "fields": [
+        [
+          15,
+          19,
+          1,
+          "thin"
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-snippet:op",
+    "result": {
+      "text": "opacity: ;",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "stylesheet-snippet:opa",
+    "result": {
+      "text": "opacity: ;",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "stylesheet-snippet:ord",
+    "result": {
+      "text": "order: ;",
+      "fields": [
+        [
+          7,
+          7,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 7
+    }
+  },
+  {
+    "id": "stylesheet-snippet:ori",
+    "result": {
+      "text": "orientation: landscape;",
+      "fields": [
+        [
+          13,
+          22,
+          1,
+          "landscape"
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-snippet:orp",
+    "result": {
+      "text": "orphans: ;",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "stylesheet-snippet:ov",
+    "result": {
+      "text": "overflow: hidden;",
+      "fields": [
+        [
+          10,
+          16,
+          1,
+          "hidden"
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "stylesheet-snippet:ovs",
+    "result": {
+      "text": "overflow-style: scrollbar;",
+      "fields": [
+        [
+          16,
+          25,
+          1,
+          "scrollbar"
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "stylesheet-snippet:ovx",
+    "result": {
+      "text": "overflow-x: hidden;",
+      "fields": [
+        [
+          12,
+          18,
+          1,
+          "hidden"
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:ovy",
+    "result": {
+      "text": "overflow-y: hidden;",
+      "fields": [
+        [
+          12,
+          18,
+          1,
+          "hidden"
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:p",
+    "result": {
+      "text": "padding: ;",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "stylesheet-snippet:pb",
+    "result": {
+      "text": "padding-bottom: ;",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "stylesheet-snippet:pgba",
+    "result": {
+      "text": "page-break-after: auto;",
+      "fields": [
+        [
+          18,
+          22,
+          1,
+          "auto"
+        ]
+      ],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-snippet:pgbb",
+    "result": {
+      "text": "page-break-before: auto;",
+      "fields": [
+        [
+          19,
+          23,
+          1,
+          "auto"
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-snippet:pgbi",
+    "result": {
+      "text": "page-break-inside: auto;",
+      "fields": [
+        [
+          19,
+          23,
+          1,
+          "auto"
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-snippet:pl",
+    "result": {
+      "text": "padding-left: ;",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-snippet:pos",
+    "result": {
+      "text": "position: relative;",
+      "fields": [
+        [
+          10,
+          18,
+          1,
+          "relative"
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "stylesheet-snippet:pr",
+    "result": {
+      "text": "padding-right: ;",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-snippet:pt",
+    "result": {
+      "text": "padding-top: ;",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-snippet:pbs",
+    "result": {
+      "text": "padding-block-start: ;",
+      "fields": [
+        [
+          21,
+          21,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "stylesheet-snippet:pbe",
+    "result": {
+      "text": "padding-block-end: ;",
+      "fields": [
+        [
+          19,
+          19,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-snippet:pis",
+    "result": {
+      "text": "padding-inline-start: ;",
+      "fields": [
+        [
+          22,
+          22,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "stylesheet-snippet:pie",
+    "result": {
+      "text": "padding-inline-end: ;",
+      "fields": [
+        [
+          20,
+          20,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 20
+    }
+  },
+  {
+    "id": "stylesheet-snippet:spbs",
+    "result": {
+      "text": "scroll-padding-block-start: ;",
+      "fields": [
+        [
+          28,
+          28,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 28
+    }
+  },
+  {
+    "id": "stylesheet-snippet:spbe",
+    "result": {
+      "text": "scroll-padding-block-end: ;",
+      "fields": [
+        [
+          26,
+          26,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 26
+    }
+  },
+  {
+    "id": "stylesheet-snippet:spis",
+    "result": {
+      "text": "scroll-padding-inline-start: ;",
+      "fields": [
+        [
+          29,
+          29,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 29
+    }
+  },
+  {
+    "id": "stylesheet-snippet:spie",
+    "result": {
+      "text": "scroll-padding-inline-end: ;",
+      "fields": [
+        [
+          27,
+          27,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "stylesheet-snippet:q",
+    "result": {
+      "text": "quotes: ;",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-snippet:qen",
+    "result": {
+      "text": "quotes: '\\201C' '\\201D' '\\2018' '\\2019';",
+      "fields": [],
+      "cursor": 40
+    }
+  },
+  {
+    "id": "stylesheet-snippet:qru",
+    "result": {
+      "text": "quotes: '\\00AB' '\\00BB' '\\201E' '\\201C';",
+      "fields": [],
+      "cursor": 40
+    }
+  },
+  {
+    "id": "stylesheet-snippet:r",
+    "result": {
+      "text": "right: ;",
+      "fields": [
+        [
+          7,
+          7,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 7
+    }
+  },
+  {
+    "id": "stylesheet-snippet:rg",
+    "result": {
+      "text": "row-gap: ;",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "stylesheet-snippet:rsz",
+    "result": {
+      "text": "resize: none;",
+      "fields": [
+        [
+          8,
+          12,
+          1,
+          "none"
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-snippet:t",
+    "result": {
+      "text": "top: ;",
+      "fields": [
+        [
+          5,
+          5,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "stylesheet-snippet:ta",
+    "result": {
+      "text": "text-align: left;",
+      "fields": [
+        [
+          12,
+          16,
+          1,
+          "left"
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:tal",
+    "result": {
+      "text": "text-align-last: left;",
+      "fields": [
+        [
+          17,
+          21,
+          1,
+          "left"
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "stylesheet-snippet:tbl",
+    "result": {
+      "text": "table-layout: fixed;",
+      "fields": [],
+      "cursor": 20
+    }
+  },
+  {
+    "id": "stylesheet-snippet:td",
+    "result": {
+      "text": "text-decoration: none;",
+      "fields": [
+        [
+          17,
+          21,
+          1,
+          "none"
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "stylesheet-snippet:te",
+    "result": {
+      "text": "text-emphasis: none;",
+      "fields": [
+        [
+          15,
+          19,
+          1,
+          "none"
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-snippet:th",
+    "result": {
+      "text": "text-height: auto;",
+      "fields": [
+        [
+          13,
+          17,
+          1,
+          "auto"
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-snippet:ti",
+    "result": {
+      "text": "text-indent: ;",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-snippet:tj",
+    "result": {
+      "text": "text-justify: auto;",
+      "fields": [
+        [
+          14,
+          18,
+          1,
+          "auto"
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-snippet:to",
+    "result": {
+      "text": "text-outline: 0 0 #000;",
+      "fields": [
+        [
+          14,
+          15,
+          1,
+          "0"
+        ],
+        [
+          16,
+          17,
+          2,
+          "0"
+        ],
+        [
+          18,
+          22,
+          3,
+          "#000"
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-snippet:tov",
+    "result": {
+      "text": "text-overflow: ellipsis;",
+      "fields": [
+        [
+          15,
+          23,
+          1,
+          "ellipsis"
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-snippet:tr",
+    "result": {
+      "text": "text-replace: ;",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-snippet:trf",
+    "result": {
+      "text": "transform: ;",
+      "fields": [
+        [
+          11,
+          11,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 11
+    }
+  },
+  {
+    "id": "stylesheet-snippet:trfo",
+    "result": {
+      "text": "transform-origin: ;",
+      "fields": [
+        [
+          18,
+          18,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-snippet:trfs",
+    "result": {
+      "text": "transform-style: preserve-3d;",
+      "fields": [],
+      "cursor": 29
+    }
+  },
+  {
+    "id": "stylesheet-snippet:trs",
+    "result": {
+      "text": "transition: prop time;",
+      "fields": [
+        [
+          12,
+          16,
+          1,
+          "prop"
+        ],
+        [
+          17,
+          21,
+          2,
+          "time"
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:trsde",
+    "result": {
+      "text": "transition-delay: time;",
+      "fields": [
+        [
+          18,
+          22,
+          1,
+          "time"
+        ]
+      ],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-snippet:trsdu",
+    "result": {
+      "text": "transition-duration: time;",
+      "fields": [
+        [
+          21,
+          25,
+          1,
+          "time"
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "stylesheet-snippet:trsp",
+    "result": {
+      "text": "transition-property: prop;",
+      "fields": [
+        [
+          21,
+          25,
+          1,
+          "prop"
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "stylesheet-snippet:trstf",
+    "result": {
+      "text": "transition-timing-function: fn;",
+      "fields": [
+        [
+          28,
+          30,
+          1,
+          "fn"
+        ]
+      ],
+      "cursor": 28
+    }
+  },
+  {
+    "id": "stylesheet-snippet:tsh",
+    "result": {
+      "text": "text-shadow: hoff voff blur #000;",
+      "fields": [
+        [
+          13,
+          17,
+          1,
+          "hoff"
+        ],
+        [
+          18,
+          22,
+          2,
+          "voff"
+        ],
+        [
+          23,
+          27,
+          3,
+          "blur"
+        ],
+        [
+          28,
+          32,
+          4,
+          "#000"
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-snippet:tt",
+    "result": {
+      "text": "text-transform: uppercase;",
+      "fields": [
+        [
+          16,
+          25,
+          1,
+          "uppercase"
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "stylesheet-snippet:tw",
+    "result": {
+      "text": "text-wrap: none;",
+      "fields": [
+        [
+          11,
+          15,
+          1,
+          "none"
+        ]
+      ],
+      "cursor": 11
+    }
+  },
+  {
+    "id": "stylesheet-snippet:us",
+    "result": {
+      "text": "user-select: none;",
+      "fields": [],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-snippet:v",
+    "result": {
+      "text": "visibility: hidden;",
+      "fields": [
+        [
+          12,
+          18,
+          1,
+          "hidden"
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:va",
+    "result": {
+      "text": "vertical-align: top;",
+      "fields": [
+        [
+          16,
+          19,
+          1,
+          "top"
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "stylesheet-snippet:w",
+    "result": {
+      "text": "width: ;",
+      "fields": [
+        [
+          7,
+          7,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 7
+    }
+  },
+  {
+    "id": "stylesheet-snippet:wid",
+    "result": {
+      "text": "width: ;",
+      "fields": [
+        [
+          7,
+          7,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 7
+    }
+  },
+  {
+    "id": "stylesheet-snippet:whs",
+    "result": {
+      "text": "white-space: nowrap;",
+      "fields": [
+        [
+          13,
+          19,
+          1,
+          "nowrap"
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-snippet:whsc",
+    "result": {
+      "text": "white-space-collapse: normal;",
+      "fields": [
+        [
+          22,
+          28,
+          1,
+          "normal"
+        ]
+      ],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "stylesheet-snippet:wido",
+    "result": {
+      "text": "widows: ;",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-snippet:wm",
+    "result": {
+      "text": "writing-mode: lr-tb;",
+      "fields": [
+        [
+          14,
+          19,
+          1,
+          "lr-tb"
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-snippet:wob",
+    "result": {
+      "text": "word-break: normal;",
+      "fields": [
+        [
+          12,
+          18,
+          1,
+          "normal"
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-snippet:wos",
+    "result": {
+      "text": "word-spacing: ;",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-snippet:wow",
+    "result": {
+      "text": "word-wrap: none;",
+      "fields": [
+        [
+          11,
+          15,
+          1,
+          "none"
+        ]
+      ],
+      "cursor": 11
+    }
+  },
+  {
+    "id": "stylesheet-snippet:z",
+    "result": {
+      "text": "z-index: ;",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "stylesheet-snippet:zom",
+    "result": {
+      "text": "zoom: 1;",
+      "fields": [],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-contract-01",
+    "result": {
+      "text": "color: #000;\nbackground: #000;",
+      "fields": [
+        [
+          7,
+          11,
+          1,
+          "#000"
+        ],
+        [
+          25,
+          29,
+          2,
+          "#000"
+        ]
+      ],
+      "cursor": 7
+    }
+  },
+  {
+    "id": "stylesheet-contract-02",
+    "result": {
+      "text": "margin: ;\npadding: ;",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ],
+        [
+          19,
+          19,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-contract-03",
+    "result": {
+      "text": "top: ;",
+      "fields": [
+        [
+          5,
+          5,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "stylesheet-contract-04",
+    "result": {
+      "text": "z-index: ;",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "stylesheet-contract-05",
+    "result": {
+      "text": "background-image: linear-gradient();",
+      "fields": [
+        [
+          34,
+          34,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 34
+    }
+  },
+  {
+    "id": "stylesheet-contract-06",
+    "result": {
+      "text": "border: 1px solid #000;\nborder: 1px solid #000;",
+      "fields": [
+        [
+          8,
+          11,
+          1,
+          "1px"
+        ],
+        [
+          12,
+          17,
+          2,
+          "solid"
+        ],
+        [
+          18,
+          22,
+          3,
+          "#000"
+        ],
+        [
+          32,
+          35,
+          4,
+          "1px"
+        ],
+        [
+          36,
+          41,
+          5,
+          "solid"
+        ],
+        [
+          42,
+          46,
+          6,
+          "#000"
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-contract-07",
+    "result": {
+      "text": "margin: 0.5rem;",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-contract-08",
+    "result": {
+      "text": "padding: 10px 20px;",
+      "fields": [],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-contract-09",
+    "result": {
+      "text": "color: rgba(51, 51, 51, 0.5);",
+      "fields": [],
+      "cursor": 29
+    }
+  },
+  {
+    "id": "stylesheet-contract-10",
+    "result": {
+      "text": "margin: 10px;\npadding: 5px;\nborder: 1px #222 solid;\nposition: absolute;\ndisplay: inline-block;\nfont-size: 16px;",
+      "fields": [],
+      "cursor": 111
+    }
+  },
+  {
+    "id": "stylesheet-contract-11",
+    "result": {
+      "text": "padding: $a $b $c;",
+      "fields": [],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-contract-12",
+    "result": {
+      "text": "top: 1px !important;",
+      "fields": [],
+      "cursor": 20
+    }
+  },
+  {
+    "id": "css-indent",
+    "result": {
+      "text": "color: #000;\n  background: #000;\n  border: 1px solid #000;",
+      "fields": [
+        [
+          7,
+          11,
+          1,
+          "#000"
+        ],
+        [
+          27,
+          31,
+          2,
+          "#000"
+        ],
+        [
+          43,
+          46,
+          3,
+          "1px"
+        ],
+        [
+          47,
+          52,
+          4,
+          "solid"
+        ],
+        [
+          53,
+          57,
+          5,
+          "#000"
+        ]
+      ],
+      "cursor": 7
+    }
+  },
+  {
+    "id": "css-invalid-raw",
+    "error": {
+      "message": "Unexpected character",
+      "position": 2
+    }
+  },
+  {
+    "id": "css-error-after-emoji",
+    "error": {
+      "message": "Unexpected character",
+      "position": 7
+    }
+  }
+]

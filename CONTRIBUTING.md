@@ -38,7 +38,9 @@ tests as migrated coverage.
   It never reads or writes an editor buffer.
 - Markup preserves real mirror groups. CSS fields belong to one parsed property;
   identical upstream numbers in different properties are independent. Upstream
-  zero is an editable field, not the final snippet exit.
+  zero is an editable field, not the final snippet exit. If one upstream number
+  has different default texts, those defaults form independent groups so that
+  snippet insertion cannot silently overwrite the authored text.
 - Extensions own opinionated syntax and all transformations of text and fields,
   including removal of CSS defaults. No later layer repeats this cleanup.
 - `emmet2-insert` is the only active source-text writer. It checks source/range/
@@ -69,10 +71,36 @@ The vendor directory is excluded from Deno lint because it is unmodified
 third-party generated code. Hand-authored source and tooling remain checked.
 Use a separate explicit upgrade to change vendor versions, checksums or fixtures.
 
-The upcoming S0 checks must run without network or node_modules. Hand-written
-field, Unicode and error assertions must pass before generated golden results
-are accepted. The core oracle, extension behavior and editor integration are
-separate suites; no shared adapter may serve as its own only correctness proof.
+The S0 reference tools use Node 24.21.0 (including `import.meta.main`) and need
+no network or node_modules:
+
+```sh
+rtk proxy node --test test/oracle/adapter.test.mjs
+rtk proxy node --test test/oracle/gen.test.mjs
+rtk proxy node test/oracle/gen.mjs --check
+rtk proxy deno lint emmet2-engine-node.mjs test/oracle
+```
+
+`emmet2-engine-node.mjs` is the fixed-version output adapter; it has no process
+or editor state. S1 will import it from the protocol server instead of creating
+a second normalization path. The runtime has not switched to this module yet.
+
+`core-inputs.json` contains an explicit input list: every pinned HTML/CSS alias,
+plus hand-selected markup, JSX, fields, Unicode, formatting and error cases.
+It is a starting corpus, not a claim of complete upstream feature coverage.
+Larger parser/formatter and lorem structural suites are still required before
+the S6/S7 engines can be accepted. Do not infer test cases by scanning arbitrary
+source string literals during generation.
+
+After an intentional input or contract change, run the same generator without
+`--check` and review both JSON outputs. Check mode regenerates in memory and
+compares contents and the entire output file list without writing. Unexpected
+files fail; the generator never deletes them automatically.
+
+Hand-written field, Unicode and error assertions must pass before generated
+goldens are accepted. The core oracle, extension behavior and editor integration
+remain separate suites; a shared adapter cannot be its own only correctness
+proof. Corfu/host probes, ERT and clean CI are still pending S0 work.
 
 ## Review and milestones
 

@@ -1,0 +1,4435 @@
+[
+  {
+    "id": "html-snippet:a",
+    "result": {
+      "text": "<a href=\"\"></a>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ],
+        [
+          11,
+          11,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "html-snippet:a:blank",
+    "result": {
+      "text": "<a href=\"http://\" target=\"_blank\" rel=\"noopener noreferrer\"></a>",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ],
+        [
+          60,
+          60,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:a:link",
+    "result": {
+      "text": "<a href=\"http://\"></a>",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ],
+        [
+          18,
+          18,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:a:mail",
+    "result": {
+      "text": "<a href=\"mailto:\"></a>",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ],
+        [
+          18,
+          18,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:a:tel",
+    "result": {
+      "text": "<a href=\"tel:+\"></a>",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ],
+        [
+          16,
+          16,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "html-snippet:abbr",
+    "result": {
+      "text": "<abbr title=\"\"></abbr>",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ],
+        [
+          15,
+          15,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "html-snippet:acr",
+    "result": {
+      "text": "<acronym title=\"\"></acronym>",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ],
+        [
+          18,
+          18,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:acronym",
+    "result": {
+      "text": "<acronym title=\"\"></acronym>",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ],
+        [
+          18,
+          18,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:base",
+    "result": {
+      "text": "<base href=\"\">",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "html-snippet:basefont",
+    "result": {
+      "text": "<basefont>",
+      "fields": [],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "html-snippet:br",
+    "result": {
+      "text": "<br>",
+      "fields": [],
+      "cursor": 4
+    }
+  },
+  {
+    "id": "html-snippet:frame",
+    "result": {
+      "text": "<frame>",
+      "fields": [],
+      "cursor": 7
+    }
+  },
+  {
+    "id": "html-snippet:hr",
+    "result": {
+      "text": "<hr>",
+      "fields": [],
+      "cursor": 4
+    }
+  },
+  {
+    "id": "html-snippet:bdo",
+    "result": {
+      "text": "<bdo dir=\"\"></bdo>",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ],
+        [
+          12,
+          12,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "html-snippet:bdo:r",
+    "result": {
+      "text": "<bdo dir=\"rtl\"></bdo>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "html-snippet:bdo:l",
+    "result": {
+      "text": "<bdo dir=\"ltr\"></bdo>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "html-snippet:col",
+    "result": {
+      "text": "<col>",
+      "fields": [],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "html-snippet:link",
+    "result": {
+      "text": "<link rel=\"stylesheet\" href=\"\">",
+      "fields": [
+        [
+          29,
+          29,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 29
+    }
+  },
+  {
+    "id": "html-snippet:link:css",
+    "result": {
+      "text": "<link rel=\"stylesheet\" href=\"style.css\">",
+      "fields": [
+        [
+          29,
+          34,
+          1,
+          "style"
+        ]
+      ],
+      "cursor": 29
+    }
+  },
+  {
+    "id": "html-snippet:link:print",
+    "result": {
+      "text": "<link rel=\"stylesheet\" href=\"print.css\" media=\"print\">",
+      "fields": [
+        [
+          29,
+          34,
+          1,
+          "print"
+        ]
+      ],
+      "cursor": 29
+    }
+  },
+  {
+    "id": "html-snippet:link:favicon",
+    "result": {
+      "text": "<link rel=\"shortcut icon\" href=\"favicon.ico\" type=\"image/x-icon\">",
+      "fields": [
+        [
+          32,
+          43,
+          1,
+          "favicon.ico"
+        ]
+      ],
+      "cursor": 32
+    }
+  },
+  {
+    "id": "html-snippet:link:mf",
+    "result": {
+      "text": "<link rel=\"manifest\" href=\"manifest.json\">",
+      "fields": [
+        [
+          27,
+          40,
+          1,
+          "manifest.json"
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "html-snippet:link:manifest",
+    "result": {
+      "text": "<link rel=\"manifest\" href=\"manifest.json\">",
+      "fields": [
+        [
+          27,
+          40,
+          1,
+          "manifest.json"
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "html-snippet:link:touch",
+    "result": {
+      "text": "<link rel=\"apple-touch-icon\" href=\"favicon.png\">",
+      "fields": [
+        [
+          35,
+          46,
+          1,
+          "favicon.png"
+        ]
+      ],
+      "cursor": 35
+    }
+  },
+  {
+    "id": "html-snippet:link:rss",
+    "result": {
+      "text": "<link rel=\"alternate\" href=\"rss.xml\" type=\"application/rss+xml\" title=\"RSS\">",
+      "fields": [
+        [
+          28,
+          35,
+          1,
+          "rss.xml"
+        ]
+      ],
+      "cursor": 28
+    }
+  },
+  {
+    "id": "html-snippet:link:atom",
+    "result": {
+      "text": "<link rel=\"alternate\" href=\"atom.xml\" type=\"application/atom+xml\" title=\"Atom\">",
+      "fields": [
+        [
+          28,
+          36,
+          1,
+          "atom.xml"
+        ]
+      ],
+      "cursor": 28
+    }
+  },
+  {
+    "id": "html-snippet:link:im",
+    "result": {
+      "text": "<link rel=\"import\" href=\"component.html\">",
+      "fields": [
+        [
+          25,
+          34,
+          1,
+          "component"
+        ]
+      ],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "html-snippet:link:import",
+    "result": {
+      "text": "<link rel=\"import\" href=\"component.html\">",
+      "fields": [
+        [
+          25,
+          34,
+          1,
+          "component"
+        ]
+      ],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "html-snippet:meta",
+    "result": {
+      "text": "<meta>",
+      "fields": [],
+      "cursor": 6
+    }
+  },
+  {
+    "id": "html-snippet:meta:utf",
+    "result": {
+      "text": "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">",
+      "fields": [],
+      "cursor": 66
+    }
+  },
+  {
+    "id": "html-snippet:meta:vp",
+    "result": {
+      "text": "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">",
+      "fields": [
+        [
+          37,
+          49,
+          1,
+          "device-width"
+        ],
+        [
+          65,
+          68,
+          2,
+          "1.0"
+        ]
+      ],
+      "cursor": 37
+    }
+  },
+  {
+    "id": "html-snippet:meta:compat",
+    "result": {
+      "text": "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=7\">",
+      "fields": [
+        [
+          44,
+          48,
+          1,
+          "IE=7"
+        ]
+      ],
+      "cursor": 44
+    }
+  },
+  {
+    "id": "html-snippet:meta:edge",
+    "result": {
+      "text": "<meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">",
+      "fields": [
+        [
+          44,
+          51,
+          1,
+          "ie=edge"
+        ]
+      ],
+      "cursor": 44
+    }
+  },
+  {
+    "id": "html-snippet:meta:redirect",
+    "result": {
+      "text": "<meta http-equiv=\"refresh\" content=\"0; url=http://example.com\">",
+      "fields": [
+        [
+          43,
+          61,
+          1,
+          "http://example.com"
+        ]
+      ],
+      "cursor": 43
+    }
+  },
+  {
+    "id": "html-snippet:meta:refresh",
+    "result": {
+      "text": "<meta http-equiv=\"refresh\" content=\"5\">",
+      "fields": [
+        [
+          36,
+          37,
+          1,
+          "5"
+        ]
+      ],
+      "cursor": 36
+    }
+  },
+  {
+    "id": "html-snippet:meta:kw",
+    "result": {
+      "text": "<meta name=\"keywords\" content=\"\">",
+      "fields": [
+        [
+          31,
+          31,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 31
+    }
+  },
+  {
+    "id": "html-snippet:meta:desc",
+    "result": {
+      "text": "<meta name=\"description\" content=\"\">",
+      "fields": [
+        [
+          34,
+          34,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 34
+    }
+  },
+  {
+    "id": "html-snippet:style",
+    "result": {
+      "text": "<style></style>",
+      "fields": [
+        [
+          7,
+          7,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 7
+    }
+  },
+  {
+    "id": "html-snippet:script",
+    "result": {
+      "text": "<script></script>",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "html-snippet:script:src",
+    "result": {
+      "text": "<script src=\"\"></script>",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ],
+        [
+          15,
+          15,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "html-snippet:script:module",
+    "result": {
+      "text": "<script type=\"module\" src=\"\"></script>",
+      "fields": [
+        [
+          27,
+          27,
+          1,
+          ""
+        ],
+        [
+          29,
+          29,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "html-snippet:img",
+    "result": {
+      "text": "<img src=\"\" alt=\"\">",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ],
+        [
+          17,
+          17,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "html-snippet:img:s",
+    "result": {
+      "text": "<img src=\"\" alt=\"\" srcset=\"\">",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ],
+        [
+          17,
+          17,
+          2,
+          ""
+        ],
+        [
+          27,
+          27,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "html-snippet:img:srcset",
+    "result": {
+      "text": "<img src=\"\" alt=\"\" srcset=\"\">",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ],
+        [
+          17,
+          17,
+          2,
+          ""
+        ],
+        [
+          27,
+          27,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "html-snippet:img:z",
+    "result": {
+      "text": "<img src=\"\" alt=\"\" sizes=\"\" srcset=\"\">",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ],
+        [
+          17,
+          17,
+          2,
+          ""
+        ],
+        [
+          26,
+          26,
+          3,
+          ""
+        ],
+        [
+          36,
+          36,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "html-snippet:img:sizes",
+    "result": {
+      "text": "<img src=\"\" alt=\"\" sizes=\"\" srcset=\"\">",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ],
+        [
+          17,
+          17,
+          2,
+          ""
+        ],
+        [
+          26,
+          26,
+          3,
+          ""
+        ],
+        [
+          36,
+          36,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "html-snippet:picture",
+    "result": {
+      "text": "<picture></picture>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "html-snippet:src",
+    "result": {
+      "text": "<source>",
+      "fields": [],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "html-snippet:source",
+    "result": {
+      "text": "<source>",
+      "fields": [],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "html-snippet:src:sc",
+    "result": {
+      "text": "<source src=\"\" type=\"\">",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ],
+        [
+          21,
+          21,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "html-snippet:source:src",
+    "result": {
+      "text": "<source src=\"\" type=\"\">",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ],
+        [
+          21,
+          21,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "html-snippet:src:s",
+    "result": {
+      "text": "<source srcset=\"\">",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:source:srcset",
+    "result": {
+      "text": "<source srcset=\"\">",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:src:t",
+    "result": {
+      "text": "<source srcset=\"\" type=\"image/\">",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ],
+        [
+          24,
+          30,
+          2,
+          "image/"
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:source:type",
+    "result": {
+      "text": "<source srcset=\"\" type=\"image/\">",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ],
+        [
+          24,
+          30,
+          2,
+          "image/"
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:src:z",
+    "result": {
+      "text": "<source sizes=\"\" srcset=\"\">",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ],
+        [
+          25,
+          25,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "html-snippet:source:sizes",
+    "result": {
+      "text": "<source sizes=\"\" srcset=\"\">",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ],
+        [
+          25,
+          25,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "html-snippet:src:m",
+    "result": {
+      "text": "<source media=\"(min-width: )\" srcset=\"\">",
+      "fields": [
+        [
+          16,
+          27,
+          1,
+          "min-width: "
+        ],
+        [
+          38,
+          38,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:source:media",
+    "result": {
+      "text": "<source media=\"(min-width: )\" srcset=\"\">",
+      "fields": [
+        [
+          16,
+          27,
+          1,
+          "min-width: "
+        ],
+        [
+          38,
+          38,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:src:mt",
+    "result": {
+      "text": "<source media=\"(min-width: )\" srcset=\"\" type=\"image/\">",
+      "fields": [
+        [
+          16,
+          27,
+          1,
+          "min-width: "
+        ],
+        [
+          38,
+          38,
+          2,
+          ""
+        ],
+        [
+          46,
+          52,
+          3,
+          "image/"
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:source:media:type",
+    "result": {
+      "text": "<source media=\"(min-width: )\" srcset=\"\" type=\"image/\">",
+      "fields": [
+        [
+          16,
+          27,
+          1,
+          "min-width: "
+        ],
+        [
+          38,
+          38,
+          2,
+          ""
+        ],
+        [
+          46,
+          52,
+          3,
+          "image/"
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:src:mz",
+    "result": {
+      "text": "<source media=\"(min-width: )\" srcset=\"\" sizes=\"\">",
+      "fields": [
+        [
+          16,
+          27,
+          1,
+          "min-width: "
+        ],
+        [
+          38,
+          38,
+          2,
+          ""
+        ],
+        [
+          47,
+          47,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:source:media:sizes",
+    "result": {
+      "text": "<source media=\"(min-width: )\" srcset=\"\" sizes=\"\">",
+      "fields": [
+        [
+          16,
+          27,
+          1,
+          "min-width: "
+        ],
+        [
+          38,
+          38,
+          2,
+          ""
+        ],
+        [
+          47,
+          47,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:src:zt",
+    "result": {
+      "text": "<source sizes=\"\" srcset=\"\" type=\"image/\">",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ],
+        [
+          25,
+          25,
+          2,
+          ""
+        ],
+        [
+          33,
+          39,
+          3,
+          "image/"
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "html-snippet:source:sizes:type",
+    "result": {
+      "text": "<source sizes=\"\" srcset=\"\" type=\"image/\">",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ],
+        [
+          25,
+          25,
+          2,
+          ""
+        ],
+        [
+          33,
+          39,
+          3,
+          "image/"
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "html-snippet:iframe",
+    "result": {
+      "text": "<iframe src=\"\" frameborder=\"0\"></iframe>",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ],
+        [
+          31,
+          31,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "html-snippet:embed",
+    "result": {
+      "text": "<embed src=\"\" type=\"\">",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ],
+        [
+          20,
+          20,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "html-snippet:object",
+    "result": {
+      "text": "<object data=\"\" type=\"\"></object>",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ],
+        [
+          22,
+          22,
+          2,
+          ""
+        ],
+        [
+          24,
+          24,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "html-snippet:param",
+    "result": {
+      "text": "<param name=\"\" value=\"\">",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ],
+        [
+          22,
+          22,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "html-snippet:map",
+    "result": {
+      "text": "<map name=\"\"></map>",
+      "fields": [
+        [
+          11,
+          11,
+          1,
+          ""
+        ],
+        [
+          13,
+          13,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 11
+    }
+  },
+  {
+    "id": "html-snippet:area",
+    "result": {
+      "text": "<area shape=\"\" coords=\"\" href=\"\" alt=\"\">",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ],
+        [
+          23,
+          23,
+          2,
+          ""
+        ],
+        [
+          31,
+          31,
+          3,
+          ""
+        ],
+        [
+          38,
+          38,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "html-snippet:area:d",
+    "result": {
+      "text": "<area shape=\"default\" coords=\"\" href=\"\" alt=\"\">",
+      "fields": [
+        [
+          30,
+          30,
+          1,
+          ""
+        ],
+        [
+          38,
+          38,
+          2,
+          ""
+        ],
+        [
+          45,
+          45,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 30
+    }
+  },
+  {
+    "id": "html-snippet:area:c",
+    "result": {
+      "text": "<area shape=\"circle\" coords=\"\" href=\"\" alt=\"\">",
+      "fields": [
+        [
+          29,
+          29,
+          1,
+          ""
+        ],
+        [
+          37,
+          37,
+          2,
+          ""
+        ],
+        [
+          44,
+          44,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 29
+    }
+  },
+  {
+    "id": "html-snippet:area:r",
+    "result": {
+      "text": "<area shape=\"rect\" coords=\"\" href=\"\" alt=\"\">",
+      "fields": [
+        [
+          27,
+          27,
+          1,
+          ""
+        ],
+        [
+          35,
+          35,
+          2,
+          ""
+        ],
+        [
+          42,
+          42,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "html-snippet:area:p",
+    "result": {
+      "text": "<area shape=\"poly\" coords=\"\" href=\"\" alt=\"\">",
+      "fields": [
+        [
+          27,
+          27,
+          1,
+          ""
+        ],
+        [
+          35,
+          35,
+          2,
+          ""
+        ],
+        [
+          42,
+          42,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "html-snippet:form",
+    "result": {
+      "text": "<form action=\"\"></form>",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ],
+        [
+          16,
+          16,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "html-snippet:form:get",
+    "result": {
+      "text": "<form action=\"\" method=\"get\"></form>",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ],
+        [
+          29,
+          29,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "html-snippet:form:post",
+    "result": {
+      "text": "<form action=\"\" method=\"post\"></form>",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ],
+        [
+          30,
+          30,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "html-snippet:label",
+    "result": {
+      "text": "<label for=\"\"></label>",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ],
+        [
+          14,
+          14,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "html-snippet:input",
+    "result": {
+      "text": "<input type=\"text\">",
+      "fields": [
+        [
+          13,
+          17,
+          1,
+          "text"
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "html-snippet:inp",
+    "result": {
+      "text": "<input type=\"text\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          13,
+          17,
+          1,
+          "text"
+        ],
+        [
+          25,
+          25,
+          2,
+          ""
+        ],
+        [
+          31,
+          31,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "html-snippet:input:h",
+    "result": {
+      "text": "<input type=\"hidden\" name=\"\">",
+      "fields": [
+        [
+          27,
+          27,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "html-snippet:input:hidden",
+    "result": {
+      "text": "<input type=\"hidden\" name=\"\">",
+      "fields": [
+        [
+          27,
+          27,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "html-snippet:input:t",
+    "result": {
+      "text": "<input type=\"text\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          25,
+          25,
+          1,
+          ""
+        ],
+        [
+          31,
+          31,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "html-snippet:input:text",
+    "result": {
+      "text": "<input type=\"text\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          25,
+          25,
+          1,
+          ""
+        ],
+        [
+          31,
+          31,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "html-snippet:input:search",
+    "result": {
+      "text": "<input type=\"search\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          27,
+          27,
+          1,
+          ""
+        ],
+        [
+          33,
+          33,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "html-snippet:input:email",
+    "result": {
+      "text": "<input type=\"email\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          26,
+          26,
+          1,
+          ""
+        ],
+        [
+          32,
+          32,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 26
+    }
+  },
+  {
+    "id": "html-snippet:input:url",
+    "result": {
+      "text": "<input type=\"url\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          24,
+          24,
+          1,
+          ""
+        ],
+        [
+          30,
+          30,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 24
+    }
+  },
+  {
+    "id": "html-snippet:input:p",
+    "result": {
+      "text": "<input type=\"password\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          29,
+          29,
+          1,
+          ""
+        ],
+        [
+          35,
+          35,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 29
+    }
+  },
+  {
+    "id": "html-snippet:input:password",
+    "result": {
+      "text": "<input type=\"password\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          29,
+          29,
+          1,
+          ""
+        ],
+        [
+          35,
+          35,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 29
+    }
+  },
+  {
+    "id": "html-snippet:input:datetime",
+    "result": {
+      "text": "<input type=\"datetime\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          29,
+          29,
+          1,
+          ""
+        ],
+        [
+          35,
+          35,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 29
+    }
+  },
+  {
+    "id": "html-snippet:input:date",
+    "result": {
+      "text": "<input type=\"date\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          25,
+          25,
+          1,
+          ""
+        ],
+        [
+          31,
+          31,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "html-snippet:input:datetime-local",
+    "result": {
+      "text": "<input type=\"datetime-local\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          35,
+          35,
+          1,
+          ""
+        ],
+        [
+          41,
+          41,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 35
+    }
+  },
+  {
+    "id": "html-snippet:input:month",
+    "result": {
+      "text": "<input type=\"month\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          26,
+          26,
+          1,
+          ""
+        ],
+        [
+          32,
+          32,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 26
+    }
+  },
+  {
+    "id": "html-snippet:input:week",
+    "result": {
+      "text": "<input type=\"week\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          25,
+          25,
+          1,
+          ""
+        ],
+        [
+          31,
+          31,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "html-snippet:input:time",
+    "result": {
+      "text": "<input type=\"time\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          25,
+          25,
+          1,
+          ""
+        ],
+        [
+          31,
+          31,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "html-snippet:input:tel",
+    "result": {
+      "text": "<input type=\"tel\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          24,
+          24,
+          1,
+          ""
+        ],
+        [
+          30,
+          30,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 24
+    }
+  },
+  {
+    "id": "html-snippet:input:number",
+    "result": {
+      "text": "<input type=\"number\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          27,
+          27,
+          1,
+          ""
+        ],
+        [
+          33,
+          33,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "html-snippet:input:color",
+    "result": {
+      "text": "<input type=\"color\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          26,
+          26,
+          1,
+          ""
+        ],
+        [
+          32,
+          32,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 26
+    }
+  },
+  {
+    "id": "html-snippet:input:c",
+    "result": {
+      "text": "<input type=\"checkbox\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          29,
+          29,
+          1,
+          ""
+        ],
+        [
+          35,
+          35,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 29
+    }
+  },
+  {
+    "id": "html-snippet:input:checkbox",
+    "result": {
+      "text": "<input type=\"checkbox\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          29,
+          29,
+          1,
+          ""
+        ],
+        [
+          35,
+          35,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 29
+    }
+  },
+  {
+    "id": "html-snippet:input:r",
+    "result": {
+      "text": "<input type=\"radio\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          26,
+          26,
+          1,
+          ""
+        ],
+        [
+          32,
+          32,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 26
+    }
+  },
+  {
+    "id": "html-snippet:input:radio",
+    "result": {
+      "text": "<input type=\"radio\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          26,
+          26,
+          1,
+          ""
+        ],
+        [
+          32,
+          32,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 26
+    }
+  },
+  {
+    "id": "html-snippet:input:range",
+    "result": {
+      "text": "<input type=\"range\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          26,
+          26,
+          1,
+          ""
+        ],
+        [
+          32,
+          32,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 26
+    }
+  },
+  {
+    "id": "html-snippet:input:f",
+    "result": {
+      "text": "<input type=\"file\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          25,
+          25,
+          1,
+          ""
+        ],
+        [
+          31,
+          31,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "html-snippet:input:file",
+    "result": {
+      "text": "<input type=\"file\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          25,
+          25,
+          1,
+          ""
+        ],
+        [
+          31,
+          31,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "html-snippet:input:s",
+    "result": {
+      "text": "<input type=\"submit\" value=\"\">",
+      "fields": [
+        [
+          28,
+          28,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 28
+    }
+  },
+  {
+    "id": "html-snippet:input:submit",
+    "result": {
+      "text": "<input type=\"submit\" value=\"\">",
+      "fields": [
+        [
+          28,
+          28,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 28
+    }
+  },
+  {
+    "id": "html-snippet:input:i",
+    "result": {
+      "text": "<input type=\"image\" src=\"\" alt=\"\">",
+      "fields": [
+        [
+          25,
+          25,
+          1,
+          ""
+        ],
+        [
+          32,
+          32,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "html-snippet:input:image",
+    "result": {
+      "text": "<input type=\"image\" src=\"\" alt=\"\">",
+      "fields": [
+        [
+          25,
+          25,
+          1,
+          ""
+        ],
+        [
+          32,
+          32,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "html-snippet:input:b",
+    "result": {
+      "text": "<input type=\"button\" value=\"\">",
+      "fields": [
+        [
+          28,
+          28,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 28
+    }
+  },
+  {
+    "id": "html-snippet:input:btn",
+    "result": {
+      "text": "<input type=\"button\" value=\"\">",
+      "fields": [
+        [
+          28,
+          28,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 28
+    }
+  },
+  {
+    "id": "html-snippet:input:button",
+    "result": {
+      "text": "<input type=\"button\" value=\"\">",
+      "fields": [
+        [
+          28,
+          28,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 28
+    }
+  },
+  {
+    "id": "html-snippet:input:reset",
+    "result": {
+      "text": "<input type=\"reset\" value=\"\">",
+      "fields": [
+        [
+          27,
+          27,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "html-snippet:isindex",
+    "result": {
+      "text": "<isindex>",
+      "fields": [],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "html-snippet:select",
+    "result": {
+      "text": "<select name=\"\" id=\"\"></select>",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ],
+        [
+          20,
+          20,
+          2,
+          ""
+        ],
+        [
+          22,
+          22,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "html-snippet:select:d",
+    "result": {
+      "text": "<select name=\"\" id=\"\" disabled=\"disabled\"></select>",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ],
+        [
+          20,
+          20,
+          2,
+          ""
+        ],
+        [
+          42,
+          42,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "html-snippet:select:disabled",
+    "result": {
+      "text": "<select name=\"\" id=\"\" disabled=\"disabled\"></select>",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ],
+        [
+          20,
+          20,
+          2,
+          ""
+        ],
+        [
+          42,
+          42,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "html-snippet:opt",
+    "result": {
+      "text": "<option value=\"\"></option>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ],
+        [
+          17,
+          17,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "html-snippet:option",
+    "result": {
+      "text": "<option value=\"\"></option>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ],
+        [
+          17,
+          17,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "html-snippet:textarea",
+    "result": {
+      "text": "<textarea name=\"\" id=\"\"></textarea>",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ],
+        [
+          22,
+          22,
+          2,
+          ""
+        ],
+        [
+          24,
+          24,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:tarea:c",
+    "result": {
+      "text": "<textarea name=\"\" id=\"\" cols=\"30\"></textarea>",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ],
+        [
+          22,
+          22,
+          2,
+          ""
+        ],
+        [
+          30,
+          32,
+          3,
+          "30"
+        ],
+        [
+          34,
+          34,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:textarea:cols",
+    "result": {
+      "text": "<textarea name=\"\" id=\"\" cols=\"30\"></textarea>",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ],
+        [
+          22,
+          22,
+          2,
+          ""
+        ],
+        [
+          30,
+          32,
+          3,
+          "30"
+        ],
+        [
+          34,
+          34,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:tarea:r",
+    "result": {
+      "text": "<textarea name=\"\" id=\"\" rows=\"10\"></textarea>",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ],
+        [
+          22,
+          22,
+          2,
+          ""
+        ],
+        [
+          30,
+          32,
+          3,
+          "10"
+        ],
+        [
+          34,
+          34,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:textarea:rows",
+    "result": {
+      "text": "<textarea name=\"\" id=\"\" rows=\"10\"></textarea>",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ],
+        [
+          22,
+          22,
+          2,
+          ""
+        ],
+        [
+          30,
+          32,
+          3,
+          "10"
+        ],
+        [
+          34,
+          34,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:tarea:cr",
+    "result": {
+      "text": "<textarea name=\"\" id=\"\" cols=\"30\" rows=\"10\"></textarea>",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ],
+        [
+          22,
+          22,
+          2,
+          ""
+        ],
+        [
+          30,
+          32,
+          3,
+          "30"
+        ],
+        [
+          40,
+          42,
+          4,
+          "10"
+        ],
+        [
+          44,
+          44,
+          5,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:textarea:cols:rows",
+    "result": {
+      "text": "<textarea name=\"\" id=\"\" cols=\"30\" rows=\"10\"></textarea>",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ],
+        [
+          22,
+          22,
+          2,
+          ""
+        ],
+        [
+          30,
+          32,
+          3,
+          "30"
+        ],
+        [
+          40,
+          42,
+          4,
+          "10"
+        ],
+        [
+          44,
+          44,
+          5,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:marquee",
+    "result": {
+      "text": "<marquee behavior=\"\" direction=\"\"></marquee>",
+      "fields": [
+        [
+          19,
+          19,
+          1,
+          ""
+        ],
+        [
+          32,
+          32,
+          2,
+          ""
+        ],
+        [
+          34,
+          34,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "html-snippet:menu:c",
+    "result": {
+      "text": "<menu type=\"context\"></menu>",
+      "fields": [
+        [
+          21,
+          21,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "html-snippet:menu:context",
+    "result": {
+      "text": "<menu type=\"context\"></menu>",
+      "fields": [
+        [
+          21,
+          21,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "html-snippet:menu:t",
+    "result": {
+      "text": "<menu type=\"toolbar\"></menu>",
+      "fields": [
+        [
+          21,
+          21,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "html-snippet:menu:toolbar",
+    "result": {
+      "text": "<menu type=\"toolbar\"></menu>",
+      "fields": [
+        [
+          21,
+          21,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "html-snippet:video",
+    "result": {
+      "text": "<video src=\"\"></video>",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ],
+        [
+          14,
+          14,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "html-snippet:audio",
+    "result": {
+      "text": "<audio src=\"\"></audio>",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ],
+        [
+          14,
+          14,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "html-snippet:html:xml",
+    "result": {
+      "text": "<html xmlns=\"http://www.w3.org/1999/xhtml\"></html>",
+      "fields": [
+        [
+          43,
+          43,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 43
+    }
+  },
+  {
+    "id": "html-snippet:keygen",
+    "result": {
+      "text": "<keygen>",
+      "fields": [],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "html-snippet:command",
+    "result": {
+      "text": "<command>",
+      "fields": [],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "html-snippet:btn:s",
+    "result": {
+      "text": "<button type=\"submit\"></button>",
+      "fields": [
+        [
+          22,
+          22,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "html-snippet:button:s",
+    "result": {
+      "text": "<button type=\"submit\"></button>",
+      "fields": [
+        [
+          22,
+          22,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "html-snippet:button:submit",
+    "result": {
+      "text": "<button type=\"submit\"></button>",
+      "fields": [
+        [
+          22,
+          22,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "html-snippet:btn:r",
+    "result": {
+      "text": "<button type=\"reset\"></button>",
+      "fields": [
+        [
+          21,
+          21,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "html-snippet:button:r",
+    "result": {
+      "text": "<button type=\"reset\"></button>",
+      "fields": [
+        [
+          21,
+          21,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "html-snippet:button:reset",
+    "result": {
+      "text": "<button type=\"reset\"></button>",
+      "fields": [
+        [
+          21,
+          21,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "html-snippet:btn:b",
+    "result": {
+      "text": "<button type=\"button\"></button>",
+      "fields": [
+        [
+          22,
+          22,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "html-snippet:button:b",
+    "result": {
+      "text": "<button type=\"button\"></button>",
+      "fields": [
+        [
+          22,
+          22,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "html-snippet:button:button",
+    "result": {
+      "text": "<button type=\"button\"></button>",
+      "fields": [
+        [
+          22,
+          22,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "html-snippet:btn:d",
+    "result": {
+      "text": "<button disabled=\"disabled\"></button>",
+      "fields": [
+        [
+          28,
+          28,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 28
+    }
+  },
+  {
+    "id": "html-snippet:button:d",
+    "result": {
+      "text": "<button disabled=\"disabled\"></button>",
+      "fields": [
+        [
+          28,
+          28,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 28
+    }
+  },
+  {
+    "id": "html-snippet:button:disabled",
+    "result": {
+      "text": "<button disabled=\"disabled\"></button>",
+      "fields": [
+        [
+          28,
+          28,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 28
+    }
+  },
+  {
+    "id": "html-snippet:fst:d",
+    "result": {
+      "text": "<fieldset disabled=\"disabled\"></fieldset>",
+      "fields": [
+        [
+          30,
+          30,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 30
+    }
+  },
+  {
+    "id": "html-snippet:fset:d",
+    "result": {
+      "text": "<fieldset disabled=\"disabled\"></fieldset>",
+      "fields": [
+        [
+          30,
+          30,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 30
+    }
+  },
+  {
+    "id": "html-snippet:fieldset:d",
+    "result": {
+      "text": "<fieldset disabled=\"disabled\"></fieldset>",
+      "fields": [
+        [
+          30,
+          30,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 30
+    }
+  },
+  {
+    "id": "html-snippet:fieldset:disabled",
+    "result": {
+      "text": "<fieldset disabled=\"disabled\"></fieldset>",
+      "fields": [
+        [
+          30,
+          30,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 30
+    }
+  },
+  {
+    "id": "html-snippet:bq",
+    "result": {
+      "text": "<blockquote></blockquote>",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "html-snippet:fig",
+    "result": {
+      "text": "<figure></figure>",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "html-snippet:figc",
+    "result": {
+      "text": "<figcaption></figcaption>",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "html-snippet:pic",
+    "result": {
+      "text": "<picture></picture>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "html-snippet:ifr",
+    "result": {
+      "text": "<iframe src=\"\" frameborder=\"0\"></iframe>",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ],
+        [
+          31,
+          31,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "html-snippet:emb",
+    "result": {
+      "text": "<embed src=\"\" type=\"\">",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ],
+        [
+          20,
+          20,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "html-snippet:obj",
+    "result": {
+      "text": "<object data=\"\" type=\"\"></object>",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ],
+        [
+          22,
+          22,
+          2,
+          ""
+        ],
+        [
+          24,
+          24,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "html-snippet:cap",
+    "result": {
+      "text": "<caption></caption>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "html-snippet:colg",
+    "result": {
+      "text": "<colgroup></colgroup>",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "html-snippet:fst",
+    "result": {
+      "text": "<fieldset></fieldset>",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "html-snippet:btn",
+    "result": {
+      "text": "<button></button>",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "html-snippet:optg",
+    "result": {
+      "text": "<optgroup></optgroup>",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "html-snippet:tarea",
+    "result": {
+      "text": "<textarea name=\"\" id=\"\"></textarea>",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ],
+        [
+          22,
+          22,
+          2,
+          ""
+        ],
+        [
+          24,
+          24,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:leg",
+    "result": {
+      "text": "<legend></legend>",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "html-snippet:sect",
+    "result": {
+      "text": "<section></section>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "html-snippet:art",
+    "result": {
+      "text": "<article></article>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "html-snippet:hdr",
+    "result": {
+      "text": "<header></header>",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "html-snippet:ftr",
+    "result": {
+      "text": "<footer></footer>",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "html-snippet:adr",
+    "result": {
+      "text": "<address></address>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "html-snippet:dlg",
+    "result": {
+      "text": "<dialog></dialog>",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "html-snippet:str",
+    "result": {
+      "text": "<strong></strong>",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "html-snippet:prog",
+    "result": {
+      "text": "<progress></progress>",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "html-snippet:mn",
+    "result": {
+      "text": "<main></main>",
+      "fields": [
+        [
+          6,
+          6,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 6
+    }
+  },
+  {
+    "id": "html-snippet:tem",
+    "result": {
+      "text": "<template></template>",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "html-snippet:fset",
+    "result": {
+      "text": "<fieldset></fieldset>",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "html-snippet:datal",
+    "result": {
+      "text": "<datalist></datalist>",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "html-snippet:kg",
+    "result": {
+      "text": "<keygen>",
+      "fields": [],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "html-snippet:out",
+    "result": {
+      "text": "<output></output>",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "html-snippet:det",
+    "result": {
+      "text": "<details></details>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "html-snippet:sum",
+    "result": {
+      "text": "<summary></summary>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "html-snippet:cmd",
+    "result": {
+      "text": "<command>",
+      "fields": [],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "html-snippet:data",
+    "result": {
+      "text": "<data value=\"\"></data>",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ],
+        [
+          15,
+          15,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "html-snippet:meter",
+    "result": {
+      "text": "<meter value=\"\"></meter>",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ],
+        [
+          16,
+          16,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "html-snippet:time",
+    "result": {
+      "text": "<time datetime=\"\"></time>",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ],
+        [
+          18,
+          18,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "html-snippet:ri:d",
+    "result": {
+      "text": "<img src=\"\" alt=\"\" srcset=\"\">",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ],
+        [
+          17,
+          17,
+          2,
+          ""
+        ],
+        [
+          27,
+          27,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "html-snippet:ri:dpr",
+    "result": {
+      "text": "<img src=\"\" alt=\"\" srcset=\"\">",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ],
+        [
+          17,
+          17,
+          2,
+          ""
+        ],
+        [
+          27,
+          27,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "html-snippet:ri:v",
+    "result": {
+      "text": "<img src=\"\" alt=\"\" sizes=\"\" srcset=\"\">",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ],
+        [
+          17,
+          17,
+          2,
+          ""
+        ],
+        [
+          26,
+          26,
+          3,
+          ""
+        ],
+        [
+          36,
+          36,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "html-snippet:ri:viewport",
+    "result": {
+      "text": "<img src=\"\" alt=\"\" sizes=\"\" srcset=\"\">",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ],
+        [
+          17,
+          17,
+          2,
+          ""
+        ],
+        [
+          26,
+          26,
+          3,
+          ""
+        ],
+        [
+          36,
+          36,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "html-snippet:ri:a",
+    "result": {
+      "text": "<picture>\n\t<source media=\"(min-width: )\" srcset=\"\">\n\t<img src=\"\" alt=\"\">\n</picture>",
+      "fields": [
+        [
+          27,
+          38,
+          1,
+          "min-width: "
+        ],
+        [
+          49,
+          49,
+          2,
+          ""
+        ],
+        [
+          63,
+          63,
+          3,
+          ""
+        ],
+        [
+          70,
+          70,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "html-snippet:ri:art",
+    "result": {
+      "text": "<picture>\n\t<source media=\"(min-width: )\" srcset=\"\">\n\t<img src=\"\" alt=\"\">\n</picture>",
+      "fields": [
+        [
+          27,
+          38,
+          1,
+          "min-width: "
+        ],
+        [
+          49,
+          49,
+          2,
+          ""
+        ],
+        [
+          63,
+          63,
+          3,
+          ""
+        ],
+        [
+          70,
+          70,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "html-snippet:ri:t",
+    "result": {
+      "text": "<picture>\n\t<source srcset=\"\" type=\"image/\">\n\t<img src=\"\" alt=\"\">\n</picture>",
+      "fields": [
+        [
+          27,
+          27,
+          1,
+          ""
+        ],
+        [
+          35,
+          41,
+          2,
+          "image/"
+        ],
+        [
+          55,
+          55,
+          3,
+          ""
+        ],
+        [
+          62,
+          62,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "html-snippet:ri:type",
+    "result": {
+      "text": "<picture>\n\t<source srcset=\"\" type=\"image/\">\n\t<img src=\"\" alt=\"\">\n</picture>",
+      "fields": [
+        [
+          27,
+          27,
+          1,
+          ""
+        ],
+        [
+          35,
+          41,
+          2,
+          "image/"
+        ],
+        [
+          55,
+          55,
+          3,
+          ""
+        ],
+        [
+          62,
+          62,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "html-snippet:!!!",
+    "result": {
+      "text": "<!DOCTYPE html>",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "html-snippet:doc",
+    "result": {
+      "text": "<html lang=\"en\">\n<head>\n\t<meta charset=\"UTF-8\">\n\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\t<title>Document</title>\n</head>\n<body>\n\t\n</body>\n</html>",
+      "fields": [
+        [
+          86,
+          98,
+          1,
+          "device-width"
+        ],
+        [
+          114,
+          117,
+          2,
+          "1.0"
+        ],
+        [
+          128,
+          136,
+          3,
+          "Document"
+        ],
+        [
+          161,
+          161,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 86
+    }
+  },
+  {
+    "id": "html-snippet:!",
+    "result": {
+      "text": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n\t<meta charset=\"UTF-8\">\n\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\t<title>Document</title>\n</head>\n<body>\n\t\n</body>\n</html>",
+      "fields": [
+        [
+          102,
+          114,
+          1,
+          "device-width"
+        ],
+        [
+          130,
+          133,
+          2,
+          "1.0"
+        ],
+        [
+          144,
+          152,
+          3,
+          "Document"
+        ],
+        [
+          177,
+          177,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 102
+    }
+  },
+  {
+    "id": "html-snippet:html:5",
+    "result": {
+      "text": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n\t<meta charset=\"UTF-8\">\n\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\t<title>Document</title>\n</head>\n<body>\n\t\n</body>\n</html>",
+      "fields": [
+        [
+          102,
+          114,
+          1,
+          "device-width"
+        ],
+        [
+          130,
+          133,
+          2,
+          "1.0"
+        ],
+        [
+          144,
+          152,
+          3,
+          "Document"
+        ],
+        [
+          177,
+          177,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 102
+    }
+  },
+  {
+    "id": "html-snippet:c",
+    "result": {
+      "text": "<!--  -->",
+      "fields": [
+        [
+          5,
+          5,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "html-snippet:cc:ie",
+    "result": {
+      "text": "<!--[if IE]><![endif]-->",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "html-snippet:cc:noie",
+    "result": {
+      "text": "<!--[if !IE]><!--><!--<![endif]-->",
+      "fields": [
+        [
+          18,
+          18,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "html-contract-01",
+    "result": {
+      "text": "<ul>\n\t<li class=\"item1\"><a href=\"\">Link 1</a></li>\n\t<li class=\"item2\"><a href=\"\">Link 2</a></li>\n\t<li class=\"item3\"><a href=\"\">Link 3</a></li>\n\t<li class=\"item4\"><a href=\"\">Link 4</a></li>\n\t<li class=\"item5\"><a href=\"\">Link 5</a></li>\n</ul>",
+      "fields": [
+        [
+          33,
+          33,
+          1,
+          ""
+        ],
+        [
+          79,
+          79,
+          2,
+          ""
+        ],
+        [
+          125,
+          125,
+          3,
+          ""
+        ],
+        [
+          171,
+          171,
+          4,
+          ""
+        ],
+        [
+          217,
+          217,
+          5,
+          ""
+        ]
+      ],
+      "cursor": 33
+    }
+  },
+  {
+    "id": "html-contract-02",
+    "result": {
+      "text": "<div class=\"card\">\n\t<header>\n\t\t<h2>Title</h2>\n\t</header>\n\t<section>\n\t\t<p></p>\n\t\t<p></p>\n\t\t<p></p>\n\t</section>\n</div>",
+      "fields": [
+        [
+          73,
+          73,
+          1,
+          ""
+        ],
+        [
+          83,
+          83,
+          2,
+          ""
+        ],
+        [
+          93,
+          93,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 73
+    }
+  },
+  {
+    "id": "html-contract-03",
+    "result": {
+      "text": "<nav>\n\t<ul>\n\t\t<li><a href=\"#\"></a></li>\n\t\t<li><a href=\"#\"></a></li>\n\t\t<li><a href=\"#\"></a></li>\n\t\t<li><a href=\"#\"></a></li>\n\t\t<li><a href=\"#\"></a></li>\n\t\t<li><a href=\"#\"></a></li>\n\t\t<li><a href=\"#\"></a></li>\n\t\t<li><a href=\"#\"></a></li>\n\t\t<li><a href=\"#\"></a></li>\n\t\t<li><a href=\"#\"></a></li>\n\t</ul>\n</nav>",
+      "fields": [
+        [
+          30,
+          30,
+          1,
+          ""
+        ],
+        [
+          58,
+          58,
+          2,
+          ""
+        ],
+        [
+          86,
+          86,
+          3,
+          ""
+        ],
+        [
+          114,
+          114,
+          4,
+          ""
+        ],
+        [
+          142,
+          142,
+          5,
+          ""
+        ],
+        [
+          170,
+          170,
+          6,
+          ""
+        ],
+        [
+          198,
+          198,
+          7,
+          ""
+        ],
+        [
+          226,
+          226,
+          8,
+          ""
+        ],
+        [
+          254,
+          254,
+          9,
+          ""
+        ],
+        [
+          282,
+          282,
+          10,
+          ""
+        ]
+      ],
+      "cursor": 30
+    }
+  },
+  {
+    "id": "html-contract-04",
+    "result": {
+      "text": "<table>\n\t<tr class=\"row\">\n\t\t<td class=\"col\"></td>\n\t</tr>\n</table>",
+      "fields": [
+        [
+          44,
+          44,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 44
+    }
+  },
+  {
+    "id": "html-contract-05",
+    "result": {
+      "text": "<div></div>\n<div>\n\t<p><span></span><em></em></p>\n</div>\n<blockquote></blockquote>",
+      "fields": [
+        [
+          5,
+          5,
+          1,
+          ""
+        ],
+        [
+          28,
+          28,
+          2,
+          ""
+        ],
+        [
+          39,
+          39,
+          3,
+          ""
+        ],
+        [
+          68,
+          68,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "html-contract-06",
+    "result": {
+      "text": "<ul>\n\t<li class=\"item5\"></li>\n\t<li class=\"item4\"></li>\n\t<li class=\"item3\"></li>\n\t<li class=\"item2\"></li>\n\t<li class=\"item1\"></li>\n</ul>",
+      "fields": [
+        [
+          24,
+          24,
+          1,
+          ""
+        ],
+        [
+          49,
+          49,
+          2,
+          ""
+        ],
+        [
+          74,
+          74,
+          3,
+          ""
+        ],
+        [
+          99,
+          99,
+          4,
+          ""
+        ],
+        [
+          124,
+          124,
+          5,
+          ""
+        ]
+      ],
+      "cursor": 24
+    }
+  },
+  {
+    "id": "html-contract-07",
+    "result": {
+      "text": "<ul>\n\t<li class=\"item3\"></li>\n\t<li class=\"item4\"></li>\n\t<li class=\"item5\"></li>\n\t<li class=\"item6\"></li>\n\t<li class=\"item7\"></li>\n</ul>",
+      "fields": [
+        [
+          24,
+          24,
+          1,
+          ""
+        ],
+        [
+          49,
+          49,
+          2,
+          ""
+        ],
+        [
+          74,
+          74,
+          3,
+          ""
+        ],
+        [
+          99,
+          99,
+          4,
+          ""
+        ],
+        [
+          124,
+          124,
+          5,
+          ""
+        ]
+      ],
+      "cursor": 24
+    }
+  },
+  {
+    "id": "html-contract-08",
+    "result": {
+      "text": "<input type=\"email\" name=\"\" id=\"\">",
+      "fields": [
+        [
+          26,
+          26,
+          1,
+          ""
+        ],
+        [
+          32,
+          32,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 26
+    }
+  },
+  {
+    "id": "html-contract-09",
+    "result": {
+      "text": "<p title=\"Hello world\"></p>",
+      "fields": [
+        [
+          23,
+          23,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 23
+    }
+  },
+  {
+    "id": "html-contract-10",
+    "result": {
+      "text": "<div>x x</div>",
+      "fields": [
+        [
+          5,
+          6,
+          1,
+          "x"
+        ],
+        [
+          7,
+          8,
+          1,
+          "x"
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "html-contract-11",
+    "result": {
+      "text": "<div>x y</div>",
+      "fields": [
+        [
+          5,
+          6,
+          1,
+          "x"
+        ],
+        [
+          7,
+          8,
+          2,
+          "y"
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "html-contract-12",
+    "result": {
+      "text": "<div>b a</div>",
+      "fields": [
+        [
+          5,
+          6,
+          2,
+          "b"
+        ],
+        [
+          7,
+          8,
+          1,
+          "a"
+        ]
+      ],
+      "cursor": 7
+    }
+  },
+  {
+    "id": "html-contract-13",
+    "result": {
+      "text": "<div></div>",
+      "fields": [
+        [
+          5,
+          5,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "html-contract-14",
+    "result": {
+      "text": "<div>😀 😸</div>",
+      "fields": [
+        [
+          7,
+          8,
+          1,
+          "😸"
+        ]
+      ],
+      "cursor": 7
+    }
+  },
+  {
+    "id": "html-contract-15",
+    "result": {
+      "text": "<p>a\tb</p>",
+      "fields": [],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "html-contract-16",
+    "result": {
+      "text": "<p>literal|1text</p>",
+      "fields": [],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "html-contract-17",
+    "result": {
+      "text": "<a href=\"\"></a>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "html-contract-18",
+    "result": {
+      "text": "<ul></ul>",
+      "fields": [
+        [
+          4,
+          4,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 4
+    }
+  },
+  {
+    "id": "jsx-contract-01",
+    "result": {
+      "text": "<div classList=\"card\" />",
+      "fields": [],
+      "cursor": 24
+    }
+  },
+  {
+    "id": "jsx-contract-02",
+    "result": {
+      "text": "<label><input type=\"text\" /></label>",
+      "fields": [
+        [
+          20,
+          24,
+          1,
+          "text"
+        ]
+      ],
+      "cursor": 20
+    }
+  },
+  {
+    "id": "jsx-contract-03",
+    "result": {
+      "text": "<Component classList=\"class\"></Component>",
+      "fields": [
+        [
+          29,
+          29,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 29
+    }
+  },
+  {
+    "id": "jsx-contract-04",
+    "result": {
+      "text": "<input type=\"checkbox\" name=\"\" id=\"\" />",
+      "fields": [
+        [
+          29,
+          29,
+          1,
+          ""
+        ],
+        [
+          35,
+          35,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 29
+    }
+  },
+  {
+    "id": "jsx-contract-05",
+    "result": {
+      "text": "<div>{props.value}</div>",
+      "fields": [],
+      "cursor": 24
+    }
+  },
+  {
+    "id": "markup-indent",
+    "result": {
+      "text": "<div>\n    <p>a\tb</p>\n    <input type=\"text\">\n  </div>",
+      "fields": [
+        [
+          38,
+          42,
+          1,
+          "text"
+        ]
+      ],
+      "cursor": 38
+    }
+  }
+]
