@@ -100,7 +100,35 @@ files fail; the generator never deletes them automatically.
 Hand-written field, Unicode and error assertions must pass before generated
 goldens are accepted. The core oracle, extension behavior and editor integration
 remain separate suites; a shared adapter cannot be its own only correctness
-proof. Corfu/host probes, ERT and clean CI are still pending S0 work.
+proof. Host probes and clean CI are still pending S0 work.
+
+## Isolated Emacs contract tests
+
+`test/dependencies.json` records exact package, grammar and Emacs source
+revisions. Emacs 31.1 here identifies a development source commit, not a claimed
+release. Test setup requires Node, Git and a C compiler on macOS or Linux.
+It downloads into an explicit directory outside the working tree and compiles
+the three grammars there. It refuses to replace modified dependency checkouts.
+It does not install into the user's Emacs configuration.
+
+```sh
+rtk proxy node test/setup.mjs /tmp/emmet2-test-deps
+rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps emacs --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit
+```
+
+Run setup after changing the lock. The `contracts` suite is currently the only
+implemented suite; another `EMMET2_TEST_SUITE` value fails explicitly. Missing
+packages or local grammars fail bootstrap instead of skipping integration or
+falling back to a grammar in the user's configuration.
+
+The four Corfu tests exercise its pinned completion control flow with only
+popup drawing replaced. They cover the original candidate, effective styles
+and category override, all four exact-match policies, automatic/manual entry,
+prefix threshold, cancellation and explicit acceptance. They pass on the pinned
+Emacs 31 source. This is feasibility evidence, not GUI or Emmet integration
+acceptance: S5 must run the same matrix against the real capf and insertion.
+The probe uses private Corfu functions only in tests; production must use the
+public completion API. It never changes the user's completion settings.
 
 ## Review and milestones
 
