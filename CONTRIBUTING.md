@@ -149,11 +149,28 @@ the closing brace. The explicit command may expand `tag{text}`; a bare JSX
 expression is still rejected. This confidence boundary preserves existing
 manual text expansion without treating valid JSX expressions as abbreviations.
 
-The test-only host classifier is a feasibility probe, not the S3 context module.
-S3 must retain these fixtures, replace that helper with the real context owner,
-and validate HTML/CSS adapters, parser reuse/cleanup, missing grammars, full
-extraction compatibility and performance. The bounded scanner has no mode or
-parser state. Neither new module is connected to the installed mode yet.
+The original 93 host paths now call `emmet2-context.el`; the test-only classifier
+has been removed. The production JS/TS/JSX path derives its parser inventory
+from Emacs. Each buffer view owns a unique tag named `emmet2`, at most one parser
+per supported grammar, and one pending idle timer. A literal shared tag would
+be unsafe because indirect buffers share base-buffer parser storage. Default
+`treesit-parser-list` also hides tagged parsers, so all ownership checks and
+cleanup use the explicit tag. Major-mode parsers and other views are preserved.
+
+Automatic analysis uses warmed parsers; a cold call schedules idle preparation
+and returns nil. Explicit analysis initializes on demand and names a missing
+grammar. Original comments, strings and regexes are rejected before projection.
+Source edits and web script-part switches reuse the owned parser with fresh
+ranges. Stop, major-mode change and kill cancel resources; stale callbacks
+cannot act on a replacement owner.
+
+Local S3.0 evidence (2026-09-27): the 93 paths and ten ownership/context tests
+pass on pinned GNU Emacs 30.2/31.1, including missing grammars, empty/narrowed
+buffers, indirect-buffer isolation and base-buffer destruction. Compilation
+with warnings as errors passes. Idle callbacks are driven deterministically
+in ERT; GUI idle scheduling, HTML/CSS adapters, full extraction migration and
+the complete performance gates remain open. The bounded scanner has no mode
+or parser state. These developer APIs are not yet connected to the minor mode.
 
 `emmet2-engine.el` owns the pure canonical result and error types. Its constructor
 validates character offsets/defaults, preserves mirror priority, renumbers groups

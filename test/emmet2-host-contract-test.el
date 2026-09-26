@@ -7,148 +7,9 @@
 (require 'web-mode)
 (require 'emmet2-extract)
 
-;; S0 feasibility only.  S3 must replace this test helper with the production
-;; context owner while retaining the same real-point fixtures.  No known
-;; abbreviation bounds are passed to the helper, and it never edits source.
-(defun emmet2-test--host-region (parser start end language)
-  "Constrain a candidate using PARSER's original host syntax in START..END.
-LANGUAGE selects the query vocabulary.  Bounds still belong to the extractor."
-  (let ((left (max start (line-beginning-position)))
-        (right (min end (line-end-position)))
-        (position (point)))
-    (dolist (node (treesit-query-capture
-                   parser '([(object) (return_statement) (arrow_function)
-                             (parenthesized_expression)] @host)
-                   left right t))
-      (when (<= (treesit-node-start node) position (treesit-node-end node))
-        (pcase (treesit-node-type node)
-          ("object" (setq left (max left (1+ (treesit-node-start node)))))
-          ((or "arrow_function" "return_statement")
-           (let ((body (if (equal (treesit-node-type node) "arrow_function")
-                           (treesit-node-child-by-field-name node "body")
-                         (treesit-node-child node 0 t))))
-             (when (and body (<= (treesit-node-start body) position))
-               (setq left (max left (treesit-node-start body))))))
-          ("parenthesized_expression"
-           (when (member (treesit-node-type (treesit-node-parent node))
-                         '("arrow_function" "return_statement"))
-             (setq left (max left (1+ (treesit-node-start node)))))))))
-    (unless (eq language 'typescript)
-      (dolist (node (treesit-query-capture
-                     parser '([(jsx_opening_element) (jsx_expression)] @host)
-                     (line-beginning-position) right t))
-        (pcase (treesit-node-type node)
-          ("jsx_opening_element"
-           (when (<= (treesit-node-end node) position)
-             (setq left (max left (treesit-node-end node)))))
-          ("jsx_expression"
-           (let ((begin (treesit-node-start node)))
-             ;; A brace attached to an abbreviation is Emmet text; a leading
-             ;; host brace remains outside the extracted candidate.
-             (when (and (<= begin position (treesit-node-end node))
-                        (or (= begin start)
-                            (memq (char-before begin) '(?> ?\s ?\t ?\n ?{ ?=))))
-               (setq left (max left (1+ begin)))))))))
-    (cons left right)))
+(require 'emmet2-context)
 
-(defun emmet2-test--css-owner-p (node)
-  "Whether shorthand property NODE belongs to a supported CSS host."
-  (let ((parent (treesit-node-parent node)) result done)
-    (while (and parent (not done))
-      (pcase (treesit-node-type parent)
-        ((or "object" "pair")
-         (when (treesit-node-check parent 'has-error) (setq done t)))
-        ("jsx_expression"
-         (let ((attribute (treesit-node-parent parent)))
-           (setq result
-                 (and (equal (treesit-node-type attribute) "jsx_attribute")
-                      (equal (treesit-node-text (treesit-node-child attribute 0 t) t)
-                             "style"))
-                 done t)))
-        ("arguments"
-         (let* ((call (treesit-node-parent parent))
-                (function (treesit-node-child-by-field-name call "function")))
-           (setq result (and function
-                             (member (treesit-node-text function t)
-                                     '("StyleSheet.create" "createTheme")))
-                 done t)))
-        (_ (setq done t)))
-      (setq parent (treesit-node-parent parent)))
-    (and result t)))
-
-(defun emmet2-test--projected-context (parser anchor automatic)
-  "Classify PARSER at retained ANCHOR; AUTOMATIC disallows root JS expressions."
-  (let* ((node (treesit-node-on anchor (1+ anchor) parser t))
-         (parent (treesit-node-parent node)))
-    (pcase (treesit-node-type node)
-      ("jsx_text"
-       (when (and (equal (treesit-node-type parent) "jsx_element")
-                  (not (treesit-node-check parent 'has-error)))
-         'markup))
-      ("shorthand_property_identifier"
-       (when (emmet2-test--css-owner-p node) 'css-in-js))
-      ("identifier"
-       (while (equal (treesit-node-type parent) "parenthesized_expression")
-         (setq node parent parent (treesit-node-parent parent)))
-       (when (and (not automatic)
-                  (or (equal (treesit-node-type parent) "return_statement")
-                      (and (equal (treesit-node-type parent) "arrow_function")
-                           (treesit-node-eq node (treesit-node-child-by-field-name parent "body")))))
-         'markup)))))
-
-(defun emmet2-test--ambiguous-text-p (parser beg end language)
-  "Whether projecting BEG..END would erase a JSX expression after plain text.
-LANGUAGE without JSX cannot have this ambiguity.  The explicit command may
-interpret tag{text} as Emmet; automatic completion must leave it alone."
-  (unless (eq language 'typescript)
-    (cl-some
-     (lambda (node)
-       (let ((brace (treesit-node-start node)))
-         (and (< beg brace end)
-              (string-match-p "\\`[[:alnum:]_-]+\\'"
-                              (buffer-substring-no-properties beg brace)))))
-     (treesit-query-capture parser '((jsx_expression) @expression) beg end t))))
-
-(defun emmet2-test--analyze-host (automatic)
-  "Run the minimal region/extract/confirm chain at point.
-AUTOMATIC selects completion rather than the explicit command."
-  (let ((start (point-min)) (end (point-max)) (language 'tsx))
-    (cond
-     ((derived-mode-p 'web-mode)
-      (when web-mode-change-beg (web-mode-scan))
-      (let ((part (web-mode-language-at-pos)))
-        (setq language (if (string= part "typescript") 'typescript 'tsx))
-        (unless (member web-mode-content-type '("jsx" "javascript" "typescript"))
-          (setq start (web-mode-part-beginning-position)
-                end (web-mode-part-end-position)))))
-     ((derived-mode-p 'typescript-ts-mode) (setq language 'typescript))
-     ((derived-mode-p 'js-mode 'js-ts-mode) (setq language 'javascript)))
-    (when (and start end)
-      (let ((parser (treesit-parser-create language nil nil 'emmet2-contract)))
-        (unwind-protect
-            (progn
-              (treesit-parser-set-included-ranges parser (list (cons start end)))
-              (pcase-let* ((`(,left . ,right)
-                            (emmet2-test--host-region parser start end language))
-                           (candidate (emmet2-extract left right))
-                           (beg (plist-get candidate :beg))
-                           (finish (plist-get candidate :end)))
-                (when (and candidate
-                           (not (and automatic
-                                     (emmet2-test--ambiguous-text-p parser beg finish language))))
-                  (let ((anchor (save-excursion
-                                  (goto-char beg)
-                                  (when (re-search-forward "[A-Za-z_]" finish t)
-                                    (1- (point))))))
-                    (when anchor
-                      (treesit-parser-set-included-ranges
-                       parser (delq nil (list (and (< start beg) (cons start beg))
-                                              (cons anchor (1+ anchor))
-                                              (and (< finish end) (cons finish end)))))
-                      (let ((context (emmet2-test--projected-context parser anchor automatic)))
-                        (when context (append candidate (list :lang context)))))))))
-          (treesit-parser-delete parser))))))
-
+;; The original S0 real-point matrix now exercises the production context owner.
 (defconst emmet2-test-host-cases
   '((tight "const A = () => (<main>ul>li*3│</main>);" markup "ul>li*3")
     (middle "const A = () => (<main>ul>│li*3</main>);" markup "ul>li*3")
@@ -192,13 +53,15 @@ AUTOMATIC selects completion rather than the explicit command."
 		(funcall mode)
 		(goto-char position)
 		(let* ((original (buffer-string))
-                       (result (emmet2-test--analyze-host (not (memq 'manual options)))))
+                       (result (progn (emmet2-context--prepare)
+                               (emmet2-context-analyze (not (memq 'manual options))))))
                   (should (equal (plist-get result :lang) language))
                   (should (equal (plist-get result :abbr) abbreviation))
                   (should (equal (buffer-string) original))
                   (should (= (point) position))
-                  (should-not (cl-find 'emmet2-contract (treesit-parser-list)
-                                       :key #'treesit-parser-tag)))))))))))
+                  (should (= (length (emmet2-context--parsers)) 1))
+                  (emmet2-context-stop)
+                  (should-not (emmet2-context--parsers)))))))))))
 
 (ert-deftest emmet2-contract-host-script-owners ()
   (dolist (mode '(js-mode js-ts-mode typescript-ts-mode web-mode))
@@ -211,7 +74,7 @@ AUTOMATIC selects completion rather than the explicit command."
           (when (eq mode 'web-mode) (insert "\n</script>"))
           (funcall mode)
           (goto-char (point-min)) (search-forward "1px")
-          (let ((result (emmet2-test--analyze-host t)))
+          (let ((result (progn (emmet2-context--prepare) (emmet2-context-analyze t))))
             (if (equal call "ordinary")
                 (should-not result)
               (should (eq (plist-get result :lang) 'css-in-js))
