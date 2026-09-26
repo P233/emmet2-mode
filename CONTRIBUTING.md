@@ -104,9 +104,11 @@ proof. Clean CI and the remainder of the S0 gate are still pending.
 
 ## Isolated Emacs contract tests
 
-`test/dependencies.json` records exact package, grammar and Emacs source
-revisions. Emacs 31.1 here identifies a development source commit, not a claimed
-release. Test setup requires Node, Git and a C compiler on macOS or Linux.
+`test/dependencies.json` records exact package/grammar revisions, official Emacs
+30.2/31.1 release tags and source archive hashes. Initial probes used the locally
+installed 31.1 reporting `fac6532`; that revision was not available from the
+upstream mirror, so reproducible builds use the official release archives.
+Test setup requires Node, Git and a C compiler on macOS or Linux.
 It downloads into an explicit directory outside the working tree and compiles
 the locked grammars there. jsdoc is needed by the pinned Emacs 31 `js-ts-mode`
 itself; Emmet's context analysis uses javascript, typescript and tsx only.
@@ -126,8 +128,8 @@ falling back to a grammar in the user's configuration.
 The four Corfu tests exercise its pinned completion control flow with only
 popup drawing replaced. They cover the original candidate, effective styles
 and category override, all four exact-match policies, automatic/manual entry,
-prefix threshold, cancellation and explicit acceptance. They pass on the pinned
-Emacs 31 source. This is feasibility evidence, not GUI or Emmet integration
+prefix threshold, cancellation and explicit acceptance.
+This is feasibility evidence, not GUI or Emmet integration
 acceptance: S5 must run the same matrix against the real capf and insertion.
 The probe uses private Corfu functions only in tests; production must use the
 public completion API. It never changes the user's completion settings.
@@ -153,6 +155,37 @@ and validate HTML/CSS adapters, parser reuse/cleanup, missing grammars, full
 extraction compatibility and performance. The bounded scanner has no mode or
 parser state. Neither new module is connected to the installed mode yet.
 
+## Build and CI
+
+`test/build-emacs.mjs` builds the pinned GNU release archive and a private static
+tree-sitter 0.25.10. The latter avoids the removed API in system tree-sitter 0.27
+that prevents Emacs 30 from compiling. It requires Git, Make, a C toolchain,
+tar/xz, pkg-config and terminal development headers; CI installs those on
+Ubuntu 24.04. It does not run `make install` or change system libraries.
+The build directory must not exist; failed builds keep `build.log` for diagnosis.
+
+```sh
+rtk proxy node test/build-emacs.mjs 30.2 /tmp/emmet2-build-30
+rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps /tmp/emmet2-build-30/emacs/src/emacs --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit
+rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps /tmp/emmet2-build-30/emacs/src/emacs --batch -Q -L . -l test/compile.el
+```
+
+Repeat with `31.1` and a separate new build directory. `test/compile.el` compiles
+only implemented rewrite files, treats warnings as errors and deletes its own
+temporary `.elc` output. It does not compile/load the old Deno mode as though it
+were the new implementation. Extend its explicit list with each module.
+
+`.github/workflows/test.yml` pins action SHAs and reads runtime versions from the
+lock. It runs the two Emacs builds, stage-scoped ERT, byte compilation, oracle
+tests/check, scoped tooling lint and the original Deno baseline. Oracle check
+also runs under Deno with network access denied. CI has read-only repository
+permissions, does not publish, and does not install npm packages.
+Hosted execution remains unverified until a pushed commit actually runs there;
+local checks and workflow lint do not establish hosted CI acceptance.
+
+Fixed-machine performance gates and reporting requirements live in
+[test/PERFORMANCE.md](test/PERFORMANCE.md). Timing is not asserted in CI.
+
 ## Review and milestones
 
 For each independently validated slice:
@@ -172,7 +205,10 @@ entry points and verifies the final installed package.
 
 MCP gaps must remain explicit. Wallaby returned no data for the three legacy
 test files during baseline capture; the repository Deno tasks supplied evidence.
-Emacs 31.1 and Node 24.21.0 are available locally. Emacs 30, clean CI, GUI flows,
+Both GNU Emacs 30.2 and 31.1 were built from the locked archives with the build
+script on macOS. All 9 S0 ERT tests and warning-free byte compilation passed on
+both. Node 24.21.0 passed 12 adapter/generator tests and the 494-case offline
+oracle check. The workflow passes actionlint. Hosted Linux CI, GUI flows,
 installed-package checks and native performance are not yet validated.
 ESLint MCP has no configuration in this Deno repository. A scoped Deno lint
 check of unchanged `src/index.ts` reports the existing inline-URL import under

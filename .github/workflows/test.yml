@@ -1,0 +1,80 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  oracle-and-legacy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - id: versions
+        run: |
+          node -e 'const d=require("./test/dependencies.json"); console.log("node="+d.node); console.log("deno="+d.deno)' >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: ${{ steps.versions.outputs.node }}
+          package-manager-cache: false
+      - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
+        with:
+          deno-version: ${{ steps.versions.outputs.deno }}
+      - run: node --test test/oracle/adapter.test.mjs test/oracle/gen.test.mjs
+      - run: node test/oracle/gen.mjs --check
+      - run: deno lint emmet2-engine-node.mjs test/oracle test/setup.mjs test/build-emacs.mjs
+      - name: Legacy behavior baseline (until migrated)
+        run: |
+          deno task test:css
+          deno task test:markup
+          deno task test:regex
+      - name: Oracle with networking denied
+        run: deno run --cached-only --frozen --allow-read=. test/oracle/gen.mjs --check
+
+  emacs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ["30.2", "31.1"]
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - id: versions
+        run: node -e 'console.log("node="+require("./test/dependencies.json").node)' >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: ${{ steps.versions.outputs.node }}
+          package-manager-cache: false
+      - name: Build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential texinfo libncurses-dev pkg-config
+      - name: Build pinned Emacs and tree-sitter
+        env:
+          EMMET2_EMACS_VERSION: ${{ matrix.version }}
+        run: |
+          emacs_binary=$(node test/build-emacs.mjs "$EMMET2_EMACS_VERSION" "$RUNNER_TEMP/emacs-build")
+          echo "EMMET2_EMACS=$emacs_binary" >> "$GITHUB_ENV"
+      - name: Install isolated test dependencies
+        run: |
+          node test/setup.mjs "$RUNNER_TEMP/emmet2-deps"
+          echo "EMMET2_TEST_DEPS=$RUNNER_TEMP/emmet2-deps" >> "$GITHUB_ENV"
+      - name: S0 contract probes
+        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit'
+      - name: Byte compilation (warnings fail)
+        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/compile.el'
+      - name: Build diagnostics
+        if: failure()
+        run: |
+          if test -f "$RUNNER_TEMP/emacs-build/build.log"; then
+            tail -n 150 "$RUNNER_TEMP/emacs-build/build.log"
+          fi
