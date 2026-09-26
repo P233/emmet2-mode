@@ -48,7 +48,9 @@
     ":la": ":lang",
     ":h": ":has",
     ":is": ":is",
-    ":w": ":where"
+    ":w": ":where",
+    ":f-l": "::first-letter",
+    ":fo": ":first-of-type"
   },
   "atRuleAliases": {
     "@ch": "@charset",

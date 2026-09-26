@@ -1,0 +1,560 @@
+[
+  {
+    "id": "css-001",
+    "abbreviation": "t",
+    "cssInJs": false,
+    "text": "top: ;"
+  },
+  {
+    "id": "css-002",
+    "abbreviation": "t0",
+    "cssInJs": false,
+    "text": "top: 0;"
+  },
+  {
+    "id": "css-003",
+    "abbreviation": "t1",
+    "cssInJs": false,
+    "text": "top: 1px;"
+  },
+  {
+    "id": "css-004",
+    "abbreviation": "t1p",
+    "cssInJs": false,
+    "text": "top: 1%;"
+  },
+  {
+    "id": "css-005",
+    "abbreviation": "t1!",
+    "cssInJs": false,
+    "text": "top: 1px !important;"
+  },
+  {
+    "id": "css-006",
+    "abbreviation": "t$abc",
+    "cssInJs": false,
+    "text": "top: $abc;"
+  },
+  {
+    "id": "css-007",
+    "abbreviation": "t1r",
+    "cssInJs": false,
+    "text": "top: 1rem;"
+  },
+  {
+    "id": "css-008",
+    "abbreviation": "t0+r0+b0+l0",
+    "cssInJs": false,
+    "text": "top: 0;\nright: 0;\nbottom: 0;\nleft: 0;"
+  },
+  {
+    "id": "css-009",
+    "abbreviation": "t-a",
+    "cssInJs": false,
+    "text": "top: auto;"
+  },
+  {
+    "id": "css-010",
+    "abbreviation": "bd",
+    "cssInJs": false,
+    "text": "border: ;"
+  },
+  {
+    "id": "css-011",
+    "abbreviation": "bd1#2s",
+    "cssInJs": false,
+    "text": "border: 1px #222 solid;"
+  },
+  {
+    "id": "css-012",
+    "abbreviation": "p1px2px3px",
+    "cssInJs": false,
+    "text": "padding: 1px 2px 3px;"
+  },
+  {
+    "id": "css-013",
+    "abbreviation": "p1px2px3px!",
+    "cssInJs": false,
+    "text": "padding: 1px 2px 3px !important;"
+  },
+  {
+    "id": "css-014",
+    "abbreviation": "p$a$b$c",
+    "cssInJs": false,
+    "text": "padding: $a $b $c;"
+  },
+  {
+    "id": "css-015",
+    "abbreviation": "gtc",
+    "cssInJs": false,
+    "text": "grid-template-columns: repeat();"
+  },
+  {
+    "id": "css-016",
+    "abbreviation": "c",
+    "cssInJs": false,
+    "text": "color: ;"
+  },
+  {
+    "id": "css-017",
+    "abbreviation": "bg",
+    "cssInJs": false,
+    "text": "background: ;"
+  },
+  {
+    "id": "css-018",
+    "abbreviation": "ct",
+    "cssInJs": false,
+    "text": "content: ;"
+  },
+  {
+    "id": "css-019",
+    "abbreviation": "t(2)",
+    "cssInJs": false,
+    "text": "top: rhythm(2);"
+  },
+  {
+    "id": "css-020",
+    "abbreviation": "t(.5)",
+    "cssInJs": false,
+    "text": "top: rhythm(.5);"
+  },
+  {
+    "id": "css-021",
+    "abbreviation": "t(0.5)",
+    "cssInJs": false,
+    "text": "top: rhythm(0.5);"
+  },
+  {
+    "id": "css-022",
+    "abbreviation": "t(2)!",
+    "cssInJs": false,
+    "text": "top: rhythm(2) !important;"
+  },
+  {
+    "id": "css-023",
+    "abbreviation": "fz(1)",
+    "cssInJs": false,
+    "text": "font-size: ms(1);"
+  },
+  {
+    "id": "css-024",
+    "abbreviation": "fz(-1)",
+    "cssInJs": false,
+    "text": "font-size: ms(-1);"
+  },
+  {
+    "id": "css-025",
+    "abbreviation": "fz(1)!",
+    "cssInJs": false,
+    "text": "font-size: ms(1) !important;"
+  },
+  {
+    "id": "css-026",
+    "abbreviation": "fz(1)+t(2)!",
+    "cssInJs": false,
+    "text": "font-size: ms(1);\ntop: rhythm(2) !important;"
+  },
+  {
+    "id": "css-027",
+    "abbreviation": "fz(1)!+lh2",
+    "cssInJs": false,
+    "text": "font-size: ms(1) !important;\nline-height: 2;"
+  },
+  {
+    "id": "css-028",
+    "abbreviation": "p(1)(2)(3)",
+    "cssInJs": false,
+    "text": "padding: rhythm(1) rhythm(2) rhythm(3);"
+  },
+  {
+    "id": "css-029",
+    "abbreviation": "p(0)(2)(3)",
+    "cssInJs": false,
+    "text": "padding: 0 rhythm(2) rhythm(3);"
+  },
+  {
+    "id": "css-030",
+    "abbreviation": "m--gutter",
+    "cssInJs": false,
+    "text": "margin: var(--gutter);"
+  },
+  {
+    "id": "css-031",
+    "abbreviation": "m--gutter!",
+    "cssInJs": false,
+    "text": "margin: var(--gutter) !important;"
+  },
+  {
+    "id": "css-032",
+    "abbreviation": "c--primary-color",
+    "cssInJs": false,
+    "text": "color: var(--primary-color);"
+  },
+  {
+    "id": "css-033",
+    "abbreviation": "p--a--b--c",
+    "cssInJs": false,
+    "text": "padding: var(--a) var(--b) var(--c);"
+  },
+  {
+    "id": "css-034",
+    "abbreviation": "p[1px 2px 3px]",
+    "cssInJs": false,
+    "text": "padding: 1px 2px 3px;"
+  },
+  {
+    "id": "css-035",
+    "abbreviation": "p[var(--a) var(--b) var(--c)]",
+    "cssInJs": false,
+    "text": "padding: var(--a) var(--b) var(--c);"
+  },
+  {
+    "id": "css-036",
+    "abbreviation": "posa",
+    "cssInJs": false,
+    "text": "position: absolute;\nz-index: ;"
+  },
+  {
+    "id": "css-037",
+    "abbreviation": "posa10",
+    "cssInJs": false,
+    "text": "position: absolute;\nz-index: 10;"
+  },
+  {
+    "id": "css-038",
+    "abbreviation": "posa--z",
+    "cssInJs": false,
+    "text": "position: absolute;\nz-index: var(--z);"
+  },
+  {
+    "id": "css-039",
+    "abbreviation": "posa$z",
+    "cssInJs": false,
+    "text": "position: absolute;\nz-index: $z;"
+  },
+  {
+    "id": "css-040",
+    "abbreviation": "posf",
+    "cssInJs": false,
+    "text": "position: fixed;\nz-index: ;"
+  },
+  {
+    "id": "css-041",
+    "abbreviation": "posf100",
+    "cssInJs": false,
+    "text": "position: fixed;\nz-index: 100;"
+  },
+  {
+    "id": "css-042",
+    "abbreviation": "all",
+    "cssInJs": false,
+    "text": "top: ;\nright: ;\nbottom: ;\nleft: ;"
+  },
+  {
+    "id": "css-043",
+    "abbreviation": "all0",
+    "cssInJs": false,
+    "text": "top: 0;\nright: 0;\nbottom: 0;\nleft: 0;"
+  },
+  {
+    "id": "css-044",
+    "abbreviation": "all8",
+    "cssInJs": false,
+    "text": "top: 8px;\nright: 8px;\nbottom: 8px;\nleft: 8px;"
+  },
+  {
+    "id": "css-045",
+    "abbreviation": "all8!",
+    "cssInJs": false,
+    "text": "top: 8px !important;\nright: 8px !important;\nbottom: 8px !important;\nleft: 8px !important;"
+  },
+  {
+    "id": "css-046",
+    "abbreviation": "all(2)",
+    "cssInJs": false,
+    "text": "top: rhythm(2);\nright: rhythm(2);\nbottom: rhythm(2);\nleft: rhythm(2);"
+  },
+  {
+    "id": "css-047",
+    "abbreviation": "all--gutter",
+    "cssInJs": false,
+    "text": "top: var(--gutter);\nright: var(--gutter);\nbottom: var(--gutter);\nleft: var(--gutter);"
+  },
+  {
+    "id": "css-048",
+    "abbreviation": "all$gutter",
+    "cssInJs": false,
+    "text": "top: $gutter;\nright: $gutter;\nbottom: $gutter;\nleft: $gutter;"
+  },
+  {
+    "id": "css-049",
+    "abbreviation": "posa5+t(2)",
+    "cssInJs": false,
+    "text": "position: absolute;\nz-index: 5;\ntop: rhythm(2);"
+  },
+  {
+    "id": "css-050",
+    "abbreviation": "mA",
+    "cssInJs": false,
+    "text": "margin: auto;"
+  },
+  {
+    "id": "css-051",
+    "abbreviation": "mA!",
+    "cssInJs": false,
+    "text": "margin: auto !important;"
+  },
+  {
+    "id": "css-052",
+    "abbreviation": "allA",
+    "cssInJs": false,
+    "text": "top: auto;\nright: auto;\nbottom: auto;\nleft: auto;"
+  },
+  {
+    "id": "css-053",
+    "abbreviation": "fw7",
+    "cssInJs": false,
+    "text": "font-weight: 700;"
+  },
+  {
+    "id": "css-054",
+    "abbreviation": "fw700",
+    "cssInJs": false,
+    "text": "font-weight: 700;"
+  },
+  {
+    "id": "css-055",
+    "abbreviation": "wf",
+    "cssInJs": false,
+    "text": "width: 100%;"
+  },
+  {
+    "id": "css-056",
+    "abbreviation": "mawf",
+    "cssInJs": false,
+    "text": "max-width: 100%;"
+  },
+  {
+    "id": "css-057",
+    "abbreviation": "miwf",
+    "cssInJs": false,
+    "text": "min-width: 100%;"
+  },
+  {
+    "id": "css-058",
+    "abbreviation": "hf",
+    "cssInJs": false,
+    "text": "height: 100%;"
+  },
+  {
+    "id": "css-059",
+    "abbreviation": "mahf",
+    "cssInJs": false,
+    "text": "max-height: 100%;"
+  },
+  {
+    "id": "css-060",
+    "abbreviation": "mihf",
+    "cssInJs": false,
+    "text": "min-height: 100%;"
+  },
+  {
+    "id": "css-061",
+    "abbreviation": "t0,r0,b0,l0",
+    "cssInJs": false,
+    "text": "top: 0;\nright: 0;\nbottom: 0;\nleft: 0;"
+  },
+  {
+    "id": "css-062",
+    "abbreviation": "fz(1),t(2)!",
+    "cssInJs": false,
+    "text": "font-size: ms(1);\ntop: rhythm(2) !important;"
+  },
+  {
+    "id": "css-063",
+    "abbreviation": "fz(1)!,lh2",
+    "cssInJs": false,
+    "text": "font-size: ms(1) !important;\nline-height: 2;"
+  },
+  {
+    "id": "css-064",
+    "abbreviation": "posa,all0,fz(-1)!,lh(2.5)+mA,p[1px 2px 3px]!",
+    "cssInJs": false,
+    "text": "position: absolute;\nz-index: ;\ntop: 0;\nright: 0;\nbottom: 0;\nleft: 0;\nfont-size: ms(-1) !important;\nline-height: rhythm(2.5);\nmargin: auto;\npadding: 1px 2px 3px !important;"
+  },
+  {
+    "id": "css-065",
+    "abbreviation": "t",
+    "cssInJs": true,
+    "text": "top: "
+  },
+  {
+    "id": "css-066",
+    "abbreviation": "tac",
+    "cssInJs": true,
+    "text": "textAlign: \"center\""
+  },
+  {
+    "id": "css-067",
+    "abbreviation": "all0",
+    "cssInJs": true,
+    "text": "top: 0, right: 0, bottom: 0, left: 0"
+  },
+  {
+    "id": "css-068",
+    "abbreviation": "hf",
+    "cssInJs": true,
+    "text": "height: \"100%\""
+  },
+  {
+    "id": "css-069",
+    "abbreviation": "fz16,lh24,tar",
+    "cssInJs": true,
+    "text": "fontSize: 16, lineHeight: 24, textAlign: \"right\""
+  },
+  {
+    "id": "css-070",
+    "abbreviation": "@ch",
+    "cssInJs": false,
+    "text": "@charset "
+  },
+  {
+    "id": "css-071",
+    "abbreviation": "@co",
+    "cssInJs": false,
+    "text": "@counter-style "
+  },
+  {
+    "id": "css-072",
+    "abbreviation": "@fa",
+    "cssInJs": false,
+    "text": "@font-face "
+  },
+  {
+    "id": "css-073",
+    "abbreviation": "@fv",
+    "cssInJs": false,
+    "text": "@font-feature-values "
+  },
+  {
+    "id": "css-074",
+    "abbreviation": "@im",
+    "cssInJs": false,
+    "text": "@import \"\""
+  },
+  {
+    "id": "css-075",
+    "abbreviation": "@kf",
+    "cssInJs": false,
+    "text": "@keyframes "
+  },
+  {
+    "id": "css-076",
+    "abbreviation": "@ly",
+    "cssInJs": false,
+    "text": "@layer "
+  },
+  {
+    "id": "css-077",
+    "abbreviation": "@md",
+    "cssInJs": false,
+    "text": "@media "
+  },
+  {
+    "id": "css-078",
+    "abbreviation": "@ns",
+    "cssInJs": false,
+    "text": "@namespace "
+  },
+  {
+    "id": "css-079",
+    "abbreviation": "@pg",
+    "cssInJs": false,
+    "text": "@page "
+  },
+  {
+    "id": "css-080",
+    "abbreviation": "@pr",
+    "cssInJs": false,
+    "text": "@property "
+  },
+  {
+    "id": "css-081",
+    "abbreviation": "@su",
+    "cssInJs": false,
+    "text": "@supports "
+  },
+  {
+    "id": "css-082",
+    "abbreviation": ":fu",
+    "cssInJs": false,
+    "text": "&:focus {\n\t\n}"
+  },
+  {
+    "id": "css-083",
+    "abbreviation": ":hv:af",
+    "cssInJs": false,
+    "text": "&:hover::after {\n\t\n}"
+  },
+  {
+    "id": "css-084",
+    "abbreviation": "_:fu",
+    "cssInJs": false,
+    "text": ":focus {\n\t\n}"
+  },
+  {
+    "id": "css-085",
+    "abbreviation": ".c:fu",
+    "cssInJs": false,
+    "text": ".c:focus {\n\t\n}"
+  },
+  {
+    "id": "css-086",
+    "abbreviation": ".c:flt",
+    "cssInJs": false,
+    "text": ".c::first-letter {\n\t\n}"
+  },
+  {
+    "id": "css-087",
+    "abbreviation": "a.c1.c2#id:fu",
+    "cssInJs": false,
+    "text": "a.c1.c2#id:focus {\n\t\n}"
+  },
+  {
+    "id": "css-088",
+    "abbreviation": "a.c1.c2#id:fc",
+    "cssInJs": false,
+    "text": "a.c1.c2#id:first-child {\n\t\n}"
+  },
+  {
+    "id": "css-089",
+    "abbreviation": ":n(:fc)",
+    "cssInJs": false,
+    "text": "&:not(:first-child) {\n\t\n}"
+  },
+  {
+    "id": "css-090",
+    "abbreviation": ":n(:fc):af",
+    "cssInJs": false,
+    "text": "&:not(:first-child)::after {\n\t\n}"
+  },
+  {
+    "id": "css-091",
+    "abbreviation": ":n(:fc,:lc)",
+    "cssInJs": false,
+    "text": "&:not(:first-child):not(:last-child) {\n\t\n}"
+  },
+  {
+    "id": "css-092",
+    "abbreviation": ":n(:fc,:lc):be",
+    "cssInJs": false,
+    "text": "&:not(:first-child):not(:last-child)::before {\n\t\n}"
+  },
+  {
+    "id": "css-093",
+    "abbreviation": ":nc(2n-1)",
+    "cssInJs": false,
+    "text": "&:nth-child(2n-1) {\n\t\n}"
+  }
+]

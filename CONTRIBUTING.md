@@ -121,7 +121,7 @@ rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps emacs --batch -Q -L . -l te
 ```
 
 Run setup after changing the lock. `EMMET2_TEST_SUITE` selects `contracts` (the
-default), `results`, `node` or `fuzzy`; unknown suites fail explicitly. Missing
+default), `results`, `node`, `fuzzy` or `css-extensions`; unknown suites fail explicitly. Missing
 packages or local grammars fail bootstrap instead of skipping integration or
 falling back to a grammar in the user's configuration.
 
@@ -298,3 +298,39 @@ ERT tests passed; warnings-as-errors compilation passed on both pinned GNU
 30.2/31.1 builds. Scoped Deno lint and actionlint passed. ESLint MCP has no
 project config and Wallaby reports no data, so these results use the documented
 Node/ERT/lint fallbacks. Hosted Linux CI and extension integration remain open.
+
+## CSS extensions
+
+`emmet2-extensions-css` accepts one abbreviation plus `:css-in-js`, `:indent`
+and `:base-indent`. It wraps the entire expansion in one deadline. A balanced
+scanner splits only top-level comma/plus separators. Aliases feed individual
+property expansions; default removal and first-whitespace normalization happen
+once per property, before concatenation. Fields collapsed to one position merge
+within that property, including their mirrors and right-boundary empty fields.
+Explicit raw/rhythm/ms/var values replace the entire core value and its fields.
+CSS-in-JS escapes string contents, quotes non-identifier keys and remaps fields.
+
+Pseudo/at-rule lookup applies authored aliases before prefix-free, non-partial
+fuzzy matching. Known legacy `:fo` (first-of-type) and `:f-l` (first-letter) also
+have aliases so data ordering cannot silently change those public inputs.
+`:has(+p)` now expands correctly; nested/raw separators and JS quotes/backslashes
+are intentional fixes. Unknown at-rules such as `@i+` remain literal. Templates
+apply layout parameters only to authored layout, leaving raw literal tabs alone.
+
+`test/fixtures/css-legacy.json` copies all 93 baseline CSS text expectations,
+removing only the old cursor marker. Each has its own `emmet2-css-legacy-css-NNN`
+ERT test; independent complete-result assertions establish fields and cursor.
+The migration ledger maps those 93 and 42 CSS-related regex cases to tests that
+actually ran. This preserves behavior without retaining the old regex design.
+The remaining markup/extraction/editor entries are still unaccepted.
+
+Local validation on 2026-09-26: all 102 CSS ERT tests passed on the pinned GNU
+30.2 and 31.1 builds. The hand-written cases cover default collapse, distant
+mirrors, explicit replacement, raw nesting/Unicode, CSS-in-JS escaping/numbers,
+functions/aliases/fallback, layout and a deterministic whole-expansion deadline.
+Runtime command/completion behavior is not switched by this module; JSX
+extensions and the S2 total gate remain open.
+
+```sh
+rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_SUITE=css-extensions emacs --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit
+```
