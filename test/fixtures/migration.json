@@ -112,9 +112,9 @@
       "source": "test/expand-markup.test.ts",
       "sha256": "06e064d90109cf3155653c08bdcbcea450a2ef4024fe6b3e0f4edb8450cf585d",
       "cases": [
-        {"id": "markup-001", "name": "lorem span", "line": 5, "section": "Extract Abbr and positions", "stage": "S3", "tests": []},
-        {"id": "markup-002", "name": "atnoeuh otnoeuh span utnehu", "line": 6, "section": "Extract Abbr and positions", "stage": "S3", "tests": []},
-        {"id": "markup-003", "name": "atnoeuh otnoeuh span utnehu span", "line": 7, "section": "Extract Abbr and positions", "stage": "S3", "tests": []},
+        {"id": "markup-001", "name": "lorem span", "line": 5, "section": "Extract Abbr and positions", "stage": "S3", "tests": ["emmet2-extract-legacy-markup-001-to-003"]},
+        {"id": "markup-002", "name": "atnoeuh otnoeuh span utnehu", "line": 6, "section": "Extract Abbr and positions", "stage": "S3", "tests": ["emmet2-extract-legacy-markup-001-to-003"]},
+        {"id": "markup-003", "name": "atnoeuh otnoeuh span utnehu span", "line": 7, "section": "Extract Abbr and positions", "stage": "S3", "tests": ["emmet2-extract-legacy-markup-001-to-003"]},
         {"id": "markup-004", "name": "br", "line": 11, "section": "HTML;", "stage": "S2", "tests": ["emmet2-markup-legacy-markup-004"]},
         {"id": "markup-005", "name": ".", "line": 12, "section": "HTML;", "stage": "S2", "tests": ["emmet2-markup-legacy-markup-005"]},
         {"id": "markup-006", "name": ".class", "line": 13, "section": "HTML;", "stage": "S2", "tests": ["emmet2-markup-legacy-markup-006"]},
@@ -130,7 +130,7 @@
         {"id": "markup-016", "name": ".", "line": 29, "section": "Solid", "stage": "S2", "tests": ["emmet2-markup-legacy-markup-016"]},
         {"id": "markup-017", "name": ".class", "line": 30, "section": "Solid", "stage": "S2", "tests": ["emmet2-markup-legacy-markup-017"]},
         {"id": "markup-018", "name": ".a.b.c", "line": 31, "section": "Solid", "stage": "S2", "tests": ["emmet2-markup-legacy-markup-018"]},
-        {"id": "markup-019", "name": "{team.map(i => div)}", "line": 34, "section": "Special Cases", "stage": "S3", "tests": []}
+        {"id": "markup-019", "name": "{team.map(i => div)}", "line": 34, "section": "Special Cases", "stage": "S3", "tests": ["emmet2-extract-legacy-markup-019-map-host"]}
       ]
     },
     {
@@ -172,34 +172,34 @@
         {"id": "regex-033", "name": "p(1)(2)(3)", "line": 73, "section": "OPINIONATED_ELEMENTS_REGEX", "stage": "S2", "tests": ["emmet2-css-legacy-css-028"]},
         {"id": "regex-034", "name": "p--p", "line": 81, "section": "OPINIONATED_ELEMENTS_REGEX", "stage": "S2", "tests": ["emmet2-css-opinionated-regression-inputs"]},
         {"id": "regex-035", "name": "p[0 2px]", "line": 89, "section": "OPINIONATED_ELEMENTS_REGEX", "stage": "S2", "tests": ["emmet2-css-opinionated-regression-inputs"]},
-        {"id": "regex-036", "name": "Empty string", "line": 99, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-037", "name": "()", "line": 100, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-038", "name": "nav>ul>li", "line": 102, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-039", "name": "div+p+bq", "line": 103, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-040", "name": "div+div>p>span+em^bq", "line": 104, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-041", "name": "div+div>p>span+em^^bq", "line": 105, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-042", "name": "div>(header>ul>li*2>a)+footer>p", "line": 106, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-043", "name": "(div>dl>(dt+dd)*3)+footer>p", "line": 107, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-044", "name": "ul>li*5", "line": 108, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-045", "name": "ul>li.item$*5", "line": 109, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-046", "name": "h$[title=item$]{Header $}*3", "line": 110, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-047", "name": "ul>li.item$$$*5", "line": 111, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-048", "name": "ul>li.item$@-*5", "line": 112, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-049", "name": "ul>li.item$@3*5", "line": 113, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-050", "name": "#header", "line": 114, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-051", "name": ".title", "line": 115, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-052", "name": "form#search.wide", "line": 116, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-053", "name": "p.class1.class2.class3", "line": 117, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-054", "name": "p[title=\"Hello world\"]", "line": 118, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-055", "name": "td[rowspan=2 colspan=3 title]", "line": 119, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-056", "name": "[a=\"value1\" b=\"value2\"]", "line": 120, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-057", "name": "a{Click me}", "line": 121, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-058", "name": "p>{Click }+a{here}+{ to continue}", "line": 122, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-059", "name": ".class", "line": 123, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-060", "name": "em>.class", "line": 124, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-061", "name": "ul>.class", "line": 125, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-062", "name": "table>.row>.col", "line": 126, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
-        {"id": "regex-063", "name": "input:color", "line": 127, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": []},
+        {"id": "regex-036", "name": "Empty string", "line": 99, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-036"]},
+        {"id": "regex-037", "name": "()", "line": 100, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-037"]},
+        {"id": "regex-038", "name": "nav>ul>li", "line": 102, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-038"]},
+        {"id": "regex-039", "name": "div+p+bq", "line": 103, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-039"]},
+        {"id": "regex-040", "name": "div+div>p>span+em^bq", "line": 104, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-040"]},
+        {"id": "regex-041", "name": "div+div>p>span+em^^bq", "line": 105, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-041"]},
+        {"id": "regex-042", "name": "div>(header>ul>li*2>a)+footer>p", "line": 106, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-042"]},
+        {"id": "regex-043", "name": "(div>dl>(dt+dd)*3)+footer>p", "line": 107, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-043"]},
+        {"id": "regex-044", "name": "ul>li*5", "line": 108, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-044"]},
+        {"id": "regex-045", "name": "ul>li.item$*5", "line": 109, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-045"]},
+        {"id": "regex-046", "name": "h$[title=item$]{Header $}*3", "line": 110, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-046"]},
+        {"id": "regex-047", "name": "ul>li.item$$$*5", "line": 111, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-047"]},
+        {"id": "regex-048", "name": "ul>li.item$@-*5", "line": 112, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-048"]},
+        {"id": "regex-049", "name": "ul>li.item$@3*5", "line": 113, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-049"]},
+        {"id": "regex-050", "name": "#header", "line": 114, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-050"]},
+        {"id": "regex-051", "name": ".title", "line": 115, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-051"]},
+        {"id": "regex-052", "name": "form#search.wide", "line": 116, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-052"]},
+        {"id": "regex-053", "name": "p.class1.class2.class3", "line": 117, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-053"]},
+        {"id": "regex-054", "name": "p[title=\"Hello world\"]", "line": 118, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-054"]},
+        {"id": "regex-055", "name": "td[rowspan=2 colspan=3 title]", "line": 119, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-055"]},
+        {"id": "regex-056", "name": "[a=\"value1\" b=\"value2\"]", "line": 120, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-056"]},
+        {"id": "regex-057", "name": "a{Click me}", "line": 121, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-057"]},
+        {"id": "regex-058", "name": "p>{Click }+a{here}+{ to continue}", "line": 122, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-058"]},
+        {"id": "regex-059", "name": ".class", "line": 123, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-059"]},
+        {"id": "regex-060", "name": "em>.class", "line": 124, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-060"]},
+        {"id": "regex-061", "name": "ul>.class", "line": 125, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-061"]},
+        {"id": "regex-062", "name": "table>.row>.col", "line": 126, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-062"]},
+        {"id": "regex-063", "name": "input:color", "line": 127, "section": "MARKUP_ABBR_REGEX", "stage": "S3", "tests": ["emmet2-extract-legacy-regex-063"]},
         {"id": "regex-064", "name": "12px 12px", "line": 130, "section": "CSS_IN_JS_NUMBER_REGEX", "stage": "S2", "tests": ["emmet2-css-js-escapes-and-fields"]},
         {"id": "regex-065", "name": "12px !important", "line": 131, "section": "CSS_IN_JS_NUMBER_REGEX", "stage": "S2", "tests": ["emmet2-css-js-escapes-and-fields"]},
         {"id": "regex-066", "name": "center", "line": 132, "section": "CSS_IN_JS_NUMBER_REGEX", "stage": "S2", "tests": ["emmet2-css-js-escapes-and-fields"]},
@@ -221,37 +221,37 @@
       "id": "host-css",
       "contract": "css/scss properties, selectors, at-rules, raw values",
       "stage": "S3",
-      "tests": []
+      "tests": ["emmet2-context-css-position-prototypes", "emmet2-context-lexical-real-point"]
     },
     {
       "id": "host-web",
       "contract": "web-mode HTML, style attribute/block boundaries",
       "stage": "S3",
-      "tests": []
+      "tests": ["emmet2-context-web-position-prototypes", "emmet2-context-lexical-real-point", "emmet2-context-web-pending-scan-and-part-switch"]
     },
     {
       "id": "host-jsx",
       "contract": "TSX/JS JSX text, explicit root JSX and map callback",
       "stage": "S3",
-      "tests": []
+      "tests": ["emmet2-contract-host-jsx-real-point", "emmet2-extract-legacy-markup-019-map-host"]
     },
     {
       "id": "host-web-jsx",
       "contract": "web-mode JSX/TSX, React/Solid, style and named CSS-in-JS calls",
       "stage": "S3",
-      "tests": []
+      "tests": ["emmet2-contract-host-jsx-real-point"]
     },
     {
       "id": "host-script",
       "contract": "JS/TS script StyleSheet.create and createTheme owners",
       "stage": "S3",
-      "tests": []
+      "tests": ["emmet2-contract-host-script-owners"]
     },
     {
       "id": "context-negative",
       "contract": "comments, strings, other attributes, ordinary expressions/calls",
       "stage": "S3",
-      "tests": []
+      "tests": ["emmet2-context-original-comments-strings-and-regex-stay-forbidden", "emmet2-context-lexical-real-point"]
     },
     {
       "id": "project-options",
@@ -325,7 +325,7 @@
       "id": "safe-context",
       "behavior": "Confirmed host exclusions block expansion; unknown context cannot auto-complete.",
       "stage": "S3",
-      "tests": []
+      "tests": ["emmet2-contract-host-jsx-real-point", "emmet2-context-lexical-real-point"]
     },
     {
       "id": "emacs-30",

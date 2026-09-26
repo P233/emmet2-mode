@@ -11,6 +11,7 @@
 
 (require 'cl-lib)
 (require 'treesit)
+(require 'css-mode)
 (require 'emmet2-engine)
 (require 'emmet2-extract)
 
@@ -21,6 +22,7 @@
 (declare-function web-mode-language-at-pos "web-mode")
 (declare-function web-mode-part-beginning-position "web-mode")
 (declare-function web-mode-part-end-position "web-mode")
+(declare-function web-mode-attribute-beginning-position "web-mode")
 
 (cl-defstruct (emmet2-context--state (:constructor emmet2-context--state-create))
   buffer (tag (make-symbol "emmet2")) timer)
@@ -87,13 +89,15 @@ INITIALIZE permits creation or a missing-grammar error."
 (defun emmet2-context--prepare ()
   "Prepare the current JS region during idle time.
 Return its parser when the grammar is available."
-  (when-let* ((region (emmet2-context--js-region)))
-    (pcase-let ((`(,language ,beg ,end) region))
-      (when (and (treesit-available-p) (treesit-language-available-p language))
-        (let ((parser (emmet2-context--parser language t)))
-          (treesit-parser-set-included-ranges parser (list (cons beg end)))
-          (treesit-parser-root-node parser)
-          parser)))))
+  (save-restriction
+    (when (derived-mode-p 'web-mode) (widen))
+    (when-let* ((region (emmet2-context--js-region)))
+      (pcase-let ((`(,language ,beg ,end) region))
+        (when (and (treesit-available-p) (treesit-language-available-p language))
+          (let ((parser (emmet2-context--parser language t)))
+            (treesit-parser-set-included-ranges parser (list (cons beg end)))
+            (treesit-parser-root-node parser)
+            parser))))))
 
 (defun emmet2-context--warm (buffer owner)
   "Warm BUFFER only while OWNER still belongs to an enabled mode."
@@ -219,38 +223,142 @@ interpret tag{text} as Emmet; automatic completion must leave it alone."
       (setq node (treesit-node-parent node)))
     found))
 
+(defun emmet2-context--analyze-js (region automatic)
+  "Analyze JS REGION; AUTOMATIC requires a warmed parser and trusted position."
+  (pcase-let* ((`(,language ,start ,end) region)
+               (parser (emmet2-context--parser language (not automatic))))
+    (if (not parser)
+        (progn
+          (when (bound-and-true-p emmet2-mode) (emmet2-context-start))
+          nil)
+      (treesit-parser-set-included-ranges parser (list (cons start end)))
+      (pcase-let* ((`(,left . ,right) (emmet2-context--host-region parser start end language))
+                   (candidate (emmet2-extract left right))
+                   (beg (plist-get candidate :beg)) (finish (plist-get candidate :end)))
+        (when (and candidate (< beg finish)
+                   (not (emmet2-context--forbidden-origin-p parser beg))
+                   (not (and automatic (emmet2-context--ambiguous-text-p parser beg finish language))))
+          (let ((anchor (save-excursion
+                          (goto-char beg)
+                          (when (re-search-forward "[A-Za-z_]" finish t) (1- (point))))))
+            (when anchor
+              (treesit-parser-set-included-ranges
+               parser (delq nil (list (and (< start beg) (cons start beg))
+                                      (cons anchor (1+ anchor))
+                                      (and (< finish end) (cons finish end)))))
+              (when-let* ((context (emmet2-context--projected parser anchor automatic)))
+                (append candidate (list :lang context :syntax 'jsx
+                                        :position (if (eq context 'css-in-js)
+                                                      'declaration-start 'markup)))))))))))
+
+(defun emmet2-context--web-attribute (position)
+  "Return (NAME BEG END) of a quoted value at POSITION, `name', or nil."
+  (let ((pos (max (point-min) (1- position))))
+    (when-let* ((beg (web-mode-attribute-beginning-position pos)))
+      (save-excursion
+        (goto-char beg)
+        (if (and (looking-at "\\([[:alnum:]:@_.-]+\\)[ \t\n]*=[ \t\n]*\\([\"']\\)")
+                 (>= position (match-end 0)))
+            (let ((name (downcase (match-string-no-properties 1)))
+                  (quote (match-string-no-properties 2)) (start (match-end 0)))
+              (goto-char start)
+              (let ((end (if (search-forward quote nil t) (1- (point)) (point-max))))
+                (if (<= position end) (list name start end) 'name)))
+          'name)))))
+
+(defun emmet2-context--web-region ()
+  "Return (KIND BEG END ATTRIBUTE) for web HTML/CSS at point, or nil.
+The JS region probe has already flushed pending web-mode scanning."
+  (let* ((pos (max (point-min) (1- (point))))
+         (part-pos (if (get-text-property (point) 'part-side) (point) pos))
+         (attribute (emmet2-context--web-attribute (point)))
+         (language (web-mode-language-at-pos part-pos)))
+    (cond
+     ((eq (get-text-property pos 'tag-type) 'comment) nil)
+     ((consp attribute)
+      (when (equal (car attribute) "style")
+        (list 'css (nth 1 attribute) (nth 2 attribute) t)))
+     ((or attribute
+          (and (get-text-property pos 'tag-type)
+               (not (get-text-property pos 'tag-end)))) nil)
+     ((equal language "css")
+      (when-let* ((start (web-mode-part-beginning-position part-pos)))
+        ;; web-mode's end helper returns the last character at a part's end,
+        ;; but a boundary elsewhere.  The property change is always exclusive.
+        (list 'css start (next-single-property-change part-pos 'part-side nil (point-max)) nil)))
+     ((member language '("" "html"))
+      (list 'markup
+            (if (get-text-property pos 'tag-end) (1+ pos)
+              (previous-single-property-change (point) 'tag-end nil (line-beginning-position)))
+            (if (get-text-property (point) 'tag-beg) (point)
+              (next-single-property-change (point) 'tag-beg nil (line-end-position))) nil)))))
+
+(defun emmet2-context--css-position (start beg attribute state)
+  "Classify CSS at BEG using parse STATE from START; ATTRIBUTE has no selectors."
+  (cond
+   ((nth 3 state) 'string)
+   ((or (nth 4 state)
+        (save-excursion (goto-char beg) (looking-at "/[/*]"))) 'comment)
+   ((and (nth 1 state) (eq (char-after (nth 1 state)) ?\()) 'paren-args)
+   ((and (nth 1 state) (eq (char-after (nth 1 state)) ?\[)) 'brackets)
+   ((save-excursion
+      (goto-char beg)
+      (let ((limit (save-excursion (skip-chars-backward "^{};\n" start) (point))))
+        (re-search-backward "@[[:alpha:]-]+[ \t]+" limit t)))
+    'at-rule-prelude)
+   ((and (null (nth 1 state)) (not attribute)) 'selector)
+   (t
+    (let ((previous (save-excursion (goto-char beg) (skip-chars-backward " \t\n" start) (point))))
+      (if (or (memq (char-before previous) '(?{ ?\; ?}))
+              (and attribute (= previous start)))
+          'declaration-start 'value)))))
+
+(defun emmet2-context--analyze-lexical (region automatic)
+  "Analyze a CSS/markup REGION with only the host's lexical syntax.
+AUTOMATIC limits CSS completion to declared insertion positions."
+  (pcase-let* ((`(,kind ,start ,end ,attribute) region)
+               (candidate (emmet2-extract (max start (point-min)) (min end (point-max))
+                                          (when (eq kind 'css) 'css)))
+               (beg (plist-get candidate :beg)))
+    (when candidate
+      (if (eq kind 'markup)
+          (unless (equal (plist-get candidate :abbr) "()")
+            (append candidate '(:lang markup :syntax html :position markup)))
+        (let* ((state (save-excursion
+                        (if (derived-mode-p 'web-mode)
+                            (with-syntax-table css-mode-syntax-table
+                              (parse-partial-sexp start beg))
+                          (syntax-ppss beg))))
+               (position (emmet2-context--css-position start beg attribute state)))
+          (when (and (not (memq position '(string comment)))
+                     (or (not automatic)
+                         (eq position 'declaration-start)
+                         (and (eq position 'selector)
+                              (string-match-p "\\`[@_:]" (plist-get candidate :abbr)))))
+            (append candidate (list :lang 'css :syntax 'css :position position))))))))
+
 (defun emmet2-context-analyze (&optional automatic)
   "Return a confirmed abbreviation at point, or nil.
-AUTOMATIC requires a warmed parser and excludes manual root expressions.
-Explicit analysis initializes on demand and reports missing required grammars.
-This first production slice implements JS/TS/JSX hosts; HTML/CSS follow in S3."
+AUTOMATIC requires trusted positions and warmed JS parsers.  Explicit calls
+initialize required grammars and allow manual markup in other major modes."
   (save-match-data
-    (when-let* ((region (emmet2-context--js-region)))
-      (pcase-let* ((`(,language ,start ,end) region)
-                   (parser (emmet2-context--parser language (not automatic))))
-        (if (not parser)
-            (progn
-              (when (bound-and-true-p emmet2-mode) (emmet2-context-start))
-              nil)
-          (treesit-parser-set-included-ranges parser (list (cons start end)))
-          (pcase-let* ((`(,left . ,right) (emmet2-context--host-region parser start end language))
-                       (candidate (emmet2-extract left right))
-                       (beg (plist-get candidate :beg)) (finish (plist-get candidate :end)))
-            (when (and candidate (< beg finish)
-                       (not (emmet2-context--forbidden-origin-p parser beg))
-                       (not (and automatic (emmet2-context--ambiguous-text-p parser beg finish language))))
-              (let ((anchor (save-excursion
-                              (goto-char beg)
-                              (when (re-search-forward "[A-Za-z_]" finish t) (1- (point))))))
-                (when anchor
-                  (treesit-parser-set-included-ranges
-                   parser (delq nil (list (and (< start beg) (cons start beg))
-                                          (cons anchor (1+ anchor))
-                                          (and (< finish end) (cons finish end)))))
-                  (when-let* ((context (emmet2-context--projected parser anchor automatic)))
-                    (append candidate (list :lang context :syntax 'jsx
-                                            :position (if (eq context 'css-in-js)
-                                                          'declaration-start 'markup)))))))))))))
+    (let ((visible-start (point-min)) (visible-end (point-max)))
+      (save-restriction
+        ;; web-mode pending scan ranges refer to the full host document.
+        ;; Restore that view for classification, never for candidate acceptance.
+        (when (derived-mode-p 'web-mode) (widen))
+        (let ((result
+               (if-let* ((region (emmet2-context--js-region)))
+                   (emmet2-context--analyze-js region automatic)
+                 (when-let* ((region
+                               (cond
+                                ((derived-mode-p 'web-mode) (emmet2-context--web-region))
+                                ((derived-mode-p 'css-mode) (list 'css (point-min) (point-max) nil))
+                                ((not automatic) (list 'markup (point-min) (point-max) nil)))))
+                   (emmet2-context--analyze-lexical region automatic)))))
+          (when (and result (<= visible-start (plist-get result :beg))
+                     (<= (plist-get result :end) visible-end))
+            result))))))
 
 (provide 'emmet2-context)
 ;;; emmet2-context.el ends here

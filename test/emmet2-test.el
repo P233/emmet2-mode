@@ -11,7 +11,8 @@
      (load (expand-file-name "test/emmet2-capf-contract-test.el" emmet2-test-root) nil t)
      (load (expand-file-name "test/emmet2-extract-test.el" emmet2-test-root) nil t)
      (load (expand-file-name "test/emmet2-host-contract-test.el" emmet2-test-root) nil t)
-     (load (expand-file-name "test/emmet2-context-test.el" emmet2-test-root) nil t))
+     (load (expand-file-name "test/emmet2-context-test.el" emmet2-test-root) nil t)
+     (load (expand-file-name "test/emmet2-context-lexical-test.el" emmet2-test-root) nil t))
     ("results"
      (load (expand-file-name "test/emmet2-engine-test.el" emmet2-test-root) nil t))
     ("markup-extensions"

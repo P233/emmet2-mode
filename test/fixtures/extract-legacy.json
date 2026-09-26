@@ -1,0 +1,142 @@
+[
+  {
+    "id": "regex-036",
+    "abbreviation": "",
+    "accepted": false
+  },
+  {
+    "id": "regex-037",
+    "abbreviation": "()",
+    "accepted": false
+  },
+  {
+    "id": "regex-038",
+    "abbreviation": "nav>ul>li",
+    "accepted": true
+  },
+  {
+    "id": "regex-039",
+    "abbreviation": "div+p+bq",
+    "accepted": true
+  },
+  {
+    "id": "regex-040",
+    "abbreviation": "div+div>p>span+em^bq",
+    "accepted": true
+  },
+  {
+    "id": "regex-041",
+    "abbreviation": "div+div>p>span+em^^bq",
+    "accepted": true
+  },
+  {
+    "id": "regex-042",
+    "abbreviation": "div>(header>ul>li*2>a)+footer>p",
+    "accepted": true
+  },
+  {
+    "id": "regex-043",
+    "abbreviation": "(div>dl>(dt+dd)*3)+footer>p",
+    "accepted": true
+  },
+  {
+    "id": "regex-044",
+    "abbreviation": "ul>li*5",
+    "accepted": true
+  },
+  {
+    "id": "regex-045",
+    "abbreviation": "ul>li.item$*5",
+    "accepted": true
+  },
+  {
+    "id": "regex-046",
+    "abbreviation": "h$[title=item$]{Header $}*3",
+    "accepted": true
+  },
+  {
+    "id": "regex-047",
+    "abbreviation": "ul>li.item$$$*5",
+    "accepted": true
+  },
+  {
+    "id": "regex-048",
+    "abbreviation": "ul>li.item$@-*5",
+    "accepted": true
+  },
+  {
+    "id": "regex-049",
+    "abbreviation": "ul>li.item$@3*5",
+    "accepted": true
+  },
+  {
+    "id": "regex-050",
+    "abbreviation": "#header",
+    "accepted": true
+  },
+  {
+    "id": "regex-051",
+    "abbreviation": ".title",
+    "accepted": true
+  },
+  {
+    "id": "regex-052",
+    "abbreviation": "form#search.wide",
+    "accepted": true
+  },
+  {
+    "id": "regex-053",
+    "abbreviation": "p.class1.class2.class3",
+    "accepted": true
+  },
+  {
+    "id": "regex-054",
+    "abbreviation": "p[title=\"Hello world\"]",
+    "accepted": true
+  },
+  {
+    "id": "regex-055",
+    "abbreviation": "td[rowspan=2 colspan=3 title]",
+    "accepted": true
+  },
+  {
+    "id": "regex-056",
+    "abbreviation": "[a=\"value1\" b=\"value2\"]",
+    "accepted": true
+  },
+  {
+    "id": "regex-057",
+    "abbreviation": "a{Click me}",
+    "accepted": true
+  },
+  {
+    "id": "regex-058",
+    "abbreviation": "p>{Click }+a{here}+{ to continue}",
+    "accepted": true
+  },
+  {
+    "id": "regex-059",
+    "abbreviation": ".class",
+    "accepted": true
+  },
+  {
+    "id": "regex-060",
+    "abbreviation": "em>.class",
+    "accepted": true
+  },
+  {
+    "id": "regex-061",
+    "abbreviation": "ul>.class",
+    "accepted": true
+  },
+  {
+    "id": "regex-062",
+    "abbreviation": "table>.row>.col",
+    "accepted": true
+  },
+  {
+    "id": "regex-063",
+    "abbreviation": "input:color",
+    "accepted": true
+  }
+]

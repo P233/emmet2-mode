@@ -399,3 +399,41 @@ rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_SUITE=markup-ex
 Primary review found and fixed duplicate class emission when a nonempty field
 starts at a preceding word end; the half-open intersection rule and boundary
 matrix now cover that case. No core oracle or baseline expected text changed.
+
+## CSS and web host analysis
+
+The lexical context adapter uses `syntax-ppss` in CSS/SCSS and web-mode's own
+pending scanner, attribute markers and part ranges in HTML/CSS. It adds no
+parser or cross-edit cache. CSS classification happens at the extracted start,
+so a point inside a balanced raw value still selects the complete abbreviation.
+Comments and strings are forbidden. Automatic analysis also excludes values,
+at-rule preludes and ordinary selectors; explicit commands retain manual CSS
+positions. Unknown major modes retain manual markup only.
+
+The extractor's CSS syntax treats host braces as boundaries, even following an
+unfinished function/raw value; balanced braces inside raw values are retained.
+HTML style values are bounded by their own quotes, and markup by actual tag
+markers. An unfinished HTML tag whose value markers have been lost returns nil.
+The CSS part's exclusive end comes from its property change: web-mode's helper
+can otherwise return the last character at the end but a boundary elsewhere.
+At-rule preludes stop at completed semicolons/blocks, including on the same line.
+
+All 38 planning position probes are ERT assertions. Additional real-point cases
+cover start/middle/end, pending rescans, cross-part edits, missing tree-sitter,
+tight block/tag boundaries, attributes, raw values and negative contexts. The
+remaining 32 legacy extraction cases now map to executed assertions; all 182
+baseline IDs are accounted for. This is functional migration evidence, not
+editor insertion, completion, GUI, installed-package or performance acceptance.
+Astro expressions not marked by the pinned web-mode scanner retain the recorded
+limitation; this is not used to relax the JS/TS/JSX grammar boundary.
+
+Primary review reproduced out-of-range scans in narrowed web buffers. Analysis
+and idle preparation now temporarily expose the complete host to web-mode and
+restore narrowing afterward; accepted candidates must still lie fully inside
+the original visible range. Tests cover CSS parts, style attributes and script
+owners, including rejection of a partially hidden abbreviation.
+
+Local evidence (2026-09-27): 51 context/extraction ERT tests, including the 93
+JS host paths and 38 lexical probes, pass on both pinned GNU Emacs 30.2/31.1
+builds; warning-free compilation also passes. This completes the current S3
+functional slice. Full-path timing remains the next gate before the S4 switch.

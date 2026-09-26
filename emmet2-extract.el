@@ -10,12 +10,13 @@
 
 (require 'cl-lib)
 
-(defun emmet2-extract (region-beg region-end)
+(defun emmet2-extract (region-beg region-end &optional syntax)
   "Return (:beg BEG :end END :abbr TEXT) at point within the given region.
 REGION-BEG and REGION-END constrain host syntax.  Only the current line is
 scanned.  Balanced groups include spaces and quotes; unmatched host closing
 delimiters are excluded.  Point can be anywhere in the token, including its
-start and end.  Return nil outside a token."
+start and end.  Return nil outside a token.  SYNTAX `css' treats top-level
+and unmatched closing braces as host boundaries; balanced raw braces remain."
   (let ((position (point))
         (begin (max region-beg (line-beginning-position)))
         (limit (min region-end (line-end-position))))
@@ -35,6 +36,10 @@ start and end.  Return nil outside a token."
                  (escaped (setq escaped nil))
                  ((and token (eq character ?\\)) (setq escaped t))
                  (quote (when (eq character quote) (setq quote nil)))
+                 ((and (eq syntax 'css)
+                       (or (and (not stack) (eq character ?{))
+                           (and (eq character ?}) (not (eq (car stack) ?})))))
+                  (finish))
                  ((and stack (not (eq (car stack) ?}))
                        (memq character '(?\" ?\')))
                   (setq quote character))
