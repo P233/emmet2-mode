@@ -82,8 +82,8 @@ rtk proxy deno lint emmet2-engine-node.mjs test/oracle
 ```
 
 `emmet2-engine-node.mjs` is the fixed-version output adapter; it has no process
-or editor state. S1 will import it from the protocol server instead of creating
-a second normalization path. The runtime has not switched to this module yet.
+or editor state. The Node protocol server imports this same normalization
+path. The installed mode has not switched to this module yet.
 
 `core-inputs.json` contains an explicit input list: every pinned HTML/CSS alias,
 plus hand-selected markup, JSX, fields, Unicode, formatting and error cases.
@@ -121,7 +121,7 @@ rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps emacs --batch -Q -L . -l te
 ```
 
 Run setup after changing the lock. `EMMET2_TEST_SUITE` selects `contracts` (the
-default) or `results`; unknown suites fail explicitly. Missing
+default), `results` or `node`; unknown suites fail explicitly. Missing
 packages or local grammars fail bootstrap instead of skipping integration or
 falling back to a grammar in the user's configuration.
 
@@ -169,7 +169,39 @@ rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_SUITE=results e
 
 Six result tests cover Unicode, mirrors, invalid intervals, concat isolation,
 splice boundaries and all successful committed oracle result shapes. They do
-not execute an Elisp engine or the upcoming Node protocol.
+not execute an Elisp engine or the Node protocol.
+
+## Temporary Node API
+
+`emmet2-engine-expand` accepts an abbreviation, a preset symbol (`html`, `jsx`
+or `stylesheet`), and literal `:indent`/`:base-indent` strings. It returns the
+canonical result. `emmet2-engine-with-expansion` gives a group of core calls one
+shared one-second deadline, including startup, decoding and result transforms.
+S2 must wrap an entire extension expansion so multiple properties do not each
+receive a fresh second. The installed minor mode still uses the old bridge;
+this developer API does not switch editor commands or add insertion yet.
+
+The channel owns one process and one pending request. Reply fragments are
+attached to their originating process, validated by request ID and result
+schema, then converted at the boundary. Timeout, quit, nonlocal cancellation,
+incomplete exit and protocol/backend failure dispose of the process and its
+diagnostic buffer. The next call starts a new process; no current call retries.
+A complete parse error signals `emmet2-parse-error` with `(MESSAGE POSITION)`
+and leaves a valid process reusable. Backend faults use `emmet2-backend-error`.
+The server preserves the original parse diagnostic in the JSON error payload.
+Stopping/unloading the backend and exiting Emacs clean up its owned resources.
+
+```sh
+rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_SUITE=node emacs --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit
+```
+
+This suite compares all 494 core oracle cases across the real process boundary
+and has independent field/Unicode/error assertions. Its fault process covers
+partial/malformed replies, invalid fields/IDs, split UTF-8, request/idle death,
+shared startup/multiple-call deadlines, missing Node, cross-buffer reentry,
+quit/nonlocal unwinding, stale filter isolation and actual feature unload/reload.
+Keyboard input cancellation is simulated in ERT; real editor interactions remain
+part of S4/S5 acceptance. `test/node-fixture.mjs` is only a fault injector.
 
 ## Build and CI
 

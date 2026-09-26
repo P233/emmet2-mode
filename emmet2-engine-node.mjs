@@ -1,4 +1,4 @@
-// Fixed-version reference adapter. S1 will reuse this boundary for Node IPC.
+// Fixed-version result adapter shared by the offline oracle and Node IPC.
 import expandAbbreviation, {
   parseStylesheet,
   resolveConfig,

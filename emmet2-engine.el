@@ -17,6 +17,34 @@
 (define-error 'emmet2-backend-error "Emmet backend failed" 'emmet2-error)
 (define-error 'emmet2-result-error "Invalid Emmet result" 'emmet2-error)
 
+(defvar emmet2-engine--deadline nil "Dynamically scoped deadline for one expansion.")
+(defvar emmet2-engine--timeout 1.0 "Seconds allowed for a complete Node expansion.")
+
+(defun emmet2-engine--check-deadline ()
+  "Reject an expired expansion deadline."
+  (when (and emmet2-engine--deadline (>= (float-time) emmet2-engine--deadline))
+    (signal 'emmet2-backend-error '("Expansion deadline exceeded"))))
+
+(defmacro emmet2-engine-with-expansion (&rest body)
+  "Run BODY within one shared expansion deadline, including nested core calls."
+  (declare (indent 0) (debug t))
+  `(let ((emmet2-engine--deadline
+          (or emmet2-engine--deadline (+ (float-time) emmet2-engine--timeout))))
+     (emmet2-engine--check-deadline)
+     (prog1 (progn ,@body) (emmet2-engine--check-deadline))))
+
+(autoload 'emmet2-engine-node-expand "emmet2-engine-node")
+
+(cl-defun emmet2-engine-expand (abbreviation &key (preset 'html) (indent "\t") (base-indent ""))
+  "Expand ABBREVIATION with PRESET and the internal rendering parameters.
+PRESET is html, jsx or stylesheet.  INDENT and BASE-INDENT are literal strings.
+Return a canonical result.  The Node backend is temporary until S6/S7 pass."
+  (unless (and (stringp abbreviation) (memq preset '(html jsx stylesheet))
+               (stringp indent) (stringp base-indent))
+    (signal 'emmet2-error '("Invalid abbreviation, preset or indentation")))
+  (emmet2-engine-with-expansion
+    (emmet2-engine-node-expand abbreviation preset indent base-indent)))
+
 (defun emmet2-result-create (text &optional fields)
   "Create a canonical result from TEXT and FIELDS.
 Each field is (BEG END INDEX PLACEHOLDER), using zero-based character offsets.
