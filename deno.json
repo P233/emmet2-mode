@@ -9,5 +9,10 @@
   },
   "githooks": {
     "pre-commit": "lint"
+  },
+  "lint": {
+    "exclude": [
+      "vendor/"
+    ]
   }
 }

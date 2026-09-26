@@ -1,0 +1,20 @@
+Third-party material
+====================
+
+vendor/emmet-2.4.11.mjs is the unmodified ES module bundle from the published
+emmet 2.4.11 npm archive. It includes @emmetio/abbreviation,
+@emmetio/css-abbreviation and @emmetio/scanner. These packages and the Emmet
+snippet data use the MIT license reproduced in vendor/emmet-LICENSE.
+
+data/emmet/{html,css,variables}.json are unmodified upstream files from the
+published package's source commit a96c77a84dc4519de695f3a1625011d908dbe9c0.
+Package integrity, individual SHA-256 checksums and source locations are
+recorded in vendor/emmet-source.json. Do not substitute files from upstream
+HEAD: its snippets differ from the published 2.4.11 package.
+
+Upstream: https://github.com/emmetio/emmet
+Package: https://www.npmjs.com/package/emmet/v/2.4.11
+
+The existing data/css-data.json is derived from Microsoft VS Code Custom Data.
+Its existing updater and extension behavior remain in place until the S2 data
+migration, which will record its pinned source and license separately.

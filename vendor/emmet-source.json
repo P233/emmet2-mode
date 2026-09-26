@@ -1,0 +1,29 @@
+{
+  "package": "emmet",
+  "version": "2.4.11",
+  "sourceCommit": "a96c77a84dc4519de695f3a1625011d908dbe9c0",
+  "tarball": "https://registry.npmjs.org/emmet/-/emmet-2.4.11.tgz",
+  "integrity": "sha512-23QPJB3moh/U9sT4rQzGgeyyGIrcM+GH5uVYg2C6wZIxAIJq7Ng3QLT79tl8FUwDXhyq9SusfknOrofAKqvgyQ==",
+  "files": {
+    "vendor/emmet-2.4.11.mjs": {
+      "source": "package/dist/emmet.es.js",
+      "sha256": "66283d58591b0c901cb4e1e5ce81b8a58b3f568cfce813d4a801dc4001d8efb2"
+    },
+    "vendor/emmet-LICENSE": {
+      "source": "package/LICENSE",
+      "sha256": "72dd5a0ed7d2d2fd2da518cc365a15f9693fe3505d53919530e5113554f2b235"
+    },
+    "data/emmet/html.json": {
+      "source": "https://raw.githubusercontent.com/emmetio/emmet/a96c77a84dc4519de695f3a1625011d908dbe9c0/src/snippets/html.json",
+      "sha256": "e71fa03133b6a9900f50fe2fda6322482654090a005f98781261c0350d054212"
+    },
+    "data/emmet/css.json": {
+      "source": "https://raw.githubusercontent.com/emmetio/emmet/a96c77a84dc4519de695f3a1625011d908dbe9c0/src/snippets/css.json",
+      "sha256": "c193df4a49e14d4246bbe6b39f7d5073d357883189d06d93f4d1ac7d28c85891"
+    },
+    "data/emmet/variables.json": {
+      "source": "https://raw.githubusercontent.com/emmetio/emmet/a96c77a84dc4519de695f3a1625011d908dbe9c0/src/snippets/variables.json",
+      "sha256": "58bb8e0278c2240973cf6fa2a663dafaee5137bc102a28f78c01f5fca0d7d851"
+    }
+  }
+}
