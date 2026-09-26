@@ -1,0 +1,70 @@
+;;; emmet2-engine-test.el --- Result transformation contracts -*- lexical-binding: t; -*-
+
+;; SPDX-License-Identifier: GPL-3.0-or-later
+
+(require 'ert)
+(require 'json)
+(require 'emmet2-engine)
+
+(ert-deftest emmet2-result-character-offsets-and-mirrors ()
+  (should (equal (emmet2-result-create "😀 x x" '((4 5 9 "x") (2 3 9 "x") (1 1 3 "")))
+                 '(:text "😀 x x" :fields ((1 1 1 "") (2 3 2 "x") (4 5 2 "x")) :cursor 1)))
+  (should (equal (emmet2-result-create "😀") '(:text "😀" :fields nil :cursor 1)))
+  (should (equal (emmet2-result-create "x" '((0 1 2 "x") (0 0 1 "")))
+                 '(:text "x" :fields ((0 1 2 "x") (0 0 1 "")) :cursor 0)))
+  (should (= (plist-get (emmet2-result-create "x" '((0 1 1 "x"))) :cursor) 0)))
+
+(ert-deftest emmet2-result-rejects-invalid-fields ()
+  (dolist (fields '(((0 2 1 "x")) ((0 1 0 "x")) ((0 1 1 "y"))
+                    ((0 1 1 "x") (1 1 1 "")) ((0 1 1 "x") (0 1 2 "x"))
+                    ((0 1 1 "x" extra)) ((0 . 1))))
+    (should-error (emmet2-result-create "x" fields) :type 'emmet2-result-error)))
+
+(ert-deftest emmet2-result-concat-isolates-groups-without-mutation ()
+  (let* ((a (emmet2-result-create "x x" '((0 1 1 "x") (2 3 1 "x"))))
+         (b (emmet2-result-create "😀" '((1 1 1 ""))))
+         (original (copy-tree (list a b))))
+    (should (equal (emmet2-result-concat a b)
+                   '(:text "x x😀" :fields ((0 1 1 "x") (2 3 1 "x") (4 4 2 "")) :cursor 0)))
+    (should (equal (list a b) original))
+    (should (equal (emmet2-result-concat) '(:text "" :fields nil :cursor 0)))))
+
+(ert-deftest emmet2-result-splice-rebuilds-covered-fields ()
+  (let* ((source (emmet2-result-create "x 😀 y" '((0 1 1 "x") (2 3 2 "😀") (4 5 3 "y"))))
+         (replacement (emmet2-result-create "a b" '((0 1 1 "a") (2 3 2 "b"))))
+         (original (copy-tree (list source replacement))))
+    (should (equal (emmet2-result-splice source 2 3 replacement)
+                   '(:text "x a b y" :fields ((0 1 1 "x") (2 3 2 "a") (4 5 3 "b") (6 7 4 "y")) :cursor 0)))
+    (should (equal (list source replacement) original))
+    (should (equal (emmet2-result-splice source 0 3 (emmet2-result-create ""))
+                   '(:text " y" :fields ((1 2 1 "y")) :cursor 1)))))
+
+(ert-deftest emmet2-result-splice-empty-fields-and-partial-overlap ()
+  (let ((source (emmet2-result-create "a  b" '((1 1 1 "") (3 3 2 "")))))
+    (should (equal (emmet2-result-splice source 1 3 (emmet2-result-create " "))
+                   '(:text "a b" :fields ((2 2 1 "")) :cursor 2)))
+    (should (equal (emmet2-result-splice source 1 1 (emmet2-result-create "😀" '((0 1 1 "😀"))))
+                   '(:text "a😀  b" :fields ((1 2 1 "😀") (2 2 2 "") (4 4 3 "")) :cursor 1))))
+  (let ((source (emmet2-result-create "abc" '((0 3 1 "abc")))))
+    (dolist (range '((0 1) (1 3) (1 1) (-1 0) (0 4) (nil 1) (1 1.5)))
+      (should-error (emmet2-result-splice source (car range) (cadr range) (emmet2-result-create ""))
+                    :type 'emmet2-result-error))))
+
+(ert-deftest emmet2-result-canonical-oracle-shapes ()
+  (dolist (file '("markup.json" "stylesheet.json"))
+    (let ((checked 0)
+          (cases (with-temp-buffer
+                   (insert-file-contents (expand-file-name (concat "test/fixtures/oracle/" file)
+                                                          emmet2-test-root))
+                   (json-parse-buffer :object-type 'alist :array-type 'list))))
+      (dolist (entry cases)
+        (when-let* ((result (alist-get 'result entry)))
+          (cl-incf checked)
+          (ert-info ((alist-get 'id entry))
+            (let ((canonical (emmet2-result-create (alist-get 'text result) (alist-get 'fields result))))
+              (should (equal (plist-get canonical :fields) (alist-get 'fields result)))
+              (should (equal (plist-get canonical :cursor) (alist-get 'cursor result)))))))
+      (should (> checked 0)))))
+
+(provide 'emmet2-engine-test)
+;;; emmet2-engine-test.el ends here

@@ -120,8 +120,8 @@ rtk proxy node test/setup.mjs /tmp/emmet2-test-deps
 rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps emacs --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit
 ```
 
-Run setup after changing the lock. The `contracts` suite is currently the only
-implemented suite; another `EMMET2_TEST_SUITE` value fails explicitly. Missing
+Run setup after changing the lock. `EMMET2_TEST_SUITE` selects `contracts` (the
+default) or `results`; unknown suites fail explicitly. Missing
 packages or local grammars fail bootstrap instead of skipping integration or
 falling back to a grammar in the user's configuration.
 
@@ -154,6 +154,22 @@ S3 must retain these fixtures, replace that helper with the real context owner,
 and validate HTML/CSS adapters, parser reuse/cleanup, missing grammars, full
 extraction compatibility and performance. The bounded scanner has no mode or
 parser state. Neither new module is connected to the installed mode yet.
+
+`emmet2-engine.el` owns the pure canonical result and error types. Its constructor
+validates character offsets/defaults, preserves mirror priority, renumbers groups
+and derives cursor. `emmet2-result-concat` isolates groups between results;
+`emmet2-result-splice` rebuilds covered fields, shifts surviving boundary fields
+and rejects partial overlap. Neither mutates inputs. New splice groups precede
+the first replaced group (or next field group); surviving groups keep their
+relative order. CSS-specific default removal and coalescing remain S2 work.
+
+```sh
+rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_SUITE=results emacs --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit
+```
+
+Six result tests cover Unicode, mirrors, invalid intervals, concat isolation,
+splice boundaries and all successful committed oracle result shapes. They do
+not execute an Elisp engine or the upcoming Node protocol.
 
 ## Build and CI
 
