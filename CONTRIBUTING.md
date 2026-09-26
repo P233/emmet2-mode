@@ -100,7 +100,7 @@ files fail; the generator never deletes them automatically.
 Hand-written field, Unicode and error assertions must pass before generated
 goldens are accepted. The core oracle, extension behavior and editor integration
 remain separate suites; a shared adapter cannot be its own only correctness
-proof. Host probes and clean CI are still pending S0 work.
+proof. Clean CI and the remainder of the S0 gate are still pending.
 
 ## Isolated Emacs contract tests
 
@@ -108,7 +108,9 @@ proof. Host probes and clean CI are still pending S0 work.
 revisions. Emacs 31.1 here identifies a development source commit, not a claimed
 release. Test setup requires Node, Git and a C compiler on macOS or Linux.
 It downloads into an explicit directory outside the working tree and compiles
-the three grammars there. It refuses to replace modified dependency checkouts.
+the locked grammars there. jsdoc is needed by the pinned Emacs 31 `js-ts-mode`
+itself; Emmet's context analysis uses javascript, typescript and tsx only.
+Setup refuses to replace modified dependency checkouts.
 It does not install into the user's Emacs configuration.
 
 ```sh
@@ -129,6 +131,27 @@ Emacs 31 source. This is feasibility evidence, not GUI or Emmet integration
 acceptance: S5 must run the same matrix against the real capf and insertion.
 The probe uses private Corfu functions only in tests; production must use the
 public completion API. It never changes the user's completion settings.
+
+The host probe calls the bounded `emmet2-extract` scanner with real buffer point,
+then confirms context using a tagged tree-sitter parser. It keeps one identifier
+character from the candidate in the parser's included ranges; deleting the
+entire candidate loses expression structure. The original host braces remain
+outside the candidate. Tests exercise TSX and web-mode JSX/TSX, raw values,
+middle positions, named CSS calls in JS/TS/web script, root/map manual entry,
+and negative expression/attribute/object/call/string/comment cases. Source and
+point must remain unchanged, and the probe deletes its parser even on failure.
+
+JSX `Hello{items.ma}` is ambiguous with Emmet `tag{text}`. Automatic completion
+leaves a plain prefix plus JSX expression alone, including immediately after
+the closing brace. The explicit command may expand `tag{text}`; a bare JSX
+expression is still rejected. This confidence boundary preserves existing
+manual text expansion without treating valid JSX expressions as abbreviations.
+
+The test-only host classifier is a feasibility probe, not the S3 context module.
+S3 must retain these fixtures, replace that helper with the real context owner,
+and validate HTML/CSS adapters, parser reuse/cleanup, missing grammars, full
+extraction compatibility and performance. The bounded scanner has no mode or
+parser state. Neither new module is connected to the installed mode yet.
 
 ## Review and milestones
 

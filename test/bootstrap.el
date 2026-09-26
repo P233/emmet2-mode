@@ -5,6 +5,11 @@
 (require 'json)
 (require 'treesit)
 
+;; Emacs 31 can offer to download mode grammars.  Only explicit setup may
+;; download; every locked grammar must already exist in the isolated directory.
+(when (boundp 'treesit-auto-install-grammar)
+  (set 'treesit-auto-install-grammar nil))
+
 (when (version< emacs-version "30")
   (error "Native rewrite tests require Emacs 30 or later"))
 
@@ -27,15 +32,16 @@
       (when (file-directory-p (expand-file-name "extensions" path))
         (add-to-list 'load-path (expand-file-name "extensions" path)))))
   (setq treesit-extra-load-path (list (expand-file-name "grammars" directory)))
-  (dolist (language '(javascript tsx typescript))
-    ;; Do not accidentally pass by falling back to the user's/system grammar.
-    (unless (file-exists-p
-             (expand-file-name
-              (format "grammars/libtree-sitter-%s.%s" language
-                      (if (eq system-type 'darwin) "dylib" "so")) directory))
-      (error "Missing isolated test grammar: %s; rerun test/setup.mjs" language))
-    (unless (treesit-language-available-p language)
-      (error "Missing test grammar: %s; rerun test/setup.mjs" language))))
+  (dolist (grammar (alist-get 'grammars dependencies))
+    (let ((language (car grammar)))
+      ;; Do not accidentally pass by falling back to the user's/system grammar.
+      (unless (file-exists-p
+               (expand-file-name
+		(format "grammars/libtree-sitter-%s.%s" language
+			(if (eq system-type 'darwin) "dylib" "so")) directory))
+	(error "Missing isolated test grammar: %s; rerun test/setup.mjs" language))
+      (unless (treesit-language-available-p language)
+	(error "Missing test grammar: %s; rerun test/setup.mjs" language)))))
 
 (add-to-list 'load-path emmet2-test-root)
 (provide 'emmet2-test-bootstrap)
