@@ -1,0 +1,159 @@
+{
+  "pseudoFunctions": [
+    ":active-view-transition-type",
+    ":current",
+    ":dir",
+    ":has",
+    ":host",
+    ":host-context",
+    ":is",
+    ":lang",
+    ":matches",
+    ":not",
+    ":nth-child",
+    ":nth-last-child",
+    ":nth-last-of-type",
+    ":nth-of-type",
+    ":state",
+    ":where",
+    "::cue",
+    "::cue-region",
+    "::highlight",
+    "::part",
+    "::picker",
+    "::slotted",
+    "::view-transition-group",
+    "::view-transition-image-pair",
+    "::view-transition-new",
+    "::view-transition-old"
+  ],
+  "pseudoAliases": {
+    ":fu": ":focus",
+    ":hv": ":hover",
+    ":af": "::after",
+    ":be": "::before",
+    ":flt": "::first-letter",
+    ":fc": ":first-child",
+    ":lc": ":last-child",
+    ":fw": ":focus-within",
+    ":fv": ":focus-visible",
+    ":pl": "::placeholder",
+    ":sel": "::selection",
+    ":dis": ":disabled",
+    ":ch": ":checked",
+    ":em": ":empty",
+    ":n": ":not",
+    ":nc": ":nth-child",
+    ":nlc": ":nth-last-child",
+    ":la": ":lang",
+    ":h": ":has",
+    ":is": ":is",
+    ":w": ":where"
+  },
+  "atRuleAliases": {
+    "@ch": "@charset",
+    "@cs": "@charset",
+    "@co": "@counter-style",
+    "@fa": "@font-face",
+    "@fv": "@font-feature-values",
+    "@im": "@import",
+    "@kf": "@keyframes",
+    "@ly": "@layer",
+    "@md": "@media",
+    "@ns": "@namespace",
+    "@pg": "@page",
+    "@pr": "@property",
+    "@su": "@supports",
+    "@us": "@use",
+    "@in": "@if not",
+    "@if": "@if",
+    "@el": "@else",
+    "@ei": "@else if",
+    "@mi": "@mixin",
+    "@inc": "@include",
+    "@fu": "@function",
+    "@ea": "@each",
+    "@fo": "@for",
+    "@wh": "@while",
+    "@ex": "@extend",
+    "@ar": "@at-root"
+  },
+  "atRuleTemplates": {
+    "@at-root": {
+      "text": "@at-root  {\n\t\n}",
+      "cursor": 9
+    },
+    "@debug": {
+      "text": "@debug ;",
+      "cursor": 7
+    },
+    "@each": {
+      "text": "@each $ in $ {\n\t\n}",
+      "cursor": 7
+    },
+    "@else if not": {
+      "text": "@else if not  {\n\t\n}",
+      "cursor": 13
+    },
+    "@else if": {
+      "text": "@else if  {\n\t\n}",
+      "cursor": 9
+    },
+    "@else": {
+      "text": "@else {\n\t\n}",
+      "cursor": 9
+    },
+    "@error": {
+      "text": "@error \"\";",
+      "cursor": 8
+    },
+    "@extend": {
+      "text": "@extend ;",
+      "cursor": 8
+    },
+    "@for": {
+      "text": "@for $ from 1 {\n\t\n}",
+      "cursor": 6
+    },
+    "@forward": {
+      "text": "@forward \"\";",
+      "cursor": 10
+    },
+    "@function": {
+      "text": "@function  {\n\t@return \n}",
+      "cursor": 10
+    },
+    "@if not": {
+      "text": "@if not  {\n\t\n}",
+      "cursor": 8
+    },
+    "@if": {
+      "text": "@if  {\n\t\n}",
+      "cursor": 4
+    },
+    "@import": {
+      "text": "@import \"\"",
+      "cursor": 9
+    },
+    "@mixin": {
+      "text": "@mixin  {\n\t\n}",
+      "cursor": 7
+    },
+    "@use": {
+      "text": "@use \"\";",
+      "cursor": 6
+    },
+    "@warn": {
+      "text": "@warn \"\";",
+      "cursor": 7
+    },
+    "@while": {
+      "text": "@while  {\n\t\n}",
+      "cursor": 7
+    },
+    "@include": {
+      "text": "@include ",
+      "cursor": 9
+    }
+  }
+}

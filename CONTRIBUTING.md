@@ -121,7 +121,7 @@ rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps emacs --batch -Q -L . -l te
 ```
 
 Run setup after changing the lock. `EMMET2_TEST_SUITE` selects `contracts` (the
-default), `results` or `node`; unknown suites fail explicitly. Missing
+default), `results`, `node` or `fuzzy`; unknown suites fail explicitly. Missing
 packages or local grammars fail bootstrap instead of skipping integration or
 falling back to a grammar in the user's configuration.
 
@@ -267,3 +267,34 @@ Performance checks use fixed inputs, bytecode, normal GC, at least 100 warmups
 and 1,000 samples per group, repeated three times. Report cold time, p50/p99/max
 and GC costs. Do not put machine-specific timing assertions in ERT or infer
 whole-flow performance from parser or matching microbenchmarks.
+
+## CSS extension data and fuzzy matching
+
+`data/css-source.json` locks vscode-custom-data to one commit, SHA-256 hashes,
+schema and exact raw counts. Run `node data/update-web-data.mjs` only as an
+explicit networked maintenance step. It verifies all inputs before writing
+`css-names.json` and the upstream license. Generated names are sorted, deduplicated
+and omit vendor prefixes. The pinned data contains 19 at-rules and 117 pseudos.
+An upgrade must review the manifest, generated diff and local functional names.
+`css-overrides.json` alone owns pseudo functions, aliases and SCSS templates
+(literal text plus cursor offset); generation never writes it or legacy data.
+
+`emmet2-fuzzy.el` ports the published Emmet algorithm, including candidate
+position reuse, partial suffixes, early exact hits and later nonzero tie wins.
+The caller owns syntax prefixes and alias priority. S2 extensions and S7 core
+resolution share this module; no fuzzy cache or additional state is introduced.
+This does not yet switch the installed runtime or mark legacy cases migrated.
+
+```sh
+rtk proxy node --test test/css-data.test.mjs
+rtk proxy deno lint data/update-web-data.mjs test/css-data.test.mjs
+rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_SUITE=fuzzy emacs --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit
+```
+
+Local S2 data evidence (2026-09-26): pinned regeneration ran twice with identical
+outputs and unchanged override/legacy files; all alias and function targets
+exist in the pinned names or local templates. Two generator tests and two fuzzy
+ERT tests passed; warnings-as-errors compilation passed on both pinned GNU
+30.2/31.1 builds. Scoped Deno lint and actionlint passed. ESLint MCP has no
+project config and Wallaby reports no data, so these results use the documented
+Node/ERT/lint fallbacks. Hosted Linux CI and extension integration remain open.

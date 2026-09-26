@@ -15,6 +15,11 @@ HEAD: its snippets differ from the published 2.4.11 package.
 Upstream: https://github.com/emmetio/emmet
 Package: https://www.npmjs.com/package/emmet/v/2.4.11
 
-The existing data/css-data.json is derived from Microsoft VS Code Custom Data.
-Its existing updater and extension behavior remain in place until the S2 data
-migration, which will record its pinned source and license separately.
+emmet2-fuzzy.el ports the scoring algorithm from the same Emmet bundle.
+
+data/css-names.json contains names derived from Microsoft VS Code Custom Data
+commit 01df47ad7cc0b140624fc941ff57618c36ed46a1. Its MIT license is reproduced
+in data/vscode-custom-data-LICENSE; data/css-source.json records source paths,
+checksums and input counts. data/css-overrides.json is authored project behavior
+and is never generated from upstream names. The old data/css-data.json and its
+Deno updater remain solely for the legacy runtime until S8 retirement.

@@ -13,9 +13,11 @@
      (load (expand-file-name "test/emmet2-host-contract-test.el" emmet2-test-root) nil t))
     ("results"
      (load (expand-file-name "test/emmet2-engine-test.el" emmet2-test-root) nil t))
+    ("fuzzy"
+     (load (expand-file-name "test/emmet2-fuzzy-test.el" emmet2-test-root) nil t))
     ("node"
      (load (expand-file-name "test/emmet2-engine-node-test.el" emmet2-test-root) nil t))
-    (_ (error "Suite %s is not implemented; available: contracts, results, node" suite)))
+    (_ (error "Suite %s is not implemented; available: contracts, results, node, fuzzy" suite)))
   (message "Implemented %s tests only; native engines and editor integration are not implemented" suite))
 
 ;;; emmet2-test.el ends here

@@ -1,0 +1,14 @@
+{
+  "repository": "https://github.com/microsoft/vscode-custom-data",
+  "commit": "01df47ad7cc0b140624fc941ff57618c36ed46a1",
+  "schemaVersion": 1.1,
+  "counts": {
+    "atDirectives": 25,
+    "pseudoClasses": 111,
+    "pseudoElements": 90
+  },
+  "files": {
+    "web-data/data/browsers.css-data.json": "556472347738581a7670849db10f5128198d34ee2162e1e1b375498bd1bfa6c2",
+    "LICENSE": "9906940f61b1f0b533fa7d99baf55178b2808fbe113ea51dfbfad8572ccd5f2b"
+  }
+}
