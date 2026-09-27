@@ -415,7 +415,7 @@ matrix now cover that case. No core oracle or baseline expected text changed.
 
 The lexical context adapter uses `syntax-ppss` in CSS/SCSS and web-mode's own
 pending scanner, attribute markers and part ranges in HTML/CSS. It adds no
-parser or cross-edit cache. CSS classification happens at the extracted start,
+parser or cached parse result. CSS classification happens at the extracted start,
 so a point inside a balanced raw value still selects the complete abbreviation.
 Comments and strings are forbidden. Automatic analysis also excludes values,
 at-rule preludes and ordinary selectors; explicit commands retain manual CSS
@@ -465,8 +465,23 @@ into a temporary directory and rejects mixed evidence if measured source files
 change while it runs. Fixture/source hashes and the dependency lock identify
 the inputs. Filters are for diagnosis, never acceptance.
 
-Local correctness evidence: 60 scoped context/extraction tests pass on pinned
+Local correctness evidence: 68 scoped context/extraction tests pass on pinned
 Emacs 30.2 and 31.1, including local-unit invalidation, indirect edits, malformed
-host structure and unterminated comments. The S3 performance gate remains open:
-large web-mode programmatic edits still trigger a full pending scan. No editor
-entry point has been switched, and no GUI or hosted acceptance is implied.
+host structure and unterminated comments. The S3 performance gate remains open pending stable scale-ratio measurements.
+No editor entry point has been switched, and no GUI or hosted acceptance is implied.
+
+For HTML with web-mode's `none` engine, the context owner can retain one pending
+insertion extent: two rule markers, the exact change positions and the expected modification tick. Before a
+single insertion, its existing CSS rule must be fully scanned and contain no
+angle brackets. Afterward only one ASCII letter, digit, underscore or hyphen
+qualifies. Tokenization still uses `web-mode-scan-region`; only a successful
+scan acknowledges the matching pending change. Deletion, replacement, repeated
+edits, markup-sensitive rules, other engines/content types and unobserved edits
+use normal scanning. The extent is detached on the next edit, scan, stop or
+mode/buffer teardown. It retains no syntax or expansion result.
+
+Tests compare all text properties against a full web-mode rescan, including
+strings, comments, nesting, Unicode, part switches, hidden buffer regions and
+configuration changes and nested hook edits. A scan error preserves the pending change and restores
+narrowing/point. The current measurements and retained failures are recorded in
+[test/performance-context-2026-09-27.md](test/performance-context-2026-09-27.md).

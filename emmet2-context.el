@@ -17,8 +17,12 @@
 
 (defvar emmet2-mode)
 (defvar web-mode-change-beg)
+(defvar web-mode-change-end)
 (defvar web-mode-content-type)
+(defvar web-mode-engine)
 (declare-function web-mode-scan "web-mode")
+(declare-function web-mode-scan-region "web-mode")
+(declare-function web-mode-css-rule-current "web-mode")
 (declare-function web-mode-language-at-pos "web-mode")
 (declare-function web-mode-part-beginning-position "web-mode")
 (declare-function web-mode-part-end-position "web-mode")
@@ -26,7 +30,7 @@
 
 (cl-defstruct (emmet2-context--state (:constructor emmet2-context--state-create))
   buffer (tag (make-symbol "emmet2"))
-  (projection-tag (make-symbol "emmet2-projection")) timer units tick)
+  (projection-tag (make-symbol "emmet2-projection")) timer units tick web-insertion)
 (defvar-local emmet2-context--state nil)
 
 (defconst emmet2-context--queries
@@ -80,24 +84,83 @@ verify owner identity and give each view its own tag, without shared cleanup."
         (emmet2-context--state-units owner)))
 
 (defun emmet2-context--check-tick (owner)
-  "Invalidate OWNER after changes that bypassed this view's hooks."
+  "Invalidate OWNER after changes that bypassed this view's hooks.
+Return non-nil when evidence was stale."
   (unless (eql (emmet2-context--state-tick owner) (buffer-chars-modified-tick))
     (emmet2-context--forget-units owner)
+    (emmet2-context--forget-web-insertion owner)
     (setf (emmet2-context--state-tick owner) (buffer-chars-modified-tick))))
 
+(defun emmet2-context--forget-web-insertion (owner)
+  "Release OWNER's single pending CSS scan extent."
+  (when-let* ((entry (emmet2-context--state-web-insertion owner)))
+    (set-marker (nth 2 entry) nil) (set-marker (nth 3 entry) nil)
+    (setf (emmet2-context--state-web-insertion owner) nil)))
+
+(defun emmet2-context--remember-web-insertion (owner beg end)
+  "Remember a previously scanned CSS rule before insertion at BEG..END.
+The one pending entry is (EDIT-BEG EDIT-END RULE-BEG RULE-END EXPECTED-TICK).
+EDIT-END is filled only after a single ordinary character was inserted."
+  (emmet2-context--forget-web-insertion owner)
+  (when (and (= beg end) (derived-mode-p 'web-mode)
+             (equal web-mode-engine "none") (equal web-mode-content-type "html")
+             (not web-mode-change-beg))
+    (save-match-data
+      (save-excursion
+        (save-restriction
+          (widen)
+          (when (and (> beg (point-min))
+                     (eq (get-text-property beg 'part-side) 'css)
+                     (eq (get-text-property (1- beg) 'part-side) 'css))
+            (let ((rule (web-mode-css-rule-current beg)))
+              (when (and (car rule) (cdr rule) (< (car rule) beg (cdr rule))
+                         ;; Completing an existing </sty...> could end a part.
+                         (not (progn (goto-char (car rule))
+                                     (re-search-forward "[<>]" (cdr rule) t))))
+                (setf (emmet2-context--state-web-insertion owner)
+                      (list beg nil (copy-marker (car rule)) (copy-marker (cdr rule) t)
+                            (1+ (buffer-modified-tick))))))))))))
+
 (defun emmet2-context--before-change (beg end)
-  "Invalidate units whose boundaries or surroundings overlap BEG..END."
+  "Invalidate affected units and remember a possible insertion at BEG..END."
   (when-let* ((owner (emmet2-context--owner)))
-    (emmet2-context--check-tick owner)
+    (unless (emmet2-context--check-tick owner)
+      (emmet2-context--remember-web-insertion owner beg end))
     (dolist (entry (copy-sequence (emmet2-context--state-units owner)))
       (unless (and (< (marker-position (cadr entry)) beg)
                    (< end (marker-position (caddr entry))))
         (emmet2-context--forget-units owner (car entry))))))
 
-(defun emmet2-context--after-change (_beg _end _length)
+(defun emmet2-context--after-change (beg end length)
   "Record the completed edit; markers already follow valid interior changes."
   (when-let* ((owner (emmet2-context--owner)))
+    (when-let* ((entry (emmet2-context--state-web-insertion owner)))
+      (if (and (zerop length) (= beg (car entry)) (= end (1+ beg))
+               (= (buffer-chars-modified-tick) (nth 4 entry))
+               (let ((char (char-after beg)))
+                 (or (<= ?a char ?z) (<= ?A char ?Z) (<= ?0 char ?9) (memq char '(?_ ?-)))))
+          (setcar (cdr entry) end)
+        (emmet2-context--forget-web-insertion owner)))
     (setf (emmet2-context--state-tick owner) (buffer-chars-modified-tick))))
+
+(defun emmet2-context--scan-web ()
+  "Flush web-mode's pending scan, using proven CSS insertion bounds if valid.
+Tokenization belongs to web-mode.  Acknowledge its pending range only after a
+successful scan of that exact edit; preserve it on errors."
+  (let ((owner (emmet2-context--owner)))
+    (when owner (emmet2-context--check-tick owner))
+    (let ((entry (when owner (emmet2-context--state-web-insertion owner))))
+      (unwind-protect
+          (when web-mode-change-beg
+            (if (and entry (equal web-mode-engine "none") (equal web-mode-content-type "html")
+                     (eql web-mode-change-beg (car entry))
+                     (eql web-mode-change-end (cadr entry)))
+                (progn
+                  (web-mode-scan-region (marker-position (nth 2 entry))
+                                        (marker-position (nth 3 entry)) "css")
+                  (setq web-mode-change-beg nil web-mode-change-end nil))
+              (web-mode-scan)))
+        (when owner (emmet2-context--forget-web-insertion owner))))))
 
 (defun emmet2-context--parsers ()
   "Return only parsers belonging to this buffer's context owner."
@@ -111,6 +174,7 @@ verify owner identity and give each view its own tag, without shared cleanup."
   (when-let* ((owner (emmet2-context--owner)))
     (when-let* ((timer (emmet2-context--state-timer owner))) (cancel-timer timer))
     (emmet2-context--forget-units owner)
+    (emmet2-context--forget-web-insertion owner)
     (dolist (parser (emmet2-context--parsers)) (treesit-parser-delete parser)))
   (setq emmet2-context--state nil)
   (remove-hook 'kill-buffer-hook #'emmet2-context-stop t)
@@ -141,7 +205,7 @@ the second tree; keeping each input view stable avoids full reparses."
   (let ((start (point-min)) (end (point-max)) language)
     (cond
      ((derived-mode-p 'web-mode)
-      (when web-mode-change-beg (web-mode-scan))
+      (emmet2-context--scan-web)
       (let ((part (web-mode-language-at-pos)))
         (setq language (cond ((equal part "typescript") 'typescript)
                              ((member part '("jsx" "tsx")) 'tsx)
@@ -441,6 +505,7 @@ The JS region probe has already flushed pending web-mode scanning."
                (not (get-text-property pos 'tag-end)))) nil)
      ((equal language "css")
       (when-let* ((start (web-mode-part-beginning-position part-pos)))
+        (emmet2-context--owner t)
         ;; web-mode's end helper returns the last character at a part's end,
         ;; but a boundary elsewhere.  The property change is always exclusive.
         (list 'css start (next-single-property-change part-pos 'part-side nil (point-max)) nil)))

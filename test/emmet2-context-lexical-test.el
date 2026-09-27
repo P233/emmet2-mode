@@ -140,7 +140,7 @@
             (should (equal (emmet2-context-analyze t) (when auto result)))
             (should (equal (buffer-substring-no-properties (point-min) (point-max)) original))
             (should (= (point) point-before))
-            (should-not (emmet2-context--owner))))))))
+            (should-not (emmet2-context--parsers))))))))
 
 (ert-deftest emmet2-context-html-css-need-no-tree-sitter ()
   (cl-letf (((symbol-function 'treesit-available-p) (lambda () nil))
@@ -167,7 +167,7 @@
     (goto-char (point-min)) (search-forward "m10")
     (delete-char -3) (insert "c")
     (should (equal (plist-get (emmet2-context-analyze t) :abbr) "c"))
-    (should-not (emmet2-context--owner))))
+    (should-not (emmet2-context--parsers))))
 
 (ert-deftest emmet2-context-web-narrowing-keeps-host-and-visible-boundaries ()
   (dolist (source '("<style>.a{m10}</style>" "<div style=\"m10\"></div>"
@@ -187,6 +187,160 @@
         (narrow-to-region (1+ start) end)
         (should-not (emmet2-context-analyze))
         (should-not (emmet2-context-analyze t))))))
+
+(defmacro emmet2-test-with-web-insertion (source &rest body)
+  "Run BODY after scanning SOURCE with point at its vertical-bar marker."
+  (declare (indent 1) (debug t))
+  `(with-temp-buffer
+     (insert ,source)
+     (goto-char (point-min)) (search-forward "│") (delete-char -1)
+     (let ((position (point)))
+       (setq buffer-file-name "/tmp/emmet2-insertion.html")
+       (web-mode) (goto-char position))
+     (emmet2-context-analyze)
+     ,@body))
+
+(ert-deftest emmet2-context-web-insertion-matches-full-scan ()
+  (dolist (source '("<p>before</p><style>.a { m10│ }</style><p>after</p>"
+                     "<style>@media screen { .a { m10│ } }</style>"
+                     "<style>.a { content: '👋{'; m10│ }</style>"
+                     "<style>.a { /* } */ m10│ }</style>"
+                     "<style>.a { content: 'm10│'; }</style>"
+                     "<style>.a { /* m10│ */ }</style>"))
+    (ert-info (source)
+      (emmet2-test-with-web-insertion source
+        (insert "1")
+        (let* ((owner (emmet2-context--owner))
+               (entry (emmet2-context--state-web-insertion owner)))
+          (should entry)
+          (let ((result (emmet2-context-analyze t)) (position (point))
+                (optimized (buffer-string)))
+            (should-not web-mode-change-beg)
+            (should-not web-mode-change-end)
+            (should-not (emmet2-context--state-web-insertion owner))
+            (should-not (marker-buffer (nth 2 entry)))
+            (web-mode-buffer-scan)
+            (should (equal-including-properties optimized (buffer-string)))
+            (should (equal result (emmet2-context-analyze t)))
+            (should (= position (point)))))))))
+
+(ert-deftest emmet2-context-web-insertion-unsafe-edits-use-normal-scan ()
+  (dolist (edit '(structural paste replace delete repeated))
+    (emmet2-test-with-web-insertion "<style>.a { m10│ }</style><p>after</p>"
+      (pcase edit
+        ('structural (insert "</style><p>"))
+        ('paste (insert "12"))
+        ('replace (delete-char -1) (insert "1"))
+        ('delete (delete-char -1))
+        ('repeated (insert "1") (insert "2")))
+      (should-not (emmet2-context--state-web-insertion (emmet2-context--owner)))
+      (let ((result (emmet2-context-analyze)) (optimized (buffer-string)))
+        (web-mode-buffer-scan)
+        (should (equal-including-properties optimized (buffer-string)))
+        (should (equal result (emmet2-context-analyze))))))
+  ;; An ordinary character can complete an HTML terminator already in CSS.
+  (emmet2-test-with-web-insertion "<style>.a { </styl│> }</style><p>after</p>"
+    (insert "e")
+    (should-not (emmet2-context--state-web-insertion (emmet2-context--owner)))
+    (let ((result (emmet2-context-analyze)) (scanned (buffer-string)))
+      (web-mode-buffer-scan)
+      (should (equal-including-properties scanned (buffer-string)))
+      (should (equal result (emmet2-context-analyze))))))
+
+(ert-deftest emmet2-context-web-insertion-narrowing-and-error-cleanup ()
+  (emmet2-test-with-web-insertion "<style>.a { m10│ }</style>"
+    (let ((start (- (point) 3)))
+      (narrow-to-region start (point))
+      (insert "1")
+      (let* ((owner (emmet2-context--owner)) (entry (emmet2-context--state-web-insertion owner))
+             (beg web-mode-change-beg) (end web-mode-change-end) (position (point)))
+        (should entry)
+        (cl-letf (((symbol-function 'web-mode-scan-region) (lambda (&rest _) (error "scan failed"))))
+          (should-error (emmet2-context-analyze)))
+        (should (equal (list web-mode-change-beg web-mode-change-end) (list beg end)))
+        (should-not (marker-buffer (nth 2 entry)))
+        (should (= start (point-min)))
+        (should (= position (point-max)))
+        (should (= position (point)))
+        (should (equal (plist-get (emmet2-context-analyze t) :abbr) "m101"))))))
+
+(ert-deftest emmet2-context-web-insertion-unobserved-edits-and-stop ()
+  (dolist (action '(inhibited indirect stop major-mode))
+    (emmet2-test-with-web-insertion "<style>.a { m10│ }</style><p>other</p>"
+      (insert "1")
+      (let* ((owner (emmet2-context--owner)) (entry (emmet2-context--state-web-insertion owner)))
+        (should entry)
+        (pcase action
+          ('inhibited (let ((inhibit-modification-hooks t)) (insert "2")))
+          ('indirect
+           (let ((view (clone-indirect-buffer " *emmet2-css-view*" nil)))
+             (unwind-protect (with-current-buffer view (insert "2")) (kill-buffer view))))
+          ('stop (emmet2-context-stop))
+          ('major-mode (fundamental-mode)))
+        (when (memq action '(inhibited indirect))
+          (emmet2-context-analyze)
+          (should-not (emmet2-context--state-web-insertion owner)))
+        (should-not (marker-buffer (nth 2 entry)))
+        (should-not (marker-buffer (nth 3 entry)))))))
+
+(ert-deftest emmet2-context-web-insertion-cannot-reuse-stale-part-evidence ()
+  (emmet2-test-with-web-insertion "<style>.a { m10│ }</style><p>other</p>"
+    (let ((inhibit-modification-hooks t))
+      (save-excursion
+        (goto-char (point-min)) (search-forward "style")
+        (replace-match "script")
+        (search-forward "</style>") (replace-match "</script>")))
+    (insert "1")
+    (should-not (emmet2-context--state-web-insertion (emmet2-context--owner)))
+    (should-not (emmet2-context-analyze)))
+  (emmet2-test-with-web-insertion "<style>.a { m10│ }</style><p>other</p><style>.b { p5 }</style>"
+    (insert "1")
+    (search-forward "p5") (insert "1")
+    (should-not (emmet2-context--state-web-insertion (emmet2-context--owner)))
+    (should (equal (plist-get (emmet2-context-analyze) :abbr) "p51"))
+    (let ((optimized (buffer-string)))
+      (web-mode-buffer-scan)
+      (should (equal-including-properties optimized (buffer-string))))))
+
+(ert-deftest emmet2-context-web-insertion-configuration-change-invalidates ()
+  (dolist (setting '(engine content-type))
+    (emmet2-test-with-web-insertion "<style>.a { m10│ }</style>"
+      (insert "1")
+      (should (emmet2-context--state-web-insertion (emmet2-context--owner)))
+      (if (eq setting 'engine) (setq web-mode-engine "php") (setq web-mode-content-type "css"))
+      (let ((scan (symbol-function 'web-mode-scan)) (calls 0))
+        (cl-letf (((symbol-function 'web-mode-scan)
+                   (lambda (&rest args) (cl-incf calls) (apply scan args))))
+          (emmet2-context-analyze))
+        (should (= calls 1))
+        (should-not (emmet2-context--state-web-insertion (emmet2-context--owner)))))))
+
+(ert-deftest emmet2-context-web-insertion-nested-hook-edit-invalidates ()
+  (emmet2-test-with-web-insertion "<style>.a { m10│ }</style>"
+    (let ((hook (lambda (_beg end _length)
+                  (let ((inhibit-modification-hooks t))
+                    (save-excursion (goto-char end) (insert "</style><p>"))))))
+      (add-hook 'after-change-functions hook nil t)
+      (unwind-protect (insert "1") (remove-hook 'after-change-functions hook t)))
+    (should-not (emmet2-context--state-web-insertion (emmet2-context--owner)))
+    (emmet2-context-analyze)
+    (let ((scanned (buffer-string)))
+      (web-mode-buffer-scan)
+      (should (equal-including-properties scanned (buffer-string))))))
+
+(ert-deftest emmet2-context-web-insertion-partial-scan-error-recovers ()
+  (emmet2-test-with-web-insertion "<style>.a { content: '{{'; m10│ }</style>"
+    (insert "1")
+    (cl-letf (((symbol-function 'web-mode-scan-region)
+               (lambda (beg end &rest _)
+                 (with-silent-modifications
+                   (remove-list-of-text-properties beg end '(part-token syntax-table)))
+                 (error "partial scan"))))
+      (should-error (emmet2-context-analyze)))
+    (should (equal (plist-get (emmet2-context-analyze t) :abbr) "m101"))
+    (let ((recovered (buffer-string)))
+      (web-mode-buffer-scan)
+      (should (equal-including-properties recovered (buffer-string))))))
 
 (provide 'emmet2-context-lexical-test)
 ;;; emmet2-context-lexical-test.el ends here
