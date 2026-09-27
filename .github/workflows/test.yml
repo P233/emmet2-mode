@@ -84,6 +84,10 @@ jobs:
         env:
           EMMET2_TEST_SUITE: markup-spike
         run: '"$EMMET2_EMACS" --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit'
+      - name: Native stylesheet core contracts
+        env:
+          EMMET2_TEST_SUITE: stylesheet
+        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit'
       - name: Markup extensions and migrated behavior
         env:
           EMMET2_TEST_SUITE: markup-extensions

@@ -23,6 +23,8 @@
      (load (expand-file-name "test/emmet2-engine-test.el" emmet2-test-root) nil t))
     ("markup-spike"
      (load (expand-file-name "test/emmet2-engine-markup-test.el" emmet2-test-root) nil t))
+    ("stylesheet"
+     (load (expand-file-name "test/emmet2-engine-stylesheet-test.el" emmet2-test-root) nil t))
     ("markup-extensions"
      (load (expand-file-name "test/emmet2-extensions-markup-test.el" emmet2-test-root) nil t))
     ("css-extensions"
@@ -31,7 +33,7 @@
      (load (expand-file-name "test/emmet2-fuzzy-test.el" emmet2-test-root) nil t))
     ("node"
      (load (expand-file-name "test/emmet2-engine-node-test.el" emmet2-test-root) nil t))
-    (_ (error "Suite %s is not implemented; available: completion, editor, contracts, results, markup-spike, node, fuzzy, css-extensions, markup-extensions" suite)))
-  (message "Selected %s suite; native markup is partial and stylesheet is not implemented" suite))
+    (_ (error "Suite %s is not implemented; available: completion, editor, contracts, results, markup-spike, stylesheet, node, fuzzy, css-extensions, markup-extensions" suite)))
+  (message "Selected %s suite; native engines remain isolated from the production Node entry" suite))
 
 ;;; emmet2-test.el ends here

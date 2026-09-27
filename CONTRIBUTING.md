@@ -1,8 +1,8 @@
 # Development and native rewrite
 
 The mode uses native context, completion and insertion with a temporary Node
-expansion backend. The pure Elisp markup engine is under development and is
-tested independently; its presence does not switch the editor backend.
+expansion backend. The pure Elisp markup and stylesheet engines are tested
+independently; their presence does not switch the editor backend.
 
 ## Baseline and migration
 
@@ -88,9 +88,10 @@ path used by the current mode.
 `core-inputs.json` contains an explicit input list: every pinned HTML/CSS alias,
 plus hand-selected markup, JSX, fields, Unicode, formatting and error cases.
 It is a starting corpus, not a claim of complete upstream feature coverage.
-Larger parser/formatter and lorem structural suites are still required before
-the S6/S7 engines can be accepted. Do not infer test cases by scanning arbitrary
-source string literals during generation.
+The S6 markup grammar/formatter and lorem structural suites are implemented;
+S7 adds stylesheet value and parser boundaries. Integration and performance
+acceptance remain separate from this corpus. Do not infer test cases by scanning
+arbitrary source string literals during generation.
 
 After an intentional input or contract change, run the same generator without
 `--check` and review both JSON outputs. Check mode regenerates in memory and
@@ -122,7 +123,8 @@ rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps emacs --batch -Q -L . -l te
 
 Run setup after changing the lock. `EMMET2_TEST_SUITE` selects `contracts` (the
 default), `editor`, `completion`, `results`, `node`, `fuzzy`, `css-extensions`
-or `markup-extensions`. `markup-spike` selects the explicit S6.0 native subset;
+or `markup-extensions`. `markup-spike` runs native markup including its original
+S6.0 subset; `stylesheet` runs the native CSS core and independent contracts;
 unknown suites fail explicitly. Missing
 packages or local grammars fail bootstrap instead of skipping integration or
 falling back to a grammar in the user's configuration.
@@ -200,6 +202,38 @@ rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_SUITE=results e
 Six result tests cover Unicode, mirrors, invalid intervals, concat isolation,
 splice boundaries and all successful committed oracle result shapes. They do
 not execute an Elisp engine or the Node protocol.
+
+## Native stylesheet contracts
+
+`emmet2-engine-stylesheet.el` parses and resolves CSS without loading the markup
+or Node backend. Module initialization parses the pinned 249 raw snippets,
+expands aliases, retains sorted-key fuzzy tie breaks and indexes by first
+character. These templates and dependency lists are immutable; numeric and
+function defaults are copied before resolution. No expansion cache is retained.
+
+The `stylesheet` suite compares 447 complete results/errors: the original 268
+cases plus 179 explicit `stylesheet-native-*` inputs. These include cases from
+the pinned `packages/css-abbreviation/test/{parser,tokenizer}.ts` and
+`test/stylesheet.ts`, adjusted to the project's fixed preset, and hand-selected
+fields, Unicode, indentation, malformed input and numeric boundaries. Existing
+oracle entries are unchanged. Handwritten assertions separately cover per-node
+field scope, conflicting defaults, emoji offsets, the six-property input,
+binary rounding, shared-data immutability, buffer purity and the deadline.
+
+Compatibility intentionally follows the pinned engine: floats use `rem`, zero
+and the fixed unitless-property list receive no implicit unit, function numeric
+arguments remain unmodified, raw snippet tabs are literal, and field defaults
+do not receive newline reindentation. Incomplete functions/strings may succeed;
+plain top-level whitespace is a parse error. The upstream numeric formatter
+rounds exact half values up and trims trailing zeroes even in exponents, so the
+unusual `1e+30` to `1e+3` result is retained as a pinned compatibility case.
+Delimiter-only failures without a source position remain backend errors;
+independent native and real-process Node assertions cover this boundary.
+Project raw CSS, rhythm, ms, aliases, CSS-in-JS and default removal remain owned
+by `emmet2-extensions.el`; the core does not duplicate them.
+
+S7 stylesheet integration, installed native acceptance and the six-property
+p99 budget are still separate pending gates. The production entry uses Node.
 
 ## Temporary Node API
 

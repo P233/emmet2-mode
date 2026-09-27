@@ -4198,5 +4198,1843 @@
       "message": "Unexpected character",
       "position": 7
     }
+  },
+  {
+    "id": "stylesheet-native-001",
+    "result": {
+      "text": "padding: 10px !important;",
+      "fields": [],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "stylesheet-native-002",
+    "result": {
+      "text": "padding: -10px 20px;",
+      "fields": [],
+      "cursor": 20
+    }
+  },
+  {
+    "id": "stylesheet-native-003",
+    "result": {
+      "text": "padding: -10% -20px -30px;",
+      "fields": [],
+      "cursor": 26
+    }
+  },
+  {
+    "id": "stylesheet-native-004",
+    "result": {
+      "text": "padding: -0.5rem;",
+      "fields": [],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "stylesheet-native-005",
+    "result": {
+      "text": "padding: 0.1rem 0.2rem 0.3rem;",
+      "fields": [],
+      "cursor": 30
+    }
+  },
+  {
+    "id": "stylesheet-native-006",
+    "result": {
+      "text": "padding: 0.1rem 0.2rem 0.3rem;",
+      "fields": [],
+      "cursor": 30
+    }
+  },
+  {
+    "id": "stylesheet-native-007",
+    "result": {
+      "text": "padding: 0.1rem -0.2rem 0.3rem;",
+      "fields": [],
+      "cursor": 31
+    }
+  },
+  {
+    "id": "stylesheet-native-008",
+    "result": {
+      "text": "10",
+      "fields": [],
+      "cursor": 2
+    }
+  },
+  {
+    "id": "stylesheet-native-009",
+    "result": {
+      "text": "0.1",
+      "fields": [],
+      "cursor": 3
+    }
+  },
+  {
+    "id": "stylesheet-native-010",
+    "result": {
+      "text": "line-height: 1;",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-native-011",
+    "result": {
+      "text": "padding: -10px;",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-native-012",
+    "result": {
+      "text": "padding: -10px -20px;",
+      "fields": [],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "stylesheet-native-013",
+    "result": {
+      "text": "padding: -10% -20px -30px;",
+      "fields": [],
+      "cursor": 26
+    }
+  },
+  {
+    "id": "stylesheet-native-014",
+    "result": {
+      "text": "margin: auto;",
+      "fields": [],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-native-015",
+    "result": {
+      "text": "margin: auto;",
+      "fields": [],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-native-016",
+    "result": {
+      "text": "margin: abc;",
+      "fields": [],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-native-017",
+    "result": {
+      "text": "margin: auto 0;",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-native-018",
+    "result": {
+      "text": "margin: auto 0 auto;",
+      "fields": [],
+      "cursor": 20
+    }
+  },
+  {
+    "id": "stylesheet-native-019",
+    "result": {
+      "text": "border: 1px solid;",
+      "fields": [],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-native-020",
+    "result": {
+      "text": "border: 0 dot-dash #fc0;",
+      "fields": [],
+      "cursor": 24
+    }
+  },
+  {
+    "id": "stylesheet-native-021",
+    "result": {
+      "text": "border: 0 hidden #fc0;",
+      "fields": [],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "stylesheet-native-022",
+    "result": {
+      "text": "border: #fc0 1px;",
+      "fields": [],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "stylesheet-native-023",
+    "result": {
+      "text": "padding: 0 !important;\nmargin: 0 !important;",
+      "fields": [],
+      "cursor": 44
+    }
+  },
+  {
+    "id": "stylesheet-native-024",
+    "result": {
+      "text": "foo: $bar;",
+      "fields": [],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "stylesheet-native-025",
+    "result": {
+      "text": "foo: $bar-2;",
+      "fields": [],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-native-026",
+    "result": {
+      "text": "foo: $bar @bam;",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-native-027",
+    "result": {
+      "text": "box-sizing: border-box;",
+      "fields": [
+        [
+          12,
+          22,
+          1,
+          "border-box"
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-native-028",
+    "result": {
+      "text": "box-sizing: content-box;",
+      "fields": [],
+      "cursor": 24
+    }
+  },
+  {
+    "id": "stylesheet-native-029",
+    "result": {
+      "text": "float: left;",
+      "fields": [],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-native-030",
+    "result": {
+      "text": "position: absolute;",
+      "fields": [],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-native-031",
+    "result": {
+      "text": "position: relative;",
+      "fields": [],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-native-032",
+    "result": {
+      "text": "position: fixed;",
+      "fields": [],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "stylesheet-native-033",
+    "result": {
+      "text": "position: absolute;",
+      "fields": [],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-native-034",
+    "result": {
+      "text": "margin: 0 auto;",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-native-035",
+    "result": {
+      "text": "transform: translate(x, y);",
+      "fields": [
+        [
+          21,
+          22,
+          1,
+          "x"
+        ],
+        [
+          24,
+          25,
+          2,
+          "y"
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "stylesheet-native-036",
+    "result": {
+      "text": "color: rgb(0, 0, 0);",
+      "fields": [
+        [
+          11,
+          12,
+          1,
+          "0"
+        ],
+        [
+          14,
+          15,
+          2,
+          "0"
+        ],
+        [
+          17,
+          18,
+          3,
+          "0"
+        ]
+      ],
+      "cursor": 11
+    }
+  },
+  {
+    "id": "stylesheet-native-037",
+    "result": {
+      "text": "color: rgba(0, 0, 0, .5);",
+      "fields": [
+        [
+          12,
+          13,
+          1,
+          "0"
+        ],
+        [
+          15,
+          16,
+          2,
+          "0"
+        ],
+        [
+          18,
+          19,
+          3,
+          "0"
+        ],
+        [
+          21,
+          23,
+          4,
+          ".5"
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-native-038",
+    "result": {
+      "text": "list-style: none;",
+      "fields": [],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "stylesheet-native-039",
+    "result": {
+      "text": "list-style-type: none;",
+      "fields": [],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "stylesheet-native-040",
+    "result": {
+      "text": "border-top: none;",
+      "fields": [],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "stylesheet-native-041",
+    "result": {
+      "text": "background-image: none;",
+      "fields": [],
+      "cursor": 23
+    }
+  },
+  {
+    "id": "stylesheet-native-042",
+    "result": {
+      "text": "quotes: none;",
+      "fields": [],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-native-043",
+    "result": {
+      "text": "background: none;",
+      "fields": [],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "stylesheet-native-044",
+    "result": {
+      "text": "display: contents;",
+      "fields": [],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-native-045",
+    "result": {
+      "text": "padding: 10%;",
+      "fields": [],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-native-046",
+    "result": {
+      "text": "padding: 10em;",
+      "fields": [],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-native-047",
+    "result": {
+      "text": "padding: 10ex;",
+      "fields": [],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-native-048",
+    "result": {
+      "text": "padding: 10rem;",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-native-049",
+    "result": {
+      "text": "padding: 10vh;",
+      "fields": [],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-native-050",
+    "result": {
+      "text": "padding: 0rem;",
+      "fields": [],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-native-051",
+    "result": {
+      "text": "font-size: 1rem;",
+      "fields": [],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "stylesheet-native-052",
+    "result": {
+      "text": "z-index: 10;",
+      "fields": [],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-native-053",
+    "result": {
+      "text": "opacity: 0.1;",
+      "fields": [],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-native-054",
+    "result": {
+      "text": "opacity: .a;",
+      "fields": [],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-native-055",
+    "result": {
+      "text": "!important",
+      "fields": [],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "stylesheet-native-056",
+    "result": {
+      "text": "padding:  !important;",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "stylesheet-native-057",
+    "result": {
+      "text": "padding: 0 !important;",
+      "fields": [],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "stylesheet-native-058",
+    "result": {
+      "text": "@media screen {\n\t\n}",
+      "fields": [
+        [
+          7,
+          13,
+          1,
+          "screen"
+        ],
+        [
+          17,
+          17,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 7
+    }
+  },
+  {
+    "id": "stylesheet-native-059",
+    "result": {
+      "text": "@keyframes name {\n\t\n}",
+      "fields": [
+        [
+          19,
+          19,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-native-060",
+    "result": {
+      "text": "@keyframes name {\n\t10\n}",
+      "fields": [],
+      "cursor": 23
+    }
+  },
+  {
+    "id": "stylesheet-native-061",
+    "result": {
+      "text": "padding: 10px;\nmargin: 10px 20px;",
+      "fields": [],
+      "cursor": 33
+    }
+  },
+  {
+    "id": "stylesheet-native-062",
+    "result": {
+      "text": "transform: scale(2, y);",
+      "fields": [
+        [
+          20,
+          21,
+          1,
+          "y"
+        ]
+      ],
+      "cursor": 20
+    }
+  },
+  {
+    "id": "stylesheet-native-063",
+    "result": {
+      "text": "transform: scale(2, 3);",
+      "fields": [],
+      "cursor": 23
+    }
+  },
+  {
+    "id": "stylesheet-native-064",
+    "result": {
+      "text": "transform: rotateX(angle);",
+      "fields": [
+        [
+          19,
+          24,
+          1,
+          "angle"
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-native-065",
+    "result": {
+      "text": "auto: ;",
+      "fields": [
+        [
+          6,
+          6,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 6
+    }
+  },
+  {
+    "id": "stylesheet-native-066",
+    "result": {
+      "text": "max: inline size;",
+      "fields": [],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "stylesheet-native-067",
+    "result": {
+      "text": "background-image: linear-gradient(to right, #000, rgba(255, 0, 0, 0.5));",
+      "fields": [],
+      "cursor": 72
+    }
+  },
+  {
+    "id": "stylesheet-native-068",
+    "result": {
+      "text": "background-image: linear-gradient(top, \"red, black\", rgb(0, 0, 0) 10%);",
+      "fields": [],
+      "cursor": 71
+    }
+  },
+  {
+    "id": "stylesheet-native-069",
+    "result": {
+      "text": "background-image: linear-gradient(top, \"red, black\", rgb(0, 0, 0) 10%);",
+      "fields": [],
+      "cursor": 71
+    }
+  },
+  {
+    "id": "stylesheet-native-070",
+    "result": {
+      "text": "transform: scale3d(1, 2, 3);",
+      "fields": [],
+      "cursor": 28
+    }
+  },
+  {
+    "id": "stylesheet-native-071",
+    "result": {
+      "text": "grid-template-columns: repeat(2, auto);",
+      "fields": [],
+      "cursor": 39
+    }
+  },
+  {
+    "id": "stylesheet-native-072",
+    "result": {
+      "text": "box-sizing: var(--bxsh-);",
+      "fields": [
+        [
+          23,
+          23,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 23
+    }
+  },
+  {
+    "id": "stylesheet-native-073",
+    "result": {
+      "text": "padding: var(--space, 2r);",
+      "fields": [],
+      "cursor": 26
+    }
+  },
+  {
+    "id": "stylesheet-native-074",
+    "result": {
+      "text": "color: #000;",
+      "fields": [],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-native-075",
+    "result": {
+      "text": "color: #111;",
+      "fields": [],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-native-076",
+    "result": {
+      "text": "color: #fff;",
+      "fields": [],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-native-077",
+    "result": {
+      "text": "color: #aaa #bbb #ccc;",
+      "fields": [],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "stylesheet-native-078",
+    "result": {
+      "text": "color: #afafaf;",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-native-079",
+    "result": {
+      "text": "color: #fc0;",
+      "fields": [],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-native-080",
+    "result": {
+      "text": "color: rgba(17, 17, 17, 0.5);",
+      "fields": [],
+      "cursor": 29
+    }
+  },
+  {
+    "id": "stylesheet-native-081",
+    "result": {
+      "text": "color: rgba(0, 0, 0, 0.99);",
+      "fields": [],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "stylesheet-native-082",
+    "result": {
+      "text": "color: transparent;",
+      "fields": [],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-native-083",
+    "result": {
+      "text": "color: #000;",
+      "fields": [],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-native-084",
+    "result": {
+      "text": "color: rgba(0, 0, 0, 0.5);",
+      "fields": [],
+      "cursor": 26
+    }
+  },
+  {
+    "id": "stylesheet-native-085",
+    "result": {
+      "text": "color: #000;",
+      "fields": [],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-native-086",
+    "result": {
+      "text": "color: #123412;",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-native-087",
+    "result": {
+      "text": "color: #123451;",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-native-088",
+    "result": {
+      "text": "color: #abcdef;",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-native-089",
+    "result": {
+      "text": "color: #abcdef;",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-native-090",
+    "result": {
+      "text": "color: transparent;",
+      "fields": [],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-native-091",
+    "result": {
+      "text": "color: rgba(255, 255, 255, 1);",
+      "fields": [],
+      "cursor": 30
+    }
+  },
+  {
+    "id": "stylesheet-native-092",
+    "result": {
+      "text": "color: rgba(255, 255, 255, 0.5) !important;",
+      "fields": [],
+      "cursor": 43
+    }
+  },
+  {
+    "id": "stylesheet-native-093",
+    "result": {
+      "text": "color: #000 G;",
+      "fields": [],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-native-094",
+    "result": {
+      "text": "color: #000 fff;",
+      "fields": [
+        [
+          12,
+          15,
+          1,
+          "fff"
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-native-095",
+    "result": {
+      "text": "margin: ;",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ],
+        [
+          8,
+          8,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-native-096",
+    "result": {
+      "text": "margin: ;",
+      "fields": [
+        [
+          8,
+          8,
+          2,
+          ""
+        ],
+        [
+          8,
+          8,
+          1,
+          ""
+        ],
+        [
+          8,
+          8,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-native-097",
+    "result": {
+      "text": "padding: 😀 x 😀 y;\nmargin: z;",
+      "fields": [
+        [
+          9,
+          10,
+          3,
+          "😀"
+        ],
+        [
+          11,
+          12,
+          1,
+          "x"
+        ],
+        [
+          13,
+          14,
+          3,
+          "😀"
+        ],
+        [
+          15,
+          16,
+          2,
+          "y"
+        ],
+        [
+          26,
+          27,
+          4,
+          "z"
+        ]
+      ],
+      "cursor": 11
+    }
+  },
+  {
+    "id": "stylesheet-native-098",
+    "result": {
+      "text": "margin: name name;\npadding: name;",
+      "fields": [
+        [
+          8,
+          12,
+          1,
+          "name"
+        ],
+        [
+          13,
+          17,
+          1,
+          "name"
+        ],
+        [
+          28,
+          32,
+          2,
+          "name"
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-native-099",
+    "result": {
+      "text": "margin: ;",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-native-100",
+    "result": {
+      "text": "margin: ;",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-native-101",
+    "result": {
+      "text": "margin: ;",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-native-102",
+    "result": {
+      "text": "margin: a{b};",
+      "fields": [
+        [
+          8,
+          12,
+          1,
+          "a{b}"
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-native-103",
+    "result": {
+      "text": "margin: a\nb;",
+      "fields": [
+        [
+          8,
+          11,
+          1,
+          "a\nb"
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-native-104",
+    "result": {
+      "text": "margin: 0 %;",
+      "fields": [
+        [
+          8,
+          9,
+          1,
+          "0"
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-native-105",
+    "result": {
+      "text": "margin: .5;",
+      "fields": [
+        [
+          9,
+          10,
+          1,
+          "5"
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "stylesheet-native-106",
+    "result": {
+      "text": "margin: foobar;",
+      "fields": [
+        [
+          11,
+          14,
+          1,
+          "bar"
+        ]
+      ],
+      "cursor": 11
+    }
+  },
+  {
+    "id": "stylesheet-native-107",
+    "result": {
+      "text": "margin: fn() x;",
+      "fields": [
+        [
+          13,
+          14,
+          1,
+          "x"
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-native-108",
+    "result": {
+      "text": "margin:  x y;\npadding: x;",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ],
+        [
+          8,
+          8,
+          3,
+          ""
+        ],
+        [
+          9,
+          10,
+          2,
+          "x"
+        ],
+        [
+          11,
+          12,
+          4,
+          "y"
+        ],
+        [
+          23,
+          24,
+          5,
+          "x"
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-native-109",
+    "result": {
+      "text": "content: \"😀\";\nmargin: 😸;",
+      "fields": [
+        [
+          22,
+          23,
+          1,
+          "😸"
+        ]
+      ],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "stylesheet-native-110",
+    "result": {
+      "text": "content: \"a\nb\";",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-native-111",
+    "result": {
+      "text": "content: \"a\nb\";",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-native-112",
+    "result": {
+      "text": "content: \"a\nb\";",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-native-113",
+    "result": {
+      "text": "content: \"a b\";",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-native-114",
+    "result": {
+      "text": "content: \"a b\";",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-native-115",
+    "result": {
+      "text": "content: \"\";",
+      "fields": [],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "stylesheet-native-116",
+    "result": {
+      "text": "content: \"abc\";",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-native-117",
+    "result": {
+      "text": "content: 'abc';",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-native-118",
+    "result": {
+      "text": "margin: --space;",
+      "fields": [],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "stylesheet-native-119",
+    "result": {
+      "text": "--space",
+      "fields": [],
+      "cursor": 7
+    }
+  },
+  {
+    "id": "stylesheet-native-120",
+    "error": {
+      "message": "Unexpected token",
+      "position": 9
+    }
+  },
+  {
+    "id": "stylesheet-native-121",
+    "result": {
+      "text": "margin: calc(1 2);",
+      "fields": [],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-native-122",
+    "result": {
+      "text": "margin: fn(a b, c);",
+      "fields": [],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-native-123",
+    "result": {
+      "text": "margin: fn();",
+      "fields": [],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-native-124",
+    "result": {
+      "text": "margin: fn(a);",
+      "fields": [],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-native-125",
+    "result": {
+      "text": "margin: fn(a);",
+      "fields": [],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-native-126",
+    "error": {
+      "message": "Unexpected token",
+      "position": 6
+    }
+  },
+  {
+    "id": "stylesheet-native-127",
+    "error": {
+      "message": "Unexpected token",
+      "position": 6
+    }
+  },
+  {
+    "id": "stylesheet-native-128",
+    "error": {
+      "message": "Unexpected bracket",
+      "position": 7
+    }
+  },
+  {
+    "id": "stylesheet-native-129",
+    "result": {
+      "text": "m()",
+      "fields": [],
+      "cursor": 3
+    }
+  },
+  {
+    "id": "stylesheet-native-130",
+    "error": {
+      "message": "Unexpected bracket",
+      "position": 1
+    }
+  },
+  {
+    "id": "stylesheet-native-131",
+    "error": {
+      "message": "Unexpected token",
+      "position": 0
+    }
+  },
+  {
+    "id": "stylesheet-native-132",
+    "error": {
+      "message": "Unexpected bracket",
+      "position": 0
+    }
+  },
+  {
+    "id": "stylesheet-native-133",
+    "result": {
+      "text": "margin: ;\npadding: ;",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ],
+        [
+          19,
+          19,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-native-134",
+    "result": {
+      "text": "",
+      "fields": [],
+      "cursor": 0
+    }
+  },
+  {
+    "id": "stylesheet-native-135",
+    "error": {
+      "message": "Unexpected token",
+      "position": 3
+    }
+  },
+  {
+    "id": "stylesheet-native-136",
+    "error": {
+      "message": "Unexpected token",
+      "position": 1
+    }
+  },
+  {
+    "id": "stylesheet-native-137",
+    "error": {
+      "message": "Unexpected token",
+      "position": 1
+    }
+  },
+  {
+    "id": "stylesheet-native-138",
+    "error": {
+      "message": "Unexpected token",
+      "position": 1
+    }
+  },
+  {
+    "id": "stylesheet-native-139",
+    "error": {
+      "message": "Unexpected character",
+      "position": 1
+    }
+  },
+  {
+    "id": "stylesheet-native-140",
+    "error": {
+      "message": "Unexpected token",
+      "position": 1
+    }
+  },
+  {
+    "id": "stylesheet-native-141",
+    "error": {
+      "message": "Unexpected character",
+      "position": 1
+    }
+  },
+  {
+    "id": "stylesheet-native-142",
+    "error": {
+      "message": "Unexpected character",
+      "position": 1
+    }
+  },
+  {
+    "id": "stylesheet-native-143",
+    "error": {
+      "message": "Unexpected character",
+      "position": 1
+    }
+  },
+  {
+    "id": "stylesheet-native-144",
+    "error": {
+      "message": "Expecting }",
+      "position": 3
+    }
+  },
+  {
+    "id": "stylesheet-native-145",
+    "error": {
+      "message": "Expecting }",
+      "position": 4
+    }
+  },
+  {
+    "id": "stylesheet-native-146",
+    "error": {
+      "message": "Expecting }",
+      "position": 5
+    }
+  },
+  {
+    "id": "stylesheet-native-147",
+    "error": {
+      "message": "Expecting }",
+      "position": 7
+    }
+  },
+  {
+    "id": "stylesheet-native-148",
+    "error": {
+      "message": "Expecting }",
+      "position": 3
+    }
+  },
+  {
+    "id": "stylesheet-native-149",
+    "error": {
+      "message": "Unexpected bracket",
+      "position": 7
+    }
+  },
+  {
+    "id": "stylesheet-native-150",
+    "error": {
+      "message": "Unexpected character",
+      "position": 7
+    }
+  },
+  {
+    "id": "stylesheet-native-151",
+    "error": {
+      "message": "Unexpected token",
+      "position": 9
+    }
+  },
+  {
+    "id": "stylesheet-native-152",
+    "error": {
+      "message": "Unexpected bracket",
+      "position": 2
+    }
+  },
+  {
+    "id": "stylesheet-native-153",
+    "result": {
+      "text": "M: 10px;",
+      "fields": [],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-native-154",
+    "result": {
+      "text": "M: ;",
+      "fields": [
+        [
+          3,
+          3,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 3
+    }
+  },
+  {
+    "id": "stylesheet-native-155",
+    "result": {
+      "text": "DIB: ;",
+      "fields": [
+        [
+          5,
+          5,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "stylesheet-native-156",
+    "result": {
+      "text": "margin: auto 10px;",
+      "fields": [],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-native-157",
+    "result": {
+      "text": "unknown: 5px;",
+      "fields": [],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-native-158",
+    "result": {
+      "text": "zzz: ;",
+      "fields": [
+        [
+          5,
+          5,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "stylesheet-native-159",
+    "result": {
+      "text": "",
+      "fields": [],
+      "cursor": 0
+    }
+  },
+  {
+    "id": "stylesheet-native-160",
+    "result": {
+      "text": "!important",
+      "fields": [],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "stylesheet-native-161",
+    "result": {
+      "text": "margin:  !important;",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "stylesheet-native-162",
+    "result": {
+      "text": "margin: auto !important;",
+      "fields": [],
+      "cursor": 24
+    }
+  },
+  {
+    "id": "stylesheet-native-163",
+    "result": {
+      "text": "margin: auto;",
+      "fields": [],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-native-164",
+    "result": {
+      "text": "margin: 0;",
+      "fields": [],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "stylesheet-native-165",
+    "result": {
+      "text": "margin: 0;",
+      "fields": [],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "stylesheet-native-166",
+    "result": {
+      "text": "margin: -0rem;",
+      "fields": [],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "stylesheet-native-167",
+    "result": {
+      "text": "margin: 0rem;",
+      "fields": [],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "stylesheet-native-168",
+    "result": {
+      "text": "margin: 0.0001rem;",
+      "fields": [],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-native-169",
+    "result": {
+      "text": "margin: 0.0313rem;",
+      "fields": [],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-native-170",
+    "result": {
+      "text": "margin: -0.0313rem;",
+      "fields": [],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "stylesheet-native-171",
+    "result": {
+      "text": "margin: 0.0625rem;",
+      "fields": [],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-native-172",
+    "result": {
+      "text": "margin: 1.2346rem;",
+      "fields": [],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "stylesheet-native-173",
+    "result": {
+      "text": "margin: 10000000000000000px;",
+      "fields": [],
+      "cursor": 28
+    }
+  },
+  {
+    "id": "stylesheet-native-174",
+    "result": {
+      "text": "margin: 1e+21px;",
+      "fields": [],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "stylesheet-native-175",
+    "result": {
+      "text": "margin: 1e+3px;",
+      "fields": [],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "stylesheet-native-176",
+    "result": {
+      "text": "@font-face {\n  \tfont-family: 'FontName';\n  \tsrc: url('FileName.eot');\n  \tsrc: url('FileName.eot?#iefix') format('embedded-opentype'),\n  \t\t url('FileName.woff') format('woff'),\n  \t\t url('FileName.ttf') format('truetype'),\n  \t\t url('FileName.svg#FontName') format('svg');\n  \tfont-style: normal;\n  \tfont-weight: normal;\n  }\n  margin: 😀;",
+      "fields": [
+        [
+          30,
+          38,
+          1,
+          "FontName"
+        ],
+        [
+          54,
+          62,
+          2,
+          "FileName"
+        ],
+        [
+          83,
+          91,
+          2,
+          "FileName"
+        ],
+        [
+          144,
+          152,
+          2,
+          "FileName"
+        ],
+        [
+          186,
+          194,
+          2,
+          "FileName"
+        ],
+        [
+          231,
+          239,
+          2,
+          "FileName"
+        ],
+        [
+          244,
+          252,
+          1,
+          "FontName"
+        ],
+        [
+          285,
+          291,
+          3,
+          "normal"
+        ],
+        [
+          309,
+          315,
+          4,
+          "normal"
+        ],
+        [
+          331,
+          332,
+          5,
+          "😀"
+        ]
+      ],
+      "cursor": 30
+    }
+  },
+  {
+    "id": "stylesheet-native-177",
+    "result": {
+      "text": "@media screen {\n\t\t\n\t}",
+      "fields": [
+        [
+          7,
+          13,
+          1,
+          "screen"
+        ],
+        [
+          18,
+          18,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 7
+    }
+  },
+  {
+    "id": "stylesheet-native-178",
+    "result": {
+      "text": "content: \"😀\n😀next\";\n😀margin: a\nb;",
+      "fields": [
+        [
+          29,
+          32,
+          1,
+          "a\nb"
+        ]
+      ],
+      "cursor": 29
+    }
+  },
+  {
+    "id": "stylesheet-native-179",
+    "result": {
+      "text": "@keyframes name {\n\\$\t10\n\\$} !important",
+      "fields": [],
+      "cursor": 38
+    }
   }
 ]
