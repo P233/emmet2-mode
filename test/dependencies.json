@@ -10,7 +10,8 @@
     "corfu": {"repository": "https://github.com/minad/corfu.git", "revision": "b468efac023dda39332acc943edc9895c80b5a6f"},
     "compat": {"repository": "https://github.com/emacs-straight/compat.git", "revision": "9f8a565ad8c9617a6f006115f50f4cf63286ec83"},
     "web-mode": {"repository": "https://github.com/fxbois/web-mode.git", "revision": "ce24723eb900c455b488d224910519bd36af580a"},
-    "yasnippet": {"repository": "https://github.com/joaotavora/yasnippet.git", "revision": "c1e6ff23e9af16b856c88dfaab9d3ad7b746ad37"}
+    "yasnippet": {"repository": "https://github.com/joaotavora/yasnippet.git", "revision": "c1e6ff23e9af16b856c88dfaab9d3ad7b746ad37"},
+    "straight.el": {"repository": "https://github.com/radian-software/straight.el.git", "revision": "0d5c4d9937c8c94f0b71574960f7957d560ef837"}
   },
   "grammars": {
     "jsdoc": {"repository": "https://github.com/tree-sitter/tree-sitter-jsdoc.git", "revision": "b253abf68a73217b7a52c0ec254f4b6a7bb86665", "directory": "src"},

@@ -54,7 +54,8 @@ Example using straight.el and use-package:
 
 Enable `yas-minor-mode` separately for editable fields and mirrors. Without
 it, expansion produces the same text and first-field cursor.
-Actual packaged-installation and GUI acceptance remain the next milestone.
+The file recipe is tested through an isolated straight installation on Emacs
+30/31. GUI and hosted CI acceptance remain open during the transition.
 
 ### Completion
 

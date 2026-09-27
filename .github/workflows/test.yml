@@ -98,6 +98,10 @@ jobs:
         run: '"$EMMET2_EMACS" --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit'
       - name: Byte-compiled editor and optional dependencies
         run: '"$EMMET2_EMACS" --batch -Q -L . -l test/editor-bytecode.el'
+      - name: Actual isolated package installation
+        env:
+          EMMET2_INSTALL_ROOT: ${{ runner.temp }}/emmet2-install
+        run: '"$EMMET2_EMACS" --batch -Q -l test/install.el'
       - name: Node protocol and core oracle
         env:
           EMMET2_TEST_SUITE: node

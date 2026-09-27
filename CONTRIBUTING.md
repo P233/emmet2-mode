@@ -600,3 +600,30 @@ the pinned popupinfo documentation callback. The bytecode runner includes the
 preview module and popupinfo extension. The real popupinfo callback preserves
 font properties; its popup drawing is still outside batch acceptance. Cold and
 repeated preview costs belong to the forthcoming complete-flow measurements.
+
+### S5 actual installation acceptance
+
+`test/install.el` uses the pinned straight.el checkout from the test dependency
+lock. It loads that checkout's source without rebuilding it, creates a fresh
+isolated configuration and asks straight to clone the reviewed local Git HEAD.
+The README file recipe is unchanged; only the repository fetch source differs
+so unpushed code can be tested. No daily Emacs configuration is loaded or changed.
+
+The runner removes the source directory from `load-path` before package build,
+checks the installed revision, all 26 current runtime/data/license resources,
+library resolution and actual bytecode, then exposes only Node on the runtime
+PATH. It runs the editor, completion and preview contracts against that installed
+package. The resulting directory and `acceptance.json` remain for inspection.
+An existing destination is rejected, never overwritten or deleted.
+
+```sh
+# Run setup again after the addition of straight.el to the lock.
+rtk proxy node test/setup.mjs /tmp/emmet2-test-deps
+rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_INSTALL_ROOT=/tmp/emmet2-install-new emacs --batch -Q -l test/install.el
+```
+
+The official 30.2 and 31.1 local builds each pass all 48 installed-package tests
+at runtime revision `1bd9b5c`. This is a real package-manager build, including the
+bundled Node files, data and license files; it does not claim the GitHub fetch,
+hosted Linux CI or GUI matrix has been accepted. The 30/31 workflow now includes
+this installation check for its next execution.
