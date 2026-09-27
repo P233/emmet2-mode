@@ -13,7 +13,7 @@
         (insert "source")
         (let ((tick (buffer-chars-modified-tick)) (source (current-buffer))
               (cases '((html html-mode "<main class=\"card\">界😀</main>")
-                       (jsx js-jsx-mode "<main className={css.card}>界😀</main>")
+                       (jsx js-jsx-mode "<main className={styles.card}>界😀</main>")
                        (css css-mode "margin: 10px;\ncolor: #fff;"))))
           (dolist (case cases)
             (let* ((text (nth 2 case)) (buffer (emmet2-preview text (car case))))

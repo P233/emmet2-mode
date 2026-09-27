@@ -282,7 +282,7 @@ rendering strings.  Generated layout uses them; literal raw text is preserved."
           (apply #'emmet2-result-concat (nreverse parts))))))))
 
 (cl-defun emmet2-extensions-markup (abbreviation &key jsx variant
-                                                (css-modules-object "css")
+                                                (css-modules-object "styles")
                                                 (class-names-constructor "clsx")
                                                 (indent "\t") (base-indent ""))
   "Expand markup ABBREVIATION, optionally with JSX project semantics.

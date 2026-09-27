@@ -4,7 +4,7 @@
 
 ;; Author: Peiwen Lu <hi@peiwen.lu>
 ;; Created: 10 Oct 2022
-;; Version: 0.2.0
+;; Version: 2.0.0
 ;; URL: https://github.com/P233/emmet2-mode
 ;; Compatibility: emacs-version >= 30
 ;; Package-Requires: ((emacs "30"))
@@ -45,12 +45,16 @@
   :type '(choice (const :tag "From context" nil) (const "solid"))
   :safe (lambda (value) (member value '(nil "solid"))) :group 'emmet2)
 
-(defcustom emmet2-css-modules-object "css"
-  "Authored JavaScript reference for the project's CSS Modules object."
+(defcustom emmet2-css-modules-object "styles"
+  "JavaScript reference for the project's CSS Modules class name map.
+Use the name imported in the source file, such as styles or cardStyles.
+Emmet inserts the reference; add the matching import in the source file."
   :type 'string :safe #'stringp :group 'emmet2)
 
 (defcustom emmet2-class-names-constructor "clsx"
-  "Authored JavaScript reference for joining JSX class names."
+  "JavaScript function reference for joining multiple JSX class names.
+Use the function imported in the source file, such as clsx or cx.
+A single class uses the CSS Modules reference directly."
   :type 'string :safe #'stringp :group 'emmet2)
 
 (defun emmet2--output-syntax (analysis)

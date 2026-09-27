@@ -5,6 +5,7 @@
 (require 'ert)
 (require 'emmet2-extensions)
 
+;; Legacy fixtures exercise their original, explicitly configured names.
 (dolist (entry (with-temp-buffer
                  (insert-file-contents (expand-file-name "test/fixtures/markup-legacy.json" emmet2-test-root))
                  (json-parse-buffer :object-type 'alist :array-type 'list :false-object nil)))
@@ -20,19 +21,19 @@
   (should (equal (emmet2-extensions-markup "." :jsx t)
                  '(:text "<div className={}></div>" :fields ((16 16 1 "") (18 18 2 "")) :cursor 16)))
   (should (equal (emmet2-extensions-markup "div{😀}+div[class='😸']" :jsx t)
-                 '(:text "<div>😀</div>\n<div className={css[\"😸\"]}></div>"
-                         :fields ((39 39 1 "")) :cursor 39)))
+                 '(:text "<div>😀</div>\n<div className={styles[\"😸\"]}></div>"
+                         :fields ((42 42 1 "")) :cursor 42)))
   (should (equal (emmet2-extensions-markup "div{${1:x} ${1:x}}")
                  '(:text "<div>x x</div>" :fields ((5 6 1 "x") (7 8 1 "x")) :cursor 5)))
   (should (equal (emmet2-extensions-markup "[class='${1:a} ${1:a}']" :jsx t)
-                 '(:text "<div className={clsx(css.a, css.a)}></div>"
-                         :fields ((25 26 1 "a") (32 33 1 "a") (36 36 2 "")) :cursor 25))))
+                 '(:text "<div className={clsx(styles.a, styles.a)}></div>"
+                         :fields ((28 29 1 "a") (38 39 1 "a") (42 42 2 "")) :cursor 28))))
 
 (ert-deftest emmet2-markup-extension-escapes-class-keys ()
-  (dolist (pair '(("[class='a\"b']" . "<div className={css[\"a\\\"b\"]}></div>")
-                   ("[class='a\\\\b']" . "<div className={css[\"a\\\\b\"]}></div>")
-                   (".foo-bar" . "<div className={css[\"foo-bar\"]}></div>")
-                   ("[class='a\" title=\"b']" . "<div className={clsx(css[\"a\\\"\"], css[\"title=\\\"b\"])}></div>")))
+  (dolist (pair '(("[class='a\"b']" . "<div className={styles[\"a\\\"b\"]}></div>")
+                   ("[class='a\\\\b']" . "<div className={styles[\"a\\\\b\"]}></div>")
+                   (".foo-bar" . "<div className={styles[\"foo-bar\"]}></div>")
+                   ("[class='a\" title=\"b']" . "<div className={clsx(styles[\"a\\\"\"], styles[\"title=\\\"b\"])}></div>")))
     (ert-info ((car pair))
       (should (equal (plist-get (emmet2-extensions-markup (car pair) :jsx t) :text) (cdr pair)))))
   (should (equal (plist-get (emmet2-extensions-markup "[class={foo}]" :jsx t :variant "solid") :text)
@@ -56,11 +57,11 @@
 
 (ert-deftest emmet2-markup-extension-hyphenated-class-regression ()
   (should (equal (emmet2-extensions-markup ".btn-primary" :jsx t)
-                 '(:text "<div className={css[\"btn-primary\"]}></div>"
-                         :fields ((36 36 1 "")) :cursor 36)))
+                 '(:text "<div className={styles[\"btn-primary\"]}></div>"
+                         :fields ((39 39 1 "")) :cursor 39)))
   (should (equal (emmet2-extensions-markup ".btn-primary" :jsx t :variant "solid")
-                 '(:text "<div class={css[\"btn-primary\"]}></div>"
-                         :fields ((32 32 1 "")) :cursor 32))))
+                 '(:text "<div class={styles[\"btn-primary\"]}></div>"
+                         :fields ((35 35 1 "")) :cursor 35))))
 
 (provide 'emmet2-extensions-markup-test)
 ;;; emmet2-extensions-markup-test.el ends here

@@ -1,292 +1,279 @@
 # emmet2-mode
 
-Emmet2-mode expands [Emmet](https://emmet.io/) abbreviations in Emacs. The native
-engine and front-end run entirely in Emacs Lisp: analyze the host buffer,
-expand structured fields and insert atomically. Features include:
+[Emmet](https://emmet.io/) for Emacs.
 
-- Expand abbreviation from any character
-- Expand JSX class attribute with CSS modules object and class names constructor
-- Automatically detect `style={{}}` attribute and then expand CSS in JS
-- Automatically detect `<style></style>` tag and `style=""` attribute, then expand CSS
-- Expand CSS and SCSS at-rules
-- Expand CSS pseudo-selectors
-- Numerous enhancements for Emmet CSS abbreviations
+Starting with **V2**, emmet2-mode is implemented natively in Emacs Lisp and no
+longer calls the Emmet npm package. Requires **Emacs 30+**; no Node, Deno or other
+external runtime is needed.
 
-## How it works
+- Expand HTML, JSX, Solid, CSS and SCSS from anywhere inside an abbreviation.
+- Context-aware CSS expansion in style attributes, style blocks and JSX style objects.
+- CSS Modules and configurable class-name helpers for JSX.
+- Completion-at-point with an expansion summary and optional colored Corfu preview.
+- Editable fields and mirrors with yasnippet; one undo restores the abbreviation.
+- CSS extensions: custom properties, raw values, SCSS at-rules and pseudo-selectors.
 
-Press `C-j` (`emmet2-expand`) anywhere inside an abbreviation. Analysis uses the
-major mode and actual host syntax. CSS/SCSS and web-mode HTML/CSS work without
-tree-sitter grammars; JS/TS/JSX contexts require the matching installed grammar.
-Confirmed comments, strings and unrelated JavaScript expressions are excluded.
-An unsupported major mode retains explicit markup expansion.
+## Install
 
-web-mode supports style attributes/blocks, JSX style objects and the named
-`StyleSheet.create` / `createTheme` contexts. TSX and JavaScript modes use the
-same context rules. Set `emmet2-markup-variant` to `"solid"` for Solid JSX.
-Project options also work in buffers without a file name.
-
-Layout comes from the major mode's indentation width and the abbreviation's
-display column. Literal tabs in authored text remain literal. The rendered
-result is inserted once; it is not passed through `indent-region` afterward.
-Only a still-valid source snapshot can be replaced, and failures roll back.
-
-## Installation
-
-Requires **Emacs 30 or later**. Expansion needs no Node, Deno, deno-bridge,
-websocket or `npm install`. Keep the bundled data in the installation.
-Restart Emacs after upgrading from a Node or Deno version so its already-loaded
-backend and callbacks are retired.
-
-Example using straight.el and use-package:
+With straight.el and use-package:
 
 ```elisp
 (use-package emmet2-mode
   :straight (:type git :host github :repo "p233/emmet2-mode"
              :files (:defaults "data"))
-  :hook ((web-mode css-mode tsx-ts-mode) . emmet2-mode)
-  :config
-  ;; Optional alternative key:
-  (unbind-key "C-j" emmet2-mode-map)
-  (define-key emmet2-mode-map (kbd "C-c C-.") #'emmet2-expand))
+  :hook ((web-mode css-mode tsx-ts-mode js-ts-mode) . emmet2-mode))
 ```
 
-Enable `yas-minor-mode` separately for editable fields and mirrors. Without
-it, expansion produces the same text and first-field cursor.
-The file recipe is tested through an isolated straight installation on Emacs
-30/31. Real GUI acceptance remains open; automated checks run on both versions.
+Keep the bundled `data/` directory. Restart Emacs when upgrading from an older
+Node/Deno version. JS/TS/JSX support requires the matching tree-sitter grammar;
+CSS/SCSS and web-mode HTML/CSS do not.
 
-### Completion
+## Use
 
-The mode registers a buffer-local completion-at-point function. The candidate
-is the original abbreviation; its annotation summarizes the expansion.
-Accepting a current candidate expands it through the same insertion path as
-`C-j`. Bare markup identifiers (including tag names), bare CSS property names,
-and unconfirmed host positions are left to other completion providers. Use
-`C-j` for explicit expansion, or `M-x emmet2-complete` to request only Emmet
-completion with the same confidence gate.
+Press **`C-j`** to expand, or **`M-x emmet2-complete`** for Emmet-only completion.
+Point can be at the start, middle or end of the abbreviation; the whole
+abbreviation is replaced. Use `C-j` for bare names such as `div`, `c` or `bg`.
+Completion offers more distinctive abbreviations, leaving ordinary JavaScript
+expressions and bare names to other providers such as Eglot.
 
-Corfu is optional. Automatic presentation respects your Corfu prefix, delay
-and trigger settings. With the default `basic`-first completion styles, the
-single candidate can remain visible for all exact-match policies. With
-`partial-completion` first, or an `emmet2` category override selecting it,
-automatic completion skips the exact candidate unless your persistent
-`corfu-on-exact-match` is `show`; manual completion may immediately expand it.
-The mode changes none of these settings. With `corfu-preselect` set to `prompt`,
-select the candidate before accepting it; accepting the prompt keeps the
-abbreviation unchanged. Editing or moving away ends an obsolete session.
-For the full colored expansion beside Corfu's candidate popup, enable the
-optional `corfu-popupinfo-mode` separately. The documentation shows the same
-final text that acceptance inserts, including project JSX/Solid options.
-The package does not enable Corfu, popupinfo or yasnippet for you.
+| Context | Abbreviation | Result |
+| --- | --- | --- |
+| HTML | `ul>li*3` | A list with three items |
+| JSX | `.card.active` | `<div className={clsx(styles.card, styles.active)}></div>` |
+| CSS | `m10,p.5` or `m10+p.5` | `margin: 10px; padding: 0.5rem;` |
+| CSS | `m--gutter` | `margin: var(--gutter);` |
+| CSS | `p1-2` or `p[1px 2px]` | `padding: 1px 2px;` |
+| JSX style object | `m10,p.5` or `m10+p.5` | `margin: 10, padding: "0.5rem"` |
 
-### Field behavior after upgrading
+Use `,` or `+` between CSS properties without spaces. Use `[...]` for literal
+values and functions; commas and plus signs inside brackets stay unchanged.
 
-Point now starts at the **first editable field**, such as an anchor's `href`,
-then TAB visits independent fields when yasnippet is enabled. For `c+bg` or
-`m+p`, the two values are separate stops; `bd` has one stop. Repeated markup
-fields remain mirrors. The final TAB exits at the expansion's text end.
-One undo restores the original abbreviation.
+CSS context is detected inside `<style>` blocks and `style=""` attributes.
+JSX `style={{...}}` and objects passed to `StyleSheet.create(...)` or
+`createTheme(...)` use CSS-in-JS output: camelCase property names, numeric pixel
+values and quoted strings for other units. Ordinary comments, strings and
+unrelated JavaScript expressions are excluded. In unsupported major modes,
+`C-j` still offers plain markup expansion, including in buffers without a file.
 
-Only Emmet snippets suppress yasnippet's extra newline for an EOF field and
-web-mode's automatic reindent-on-exit. Other snippets and user exit hooks
-retain their behavior. Text and defaults containing dollars, backslashes,
-backticks or braces remain literal; they are not evaluated as Lisp.
-
-## Usage
-
-If you're not familiar with Emmet, a great place to start is by exploring the cheat sheet found at https://docs.emmet.io/cheat-sheet/. New added features are listed below, and see the `test/` folder for more usage examples.
-
-### Custom Options
-
-Emmet2-mode has three custom options:
-
-1. `emmet2-markup-variant`: This option has a single value, `"solid"`. When set, emmet2-mode outputs `class=` instead of `className=`.
-2. `emmet2-css-modules-object`: This option allows you to set the CSS Modules object for your project.
-3. `emmet2-class-names-constructor`: This option allows you to set the JSX class names constructor for your project.
-
-All these options work for expanding markups only, and they are project-based. If you need to customize any of them, create a `.dir-locals.el` file at the root of your project and add the following code:
+To use a different expansion key:
 
 ```elisp
-((web-mode . ((emmet2-markup-variant . "solid")
-              (emmet2-css-modules-object . "style")                   ;; Default value is "css"
-              (emmet2-class-names-constructor . "classnames"))))      ;; Default value is "clsx"
+(with-eval-after-load 'emmet2-mode
+  (keymap-unset emmet2-mode-map "C-j")
+  (keymap-set emmet2-mode-map "C-c C-." #'emmet2-expand))
 ```
 
-After configuring the custom options, the abbreviation `a.link.active` will be expanded to `<a href="|" class={classnames(style.link, style.active)}></a>` in this project, where the pipe symbol `|` represents the cursor position after expansion.
+## Completion and snippets
 
-### Expand Markups
+These companions are optional; **`C-j`** works without them:
 
-#### HTML
+- [Corfu](https://github.com/minad/corfu) displays completion candidates.
+- **`corfu-popupinfo-mode`**, included with Corfu, shows the full, syntax-highlighted expansion.
+- [yasnippet](https://github.com/joaotavora/yasnippet) adds **TAB** navigation between fields and synchronized mirrors.
 
-```
-.                             ->  <div class="|"></div>
-.class                        ->  <div class="class">|</div>
-```
+Add these settings to your existing setup, or use:
 
-#### React JSX
+```elisp
+(use-package corfu
+  :straight t
+  :hook ((web-mode css-mode tsx-ts-mode js-ts-mode) . corfu-mode)
+  :custom
+  (corfu-auto t)
+  (corfu-on-exact-match 'show)
+  :config
+  (corfu-popupinfo-mode 1))
 
-```
-Component                     ->  <Component>|</Component>
-Component/                    ->  <Component />
-Component./                   ->  <Component className={|} />
-Component.class               ->  <Component className={css.class}>|</Component>
-Component.Subcomponent        ->  <Component.Subcomponent>|</Component.Subcomponent>
-Component.Subcomponent.class  ->  <Component.Subcomponent className={css.class}>|</Component.Subcomponent>
-Component.Subcomponent.a.b.c  ->  <Component.Subcomponent className={clsx(css.a, css.b, css.c)}>|</Component.Subcomponent>
-Component.Subcomponent.a.b.c/ ->  <Component.Subcomponent className={clsx(css.a, css.b, css.c)} />
-Component{{props.value}}      ->  <Component>{props.value}</Component>
-```
-
-#### Solid JSX
-
-```
-Component.class               ->  <Component class={css.class}>|</Component>
+(use-package yasnippet
+  :straight t
+  :hook ((web-mode css-mode tsx-ts-mode js-ts-mode) . yas-minor-mode))
 ```
 
-#### Automatically detect markup abbreviations
+Each Emmet candidate keeps the original abbreviation and shows a compact expansion
+summary beside it. For example, in CSS:
 
-Emmet2-mode allows you to expand abbreviations at any character within them, which can be helpful if you're working on a complex abbreviation and want to make tweaks. However, detecting the correct abbreviation under the cursor can be a bit tricky. If you encounter any issues related to this, please create an issue.
-
-### Expand CSS
-
-#### Remove default color
-
-```
-c               ->  color: |;         // instead of color: #000;
-bg              ->  background: |;    // instead of background: #000;
+```text
+m10,p.5  margin: 10px; padding: 0.5rem;
 ```
 
-#### [Modular Scale](https://github.com/modularscale/modularscale-sass) and vertical rhythm functions
+The popupinfo panel shows the full expansion, including line breaks and highlighting.
+With Corfu's default keys, select with **up/down**, accept with **RET**, or cancel
+with **C-g**. If `corfu-preselect` is `prompt`, select the candidate first;
+accepting the prompt leaves the abbreviation unchanged.
 
-Only `fw` triggers the `ms()` function while the other properties will expand with the `rhythm()` function.
+After expansion, point starts at the first editable field, such as an anchor's
+`href`. With yasnippet, **TAB** visits separate values in `c,bg` or `m,p`, while
+repeated `${1:...}` fields remain synchronized mirrors. The final TAB exits at
+the expansion's end, including at EOF without an extra newline. Indentation follows
+your major mode; one undo restores the original abbreviation. Without yasnippet,
+the text and initial cursor position are the same.
 
-```
-fz(1)           ->  font-size: ms(1);
-```
+`corfu-on-exact-match` set to `show` keeps the Emmet candidate visible even when it
+matches the input exactly. Automatic display follows your Corfu prefix and delay
+settings; **`M-x emmet2-complete`** requests it manually. Emmet does not enable these
+optional modes or change your completion settings. See [completion behavior](CONTRIBUTING.md#completion-behavior)
+for details.
 
-```
-t(2)            ->  top: rhythm(2);
-p(1)(2)(3)      ->  padding: rhythm(1) rhythm(2) rhythm(3);
-```
+## JSX variables and project options
 
-#### Custom properties
+V2 defaults to **`styles`** for the CSS Modules object and **`clsx`** for joining
+multiple class names. For example, `.abc.xyz/` expands to the element below; add
+the matching imports to your source file:
 
-```
-m--gutter       ->  margin: var(--gutter);
-p--a--b--c      ->  padding: var(--a) var(--b) var(--c);
-```
+```jsx
+import styles from './Card.module.css';
+import clsx from 'clsx';
 
-#### Raw property value brackets
-
-```
-p[1px 2px 3px]  ->  padding: 1px 2px 3px;
-```
-
-#### Opinionated alias
-
-```
-posa ->
-position: absolute;
-z-index: |;
-
-posa1000  ->
-position: absolute;
-z-index: 1000;
-
-all  ->
-top: |;
-right: ;
-bottom: ;
-left: ;
-
-all8 ->
-top: 8px;
-right: 8px;
-bottom: 8px;
-left: 8px;
-
-fw2  ->  font-weight: 200;
-fw7  ->  font-weight: 700;
-
-wf   ->  width: 100%;
-hf   ->  height: 100%;
+<div className={clsx(styles.abc, styles.xyz)} />
 ```
 
-#### camelCase alias
+`styles.abc` refers to the local `.abc` class in `Card.module.css`. A single class
+uses `styles.abc` directly; multiple classes use `clsx(...)`. Hyphenated names use
+bracket access, for example `.btn-primary` becomes `styles["btn-primary"]`.
 
-In Emmet, `:` and `-` are used to separate properties and values. For example, `m:a` expands to `margin: auto;`. However, in emmet2-mode, `:` is designed to expand pseudo-selectors. To avoid this conflict, consider using camelCase instead. For instance, `mA` is equivalent to both `m:a` and `m-a`.
+| Emacs option | Default | Purpose |
+| --- | --- | --- |
+| `emmet2-css-modules-object` | `"styles"` | CSS Modules import name or object reference, such as `cardStyles` or `styles.module` |
+| `emmet2-class-names-constructor` | `"clsx"` | Function reference for joining multiple classes, such as `cx` or `helpers.cx` |
+| `emmet2-markup-variant` | `nil` | Detect HTML/JSX from context; `"solid"` emits Solid JSX with `class` instead of `className` |
 
-```
-mA   ->  margin: auto;
-allA ->
-top: auto;
-right: auto;
-bottom: auto;
-left: auto;
-```
+These names must match your JavaScript imports or bindings. They control generated
+JSX; configure your frontend project for CSS Modules and the chosen class-name helper.
+Set them globally with `setq` or use `.dir-locals.el` for a project's conventions
+(use `web-mode` instead of `tsx-ts-mode` when editing JSX with web-mode):
 
-#### Comma as abbreviations spliter
-
-As a user of the Dvorak keyboard layout, I find it much easier to press the `,` key than the `+` key.
-
-```
-t0,r0,b0,l0 == t0+r0+b0+l0
-```
-
-#### At rules
-
-To expand CSS at-rules, start with the `@` symbol, followed by two or three distinct letters. SCSS at-rules are also supported.
-
-```
-@cs  ->  @charset
-@kf  ->  @keyframes
-@md  ->  @media
-
-@us  ->  @use "|";
-@in  ->  @if not | {}
+```elisp
+((tsx-ts-mode . ((emmet2-markup-variant . "solid")
+                (emmet2-css-modules-object . "cardStyles")
+                (emmet2-class-names-constructor . "cx"))))
 ```
 
-#### Pseudo-class and pseudo-element
+Then `.card.active` becomes `<div class={cx(cardStyles.card, cardStyles.active)}></div>`.
+Use the corresponding `cardStyles` and `cx` imports in that project.
 
-To expand CSS pseudo-classes or pseudo-elements, start with the `:` symbol, followed by two or three distinct letters. When dealing with pseudo-elements, use `:` instead of `::`.
+## Abbreviation reference
 
-There is a shorthand for pseudo-functions like `:n(:fc)`, which expands to `&:not(:first-child) {|}`, and `:n(:fc,:lc)` expands to `&:not(:first-child):not(:last-child) {|}`. It's important to note that spaces are not allowed within the `()` parentheses.
+See the [Emmet cheat sheet](https://docs.emmet.io/cheat-sheet/) for general syntax.
+The examples below cover this mode's additions and editing behavior.
+`│` marks the initial cursor position where relevant.
+Multiline CSS output is shown on one line for readability.
 
-```
-:fu  ->
-&:focus {
-  |
-}
+### HTML and JSX
 
-_:fu  ->
-:focus {
-  |
-}
+| Context | Abbreviation | Expansion |
+| --- | --- | --- |
+| HTML | `.` | `<div class="│"></div>` |
+| HTML | `.card` | `<div class="card">│</div>` |
+| HTML | `a.link` | `<a href="│" class="link"></a>` |
+| JSX | `Component` | `<Component>│</Component>` |
+| JSX | `Component/` | `<Component />` |
+| JSX | `Component./` | `<Component className={│} />` |
+| JSX | `Component.card` | `<Component className={styles.card}>│</Component>` |
+| JSX | `Component.Subcomponent` | `<Component.Subcomponent>│</Component.Subcomponent>` |
+| JSX | `Component.Subcomponent.card` | `<Component.Subcomponent className={styles.card}>│</Component.Subcomponent>` |
+| JSX | `Component.Subcomponent.a.b/` | `<Component.Subcomponent className={clsx(styles.a, styles.b)} />` |
+| JSX | `Component{{props.value}}` | `<Component>{props.value}</Component>` |
+| Solid JSX | `Component.card` | `<Component class={styles.card}>│</Component>` |
 
-:hv:af  ->
-&:hover::after {
-  |
-}
+Uppercase dotted names select subcomponents; lowercase suffixes add classes.
+Use `/` for self-closing components and doubled braces for JSX text expressions.
 
-:n(:fc)  ->
-&:not(:first-child) {
-  |
-}
+### CSS values
 
-:n(:fc,:lc):be  ->
-&:not(:first-child):not(:last-child)::before {
-  |
-}
+Length values default to `px` for integers and `rem` for decimals. Zero and
+unitless properties such as `line-height` stay unitless. Explicit units override
+these defaults; `r` abbreviates `rem`, `e` abbreviates `em`, and `p` abbreviates `%`.
+Append `!` to a property abbreviation to add `!important`.
 
-:nc(2n-1)  ->
-&:nth-child(2n-1) {
-  |
-}
-```
+| Abbreviation | Expansion |
+| --- | --- |
+| `c` | `color: │;` |
+| `bg` | `background: │;` |
+| `bd` | `border: │;` |
+| `p1-2-3` or `p[1px 2px 3px]` | `padding: 1px 2px 3px;` |
+| `p1px2px3px` | `padding: 1px 2px 3px;` |
+| `p1r` | `padding: 1rem;` |
+| `w50p` | `width: 50%;` |
+| `lh1.5` | `line-height: 1.5;` |
+| `m-10` | `margin: -10px;` |
+| `m10--20` | `margin: 10px -20px;` |
+| `m--gutter!` | `margin: var(--gutter) !important;` |
+| `p--a--b--c` | `padding: var(--a) var(--b) var(--c);` |
+| `p$a$b$c` | `padding: $a $b $c;` |
+| `w[calc(100% - 2rem)]` | `width: calc(100% - 2rem);` |
+| `ff[Arial,sans-serif]` | `font-family: Arial,sans-serif;` |
 
-## Credits
+Default suggestions are cleared so `c`, `bg` and `bd` leave editable values.
+A hyphen after a number with an explicit unit is a minus sign:
+`m10px-20px` means `margin: 10px -20px;`. Use raw brackets for complex values
+when you want the literal CSS, for example `m[10px 20px]`.
 
-- [deno-bridge](https://github.com/manateelazycat/deno-bridge) (used by the original implementation)
-- [Emmet](https://emmet.io/)
-- [emmet-mode](https://github.com/smihica/emmet-mode).
-- [VS Code Custom Data](https://github.com/microsoft/vscode-custom-data)
+### CSS aliases
+
+`posa` and `posf` also create a `z-index` declaration. `all` expands to the four
+offsets in top/right/bottom/left order, with separate fields when no value is given.
+In stylesheet context, `:` starts a pseudo-selector; use camelCase aliases such
+as `mA` for keyword values.
+
+| Abbreviation | Expansion |
+| --- | --- |
+| `posa` | `position: absolute; z-index: │;` |
+| `posa1000` | `position: absolute; z-index: 1000;` |
+| `posf100` | `position: fixed; z-index: 100;` |
+| `all` | `top: │; right: ; bottom: ; left: ;` |
+| `all8` | `top: 8px; right: 8px; bottom: 8px; left: 8px;` |
+| `mA` | `margin: auto;` |
+| `allA` | `top: auto; right: auto; bottom: auto; left: auto;` |
+| `fw7` | `font-weight: 700;` |
+| `wf` | `width: 100%;` |
+| `hf` | `height: 100%;` |
+| `mawf` | `max-width: 100%;` |
+| `miwf` | `min-width: 100%;` |
+| `mahf` | `max-height: 100%;` |
+| `mihf` | `min-height: 100%;` |
+
+### Scale and rhythm functions
+
+`fz(...)` emits `ms(...)`; other properties use `rhythm(...)`, with `(0)` kept
+as `0`. These are function calls for your stylesheet build to provide.
+
+| Abbreviation | Expansion |
+| --- | --- |
+| `fz(1)` | `font-size: ms(1);` |
+| `t(2)` | `top: rhythm(2);` |
+| `p(1)(2)(3)` | `padding: rhythm(1) rhythm(2) rhythm(3);` |
+| `p(0)(2)` | `padding: 0 rhythm(2);` |
+
+### CSS and SCSS at-rules
+
+Short names expand to at-rule names or templates with editable fields:
+
+| Abbreviation | Expansion |
+| --- | --- |
+| `@cs` | `@charset │` |
+| `@kf` | `@keyframes │` |
+| `@md` | `@media │` |
+| `@us` | `@use "│";` |
+| `@in` | `@if not │ { }` |
+| `@else` | `@else { │ }` |
+
+### Pseudo-classes and pseudo-elements
+
+Use `:` for either kind, including short names such as `:af` for `::after`.
+Selectors start with `&` by default; prefix `_` to omit it, or supply a selector
+such as `.card:fu`. Comma-separated pseudo-function arguments expand into chained
+calls, and nested pseudo-functions are supported.
+
+| Abbreviation | Expansion |
+| --- | --- |
+| `:fu` | `&:focus { │ }` |
+| `_:fu` | `:focus { │ }` |
+| `.card:fu` | `.card:focus { │ }` |
+| `:hv:af` | `&:hover::after { │ }` |
+| `:n(:fc)` | `&:not(:first-child) { │ }` |
+| `:n(:fc,:lc):be` | `&:not(:first-child):not(:last-child)::before { │ }` |
+| `:nc(2n-1)` | `&:nth-child(2n-1) { │ }` |
+| `:h(+p)` | `&:has(+ p) { │ }` |
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development and tests, and the
+[manual GUI acceptance record](test/gui-acceptance-2026-09-27.md) for verified scope.
+Upstream credits and licenses are in [NOTICE](NOTICE).

@@ -96,8 +96,24 @@ character tick and move point to END; acceptance takes a new strict insertion
 snapshot. Frontends that rewrite the same text and change the tick are rejected.
 `emmet2-complete` temporarily selects only Emmet capf and keeps its confidence gate.
 Mode enable/disable owns local registration at depth -50. Corfu styles/category/
-exact-match policies and optional popupinfo behavior are described in README.
+exact-match policies are described below; optional mode setup is in README.
 Batch drawing replacements are never evidence of real GUI interaction.
+
+## Completion behavior
+
+The candidate remains the original abbreviation; its annotation summarizes the
+expansion, and optional `corfu-popupinfo-mode` shows the final colored text.
+Bare markup identifiers, bare CSS property names and unconfirmed host positions
+are left to other providers. Use `C-j` for explicit expansion.
+
+Automatic presentation respects Corfu's prefix, delay and trigger settings.
+With `basic` first, the exact candidate can remain visible for `nil`, `show`,
+`insert` and `quit` policies. With `partial-completion` first, alone, or selected
+by an `emmet2` category override, automatic completion skips it unless the
+persistent `corfu-on-exact-match` is `show`; manual completion may expand directly.
+The package changes none of these settings. With `corfu-preselect` set to
+`prompt`, select the candidate before accepting it; accepting the prompt does
+not expand. Editing or moving away invalidates the old session.
 
 ## Data, oracle and migration authority
 
@@ -232,11 +248,13 @@ versions passed native source/installed 257 tests (1699 public calls), reference
 [run 36319117967](https://github.com/P233/emmet2-mode/actions/runs/36319117967)
 passed all jobs. New revisions require their own applicable validation.
 
-Real web-mode/TSX+Eglot/Corfu/yas GUI acceptance remains OPEN because Computer Use
-cannot read the Emacs window. The cause is unconfirmed. This does not block branch
-implementation or automated checks, but the complete rewrite must not be marked
-finished until the real interaction matrix is verified. Process liveness, batch
-success and simulated popup drawing do not satisfy that gate.
+Real web-mode/TSX+Eglot/Corfu/yas functional GUI acceptance passed on Emacs 31.1
+through user-operated checks on 2026-09-27. The user confirmed the completion
+matrix, session invalidation, fields, host boundaries and final edge cases.
+The [acceptance record](test/gui-acceptance-2026-09-27.md) distinguishes the
+isolated installed-bytecode session from the final daily-configuration checks.
+Computer Use still could not read Emacs; this is user-reported manual evidence,
+not automated GUI success, screenshot evidence, GUI timing or Emacs 30 GUI coverage.
 
 S8 local checkpoint (2026-09-27): Emacs 30.2/31.1 each passed 277 complete native
 checks / 1711 public core calls, 76 bytecode checks, warning-free project compilation
@@ -246,4 +264,5 @@ inputs/results remain unchanged. The bundle/license relocation preserves bytes.
 All 23 Node development tests, ESLint MCP and CLI lint, oracle checks with read-only
 permissions, and actionlint passed. Wallaby returned no data. Linux network
 isolation and the revised exact-commit installation remain post-commit CI/installation
-gates; no GUI result or new performance improvement is claimed here.
+gates at that checkpoint; the later manual GUI result is recorded separately
+above. No new performance improvement is claimed.
