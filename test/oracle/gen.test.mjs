@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -25,8 +25,8 @@ test("fixed inputs regenerate identical output including parse failures", () => 
   const first = generate();
   assert.deepEqual(generate(), first);
   const css = JSON.parse(first.get("stylesheet.json"));
-  assert.deepEqual(css.filter((entry) => entry.error).map((entry) => entry.id),
-    ["css-invalid-raw", "css-error-after-emoji"]);
+  const expectedCss = JSON.parse(readFileSync(new URL("../fixtures/oracle/stylesheet.json", import.meta.url), "utf8"));
+  assert.deepEqual(css.filter((entry) => entry.error), expectedCss.filter((entry) => entry.error));
   for (const contents of first.values()) {
     for (const { id, result, error } of JSON.parse(contents)) {
       if (error) continue;
