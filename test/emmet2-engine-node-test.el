@@ -5,6 +5,7 @@
 (require 'ert)
 (require 'emmet2-engine-node)
 (require 'emmet2-lorem-contract)
+(require 'emmet2-core-contract)
 
 (ert-deftest emmet2-node-lorem-structural-contract ()
   (emmet2-node-stop)
@@ -19,44 +20,9 @@
      (let ((emmet2-node--server-file (expand-file-name "test/node-fixture.mjs" emmet2-test-root)))
        (unwind-protect (progn ,@body) (emmet2-node-stop)))))
 
-(defun emmet2-test--json-file (path)
-  "Read JSON PATH relative to the repository root."
-  (with-temp-buffer
-    (insert-file-contents (expand-file-name path emmet2-test-root))
-    (json-parse-buffer :object-type 'alist :array-type 'list)))
-
 (ert-deftest emmet2-node-core-oracle ()
   (emmet2-node-stop)
-  (unwind-protect
-      (let ((inputs (emmet2-test--json-file "test/fixtures/core-inputs.json"))
-            (expected (make-hash-table :test #'equal)) (checked 0))
-        (dolist (entry (append (emmet2-test--json-file "test/fixtures/oracle/markup.json")
-                              (emmet2-test--json-file "test/fixtures/oracle/stylesheet.json")))
-          (puthash (alist-get 'id entry) entry expected))
-        (dolist (input inputs)
-          (let* ((id (alist-get 'id input)) (entry (gethash id expected))
-                 (wanted (alist-get 'result entry)) (failure (alist-get 'error entry))
-                 (jsx (alist-get 'jsx input))
-                 (arguments (list (alist-get 'abbreviation input)
-                                  :preset (intern (alist-get 'preset input))
-                                  :indent (or (alist-get 'indent input) "\t")
-                                  :base-indent (or (alist-get 'baseIndent input) "")
-                                  :jsx (and jsx (list :classAttribute (alist-get 'classAttribute jsx)
-                                                     :cssModulesObject (alist-get 'cssModulesObject jsx)
-                                                     :classConstructor (alist-get 'classConstructor jsx))))))
-            (ert-info (id)
-              (should entry)
-              (if failure
-                  (let ((error (should-error (apply #'emmet2-engine-expand arguments)
-                                            :type 'emmet2-parse-error)))
-                    (should (equal (cdr error) (list (alist-get 'message failure)
-                                                     (alist-get 'position failure)))))
-                (should (equal (apply #'emmet2-engine-expand arguments)
-                               (list :text (alist-get 'text wanted) :fields (alist-get 'fields wanted)
-                                     :cursor (alist-get 'cursor wanted))))))
-            (cl-incf checked)))
-        (should (= checked (hash-table-count expected)))
-        (should (> checked 0)))
+  (unwind-protect (emmet2-core-test--check #'emmet2-engine-expand)
     (emmet2-node-stop)))
 
 (ert-deftest emmet2-node-handwritten-fields-and-permissive-input ()

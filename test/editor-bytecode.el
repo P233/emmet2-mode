@@ -3,7 +3,7 @@
 
 ;; Compilation-only checks cannot exercise calls which become bytecode
 ;; primitives or the optional yas adapter against compiled dependencies.
-;; S6 also checks the independent native markup implementation in this copy.
+;; Also check independent native cores and real markup/CSS flows in this copy.
 (load (expand-file-name "bootstrap.el" (file-name-directory load-file-name)) nil t)
 (require 'bytecomp)
 
@@ -26,13 +26,14 @@
               (error "Dependency compilation failed: %s" name)))
           (load (expand-file-name (concat name ".elc") directory) nil t))
         (let ((byte-compile-error-on-warn t))
-          (dolist (name '("emmet2-engine" "emmet2-engine-node" "emmet2-engine-markup" "emmet2-fuzzy" "emmet2-extensions"
+          (dolist (name '("emmet2-engine" "emmet2-engine-node" "emmet2-engine-markup" "emmet2-fuzzy" "emmet2-engine-stylesheet" "emmet2-extensions"
                           "emmet2-extract" "emmet2-context" "emmet2-insert" "emmet2-mode" "emmet2-preview" "emmet2-capf"))
             (unless (byte-compile-file (expand-file-name (concat name ".el") emmet2-test-root))
               (error "Project compilation failed: %s" name))
             (load (expand-file-name (concat name ".elc") directory) nil t)))
         (unless (and (byte-code-function-p (symbol-function 'emmet2-insert))
                      (byte-code-function-p (symbol-function 'emmet2-engine-markup-expand))
+                     (byte-code-function-p (symbol-function 'emmet2-engine-stylesheet-expand))
                      (byte-code-function-p (symbol-function 'emmet2-capf))
                      (byte-code-function-p (symbol-function 'corfu--in-region-1))
                      (byte-code-function-p (symbol-function 'yas-expand-snippet))
@@ -42,6 +43,8 @@
         (load (expand-file-name "test/emmet2-capf-test.el" emmet2-test-root) nil t)
         (load (expand-file-name "test/emmet2-preview-test.el" emmet2-test-root) nil t)
         (load (expand-file-name "test/emmet2-engine-markup-test.el" emmet2-test-root) nil t)
+        (load (expand-file-name "test/emmet2-engine-stylesheet-test.el" emmet2-test-root) nil t)
+        (require 'emmet2-stylesheet-integration-test)
         (let ((stats (ert-run-tests-batch t)))
           (when (> (ert-stats-completed-unexpected stats) 0)
             (error "Unexpected editor test result"))))

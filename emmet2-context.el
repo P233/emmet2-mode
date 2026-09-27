@@ -39,7 +39,7 @@
      (lambda (language)
        (list language
              (treesit-query-compile language
-                                    '([(object) (return_statement) (arrow_function)
+                                    '([(object) (pair) (return_statement) (arrow_function)
                                        (parenthesized_expression)] @host))
              (unless (eq language 'typescript)
                (treesit-query-compile language '([(jsx_opening_element) (jsx_expression)] @host)))
@@ -314,8 +314,25 @@ LANGUAGE selects the query vocabulary.  Bounds still belong to the extractor."
     (dolist (node (treesit-query-capture
                    parser (nth 1 (assq language emmet2-context--queries))
                    left right t))
-      (when (<= (treesit-node-start node) position (treesit-node-end node))
+      (when (and (<= (treesit-node-start node) position)
+                 (or (<= position (treesit-node-end node))
+                     ;; `m10+p.5' may close its containing object early with
+                     ;; a MISSING }.  Retain that real opening boundary; the
+                     ;; extractor and projection still verify the candidate
+                     ;; and complete surrounding host before accepting it.
+                     (and (equal (treesit-node-type node) "object")
+                          (let ((last (treesit-node-child node -1)))
+                            (and (equal (treesit-node-type last) "}")
+                                 (treesit-node-check last 'missing))))))
         (pcase (treesit-node-type node)
+          ("pair"
+           ;; Keep authored CSS-in-JS keys and colons in the projection.  The
+           ;; original abbreviation may damage this tree, but this only sets
+           ;; a lower bound; projected ownership still requires valid syntax.
+           (when (emmet2-context--css-owner-p node t)
+             (let ((value (treesit-node-child-by-field-name node "value")))
+               (when (and value (<= (treesit-node-start value) position))
+                 (setq left (max left (treesit-node-start value)))))))
           ("object"
            (let ((begin (treesit-node-start node)))
              ;; Broken JSX such as a{Link $} can recover as an object under
@@ -354,13 +371,15 @@ LANGUAGE selects the query vocabulary.  Bounds still belong to the extractor."
                (setq left (max left (1+ begin)))))))))
     (cons left right)))
 
-(defun emmet2-context--css-owner-p (node)
-  "Whether shorthand property NODE belongs to a supported CSS host."
+(defun emmet2-context--css-owner-p (node &optional allow-errors)
+  "Whether property NODE belongs to a supported CSS host.
+ALLOW-ERRORS is only for original-tree bounds.
+Projected acceptance still requires valid syntax."
   (let ((parent (treesit-node-parent node)) result done)
     (while (and parent (not done))
       (pcase (treesit-node-type parent)
         ((or "object" "pair")
-         (when (treesit-node-check parent 'has-error) (setq done t)))
+         (when (and (not allow-errors) (treesit-node-check parent 'has-error)) (setq done t)))
         ("jsx_expression"
          (let ((attribute (treesit-node-parent parent)))
            (setq result

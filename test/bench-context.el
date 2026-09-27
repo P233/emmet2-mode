@@ -100,7 +100,7 @@
 (defun emmet2-bench--sample (spec edit changed)
   "Time one complete operation for SPEC, then verify it outside the clock.
 EDIT is nil, `typing', or `programmatic'; CHANGED selects insertion or deletion."
-  (let ((t0 (current-time)) (gcs gcs-done) (gc-time gc-elapsed) result sample)
+  (let ((t0 (current-time)) (gcs gcs-done) (gc-time gc-elapsed) result end-gcs end-gc-time end sample)
     (when edit
       (if changed
           (if (eq edit 'typing)
@@ -108,8 +108,9 @@ EDIT is nil, `typing', or `programmatic'; CHANGED selects insertion or deletion.
             (insert "1"))
         (delete-char -1)))
     (setq result (emmet2-context-analyze t)
-          sample (vector (* 1000 (float-time (time-subtract (current-time) t0)))
-                         (- gcs-done gcs) (- gc-elapsed gc-time)))
+          end-gcs gcs-done end-gc-time gc-elapsed end (current-time)
+          sample (vector (* 1000 (float-time (time-subtract end t0)))
+                         (- end-gcs gcs) (- end-gc-time gc-time)))
     (emmet2-bench--verify result spec changed)
     sample))
 
@@ -173,8 +174,9 @@ At most five owned buffers survive until this group finishes, even on failure."
                     (let* ((spec (emmet2-bench--fixture kind (car size) (cadr size)))
                            (gcs gcs-done) (gc-time gc-elapsed) (t0 (current-time))
                            (result (emmet2-context-analyze))
-                           (cold-ms (* 1000 (float-time (time-subtract (current-time) t0))))
-                           (cold-gcs (- gcs-done gcs)) (cold-gc-time (- gc-elapsed gc-time)))
+                           (end-gcs gcs-done) (end-gc-time gc-elapsed) (end (current-time))
+                           (cold-ms (* 1000 (float-time (time-subtract end t0))))
+                           (cold-gcs (- end-gcs gcs)) (cold-gc-time (- end-gc-time gc-time)))
                       (emmet2-bench--verify result spec)
                       (setf (emmet2-bench--case-report entry)
                             (list :name name :fixture spec :cold-ms cold-ms

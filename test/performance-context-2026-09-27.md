@@ -183,3 +183,55 @@ Dual-version validation also passed 68 context/extraction ERT tests and 48
 byte-compiled editor/completion/preview tests, including the original failing
 abbreviation and ordinary-object/expression exclusions. The S5 complete-flow
 measurement restarts from this corrected implementation.
+
+## S7.3 original-host boundary regression check
+
+Complete CSS integration exposed the same pre-existing failure in Node and
+native: `StyleSheet.create({card:{m10+p.5}})` could extract `card:{m10+p.5}`.
+The original tree can end the inner object early with a missing closing brace.
+Host bounds now retain that real opening and preserve keys/colons in supported
+CSS-in-JS owners. The projected tree still requires valid enclosing syntax.
+Ordinary calls, computed objects, property values and incomplete hosts remain
+negative cases; markup text containing colons remains supported.
+
+The original 15 TSX fixtures and three complete analysis/edit paths ran in three
+fresh serial Emacs 31.1 processes on the same Apple M1 Pro, using bytecode and
+normal GC (800000/1.0): 100 warmups and 10000 samples per path, 1350000 measured
+operations. No concurrent builds/tests or measured-source edits ran during
+timing. CSS/web lexical code did not change, so its prior acceptance remains
+separate. This is a regression check of the existing TSX matrix, not a timing
+claim for every newly supported abbreviation or a GUI latency claim.
+
+The runner now captures end GC counters before its end timestamp, matching the
+S6.4 correction. Prior sections retain their original samples and elapsed-time
+quantiles, but their GC totals can include bookkeeping after the timed interval;
+those historical GC attributions are not treated as corrected measurements.
+All new sample quantiles, maxima and GC totals were independently recomputed;
+every formal/cold GC duration lies within its timed interval (1 microsecond
+comparison tolerance). No slow sample or GC pause was omitted.
+
+| Process | p99 range (ms) | Worst same-kind/path size ratio | Max operation (ms) | GC count / seconds |
+| --- | --- | --- | --- | --- |
+| 1 | 0.033–0.081 | 1.095 | 68.999 | 57 / 1.765 |
+| 2 | 0.034–0.137 | 1.203 | 72.042 | 55 / 1.786 |
+| 3 | 0.035–0.174 | 1.252 | 87.602 | 56 / 1.822 |
+
+All processes satisfy the existing 1 ms and 1.5 ratio budgets.
+
+Raw data is archived in ignored `plans/native-emmet-rewrite/measurements/2026-09-27/context-s7.3/`. Hashes identify uncompressed JSON.
+
+| File | SHA256 |
+| --- | --- |
+| `emmet2-s73-context31-1.json.gz` | `200d717eea3c5d355ddfb47ef45b54cf2ba31a5715ec9249190d3fecc4bff1a0` |
+| `emmet2-s73-context31-2.json.gz` | `a922a3e4d6c492a3f1e2325547b5441e56fac1e388df682bd7c16eccc389b177` |
+| `emmet2-s73-context31-3.json.gz` | `4f2148500d9b04ece3d8024e8457034542ea448f08f72be1e6e70c0fa6c7552a` |
+
+Measured sources:
+
+| File | SHA256 |
+| --- | --- |
+| `emmet2-context.el` | `b33f6f0156ab37f46d4464d5216bb45745c2e0b570a2c3079305d3cd716a0f14` |
+| `emmet2-extract.el` | `315b6b3a3b3de2b7be050e335808153dfc251d495368246bedae3f62c7883ad0` |
+| `emmet2-engine.el` | `fc47373962a6a20e3966859e77900e14f8e6c7500e514c53429e83ba6f4567df` |
+| `test/bootstrap.el` | `91f9c27133956fa0541ca5ee2f06a22a6157717163a77b1cb3bfa0e2c83d442c` |
+| `test/bench-context.el` | `eb984bb00f82ebc9976256efd12534a441cc902cb7940c722d53d95b78db5830` |

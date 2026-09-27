@@ -18,7 +18,8 @@
                       "test/emmet2-engine-node-test.el" "emmet2-engine-markup.el"
                       "emmet2-engine-stylesheet.el" "test/emmet2-engine-stylesheet-test.el"
                       "test/emmet2-engine-markup-test.el" "test/emmet2-lorem-contract.el" "test/bench-markup.el"
-                      "test/emmet2-test.el" "test/emmet2-markup-integration-test.el" "test/markup-integration.el"))
+                      "test/emmet2-test.el" "test/emmet2-markup-integration-test.el" "test/backend-integration.el"
+                      "test/emmet2-core-contract.el" "test/emmet2-stylesheet-integration-test.el"))
         (unless (byte-compile-file (expand-file-name file emmet2-test-root))
           (error "Byte compilation failed: %s" file)))
     (delete-directory directory t)))

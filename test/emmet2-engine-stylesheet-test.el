@@ -92,6 +92,10 @@
     (setq first (emmet2-engine-stylesheet-expand input))
     (dolist (abbreviation '("bd" "animtf" "@ff" "c+bg" "p$a$b$c" "tf:scale3d(1,2,3)"))
       (emmet2-engine-stylesheet-expand abbreviation))
+    (let* ((result (emmet2-engine-stylesheet-expand "bd"))
+           (default (nth 3 (car (plist-get result :fields)))))
+      (aset default 0 ?X)
+      (should (equal (plist-get (emmet2-engine-stylesheet-expand "bd") :text) "border: 1px solid #000;")))
     (should (equal first (emmet2-engine-stylesheet-expand input)))
     (should (equal before (prin1-to-string emmet2-stylesheet--snippets)))))
 

@@ -849,38 +849,51 @@ entries. Ranges preserve the pinned implementation's exclusive upper bound when
 it exceeds the minimum. The pinned version does not recognize `lipsum`; it remains
 an ordinary element name.
 
-The default editor entry still uses Node. Native integration and the complete S6
-performance and installation checks remain separate acceptance work.
+The default editor entry still uses Node. S6 markup integration, installation and
+performance passed locally; S7 stylesheet and external acceptance remain separate
+gates before switching that entry.
 
-### S6.3 independent markup integration
+### Independent complete backend integration (S7.3)
 
-Run the same 61 integration tests in separate Emacs processes:
+Run the same 250 tests in separate Emacs processes:
 
 ```sh
-rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_MARKUP_BACKEND=node emacs --batch -Q -L . -l test/markup-integration.el
-rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_MARKUP_BACKEND=native emacs --batch -Q -L . -l test/markup-integration.el
+rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_BACKEND=node emacs --batch -Q -L . -l test/backend-integration.el
+rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_BACKEND=native emacs --batch -Q -L . -l test/backend-integration.el
 ```
 
-Only this runner replaces the core entry for native acceptance. Native execution
-has no executable search path, rejects process creation and fails if Node loads;
-Node execution fails if native markup loads. There is no production backend
-selector or per-request fallback. Remove the temporary test override after S7
+This replaces the S6 markup-only runner and removes its six CSS exclusions.
+The runner uses both core oracle files (973 inputs), all 42 lorem structural
+contracts, the existing result/fuzzy/extraction/host/context suites, all CSS and
+markup extensions and the complete editor/completion/preview suites. Node
+protocol fault injection remains separate because it tests only that transport.
+Only the test runner replaces the public core entry for native acceptance. A
+native process has no executable search path, rejects process creation and fails
+if Node loads; a Node process fails if either native engine loads. Production has
+no backend selector or per-request fallback. Retire this test override after S7
 switches the complete native implementation.
 
-The runner reuses all 18 markup extension tests and 42 applicable editor tests.
-Six existing tests expand CSS and stay in the complete, unchanged Node/editor
-suites until S7 implements stylesheet expansion. They are explicitly listed in
-the runner. A new test supplies 24 markup flow combinations across web-mode,
-TSX and JS-hosted JSX, React/Solid, literal Unicode/fields and lorem, using direct
-commands or completion with/without yas. It checks exact source replacement,
-preview reuse, one expansion, no second indentation, cursor, hooks and undo.
+The original 24 markup combinations remain. Eight new CSS/SCSS/web/style/script
+cases add 32 combinations with exact expected text, preview reuse, one expansion,
+no second indentation, cursor/hooks and undo checks, both with and without yas.
+Separate tests preserve the bare-property completion gate and edit core mirror
+fields through real yas, keeping separate properties and conflicting defaults
+independent. A bare `bd` is command-only; `bd+c` has the completion signal.
 
-After `test/install.el`, set `EMMET2_MARKUP_PACKAGE` to its
+The float case `StyleSheet.create({card:{m10+p.5}})` exposed an existing context
+error in both backends: tree-sitter can end the inner object early with a missing
+brace. Original-tree bounds now retain that opening and retain authored CSS-in-JS
+property keys/colons. The existing projection still requires a valid supported
+owner; ordinary calls, computed objects, property values and incomplete hosts
+remain rejected. Attached markup text with colons retains its markup semantics.
+No new parser, cache or acceptance fallback is introduced.
+
+After `test/install.el`, set `EMMET2_TEST_PACKAGE` to its
 `straight/build/emmet2-mode` directory and run both commands again. The runner
-removes the source fallback and requires installed bytecode for the engine,
-extensions, context, command, completion, preview and insertion paths. CI includes
-these source and installed runs for both Emacs versions; hosted execution still
-needs an actual pushed CI run. Performance and GUI gates remain separate.
+removes the source fallback before any runtime module loads and requires installed
+bytecode for both native engines and the editor paths. CI includes source and
+installed runs for both Emacs versions. Hosted CI, GUI and full stylesheet
+performance require their own acceptance evidence.
 
 ### S6.4 complete markup measurements
 

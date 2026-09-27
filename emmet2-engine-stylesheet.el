@@ -419,9 +419,11 @@ The upstream trimming also applies to scientific notation at 1e21 and above."
       ('color (emmet2-stylesheet--push out (emmet2-stylesheet--color value)))
       ('string (emmet2-stylesheet--push out (concat (char-to-string (car value)) (cdr value) (char-to-string (car value))) t))
       ('field
-       (let ((start (emmet2-stylesheet--output-offset out)))
-         (emmet2-stylesheet--push out (cdr value))
-         (push (list start (emmet2-stylesheet--output-offset out) (car value) (cdr value))
+       ;; copy-tree duplicates AST containers, not strings.  A returned field
+       ;; must not expose a mutable string from the immutable snippet table.
+       (let ((start (emmet2-stylesheet--output-offset out)) (default (copy-sequence (cdr value))))
+         (emmet2-stylesheet--push out default)
+         (push (list start (emmet2-stylesheet--output-offset out) (car value) default)
                (emmet2-stylesheet--output-fields out))))
       ('function
        (emmet2-stylesheet--push out (concat (car value) "("))

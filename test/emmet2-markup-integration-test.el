@@ -5,21 +5,20 @@
 (require 'emmet2-capf-test)
 (require 'emmet2-preview-test)
 
-(ert-deftest emmet2-markup-command-completion-preview-and-yas ()
+(defun emmet2-integration-test--flows (cases)
+  "Verify command/completion/preview/yas/undo for host CASES."
   (unwind-protect
-      (dolist (case '((web-mode "<main>ul>li│*2</main>" nil)
-                      (web-mode "<main>.card>span{${1:😀} ${1:😀}}│</main>" "solid")
-                      (tsx-ts-mode "const A=(<main>ul>li│*2</main>);" nil)
-                      (tsx-ts-mode "const A=(<main>.card>span{${1:😀} ${1:😀}}│</main>);" "solid")
-                      (js-mode "const A=(<main>.card│</main>);" nil)
-                      (web-mode "<main>p>lorem5+span{${1:😀}}│</main>" nil)))
+      (dolist (case cases)
         (dolist (yas '(nil t))
           (dolist (completion '(nil t))
             (ert-info ((format "%S yas=%s completion=%s" case yas completion))
               (with-temp-buffer
                 (insert (nth 1 case)) (search-backward "│") (delete-char 1)
                 (let ((position (point)))
-                  (setq buffer-file-name (if (eq (car case) 'web-mode) "/tmp/emmet2.html" "/tmp/emmet2.tsx"))
+                  (setq buffer-file-name
+                        (pcase (car case) ('web-mode "/tmp/emmet2.html")
+                               ('css-mode "/tmp/emmet2.css") ('scss-mode "/tmp/emmet2.scss")
+                               (_ "/tmp/emmet2.tsx")))
                   (funcall (car case)) (goto-char position))
                 (setq-local indent-tabs-mode nil emmet2-markup-variant (nth 2 case)
                             emmet2-css-modules-object "styles" emmet2-class-names-constructor "cx")
@@ -32,6 +31,7 @@
                        (before (buffer-string)) (result (emmet2--expand-analysis analysis))
                        (expand (symbol-function 'emmet2--expand-analysis)) (calls 0)
                        (yas-indent-line 'auto) (yas-wrap-around-region t) (exits 0))
+                  (when (nth 3 case) (should (equal (plist-get result :text) (nth 3 case))))
                   (add-hook 'yas-after-exit-snippet-hook (lambda () (cl-incf exits)) nil t)
                   (let ((hooks (copy-sequence yas-after-exit-snippet-hook)))
                     (cl-letf (((symbol-function 'emmet2--expand-analysis)
@@ -61,6 +61,15 @@
                     (should (equal (buffer-string) before))
                     (should-not (yas-active-snippets)))))))))
     (emmet2-preview-clear)))
+
+(ert-deftest emmet2-markup-command-completion-preview-and-yas ()
+  (emmet2-integration-test--flows
+   '((web-mode "<main>ul>li│*2</main>" nil)
+     (web-mode "<main>.card>span{${1:😀} ${1:😀}}│</main>" "solid")
+     (tsx-ts-mode "const A=(<main>ul>li│*2</main>);" nil)
+     (tsx-ts-mode "const A=(<main>.card>span{${1:😀} ${1:😀}}│</main>);" "solid")
+     (js-mode "const A=(<main>.card│</main>);" nil)
+     (web-mode "<main>p>lorem5+span{${1:😀}}│</main>" nil))))
 
 (provide 'emmet2-markup-integration-test)
 ;;; emmet2-markup-integration-test.el ends here
