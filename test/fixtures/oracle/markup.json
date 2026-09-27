@@ -6020,5 +6020,2150 @@
       ],
       "cursor": 12
     }
+  },
+  {
+    "id": "markup-grammar-01",
+    "result": {
+      "text": "<DatenSätze></DatenSätze>",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "markup-grammar-02",
+    "result": {
+      "text": "<div class=\"w-1/2\"></div>",
+      "fields": [
+        [
+          19,
+          19,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "markup-grammar-03",
+    "result": {
+      "text": "<div class=\"w-1/2\"></div>",
+      "fields": [
+        [
+          19,
+          19,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "markup-grammar-04",
+    "result": {
+      "text": "<li repeat.for=\"todo of todoList\"></li>",
+      "fields": [
+        [
+          34,
+          34,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 34
+    }
+  },
+  {
+    "id": "markup-grammar-05",
+    "result": {
+      "text": "<a href=\"\"><b><!--  --></b></a>\n<d>\n\t<e></e>\n</d>\n<f></f>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ],
+        [
+          19,
+          19,
+          2,
+          ""
+        ],
+        [
+          40,
+          40,
+          3,
+          ""
+        ],
+        [
+          53,
+          53,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "markup-grammar-06",
+    "result": {
+      "text": "<a href=\"\">\n\t<b><!--  --></b>\n\t<d>\n\t\t<e></e>\n\t</d>\n\t<f></f>\n</a>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ],
+        [
+          21,
+          21,
+          2,
+          ""
+        ],
+        [
+          40,
+          40,
+          3,
+          ""
+        ],
+        [
+          55,
+          55,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "markup-grammar-07",
+    "result": {
+      "text": "<a href=\"\">\n\t<b><!--  --></b>\n\t<d></d>\n</a>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ],
+        [
+          21,
+          21,
+          2,
+          ""
+        ],
+        [
+          34,
+          34,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "markup-grammar-08",
+    "result": {
+      "text": "<div>\n\t<dl>\n\t\t<dt></dt>\n\t\t<dd></dd>\n\t\t<dt></dt>\n\t\t<dd></dd>\n\t</dl>\n</div>",
+      "fields": [
+        [
+          18,
+          18,
+          1,
+          ""
+        ],
+        [
+          30,
+          30,
+          2,
+          ""
+        ],
+        [
+          42,
+          42,
+          3,
+          ""
+        ],
+        [
+          54,
+          54,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "markup-grammar-09",
+    "result": {
+      "text": "<a href=\"\"></a>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ],
+        [
+          11,
+          11,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "markup-grammar-10",
+    "result": {
+      "text": "<div></div>",
+      "fields": [
+        [
+          5,
+          5,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "markup-grammar-11",
+    "result": {
+      "text": "<div></div>",
+      "fields": [
+        [
+          5,
+          5,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "markup-grammar-12",
+    "result": {
+      "text": "<div a=\"\" b=\"\" c=\"\" [d]=\"\"></div>",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ],
+        [
+          13,
+          13,
+          2,
+          ""
+        ],
+        [
+          18,
+          18,
+          3,
+          ""
+        ],
+        [
+          25,
+          25,
+          4,
+          ""
+        ],
+        [
+          27,
+          27,
+          5,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "markup-grammar-13",
+    "result": {
+      "text": "<div [a]=\"b\" (c}=\"d\"></div>",
+      "fields": [
+        [
+          21,
+          21,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "markup-grammar-14",
+    "result": {
+      "text": "<div a=\"b.c\" d=\"тест\"></div>",
+      "fields": [
+        [
+          22,
+          22,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "markup-grammar-15",
+    "result": {
+      "text": "<div a=\"b\" c=\"\" d=\"e\"></div>",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ],
+        [
+          22,
+          22,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "markup-grammar-16",
+    "result": {
+      "text": "<div foo={1 + 2} bar={fn(1, \"foo\")}></div>",
+      "fields": [
+        [
+          36,
+          36,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 36
+    }
+  },
+  {
+    "id": "markup-grammar-17",
+    "result": {
+      "text": "<input type=\"text\" name=\"\" value=\"test\">",
+      "fields": [
+        [
+          13,
+          17,
+          1,
+          "text"
+        ],
+        [
+          25,
+          25,
+          2,
+          ""
+        ],
+        [
+          34,
+          38,
+          3,
+          "test"
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "markup-grammar-18",
+    "result": {
+      "text": "<div a=\"UTF-8\" b=\"${2}\"></div>",
+      "fields": [
+        [
+          18,
+          22,
+          1,
+          "${2}"
+        ],
+        [
+          24,
+          24,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "markup-grammar-19",
+    "result": {
+      "text": "<div b=\"b\" d=\"\" e=\"\"></div>",
+      "fields": [
+        [
+          21,
+          21,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "markup-grammar-20",
+    "result": {
+      "text": "<div></div>",
+      "fields": [
+        [
+          5,
+          5,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "markup-grammar-21",
+    "result": {
+      "text": "<a href=\"\"></a>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ],
+        [
+          11,
+          11,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "markup-grammar-22",
+    "result": {
+      "text": "<div foo=\"bar\"></div>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "markup-grammar-23",
+    "result": {
+      "text": "<div a=\"\"></div>",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ],
+        [
+          10,
+          10,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "markup-grammar-24",
+    "result": {
+      "text": "<div a={foo]}></div>",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "markup-grammar-25",
+    "error": {
+      "message": "Unclosed quote",
+      "position": 6
+    }
+  },
+  {
+    "id": "markup-grammar-26",
+    "error": {
+      "message": "Unexpected \"Operator\" token",
+      "position": 7
+    }
+  },
+  {
+    "id": "markup-grammar-27",
+    "result": {
+      "text": "<div id=\"\" class=\"\"></div>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ],
+        [
+          18,
+          18,
+          2,
+          ""
+        ],
+        [
+          20,
+          20,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "markup-grammar-28",
+    "result": {
+      "text": "<div class=\"\" id=\"\"></div>",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ],
+        [
+          18,
+          18,
+          2,
+          ""
+        ],
+        [
+          20,
+          20,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "markup-grammar-29",
+    "result": {
+      "text": "<div class=\"a\"></div>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "markup-grammar-30",
+    "result": {
+      "text": "<div class=\"a b\"></div>",
+      "fields": [
+        [
+          17,
+          17,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "markup-grammar-31",
+    "result": {
+      "text": "<div class=\"a b\"></div>",
+      "fields": [
+        [
+          17,
+          17,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "markup-grammar-32",
+    "result": {
+      "text": "<div b=\"c\"></div>\n<a href=\"\"></a>",
+      "fields": [
+        [
+          11,
+          11,
+          1,
+          ""
+        ],
+        [
+          27,
+          27,
+          2,
+          ""
+        ],
+        [
+          29,
+          29,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 11
+    }
+  },
+  {
+    "id": "markup-grammar-33",
+    "result": {
+      "text": "<div title=\"x\">hello</div>\n<div title=\"x\">hello</div>\n<div title=\"x\">hello</div>",
+      "fields": [],
+      "cursor": 80
+    }
+  },
+  {
+    "id": "markup-grammar-34",
+    "result": {
+      "text": "<img src=\"\" alt=\"\">\n<img src=\"\" alt=\"\">\n<img src=\"\" alt=\"\">",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ],
+        [
+          17,
+          17,
+          2,
+          ""
+        ],
+        [
+          30,
+          30,
+          3,
+          ""
+        ],
+        [
+          37,
+          37,
+          4,
+          ""
+        ],
+        [
+          50,
+          50,
+          5,
+          ""
+        ],
+        [
+          57,
+          57,
+          6,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "markup-grammar-35",
+    "result": {
+      "text": "<img src=\"\" alt=\"\">\n<img src=\"\" alt=\"\">\n<img src=\"\" alt=\"\">",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ],
+        [
+          17,
+          17,
+          2,
+          ""
+        ],
+        [
+          30,
+          30,
+          3,
+          ""
+        ],
+        [
+          37,
+          37,
+          4,
+          ""
+        ],
+        [
+          50,
+          50,
+          5,
+          ""
+        ],
+        [
+          57,
+          57,
+          6,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "markup-grammar-36",
+    "result": {
+      "text": "<ul>\n\t<li class=\"item1\"></li>\n</ul>",
+      "fields": [],
+      "cursor": 35
+    }
+  },
+  {
+    "id": "markup-grammar-37",
+    "result": {
+      "text": "<div><span></span></div>",
+      "fields": [],
+      "cursor": 24
+    }
+  },
+  {
+    "id": "markup-grammar-38",
+    "result": {
+      "text": "<ul>\n\t<li><a href=\"\"></a></li>\n</ul>",
+      "fields": [
+        [
+          19,
+          19,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "markup-grammar-39",
+    "result": {
+      "text": "<ul>\n\t<li></li>\n</ul>",
+      "fields": [],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "markup-grammar-40",
+    "result": {
+      "text": "<p></p>",
+      "fields": [],
+      "cursor": 7
+    }
+  },
+  {
+    "id": "markup-grammar-41",
+    "result": {
+      "text": "<p></p>",
+      "fields": [
+        [
+          3,
+          3,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 3
+    }
+  },
+  {
+    "id": "markup-grammar-42",
+    "result": {
+      "text": "<ul>\n\t<li class=\"item3\"></li>\n\t<li class=\"item4\"></li>\n\t<li class=\"item5\"></li>\n</ul>",
+      "fields": [
+        [
+          24,
+          24,
+          1,
+          ""
+        ],
+        [
+          49,
+          49,
+          2,
+          ""
+        ],
+        [
+          74,
+          74,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 24
+    }
+  },
+  {
+    "id": "markup-grammar-43",
+    "result": {
+      "text": "<ul>\n\t<li class=\"item5\"></li>\n\t<li class=\"item4\"></li>\n\t<li class=\"item3\"></li>\n</ul>",
+      "fields": [
+        [
+          24,
+          24,
+          1,
+          ""
+        ],
+        [
+          49,
+          49,
+          2,
+          ""
+        ],
+        [
+          74,
+          74,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 24
+    }
+  },
+  {
+    "id": "markup-grammar-44",
+    "result": {
+      "text": "<ul>\n\t<li class=\"item1\"></li>\n\t<li class=\"item2\"></li>\n</ul>\n<ul>\n\t<li class=\"item3\"></li>\n\t<li class=\"item4\"></li>\n</ul>\n<ul>\n\t<li class=\"item5\"></li>\n\t<li class=\"item6\"></li>\n</ul>",
+      "fields": [
+        [
+          24,
+          24,
+          1,
+          ""
+        ],
+        [
+          49,
+          49,
+          2,
+          ""
+        ],
+        [
+          85,
+          85,
+          3,
+          ""
+        ],
+        [
+          110,
+          110,
+          4,
+          ""
+        ],
+        [
+          146,
+          146,
+          5,
+          ""
+        ],
+        [
+          171,
+          171,
+          6,
+          ""
+        ]
+      ],
+      "cursor": 24
+    }
+  },
+  {
+    "id": "markup-grammar-45",
+    "result": {
+      "text": "<section>\n\t<ul>\n\t\t<li class=\"i1\"></li>\n\t\t<li class=\"i2\"></li>\n\t</ul>\n\t<ul>\n\t\t<li class=\"i1\"></li>\n\t\t<li class=\"i2\"></li>\n\t</ul>\n</section>\n<section>\n\t<ul>\n\t\t<li class=\"i3\"></li>\n\t\t<li class=\"i4\"></li>\n\t</ul>\n\t<ul>\n\t\t<li class=\"i3\"></li>\n\t\t<li class=\"i4\"></li>\n\t</ul>\n</section>",
+      "fields": [
+        [
+          33,
+          33,
+          1,
+          ""
+        ],
+        [
+          56,
+          56,
+          2,
+          ""
+        ],
+        [
+          92,
+          92,
+          3,
+          ""
+        ],
+        [
+          115,
+          115,
+          4,
+          ""
+        ],
+        [
+          172,
+          172,
+          5,
+          ""
+        ],
+        [
+          195,
+          195,
+          6,
+          ""
+        ],
+        [
+          231,
+          231,
+          7,
+          ""
+        ],
+        [
+          254,
+          254,
+          8,
+          ""
+        ]
+      ],
+      "cursor": 33
+    }
+  },
+  {
+    "id": "markup-grammar-46",
+    "result": {
+      "text": "<div title=\"test\"></div>",
+      "fields": [
+        [
+          18,
+          18,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "markup-grammar-47",
+    "result": {
+      "text": "<div></div>\n<foo></foo>",
+      "fields": [
+        [
+          5,
+          5,
+          1,
+          ""
+        ],
+        [
+          17,
+          17,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "markup-grammar-48",
+    "result": {
+      "text": "<div>foo</div>",
+      "fields": [],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "markup-grammar-49",
+    "error": {
+      "message": "Unexpected character",
+      "position": 3
+    }
+  },
+  {
+    "id": "markup-grammar-50",
+    "error": {
+      "message": "Unexpected character",
+      "position": 3
+    }
+  },
+  {
+    "id": "markup-grammar-51",
+    "result": {
+      "text": "<foo,bar></foo,bar>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "markup-grammar-52",
+    "result": {
+      "text": "<div></div>",
+      "fields": [
+        [
+          5,
+          5,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "markup-grammar-53",
+    "error": {
+      "message": "Unexpected character",
+      "position": 4
+    }
+  },
+  {
+    "id": "markup-grammar-54",
+    "error": {
+      "message": "Unexpected character",
+      "position": 7
+    }
+  },
+  {
+    "id": "markup-grammar-55",
+    "error": {
+      "message": "Expecting }",
+      "position": 13
+    }
+  },
+  {
+    "id": "markup-grammar-56",
+    "error": {
+      "message": "Expecting }",
+      "position": 16
+    }
+  },
+  {
+    "id": "markup-grammar-57",
+    "result": {
+      "text": "<div>foo{bar}baz</div>",
+      "fields": [
+        [
+          5,
+          16,
+          1,
+          "foo{bar}baz"
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "markup-grammar-58",
+    "error": {
+      "message": "Unexpected character",
+      "position": 17
+    }
+  },
+  {
+    "id": "markup-grammar-59",
+    "result": {
+      "text": "<div></div>",
+      "fields": [
+        [
+          5,
+          5,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "markup-grammar-60",
+    "result": {
+      "text": "<div></div>\n<span></span>",
+      "fields": [
+        [
+          5,
+          5,
+          1,
+          ""
+        ],
+        [
+          18,
+          18,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "markup-grammar-61",
+    "error": {
+      "message": "Unexpected character",
+      "position": 5
+    }
+  },
+  {
+    "id": "markup-grammar-62",
+    "result": {
+      "text": "<div title=\"a*b\"></div>",
+      "fields": [
+        [
+          17,
+          17,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "markup-grammar-63",
+    "error": {
+      "message": "Unexpected \"Repeater\" token",
+      "position": 10
+    }
+  },
+  {
+    "id": "markup-grammar-64",
+    "result": {
+      "text": "<div title=\"(x}\"></div>",
+      "fields": [
+        [
+          17,
+          17,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "markup-grammar-65",
+    "result": {
+      "text": "<div foo={a}bar}></div>",
+      "fields": [
+        [
+          17,
+          17,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "markup-grammar-66",
+    "result": {
+      "text": "<div foo={a}[bar]}></div>",
+      "fields": [
+        [
+          19,
+          19,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "markup-grammar-67",
+    "result": {
+      "text": "<div>a*b</div>",
+      "fields": [],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "markup-grammar-69",
+    "result": {
+      "text": "<div>a1</div>",
+      "fields": [],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "markup-grammar-70",
+    "result": {
+      "text": "<div1>1</div1>",
+      "fields": [],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "markup-grammar-71",
+    "result": {
+      "text": "<div a=\"03\"></div>\n<div a=\"02\"></div>",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ],
+        [
+          31,
+          31,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "markup-grammar-72",
+    "result": {
+      "text": "<div class=\"a\"></div>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "markup-grammar-73",
+    "result": {
+      "text": "<div class=\"1\">1:x</div>",
+      "fields": [],
+      "cursor": 24
+    }
+  },
+  {
+    "id": "markup-jsx-grammar-01",
+    "result": {
+      "text": "<Foo.Bar></Foo.Bar>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "markup-jsx-grammar-02",
+    "result": {
+      "text": "<Foo.Bar.Baz></Foo.Bar.Baz>",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "markup-jsx-grammar-03",
+    "result": {
+      "text": "<Foo.Bar classList=\"baz\"></Foo.Bar>",
+      "fields": [
+        [
+          25,
+          25,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "markup-jsx-grammar-04",
+    "result": {
+      "text": "<Foo classList=\"\"></Foo>",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ],
+        [
+          18,
+          18,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "markup-jsx-grammar-05",
+    "result": {
+      "text": "<div classList={theme.class}></div>",
+      "fields": [
+        [
+          29,
+          29,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 29
+    }
+  },
+  {
+    "id": "markup-jsx-grammar-06",
+    "result": {
+      "text": "<div id={id}></div>",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "markup-jsx-grammar-07",
+    "result": {
+      "text": "<Foo classList={theme.class}></Foo>",
+      "fields": [
+        [
+          29,
+          29,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 29
+    }
+  },
+  {
+    "id": "markup-jsx-grammar-08",
+    "result": {
+      "text": "<div classList={}></div>",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ],
+        [
+          18,
+          18,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "markup-jsx-grammar-09",
+    "result": {
+      "text": "<div classList={name}></div>",
+      "fields": [
+        [
+          22,
+          22,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "markup-jsx-grammar-10",
+    "result": {
+      "text": "<div classList=\"a b\"></div>",
+      "fields": [
+        [
+          21,
+          21,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "markup-jsx-grammar-11",
+    "result": {
+      "text": "<div classList={a b}></div>",
+      "fields": [
+        [
+          21,
+          21,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "markup-jsx-grammar-12",
+    "result": {
+      "text": "<Foo classList={theme.class}></Foo>",
+      "fields": [
+        [
+          29,
+          29,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 29
+    }
+  },
+  {
+    "id": "markup-jsx-grammar-13",
+    "result": {
+      "text": "<Foo ...props=\"\"></Foo>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ],
+        [
+          17,
+          17,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "markup-jsx-grammar-14",
+    "result": {
+      "text": "<Foo attr={fn({a: 1})} />",
+      "fields": [],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "markup-jsx-grammar-15",
+    "result": {
+      "text": "<Foo.Bar classList=\"item1\"></Foo.Bar>\n<Foo.Bar classList=\"item2\"></Foo.Bar>",
+      "fields": [
+        [
+          27,
+          27,
+          1,
+          ""
+        ],
+        [
+          65,
+          65,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "markup-jsx-grammar-16",
+    "result": {
+      "text": "<Foo11 classList=\"Bar\"></Foo11>",
+      "fields": [
+        [
+          23,
+          23,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 23
+    }
+  },
+  {
+    "id": "markup-grammar-edge-01",
+    "result": {
+      "text": "<div class=\"a b\"></div>",
+      "fields": [
+        [
+          17,
+          17,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "markup-grammar-edge-02",
+    "result": {
+      "text": "<div class=\"b\"></div>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "markup-grammar-edge-03",
+    "result": {
+      "text": "<div class={a b}></div>",
+      "fields": [
+        [
+          17,
+          17,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "markup-grammar-edge-04",
+    "result": {
+      "text": "<div></div>",
+      "fields": [
+        [
+          5,
+          5,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "markup-grammar-edge-05",
+    "result": {
+      "text": "<div></div>",
+      "fields": [
+        [
+          5,
+          5,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "markup-grammar-edge-06",
+    "result": {
+      "text": "<div a=\"x\"></div>",
+      "fields": [
+        [
+          11,
+          11,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 11
+    }
+  },
+  {
+    "id": "markup-grammar-edge-07",
+    "result": {
+      "text": "<div class=\"a\"></div>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "markup-grammar-edge-08",
+    "result": {
+      "text": "<ul>\n\t<li></li>\n</ul>",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "markup-grammar-edge-09",
+    "result": {
+      "text": "<p><span>text<b></b></span></p>",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "markup-grammar-edge-10",
+    "result": {
+      "text": "<div></div>",
+      "fields": [
+        [
+          5,
+          5,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "markup-grammar-edge-11",
+    "result": {
+      "text": "<div><a href=\"\"></a></div>\n<p></p>",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ],
+        [
+          30,
+          30,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "markup-grammar-edge-12",
+    "result": {
+      "text": "<ul>\n\t<li></li>\n</ul>\n<section>\n\t<p></p>\n</section>",
+      "fields": [
+        [
+          36,
+          36,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 36
+    }
+  },
+  {
+    "id": "markup-grammar-edge-13",
+    "result": {
+      "text": "<ul>\n\t<li></li>\n</ul>",
+      "fields": [],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "markup-grammar-edge-14",
+    "result": {
+      "text": "<p><span></span></p>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "markup-grammar-edge-15",
+    "result": {
+      "text": "<p data=\"\"><span></span></p>",
+      "fields": [],
+      "cursor": 28
+    }
+  },
+  {
+    "id": "markup-grammar-edge-16",
+    "result": {
+      "text": "<div classList={a b}></div>",
+      "fields": [
+        [
+          21,
+          21,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "markup-grammar-edge-17",
+    "error": {
+      "message": "Unexpected character",
+      "position": 0
+    }
+  },
+  {
+    "id": "markup-grammar-edge-18",
+    "error": {
+      "message": "Unexpected character",
+      "position": 7
+    }
+  },
+  {
+    "id": "markup-grammar-edge-19",
+    "result": {
+      "text": "<div title=\"é\"></div>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "markup-grammar-edge-20",
+    "result": {
+      "text": "<div title=\"a\" id=\"b\"></div>",
+      "fields": [
+        [
+          22,
+          22,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "markup-grammar-edge-21",
+    "error": {
+      "message": "Unexpected character",
+      "position": 3
+    }
+  },
+  {
+    "id": "markup-grammar-edge-22",
+    "error": {
+      "message": "Unexpected character",
+      "position": 5
+    }
+  },
+  {
+    "id": "markup-grammar-edge-23",
+    "result": {
+      "text": "<div title=\"😀\"></div>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "markup-grammar-edge-24",
+    "result": {
+      "text": "<div>😀</div>",
+      "fields": [],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "markup-grammar-edge-25",
+    "result": {
+      "text": "",
+      "fields": [],
+      "cursor": 0
+    }
+  },
+  {
+    "id": "markup-grammar-edge-26",
+    "result": {
+      "text": "<ul>\n\t<li class=\"item3\"></li>\n\t<li class=\"item2\"></li>\n\t<li class=\"item1\"></li>\n</ul>",
+      "fields": [
+        [
+          24,
+          24,
+          1,
+          ""
+        ],
+        [
+          49,
+          49,
+          2,
+          ""
+        ],
+        [
+          74,
+          74,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 24
+    }
+  },
+  {
+    "id": "markup-grammar-edge-27",
+    "result": {
+      "text": "<div>\n\t<p class=\"item3\"></p>\n\t<p class=\"item4\"></p>\n</div>\n<div>\n\t<p class=\"item5\"></p>\n\t<p class=\"item6\"></p>\n</div>",
+      "fields": [
+        [
+          24,
+          24,
+          1,
+          ""
+        ],
+        [
+          47,
+          47,
+          2,
+          ""
+        ],
+        [
+          83,
+          83,
+          3,
+          ""
+        ],
+        [
+          106,
+          106,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 24
+    }
+  },
+  {
+    "id": "markup-grammar-edge-28",
+    "result": {
+      "text": "<div title=\"a\\b}\"></div>",
+      "fields": [
+        [
+          12,
+          14,
+          1,
+          "a\\"
+        ],
+        [
+          18,
+          18,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "markup-grammar-edge-29",
+    "error": {
+      "message": "Expecting }",
+      "position": 16
+    }
+  },
+  {
+    "id": "markup-grammar-edge-30",
+    "result": {
+      "text": "<Foo classList=\"bar Baz\"></Foo>",
+      "fields": [
+        [
+          25,
+          25,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "markup-grammar-edge-31",
+    "result": {
+      "text": "<Foo .class=\"ok\"></Foo>",
+      "fields": [
+        [
+          17,
+          17,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "markup-attribute-edge-01",
+    "result": {
+      "text": "<div ${1:key}=\"x\"></div>",
+      "fields": [
+        [
+          18,
+          18,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "markup-attribute-edge-02",
+    "result": {
+      "text": "<div ${1=\"x\"></div>",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "markup-attribute-edge-03",
+    "result": {
+      "text": "<div data-${1:name}=\"x\"></div>",
+      "fields": [
+        [
+          24,
+          24,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 24
+    }
+  },
+  {
+    "id": "markup-attribute-edge-04",
+    "result": {
+      "text": "<div foo=\"\"></div>",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ],
+        [
+          12,
+          12,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "markup-attribute-edge-05",
+    "result": {
+      "text": "<div></div>",
+      "fields": [
+        [
+          5,
+          5,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "markup-attribute-edge-06",
+    "result": {
+      "text": "<div a={}></div>",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "markup-attribute-edge-07",
+    "result": {
+      "text": "<div class=\"a \"></div>",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "markup-attribute-edge-08",
+    "result": {
+      "text": "<div class=\"\"></div>",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "markup-attribute-edge-09",
+    "result": {
+      "text": "<Foo classList={bar}></Foo>",
+      "fields": [
+        [
+          21,
+          21,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 21
+    }
+  },
+  {
+    "id": "markup-attribute-edge-10",
+    "result": {
+      "text": "<Foo.Bär></Foo.Bär>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "markup-attribute-edge-11",
+    "result": {
+      "text": "<label for=\"\"><input type=\"text\" id=\"\"></label>",
+      "fields": [
+        [
+          27,
+          31,
+          1,
+          "text"
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "markup-error-precedence-01",
+    "error": {
+      "message": "Unexpected character",
+      "position": 7
+    }
+  },
+  {
+    "id": "markup-error-precedence-02",
+    "error": {
+      "message": "Unexpected character",
+      "position": 8
+    }
   }
 ]

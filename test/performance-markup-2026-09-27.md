@@ -140,3 +140,64 @@ archive round trips and reviewed source hashes were checked.
 | `emmet2-markup-spike31-reviewed1.json` | `9b196de758a3a179313163a3a8e3c7a0e871f852701bccd0858884d4fb4d1546` |
 | `emmet2-markup-spike31-reviewed2.json` | `60d78f759ea099d796576ad83ee1a9cab5b5704bea92949bbedcef57ca5ce895` |
 | `emmet2-markup-spike31-reviewed3.json` | `c803b8ff33050eecbcbd95b96e5bc2f92433ea2dddc6a27885d586d55fd48e1a` |
+
+## S6.1 grammar checkpoint (after cc0cd97)
+
+The sections above retain the S6.0 historical source and evidence. This checkpoint
+replaces the original character parser with complete tokenization followed by
+parsing/conversion, and preserves the same nine benchmark inputs, harness, normal
+GC settings, bytecode isolation and per-sample result checks. The final six serial
+processes add 54,000 measured samples and 5,400 warmups. Every fixture/process
+p99 remains below 1 ms; highest p99 is 0.920 ms. The maximum sample is 33.105 ms,
+with all GC and slow samples retained. One Emacs 31 cohort has higher tails
+across several fixtures; its cause is unconfirmed and it is not excluded.
+
+| Final raw JSON | Highest p99 ms | Maximum ms | Largest first-call ms | Module load ms |
+| --- | ---: | ---: | ---: | ---: |
+| `emmet2-markup-grammar30-reviewed1.json` | 0.281 | 12.597 | 1.642 | 1.592 |
+| `emmet2-markup-grammar30-reviewed2.json` | 0.581 | 12.082 | 1.134 | 1.694 |
+| `emmet2-markup-grammar30-reviewed3.json` | 0.314 | 12.491 | 1.140 | 1.617 |
+| `emmet2-markup-grammar31-reviewed1.json` | 0.250 | 12.051 | 1.517 | 1.657 |
+| `emmet2-markup-grammar31-reviewed2.json` | 0.920 | 33.105 | 1.215 | 1.511 |
+| `emmet2-markup-grammar31-reviewed3.json` | 0.267 | 12.176 | 0.949 | 1.609 |
+
+The initial Emacs 31 cohort (highest p99 0.336 ms) is retained separately, before
+the final attribute/error-precedence corpus and conversion changes. It is not
+part of the six accepted cohorts. These results are an absolute-budget check;
+they are not a percentage comparison with S6.0, because the implementation
+and loaded correctness corpus changed. Cold values exclude process startup,
+compilation and module loading, as in the original harness.
+
+Correctness: eight source-native tests and 56 bytecode editor/native tests on
+each pinned Emacs build; thirteen real Node protocol tests on each; eleven Node
+adapter tests. Markup has 442 oracle cases; combined core has 710. The previous
+578 inputs/results are unchanged. Scoped compilation/lint and oracle checks pass.
+Third-party package compiler warnings remain separate from project compilation.
+This does not close full S6: seeded lorem and project JSX transformations, final
+integration/performance, M1 GUI and hosted CI remain outstanding.
+
+Raw initial/final JSON is gzip archived in the ignored directory
+`plans/native-emmet-rewrite/measurements/2026-09-27/markup-s6.1/`. Summary values,
+archive round trips and final source hashes were independently checked.
+
+| Final measured source | SHA256 |
+| --- | --- |
+| `emmet2-engine.el` | `fc47373962a6a20e3966859e77900e14f8e6c7500e514c53429e83ba6f4567df` |
+| `emmet2-engine-markup.el` | `e500d03266eb99c6ddb5a9ed10211d92fceb5f38023941ca265672943a090e13` |
+| `data/emmet/html.json` | `e71fa03133b6a9900f50fe2fda6322482654090a005f98781261c0350d054212` |
+| `data/emmet/variables.json` | `58bb8e0278c2240973cf6fa2a663dafaee5137bc102a28f78c01f5fca0d7d851` |
+| `test/emmet2-engine-markup-test.el` | `faec9a5924466043d002233e25fedffd8e856e61e36f88a1124a95458be42d38` |
+| `test/fixtures/core-inputs.json` | `2ae8fad17097e2078bcf525816561e653c74fb1334f53b3dfdf6f5040d53d1eb` |
+| `test/fixtures/oracle/markup.json` | `e581a12a2cb29a727c3826a16d746ea28fe377e9381f3c86e3541e6bfb6d7fc0` |
+| `test/bench-markup.el` | `5a2c986fd56207c032b65dc250d375d8f6d0f47c0ccd3e0f4fb5b59b872517fc` |
+| `test/dependencies.json` | `8e8bd5bf9f88b66d85d6815d6c1c4cf6e5eeed956342803a5cf52c9c702aabc0` |
+
+| Raw JSON | SHA256 (uncompressed) |
+| --- | --- |
+| `emmet2-markup-grammar30-reviewed1.json` | `20916d42b0b072004b7b61c2da105790dc01d9ea60a3c4f4d23e33b13b083528` |
+| `emmet2-markup-grammar30-reviewed2.json` | `44044866b2742be6e09e919d5b08e319aa5a2a434104c1f3e7bb138d9dc36ed9` |
+| `emmet2-markup-grammar30-reviewed3.json` | `0cfaf40b5fedec7a9f5ba47842ec70b8bda9a38e284eef6706963e374f17055b` |
+| `emmet2-markup-grammar31-reviewed1.json` | `1494ff5adbb65c9a6a2b30d6b401bbf65d005427d0772cce113f2a9c185ba17d` |
+| `emmet2-markup-grammar31-reviewed2.json` | `ce800020fcb4703ade6b8217d859f0498acfd697df21329914e54780a2c2d322` |
+| `emmet2-markup-grammar31-reviewed3.json` | `a39f4a36cede8a4bfc9fdae29cbb5bb1ac633d75418ec9a3c785af3e33183a7f` |
+| `emmet2-markup-grammar31-initial1.json` | `79f6ab3e49fc2e68af6d9b9c69a902db51e84f80c195540051d306a76c8fd0c9` |

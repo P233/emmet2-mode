@@ -12,7 +12,14 @@ export class EmmetParseError extends Error {
   constructor(error, abbreviation) {
     super(error.message.split("\n")[0].replace(/ at \d+$/, ""), { cause: error });
     this.name = "EmmetParseError";
-    this.position = characterOffsets(abbreviation)[error.pos];
+    const offsets = characterOffsets(abbreviation);
+    this.position = offsets[error.pos];
+    // After an escape, the tokenizer can stop inside a surrogate pair.
+    // Report the containing character; other invalid offsets stay invalid.
+    if (this.position === undefined && offsets[error.pos - 1] !== undefined &&
+        offsets[error.pos + 1] !== undefined) {
+      this.position = offsets[error.pos - 1];
+    }
     this.originalMessage = error.message;
   }
 }

@@ -94,6 +94,16 @@ test("markup token-parser errors are typed and use character offsets", () => {
   }
 });
 
+test("lexical errors inside surrogate pairs point to the containing character", () => {
+  assert.throws(() => expand("div.\\😀"), (error) => {
+    assert.ok(error instanceof EmmetParseError);
+    assert.equal(error.message, "Unexpected character");
+    assert.equal(error.cause.pos, 6);
+    assert.equal(error.position, 5);
+    return true;
+  });
+});
+
 test("per-property formatting matches the complete published CSS formatter", () => {
   const snippets = JSON.parse(readFileSync(new URL("../../data/emmet/css.json", import.meta.url)));
   const inputs = [...new Set(Object.keys(snippets).flatMap((key) => key.split("|"))),

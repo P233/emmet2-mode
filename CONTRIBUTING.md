@@ -225,7 +225,7 @@ Stopping/unloading the backend and exiting Emacs clean up its owned resources.
 rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_SUITE=node emacs --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit
 ```
 
-This suite compares all 578 core oracle cases across the real process boundary
+This suite compares all 710 core oracle cases across the real process boundary
 and has independent field/Unicode/error assertions. Its fault process covers
 partial/malformed replies, invalid fields/IDs, split UTF-8, request/idle death,
 shared startup/multiple-call deadlines, missing Node, cross-buffer reentry,
@@ -724,3 +724,34 @@ Both pinned Emacs builds pass seven native ERT tests (including all 310 cases,
 shared-syntax immutability and search-setting independence), thirteen real Node
 protocol tests (578 cases), and warnings-fatal compilation of the changed Lisp
 files. Oracle regeneration checks and previous-result prefix comparisons pass.
+
+### S6.1 markup grammar and conversion
+
+The native parser now tokenizes the complete input before parsing statements,
+matching upstream lexical error precedence. This replaces the original character
+parser; there is no second parser or fallback. Token positions count characters.
+Attribute sets retain their presence even when empty, and repeat metadata keeps
+count, iteration and implicit wrapping. Conversion owns its placeholder state,
+copies syntax, and preserves upstream name/value/children/attribute visitation
+order. Snippet resolution carries JSX parsing and repeat metadata through the
+same pipeline.
+
+The corpus adds 132 explicit cases for groups, attributes, errors, JSX dotted
+components/expressions, numbering, implicit repetition, empty values and merge
+precedence. All 578 previous inputs/results remain unchanged; markup has 442
+cases and combined core has 710. Literal attribute names with fields and the
+pinned stringifier's group-close behavior are retained. The upstream
+`div{*2}` conversion failure remains a backend error in a separate regression;
+it is not recorded as a parse-error golden. Additional cases verify lexical
+errors precede parser errors, which precede conversion failures.
+
+The Node adapter also handles an upstream lexer offset inside a UTF-16 surrogate
+pair: it reports the containing character's start. This keeps malformed escaped
+emoji on the parse-error path and retains the healthy Node process. Other invalid
+offsets and result field boundaries keep their existing validation.
+
+Eight native ERT tests, thirteen real Node protocol tests, eleven adapter tests,
+scoped Deno lint and warnings-fatal Lisp compilation pass on the pinned builds.
+Wallaby has no project data, ESLint MCP has no configuration, and Console Ninja
+has no matching live error; repository checks supply the available evidence.
+Project JSX/CSS Modules/Solid transforms and seeded lorem are the next S6 slice.

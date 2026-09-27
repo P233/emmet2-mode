@@ -69,6 +69,7 @@
         (emmet2-engine-expand "div")
         (let ((process emmet2-node--process))
           (dolist (case '(("div{😀})" "Unexpected character" 6)
+                          ("div.\\😀" "Unexpected character" 5)
                           ("div[title=\"x]" "Unclosed quote" 10)
                           ("div[=x]" "Unexpected \"Operator\" token" 4)))
             (should (equal (cdr (should-error (emmet2-engine-expand (car case)) :type 'emmet2-parse-error))

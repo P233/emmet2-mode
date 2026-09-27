@@ -40,7 +40,7 @@
   ;; This corpus covers all shipped aliases, but is not the full grammar suite.
   (let* ((oracle (emmet2-markup-test--json "test/fixtures/oracle/markup.json"))
          (cases (emmet2-markup-test--cases (mapcar (lambda (entry) (alist-get 'id entry)) oracle))))
-    (should (= (length cases) 310))
+    (should (= (length cases) 442))
     (dolist (case cases)
       (ert-info ((car case))
         (should (equal (condition-case err (apply #'emmet2-engine-markup-expand (nth 1 case))
@@ -58,7 +58,10 @@
   (dolist (input '("(ul>li.item$*2>a[title=${1:x}])*2"
                    "(p>{foo}>div)*2"
                    "div{<se\\ction>${1:text}</section>}"
-                   "div>{${0} \\ suffix}>p*2"))
+                   "div>{${0} \\ suffix}>p*2"
+                   "(ul>li.i$@^*2)*2"
+                   "(div*>a)+p*"
+                   "div[data-${1:name}=x]"))
     (let* ((syntax (emmet2-markup--parse input))
            (before (prin1-to-string syntax))
            (first (emmet2-markup--convert syntax))
@@ -115,5 +118,13 @@
                    (cdr case))))
   (let ((emmet2-engine--deadline 1))
     (should-error (emmet2-engine-markup-expand "li*100000") :type 'emmet2-backend-error)))
+
+(ert-deftest emmet2-markup-pinned-conversion-error-does-not-leak-state ()
+  ;; Upstream tokenizes a leading * inside text as a repeater, then fails in
+  ;; stringify.  Preserve the backend-error distinction outside parse goldens.
+  (let ((before (emmet2-engine-markup-expand "ul>li.i$*")))
+    (should (equal (should-error (emmet2-engine-markup-expand "div{*2}") :type 'emmet2-backend-error)
+                   '(emmet2-backend-error "Unknown token Repeater")))
+    (should (equal (emmet2-engine-markup-expand "ul>li.i$*") before))))
 
 ;;; emmet2-engine-markup-test.el ends here
