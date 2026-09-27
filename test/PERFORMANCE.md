@@ -135,3 +135,25 @@ remain warm between fixtures, including preview mode features whose buffers
 are recreated. Raw warmup and measured triples are milliseconds, GC count,
 and GC seconds. Keep per-process p50, p99, max and GC totals, with no aggregate
 S5 pass/fail budget or cross-process percentile averaging.
+
+## Running the S6.0 native markup benchmark
+
+```sh
+EMMET2_TEST_DEPS=/tmp/emmet2-test-deps \
+EMMET2_BENCH_OUTPUT=/tmp/markup-31-1.json \
+/path/to/pinned/emacs --batch -Q -L . -l test/bootstrap.el -l test/bench-markup.el
+```
+
+Run three fresh processes serially on the fixed macOS machine for each pinned
+Emacs build. The runner compiles the pure engine into an owned temporary
+directory and copies packaged data next to it; no installed package or daily
+configuration is changed. It checks bytecode entry points, source/fixture
+hashes before and after, and full oracle output after every operation.
+Nine fixtures cover the four required inputs plus implicit tags, JSX, emoji
+and mirrored fields. Samples interleave and rotate the first fixture each
+round, with 100 warmups and 1,000 retained measurements. GC uses the normal
+800000/1.0 settings; all pauses are retained. First expansions and explicit
+bytecode loads are reported separately and exclude Emacs startup, compilation
+and fixture loading. The budget covers the complete native expansion only.
+See [the S6.0 report](performance-markup-2026-09-27.md) for accepted results,
+the retained initial failure and the remaining engine acceptance limits.

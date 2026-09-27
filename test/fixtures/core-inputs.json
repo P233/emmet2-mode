@@ -492,5 +492,20 @@
   {"id": "markup-indent", "abbreviation": "div>p{a\tb}+input", "preset": "html", "indent": "  ", "baseIndent": "  ", "source": "test/oracle/adapter.test.mjs"},
   {"id": "css-indent", "abbreviation": "c+bg+bd", "preset": "stylesheet", "indent": "  ", "baseIndent": "  ", "source": "test/oracle/adapter.test.mjs"},
   {"id": "css-invalid-raw", "abbreviation": "tn[all 0.3s]", "preset": "stylesheet", "source": "test/oracle/adapter.test.mjs"},
-  {"id": "css-error-after-emoji", "abbreviation": "ct\"😀\"+p[", "preset": "stylesheet", "source": "test/oracle/gen.test.mjs"}
+  {"id": "css-error-after-emoji", "abbreviation": "ct\"😀\"+p[", "preset": "stylesheet", "source": "test/oracle/gen.test.mjs"},
+  {"id": "markup-spike-01", "abbreviation": "(li>a)*2", "preset": "html", "source": "test/emmet2-engine-markup-test.el"},
+  {"id": "markup-spike-02", "abbreviation": "ul>li.item$*2>span.part$*2", "preset": "html", "source": "test/emmet2-engine-markup-test.el"},
+  {"id": "markup-spike-03", "abbreviation": "ul>li.item$$@-3*3", "preset": "html", "source": "test/emmet2-engine-markup-test.el"},
+  {"id": "markup-spike-04", "abbreviation": "a#x.foo.bar[href=/next title=\"😀\"]{Next}", "preset": "html", "source": "test/emmet2-engine-markup-test.el"},
+  {"id": "markup-spike-05", "abbreviation": "div{${2}${1}}", "preset": "html", "source": "test/emmet2-engine-markup-test.el"},
+  {"id": "markup-spike-06", "abbreviation": "div[title=${1:x} data-x=${1:x}]{${1:x}}", "preset": "html", "source": "test/emmet2-engine-markup-test.el"},
+  {"id": "markup-spike-07", "abbreviation": "p>.first+.second", "preset": "html", "source": "test/emmet2-engine-markup-test.el"},
+  {"id": "markup-spike-08", "abbreviation": "div{a\nb}", "preset": "html", "source": "test/emmet2-engine-markup-test.el"},
+  {"id": "markup-spike-09", "abbreviation": "div{\\$ \\{😀\\}}", "preset": "html", "source": "test/emmet2-engine-markup-test.el"},
+  {"id": "markup-spike-10", "abbreviation": "div+a+span", "preset": "html", "source": "test/emmet2-engine-markup-test.el"},
+  {"id": "markup-spike-11", "abbreviation": "Component[value={props.value}]/", "preset": "jsx", "source": "test/emmet2-engine-markup-test.el"},
+  {"id": "markup-spike-12", "abbreviation": "ul>li*2>span.item$@^*2", "preset": "html", "source": "test/emmet2-engine-markup-test.el"},
+  {"id": "markup-spike-13", "abbreviation": "div{${1", "preset": "html", "source": "test/emmet2-engine-markup-test.el"},
+  {"id": "markup-spike-14", "abbreviation": "div@", "preset": "html", "source": "test/emmet2-engine-markup-test.el"},
+  {"id": "markup-spike-15", "abbreviation": "div{😀}+€", "preset": "html", "source": "test/emmet2-engine-markup-test.el"}
 ]

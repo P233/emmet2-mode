@@ -4431,5 +4431,286 @@
       ],
       "cursor": 38
     }
+  },
+  {
+    "id": "markup-spike-01",
+    "result": {
+      "text": "<li><a href=\"\"></a></li>\n<li><a href=\"\"></a></li>",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ],
+        [
+          15,
+          15,
+          2,
+          ""
+        ],
+        [
+          38,
+          38,
+          3,
+          ""
+        ],
+        [
+          40,
+          40,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "markup-spike-02",
+    "result": {
+      "text": "<ul>\n\t<li class=\"item1\"><span class=\"part1\"></span><span class=\"part2\"></span></li>\n\t<li class=\"item2\"><span class=\"part1\"></span><span class=\"part2\"></span></li>\n</ul>",
+      "fields": [
+        [
+          44,
+          44,
+          1,
+          ""
+        ],
+        [
+          71,
+          71,
+          2,
+          ""
+        ],
+        [
+          123,
+          123,
+          3,
+          ""
+        ],
+        [
+          150,
+          150,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 44
+    }
+  },
+  {
+    "id": "markup-spike-03",
+    "result": {
+      "text": "<ul>\n\t<li class=\"item05\"></li>\n\t<li class=\"item04\"></li>\n\t<li class=\"item03\"></li>\n</ul>",
+      "fields": [
+        [
+          25,
+          25,
+          1,
+          ""
+        ],
+        [
+          51,
+          51,
+          2,
+          ""
+        ],
+        [
+          77,
+          77,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 25
+    }
+  },
+  {
+    "id": "markup-spike-04",
+    "result": {
+      "text": "<a href=\"/next\" id=\"x\" class=\"foo bar\" title=\"😀\">Next</a>",
+      "fields": [],
+      "cursor": 57
+    }
+  },
+  {
+    "id": "markup-spike-05",
+    "result": {
+      "text": "<div></div>",
+      "fields": [
+        [
+          5,
+          5,
+          2,
+          ""
+        ],
+        [
+          5,
+          5,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "markup-spike-06",
+    "result": {
+      "text": "<div title=\"x\" data-x=\"x\">x</div>",
+      "fields": [
+        [
+          12,
+          13,
+          1,
+          "x"
+        ],
+        [
+          23,
+          24,
+          2,
+          "x"
+        ],
+        [
+          26,
+          27,
+          3,
+          "x"
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "markup-spike-07",
+    "result": {
+      "text": "<p><span class=\"first\"></span><span class=\"second\"></span></p>",
+      "fields": [
+        [
+          23,
+          23,
+          1,
+          ""
+        ],
+        [
+          51,
+          51,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 23
+    }
+  },
+  {
+    "id": "markup-spike-08",
+    "result": {
+      "text": "<div>\n\ta\n\tb\n</div>",
+      "fields": [],
+      "cursor": 18
+    }
+  },
+  {
+    "id": "markup-spike-09",
+    "result": {
+      "text": "<div>$ {😀}</div>",
+      "fields": [],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "markup-spike-10",
+    "result": {
+      "text": "<div></div>\n<a href=\"\"></a><span></span>",
+      "fields": [
+        [
+          5,
+          5,
+          1,
+          ""
+        ],
+        [
+          21,
+          21,
+          2,
+          ""
+        ],
+        [
+          23,
+          23,
+          3,
+          ""
+        ],
+        [
+          33,
+          33,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "markup-spike-11",
+    "result": {
+      "text": "<Component value={props.value} />",
+      "fields": [],
+      "cursor": 33
+    }
+  },
+  {
+    "id": "markup-spike-12",
+    "result": {
+      "text": "<ul>\n\t<li><span class=\"item1\"></span><span class=\"item2\"></span></li>\n\t<li><span class=\"item3\"></span><span class=\"item4\"></span></li>\n</ul>",
+      "fields": [
+        [
+          30,
+          30,
+          1,
+          ""
+        ],
+        [
+          57,
+          57,
+          2,
+          ""
+        ],
+        [
+          95,
+          95,
+          3,
+          ""
+        ],
+        [
+          122,
+          122,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 30
+    }
+  },
+  {
+    "id": "markup-spike-13",
+    "error": {
+      "message": "Expecting }",
+      "position": 7
+    }
+  },
+  {
+    "id": "markup-spike-14",
+    "error": {
+      "message": "Unexpected character",
+      "position": 3
+    }
+  },
+  {
+    "id": "markup-spike-15",
+    "error": {
+      "message": "Unexpected character",
+      "position": 7
+    }
   }
 ]

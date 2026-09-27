@@ -15,7 +15,8 @@
                       "test/bootstrap.el" "test/compile.el" "test/install.el" "test/bench-context.el" "test/bench-completion.el" "test/emmet2-context-lexical-test.el"
                       "test/emmet2-capf-contract-test.el" "test/emmet2-extract-test.el"
                       "test/emmet2-host-contract-test.el" "test/emmet2-engine-test.el"
-                      "test/emmet2-engine-node-test.el"
+                      "test/emmet2-engine-node-test.el" "emmet2-engine-markup.el"
+                      "test/emmet2-engine-markup-test.el" "test/bench-markup.el"
                       "test/emmet2-test.el"))
         (unless (byte-compile-file (expand-file-name file emmet2-test-root))
           (error "Byte compilation failed: %s" file)))

@@ -1,8 +1,8 @@
 # Development and native rewrite
 
-The installed mode still uses the original Deno bridge. The native rewrite is
-in progress; vendoring data does not switch the runtime or change user behavior.
-Do not use the new design as evidence that a milestone has shipped.
+The mode uses native context, completion and insertion with a temporary Node
+expansion backend. The pure Elisp markup engine is under development and is
+tested independently; its presence does not switch the editor backend.
 
 ## Baseline and migration
 
@@ -83,7 +83,7 @@ rtk proxy deno lint emmet2-engine-node.mjs test/oracle
 
 `emmet2-engine-node.mjs` is the fixed-version output adapter; it has no process
 or editor state. The Node protocol server imports this same normalization
-path. The installed mode has not switched to this module yet.
+path used by the current mode.
 
 `core-inputs.json` contains an explicit input list: every pinned HTML/CSS alias,
 plus hand-selected markup, JSX, fields, Unicode, formatting and error cases.
@@ -122,7 +122,8 @@ rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps emacs --batch -Q -L . -l te
 
 Run setup after changing the lock. `EMMET2_TEST_SUITE` selects `contracts` (the
 default), `editor`, `completion`, `results`, `node`, `fuzzy`, `css-extensions`
-or `markup-extensions`; unknown suites fail explicitly. Missing
+or `markup-extensions`. `markup-spike` selects the explicit S6.0 native subset;
+unknown suites fail explicitly. Missing
 packages or local grammars fail bootstrap instead of skipping integration or
 falling back to a grammar in the user's configuration.
 
@@ -224,7 +225,7 @@ Stopping/unloading the backend and exiting Emacs clean up its owned resources.
 rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_SUITE=node emacs --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit
 ```
 
-This suite compares all 494 core oracle cases across the real process boundary
+This suite compares all 509 core oracle cases across the real process boundary
 and has independent field/Unicode/error assertions. Its fault process covers
 partial/malformed replies, invalid fields/IDs, split UTF-8, request/idle death,
 shared startup/multiple-call deadlines, missing Node, cross-buffer reentry,
@@ -658,3 +659,30 @@ during process waits and host changes without text edits remain rejected.
 No additional cache or synchronization state is introduced. These batch flows
 omit drawing and let frontend errors propagate; they do not close GUI or
 hosted-CI acceptance.
+
+### S6.0 native markup complete-path spike
+
+`emmet2-engine-markup.el` implements parsing, repeat conversion, snippet
+resolution, implicit tags, attribute merging, HTML/JSX formatting and canonical
+fields in one pure module. Vendored JSON is read at module load. A request-local
+table shares snippet syntax only; conversion creates owned nodes before any
+transformation. There is no cross-request expansion cache or backend fallback.
+
+```sh
+rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_SUITE=markup-spike emacs --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit
+```
+
+This suite directly calls the native entry; the existing editor entry remains
+entirely Node. Six ERT tests cover all 241 current markup oracle cases, a selected
+40-case spike, independent field/error assertions and input/syntax immutability.
+The existing bytecode runner now checks 54 editor/native tests. The core corpus
+adds 15 cases without changing any of the original 494 results; the Node suite
+now checks 509 cases. Both pinned Emacs builds pass these checks.
+
+The local S6.0 performance decision passes; complete measurements and retained
+failed/intermediate cohorts are in `test/performance-markup-2026-09-27.md`.
+This does not complete S6: broader grammar and formatter coverage, lorem and
+project JSX/CSS Modules/Solid transformations are still pending. Before freezing
+additional parser errors, fix the existing Node adapter's missing classification
+of upstream token-parser errors (which have `pos` but no `string`). The default
+backend switch still requires full S6/S7 and M1 GUI/hosted acceptance.
