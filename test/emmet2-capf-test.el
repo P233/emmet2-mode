@@ -55,7 +55,7 @@
         (should (equal (buffer-string) abbr))))))
 
 (ert-deftest emmet2-capf-rejects-every-stale-source ()
-  (dolist (change '(text outside delete-restore point mode narrow disabled options indent buffer))
+  (dolist (change '(text outside delete-restore point mode narrow disabled options indent host buffer))
     (ert-info ((format "%s" change))
       (emmet2-test--with-capf "<main>ul>li*2</main>"
         (goto-char 14)
@@ -72,7 +72,11 @@
             ('narrow (narrow-to-region 8 14))
             ('disabled (emmet2-mode -1))
             ('options (setq-local emmet2-markup-variant "solid"))
-            ('indent (setq-local web-mode-markup-indent-offset 9)))
+            ('indent (setq-local web-mode-markup-indent-offset 9))
+            ('host
+             (let ((tick (buffer-chars-modified-tick)))
+               (setq-local web-mode-content-type "jsx")
+               (should (= tick (buffer-chars-modified-tick))))))
           (cl-flet ((reject ()
                       (let ((before (buffer-string)) (position (point)))
                         (should-not (all-completions abbr table))

@@ -52,11 +52,12 @@ Expansion is lazy so a frontend can apply its prefix threshold first."
           ((current-p () (emmet2-capf--current-p analysis snapshot settings))
            (expanded ()
              (when (current-p)
-               (when (eq result 'unexpanded)
+               (if (not (eq result 'unexpanded)) result
                  (setq result (condition-case nil (emmet2--expand-analysis analysis)
-                                (emmet2-parse-error nil))))
-               ;; A synchronous backend can run process filters/timers.
-               (when (current-p) result))))
+                                (emmet2-parse-error nil)))
+                 ;; Only the backend can run process filters/timers between
+                 ;; validation and returning the session's cached result.
+                 (when (current-p) result)))))
         (list
          (plist-get analysis :beg) (plist-get analysis :end)
          (lambda (string predicate action)

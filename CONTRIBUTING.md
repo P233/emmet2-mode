@@ -643,3 +643,18 @@ JSX modes. Preview/acceptance also exercises the original failing abbreviation.
 This fixes host classification without changing the extractor, parser owners,
 caches or CSS lexical paths. The affected TSX performance matrix was rerun;
 see the supplementary results in `test/performance-context-2026-09-27.md`.
+
+### S5 complete editor-flow measurement
+
+`test/bench-completion.el` exercises command, real Corfu completion and yas
+acceptance against bytecode from an isolated package. It retains cold stages,
+warmups, raw samples and GC deltas for eight fixtures in three fresh processes.
+The protocol and artifact-copy distinction are in `test/PERFORMANCE.md`; the
+before/after results and hashes are in `test/performance-editor-2026-09-27.md`.
+
+Cached capf results now validate the current source/host once per access.
+Fresh expansion still validates after the backend returns; source changes
+during process waits and host changes without text edits remain rejected.
+No additional cache or synchronization state is introduced. These batch flows
+omit drawing and let frontend errors propagate; they do not close GUI or
+hosted-CI acceptance.

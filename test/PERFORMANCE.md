@@ -84,3 +84,54 @@ including GC, is retained. Earlier sequential measurements remain evidence,
 not discarded failures. Cold analysis is the first call per fixture after its
 mode setup; only the first fixture in a fresh process includes process-wide
 initialization that later fixtures share.
+
+## Running the implemented S5 benchmark
+
+First build the reviewed revision with `test/install.el` (see CONTRIBUTING).
+Then use its actual `straight/build/emmet2-mode` directory:
+
+```sh
+EMMET2_TEST_DEPS=/tmp/emmet2-test-deps \
+EMMET2_BENCH_PACKAGE=/tmp/emmet2-installed/straight/build/emmet2-mode \
+EMMET2_BENCH_OUTPUT=/tmp/editor-flow-31-1.json \
+/path/to/pinned/emacs --batch -Q -l test/bootstrap.el -l test/bench-completion.el
+```
+
+Run three fresh processes serially, without concurrent builds or tests. The
+runner verifies runtime source/resource hashes against the package, removes
+the source checkout from `load-path`, and requires bytecode entry points from
+that package. It rejects an existing output, an empty fixture selection, and
+source changes during measurement. `EMMET2_BENCH_FILTER` is diagnostic only.
+A before/after experiment may use a separate copy of that installation with
+the changed module recompiled by the same Emacs; record that distinction and
+its hashes. Such a copy is not a new package-manager installation acceptance.
+
+Each of the eight fixtures runs command, completion, and completion with yas
+paths interleaved, rotating the first path each round: 100 warmups and 1,000
+retained samples per path. Inputs cover the first two markup cases above,
+TSX numbered text, one/six CSS properties, editable CSS fields, CSS-in-JS and
+a 138,052-byte web-mode style buffer. Reset and output/cursor assertions are
+outside the clock. The next operation includes any pending scan left by the
+multi-character reset; this differs from the S3 single-character typing path.
+Yas mode setup is outside the clock, but field creation during acceptance is
+timed and checked. Undo recording remains enabled, with history cleared
+between operations.
+
+Completion uses the real Corfu control, candidate formatting, popupinfo
+getter and insertion. Popup drawing/hiding is replaced, and Corfu's error
+shield is bypassed so failures propagate to the runner. Stage labels
+mean request (`completion-at-point`), annotation (`corfu--exhibit`, including
+its candidate checks), first/repeated documentation, and acceptance. Nested
+stage times/GC deltas must not be added to the already inclusive total. These
+batch results do not measure screen painting, input-to-display latency, idle
+scheduling or Eglot interaction.
+
+Mode initialization and context preparation are reported separately. Cold
+command and cold completion each restart Node; cold completion also creates
+its first preview buffer. Cold yas follows with that Node/preview already
+warm. Package/dependency loading precedes timing, so these cold values do not
+measure Emacs startup or total package loading. Loaded Lisp/mode features can
+remain warm between fixtures, including preview mode features whose buffers
+are recreated. Raw warmup and measured triples are milliseconds, GC count,
+and GC seconds. Keep per-process p50, p99, max and GC totals, with no aggregate
+S5 pass/fail budget or cross-process percentile averaging.
