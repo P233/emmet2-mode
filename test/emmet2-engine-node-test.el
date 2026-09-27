@@ -62,6 +62,22 @@
         (should-error (emmet2-engine-expand "tn[all 0.3s]" :preset 'stylesheet) :type 'emmet2-parse-error))
     (emmet2-node-stop)))
 
+(ert-deftest emmet2-node-real-token-parser-errors-reuse-process ()
+  (emmet2-node-stop)
+  (unwind-protect
+      (progn
+        (emmet2-engine-expand "div")
+        (let ((process emmet2-node--process))
+          (dolist (case '(("div{😀})" "Unexpected character" 6)
+                          ("div[title=\"x]" "Unclosed quote" 10)
+                          ("div[=x]" "Unexpected \"Operator\" token" 4)))
+            (should (equal (cdr (should-error (emmet2-engine-expand (car case)) :type 'emmet2-parse-error))
+                           (cdr case)))
+            (should (eq process emmet2-node--process)))
+          (should (equal (plist-get (emmet2-engine-expand "p{after}") :text) "<p>after</p>"))
+          (should (eq process emmet2-node--process))))
+    (emmet2-node-stop)))
+
 (ert-deftest emmet2-node-fragmented-utf8-and-parse-error-reuse ()
   (emmet2-test--with-node-fixture
     (should (equal (emmet2-engine-expand "SPLIT")

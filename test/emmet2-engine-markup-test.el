@@ -40,7 +40,7 @@
   ;; This corpus covers all shipped aliases, but is not the full grammar suite.
   (let* ((oracle (emmet2-markup-test--json "test/fixtures/oracle/markup.json"))
          (cases (emmet2-markup-test--cases (mapcar (lambda (entry) (alist-get 'id entry)) oracle))))
-    (should (= (length cases) 241))
+    (should (= (length cases) 247))
     (dolist (case cases)
       (ert-info ((car case))
         (should (equal (condition-case err (apply #'emmet2-engine-markup-expand (nth 1 case))

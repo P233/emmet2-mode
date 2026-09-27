@@ -194,7 +194,9 @@ hold numbering width, direction, base and parent depth until conversion."
       (if (memq (emmet2-markup--peek scanner) '(?\s ?\t ?\r ?\n))
           (cl-incf (emmet2-markup--scanner-pos scanner))
         (let ((name (emmet2-markup--literal scanner t)) value kind)
-          (unless name (emmet2-markup--error scanner "Unexpected character"))
+          (unless name
+            (emmet2-markup--error scanner (if (eq (emmet2-markup--peek scanner) ?=)
+                                              "Unexpected \"Operator\" token" "Unexpected character")))
           (when (emmet2-markup--eat scanner ?=)
             (cond
              ((memq (emmet2-markup--peek scanner) '(?\" ?\'))

@@ -74,6 +74,26 @@ test("tolerated incomplete markup stays successful; parser errors remain typed",
   });
 });
 
+test("markup token-parser errors are typed and use character offsets", () => {
+  for (const [abbreviation, message, position] of [
+    ["div)", "Unexpected character", 3],
+    ["div**2", "Unexpected character", 4],
+    ['div[title="x]', "Unclosed quote", 10],
+    ["div{😀})", "Unexpected character", 6],
+    ['div{😀}[title="x]', "Unclosed quote", 13],
+    ["div[=x]", 'Unexpected "Operator" token', 4],
+  ]) {
+    assert.throws(() => expand(abbreviation), (error) => {
+      assert.ok(error instanceof EmmetParseError, abbreviation);
+      assert.equal(error.message, message);
+      assert.equal(error.position, position);
+      assert.equal(error.cause.string, undefined);
+      assert.ok(error.originalMessage.includes(" at "));
+      return true;
+    });
+  }
+});
+
 test("per-property formatting matches the complete published CSS formatter", () => {
   const snippets = JSON.parse(readFileSync(new URL("../../data/emmet/css.json", import.meta.url)));
   const inputs = [...new Set(Object.keys(snippets).flatMap((key) => key.split("|"))),

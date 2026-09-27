@@ -118,7 +118,9 @@ export function expand(abbreviation, {
       fields = localFields;
     }
   } catch (error) {
-    if (Number.isInteger(error.pos) && typeof error.string === "string") {
+    // Both upstream scanners identify parse errors by pos; token-parser
+    // errors do not carry the source string found on character-scanner errors.
+    if (Number.isInteger(error.pos)) {
       throw new EmmetParseError(error, abbreviation);
     }
     throw error;

@@ -507,5 +507,11 @@
   {"id": "markup-spike-12", "abbreviation": "ul>li*2>span.item$@^*2", "preset": "html", "source": "test/emmet2-engine-markup-test.el"},
   {"id": "markup-spike-13", "abbreviation": "div{${1", "preset": "html", "source": "test/emmet2-engine-markup-test.el"},
   {"id": "markup-spike-14", "abbreviation": "div@", "preset": "html", "source": "test/emmet2-engine-markup-test.el"},
-  {"id": "markup-spike-15", "abbreviation": "div{😀}+€", "preset": "html", "source": "test/emmet2-engine-markup-test.el"}
+  {"id": "markup-spike-15", "abbreviation": "div{😀}+€", "preset": "html", "source": "test/emmet2-engine-markup-test.el"},
+  {"id": "markup-token-error-01", "abbreviation": "div)", "preset": "html", "source": "test/oracle/adapter.test.mjs"},
+  {"id": "markup-token-error-02", "abbreviation": "div**2", "preset": "html", "source": "test/oracle/adapter.test.mjs"},
+  {"id": "markup-token-error-03", "abbreviation": "div[title=\"x]", "preset": "html", "source": "test/oracle/adapter.test.mjs"},
+  {"id": "markup-token-error-04", "abbreviation": "div{😀})", "preset": "html", "source": "test/oracle/adapter.test.mjs"},
+  {"id": "markup-token-error-05", "abbreviation": "div{😀}[title=\"x]", "preset": "html", "source": "test/oracle/adapter.test.mjs"},
+  {"id": "markup-token-error-06", "abbreviation": "div[=x]", "preset": "html", "source": "test/oracle/adapter.test.mjs"}
 ]

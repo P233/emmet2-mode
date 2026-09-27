@@ -4712,5 +4712,47 @@
       "message": "Unexpected character",
       "position": 7
     }
+  },
+  {
+    "id": "markup-token-error-01",
+    "error": {
+      "message": "Unexpected character",
+      "position": 3
+    }
+  },
+  {
+    "id": "markup-token-error-02",
+    "error": {
+      "message": "Unexpected character",
+      "position": 4
+    }
+  },
+  {
+    "id": "markup-token-error-03",
+    "error": {
+      "message": "Unclosed quote",
+      "position": 10
+    }
+  },
+  {
+    "id": "markup-token-error-04",
+    "error": {
+      "message": "Unexpected character",
+      "position": 6
+    }
+  },
+  {
+    "id": "markup-token-error-05",
+    "error": {
+      "message": "Unclosed quote",
+      "position": 13
+    }
+  },
+  {
+    "id": "markup-token-error-06",
+    "error": {
+      "message": "Unexpected \"Operator\" token",
+      "position": 4
+    }
   }
 ]

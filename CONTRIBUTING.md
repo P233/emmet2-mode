@@ -225,7 +225,7 @@ Stopping/unloading the backend and exiting Emacs clean up its owned resources.
 rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_SUITE=node emacs --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit
 ```
 
-This suite compares all 509 core oracle cases across the real process boundary
+This suite compares all 515 core oracle cases across the real process boundary
 and has independent field/Unicode/error assertions. Its fault process covers
 partial/malformed replies, invalid fields/IDs, split UTF-8, request/idle death,
 shared startup/multiple-call deadlines, missing Node, cross-buffer reentry,
@@ -682,7 +682,22 @@ now checks 509 cases. Both pinned Emacs builds pass these checks.
 The local S6.0 performance decision passes; complete measurements and retained
 failed/intermediate cohorts are in `test/performance-markup-2026-09-27.md`.
 This does not complete S6: broader grammar and formatter coverage, lorem and
-project JSX/CSS Modules/Solid transformations are still pending. Before freezing
-additional parser errors, fix the existing Node adapter's missing classification
-of upstream token-parser errors (which have `pos` but no `string`). The default
+project JSX/CSS Modules/Solid transformations are still pending. The default
 backend switch still requires full S6/S7 and M1 GUI/hosted acceptance.
+
+### S6.1 parser-error boundary
+
+Both upstream scanner types now become `EmmetParseError`: token-parser errors
+carry `pos` without the source `string` attached by the character scanner.
+Their offsets are converted from UTF-16 to characters by the existing adapter.
+Six frozen cases cover unmatched tokens, repeated operators, unclosed quotes
+and errors after emoji; all previous results remain unchanged. The native
+attribute parser reports the same unexpected-operator diagnostic. Markup now
+has 247 core cases and the combined core corpus has 515.
+
+Ten Node adapter tests and both Emacs versions' six native and thirteen real
+protocol ERT tests pass. The protocol regression verifies multiple real parse
+failures reuse the same healthy process and a following expansion succeeds.
+Backend failures retain their existing failure/disposal behavior. Wallaby has
+no project data and ESLint MCP has no configuration; scoped Deno lint and the
+repository's Node runner provide the available evidence.
