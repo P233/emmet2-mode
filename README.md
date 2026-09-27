@@ -1,6 +1,9 @@
 # emmet2-mode
 
-Emmet2-mode is an [Emmet](https://emmet.io/)-enhanced minor mode for Emacs. It is built on top of [Deno](https://deno.com/runtime), [deno-bridge](https://github.com/manateelazycat/deno-bridge) and the [Emmet NPM package](https://www.npmjs.com/package/emmet), delivering the complete set of Emmet functionalities while also integrating a wide array of extra features, such as:
+Emmet2-mode expands [Emmet](https://emmet.io/) abbreviations in Emacs. The native
+front-end now analyzes the host buffer, renders structured fields and inserts
+atomically. A bundled Node backend is temporary while the pure Emacs Lisp
+engine is being implemented. Features include:
 
 - Expand abbreviation from any character
 - Expand JSX class attribute with CSS modules object and class names constructor
@@ -10,44 +13,62 @@ Emmet2-mode is an [Emmet](https://emmet.io/)-enhanced minor mode for Emacs. It i
 - Expand CSS pseudo-selectors
 - Numerous enhancements for Emmet CSS abbreviations
 
-The credit goes to [@manateelazycat](https://github.com/manateelazycat) for creating [deno-bridge](https://github.com/manateelazycat/deno-bridge).
+## How it works
 
-## How it works?
+Press `C-j` (`emmet2-expand`) anywhere inside an abbreviation. Analysis uses the
+major mode and actual host syntax. CSS/SCSS and web-mode HTML/CSS work without
+tree-sitter grammars; JS/TS/JSX contexts require the matching installed grammar.
+Confirmed comments, strings and unrelated JavaScript expressions are excluded.
+An unsupported major mode retains explicit markup expansion.
 
-This minor mode has two parts: the elisp front-end and the deno back-end. The front-end detects abbreviations and syntax, sends data to the deno back-end, injects snippets into the buffer, reformats code, and repositions the cursor. The back-end expands abbreviations to snippets using the Emmet NPM package and sends them back to the front-end. It preprocesses abbreviations before involving Emmet and modifies the output snippets.
+web-mode supports style attributes/blocks, JSX style objects and the named
+`StyleSheet.create` / `createTheme` contexts. TSX and JavaScript modes use the
+same context rules. Set `emmet2-markup-variant` to `"solid"` for Solid JSX.
+Project options also work in buffers without a file name.
 
-Emmet2-mode detects the abbreviation under the cursor and expands it when you press `C-j` (which is the default expansion key, the same as [emmet-mode](https://github.com/smihica/emmet-mode)). It uses file extensions to determine syntax as follows:
-
-1. `.tsx` and `.jsx` files are considered to have `JSX` syntax.
-2. Both `.scss` and `.css` files are considered to have `SCSS` syntax (CSS is treated as `SCSS` syntax).
-3. All other markup files are considered to have `HTML` syntax.
-
-When editing markup files, emmet2-mode detects if the cursor is in between a `<style>|</style>` tag or in a `style="|"` attribute, and expands CSS within. It also detects if the cursor is inside a `style={{|}}` JSX attribute and expands CSS in JS.
-
-Additionally, [Solid.js](https://www.solidjs.com/) is supported, which is very similar to React.js. However, Solid.js uses `class=` instead of `className=`. To work with Solid.js, you'll need to set the `emmet2-markup-variant` to `solid`. For more information, refer to the [Custom Options](#custom-options) section.
+Layout comes from the major mode's indentation width and the abbreviation's
+display column. Literal tabs in authored text remain literal. The rendered
+result is inserted once; it is not passed through `indent-region` afterward.
+Only a still-valid source snapshot can be replaced, and failures roll back.
 
 ## Installation
 
-Emmet2-mode is built on top of the [deno-bridge](https://github.com/manateelazycat/deno-bridge); therefore, you will need to install [Deno](https://deno.land/) and deno-bridge as dependencies. As of now, Deno 2.0 or higher is required.
+The current transition release requires **Emacs 30 or later** and **Node 24**
+on Emacs's `exec-path`. Deno, deno-bridge, websocket and `npm install` are no
+longer needed to run the mode. The bundled Emmet runtime and data must be
+included in the installation. Restart Emacs after upgrading from the old
+Deno release so its already-loaded bridge and callbacks are retired.
 
-To install Deno, follow the instructions provided in the [official documentation](https://deno.land/manual/getting_started/installation).
-
-To install and configure deno-bridge and emmet2-mode, refer to the following example using [straight.el](https://github.com/radian-software/straight.el) and [use-package](https://github.com/jwiegley/use-package):
+Example using straight.el and use-package:
 
 ```elisp
-(use-package deno-bridge
-  :straight (:type git :host github :repo "manateelazycat/deno-bridge")
-  :init
-  (use-package websocket))
-
 (use-package emmet2-mode
-  :straight (:type git :host github :repo "p233/emmet2-mode" :files (:defaults "*.ts" "src" "data"))
-  :after deno-bridge
-  :hook ((web-mode css-mode) . emmet2-mode)                     ;; Enable emmet2-mode for web-mode and css-mode and other major modes based on them, such as the build-in scss-mode
-  :config                                                       ;; OPTIONAL
-  (unbind-key "C-j" emmet2-mode-map)                            ;; Unbind the default expand key
-  (define-key emmet2-mode-map (kbd "C-c C-.") 'emmet2-expand))  ;; Bind custom expand key
+  :straight (:type git :host github :repo "p233/emmet2-mode"
+             :files (:defaults "*.mjs" "vendor" "data"))
+  :hook ((web-mode css-mode tsx-ts-mode) . emmet2-mode)
+  :config
+  ;; Optional alternative key:
+  (unbind-key "C-j" emmet2-mode-map)
+  (define-key emmet2-mode-map (kbd "C-c C-.") #'emmet2-expand))
 ```
+
+Enable `yas-minor-mode` separately for editable fields and mirrors. Without
+it, expansion produces the same text and first-field cursor. No completion
+popup is connected yet; that integration follows this command migration.
+Actual packaged-installation and GUI acceptance remain the next milestone.
+
+### Field behavior after upgrading
+
+Point now starts at the **first editable field**, such as an anchor's `href`,
+then TAB visits independent fields when yasnippet is enabled. For `c+bg` or
+`m+p`, the two values are separate stops; `bd` has one stop. Repeated markup
+fields remain mirrors. The final TAB exits at the expansion's text end.
+One undo restores the original abbreviation.
+
+Only Emmet snippets suppress yasnippet's extra newline for an EOF field and
+web-mode's automatic reindent-on-exit. Other snippets and user exit hooks
+retain their behavior. Text and defaults containing dollars, backslashes,
+backticks or braces remain literal; they are not evaluated as Lisp.
 
 ## Usage
 
@@ -69,14 +90,14 @@ All these options work for expanding markups only, and they are project-based. I
               (emmet2-class-names-constructor . "classnames"))))      ;; Default value is "clsx"
 ```
 
-After configuring the custom options, the abbreviation `a.link.active` will be expanded to `<a href="" class={classnames(style.link, style.active)}>|</a>` in this project, where the pipe symbol `|` represents the cursor position after expansion.
+After configuring the custom options, the abbreviation `a.link.active` will be expanded to `<a href="|" class={classnames(style.link, style.active)}></a>` in this project, where the pipe symbol `|` represents the cursor position after expansion.
 
 ### Expand Markups
 
 #### HTML
 
 ```
-.                             ->  <div class="">|</div>
+.                             ->  <div class="|"></div>
 .class                        ->  <div class="class">|</div>
 ```
 

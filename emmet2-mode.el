@@ -5,8 +5,8 @@
 ;; Author: Peiwen Lu <hi@peiwen.lu>
 ;; Created: 10 Oct 2022
 ;; URL: https://github.com/P233/emmet2-mode
-;; Compatibility: emacs-version >= 28
-;; Package-Requires: ((emacs "28") (deno-bridge "0.1"))
+;; Compatibility: emacs-version >= 30
+;; Package-Requires: ((emacs "30"))
 
 ;;; This file is NOT part of GNU Emacs
 
@@ -30,106 +30,70 @@
 ;; Please check the README.
 
 ;;; Code:
-(require 'deno-bridge)
+(require 'emmet2-context)
+(require 'emmet2-extensions)
+(require 'emmet2-insert)
+(declare-function emmet2-node-stop "emmet2-engine-node" (&optional process))
 
-(defconst emmet2-backend-path (concat (file-name-directory load-file-name) "src/index.ts"))
-(deno-bridge-start "emmet2" emmet2-backend-path)
+(defgroup emmet2 nil "Emmet abbreviation expansion." :group 'convenience)
 
-(defvar emmet2-file-extension "")
-(defvar emmet2-markup-variant nil)
-(defvar emmet2-css-modules-object "css")
-(defvar emmet2-class-names-constructor "clsx")
+(defcustom emmet2-markup-variant nil
+  "Optional markup dialect.  The string \"solid\" selects Solid JSX."
+  :type '(choice (const :tag "From context" nil) (const "solid"))
+  :safe (lambda (value) (member value '(nil "solid"))) :group 'emmet2)
 
-(defun emmet2-after-hook ()
-  (make-local-variable 'emmet2-file-extension)
-  (make-local-variable 'emmet2-markup-variant)
-  (make-local-variable 'emmet2-css-modules-object)
-  (make-local-variable 'emmet2-class-names-constructor)
-  (setq emmet2-file-extension (file-name-extension buffer-file-name)))
+(defcustom emmet2-css-modules-object "css"
+  "Authored JavaScript reference for the project's CSS Modules object."
+  :type 'string :safe #'stringp :group 'emmet2)
 
-(defun emmet2-check-in-between (open close)
-  (let ((backward-open (save-excursion (re-search-backward open nil t)))
-        (backward-close (save-excursion (re-search-backward close nil t)))
-        (forward-open (save-excursion (re-search-forward open nil t)))
-        (forward-close (save-excursion (re-search-forward close nil t)))) 
-    (and backward-open forward-close
-         (or (not backward-close) (> backward-open backward-close))
-         (or (not forward-open) (< forward-close forward-open)))))
+(defcustom emmet2-class-names-constructor "clsx"
+  "Authored JavaScript reference for joining JSX class names."
+  :type 'string :safe #'stringp :group 'emmet2)
 
-(defun emmet2-detect-css-in-markup ()
-  (or
-   (emmet2-check-in-between "style=[\"']" "[^=][\"']")
-   (emmet2-check-in-between "<style.*>" "</style>")))
+(defun emmet2--expand-analysis (analysis)
+  "Expand ANALYSIS using current project options and formatter layout.
+This shared read-only path produces the final insertion and preview result."
+  (let ((options (emmet2-insert-render-options analysis))
+        (abbreviation (plist-get analysis :abbr)))
+    (pcase (plist-get analysis :lang)
+      ('markup
+       (apply #'emmet2-extensions-markup abbreviation
+              :jsx (or (eq (plist-get analysis :syntax) 'jsx) (equal emmet2-markup-variant "solid"))
+              :variant emmet2-markup-variant :css-modules-object emmet2-css-modules-object
+              :class-names-constructor emmet2-class-names-constructor options))
+      ((or 'css 'css-in-js)
+       (apply #'emmet2-extensions-css abbreviation
+              :css-in-js (eq (plist-get analysis :lang) 'css-in-js) options)))))
 
-(defun emmet2-detect-css-in-js ()
-  (or
-   (emmet2-check-in-between "style={" "}")
-   (emmet2-check-in-between "StyleSheet.create({" "})")
-   (emmet2-check-in-between "createTheme({" "})")))
-
-(defun emmet2-detect-expand-lang ()
-  (cond ((member emmet2-file-extension '("scss" "css")) "css")
-        ((emmet2-detect-css-in-js) "css-in-js")
-        ((emmet2-detect-css-in-markup) "css")
-        ((stringp emmet2-markup-variant) emmet2-markup-variant)
-        ((member emmet2-file-extension '("tsx" "jsx")) "jsx")
-        (t "html")))
-
-(defun emmet2-expand-css ()
-  (when (thing-at-point-looking-at "@?[a-zA-Z0-9_#.:(+,)$!-]+")
-    (let* ((bounds-beginning (match-beginning 0))
-           (bounds-end (match-end 0))
-           (input (buffer-substring-no-properties bounds-beginning bounds-end)))
-      (deno-bridge-call "emmet2" "css" input bounds-beginning))))
-
-(defun emmet2-expand-css-in-js ()
-  (when (thing-at-point-looking-at "\\b[a-zA-Z0-9_(+,)!-]+")
-    (let* ((bounds-beginning (match-beginning 0))
-           (bounds-end (match-end 0))
-           (input (buffer-substring-no-properties bounds-beginning bounds-end)))
-      (deno-bridge-call "emmet2" "css-in-js" input bounds-beginning))))
-
-(defun emmet2-expand-markup (lang)
-  (let* ((bounds-beginning (save-excursion
-                             (re-search-backward "\\(?:<.*?>\\|/>\\|}>\\|return (\\|=> (\\|)}\\|^\\)[[:space:]]*\\(.?\\)" nil t)
-                             (match-beginning 1)))
-         (left-paren? (string-match "\\(return\\|=>\\) ($" (buffer-substring-no-properties (match-beginning 0) bounds-beginning)))
-         (bounds-end (save-excursion
-                       (re-search-forward "<\\|$" nil t)
-                       (match-beginning 0)))
-         (right-paren? (and left-paren? (string-equal ")" (buffer-substring-no-properties (- bounds-end 1) bounds-end))))
-         (bounds-end (if right-paren? (- bounds-end 1) bounds-end))
-         (input (buffer-substring-no-properties bounds-beginning bounds-end)))
-    (if (or (string-equal input "") (string-equal input ">"))
-        (message "There is no abbr under the point")
-      (deno-bridge-call "emmet2" lang input bounds-beginning (point) emmet2-css-modules-object emmet2-class-names-constructor))))
-
+;;;###autoload
 (defun emmet2-expand ()
+  "Expand the abbreviation at point, preserving confirmed host exclusions."
   (interactive)
-  (let ((lang (emmet2-detect-expand-lang)))
-    (cond ((string-equal lang "css") (emmet2-expand-css))
-          ((string-equal lang "css-in-js") (emmet2-expand-css-in-js))
-          (t (emmet2-expand-markup lang)))))
-
-(defun emmet2-insert (snippet bounds-beginning bounds-end reposition? indent?)
-  (delete-region bounds-beginning bounds-end)
-  (insert snippet)
-  (when indent?
-    (indent-region bounds-beginning (point)))
-  (when reposition?
-    (re-search-backward "|" bounds-beginning t)
-    (delete-char 1)))
+  (condition-case error-data
+      (if-let* ((analysis (emmet2-context-analyze)))
+          (let* ((snapshot (emmet2-insert-snapshot analysis))
+                 (result (emmet2--expand-analysis analysis)))
+            (emmet2-insert snapshot result))
+        (user-error "There is no Emmet abbreviation at point"))
+    (emmet2-error (user-error "%s" (error-message-string error-data)))))
 
 ;;;###autoload
 (define-minor-mode emmet2-mode
-  "Minor mode for expanding emmet html and css abbreviations with opinionated enhancements."
+  "Expand Emmet abbreviations with C-j in supported host contexts."
   :lighter " emmet2"
   :keymap (let ((map (make-sparse-keymap)))
-            (define-key map (kbd "C-j") 'emmet2-expand)
+            (define-key map (kbd "C-j") #'emmet2-expand)
             map)
-  :after-hook (emmet2-after-hook))
+  (if emmet2-mode (emmet2-context-start) (emmet2-context-stop)))
 
+(defun emmet2-mode-unload-function ()
+  "Release mode-owned context resources and the interim backend."
+  (dolist (buffer (buffer-list))
+    (with-current-buffer buffer
+      (if (bound-and-true-p emmet2-mode) (emmet2-mode -1)
+        (when (emmet2-context--owner) (emmet2-context-stop)))))
+  (when (fboundp 'emmet2-node-stop) (emmet2-node-stop))
+  nil)
 
 (provide 'emmet2-mode)
-
 ;;; emmet2-mode.el ends here

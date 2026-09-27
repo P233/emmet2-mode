@@ -257,31 +257,31 @@
       "id": "project-options",
       "contract": "markup-variant, css-modules-object, class-names-constructor names preserved",
       "stage": "S4",
-      "tests": []
+      "tests": ["emmet2-expand-options-and-nonfile-buffers"]
     },
     {
       "id": "mode-lifecycle",
       "contract": "enable/disable, mode change, kill, unload and parser warmup",
       "stage": "S3/S4",
-      "tests": []
+      "tests": ["emmet2-mode-lifecycle-and-lazy-backend", "emmet2-mode-unload-cleans-command-created-context"]
     },
     {
       "id": "fields",
       "contract": "independent CSS groups, markup mirrors, escaping, TAB and final exit",
       "stage": "S4",
-      "tests": []
+      "tests": ["emmet2-insert-css-fields-tab-and-final-exit", "emmet2-insert-plain-and-yas-share-text-and-cursor", "emmet2-insert-literals-never-evaluate", "emmet2-insert-yas-eof-navigation-and-advice-isolation"]
     },
     {
       "id": "without-yas",
       "contract": "plain insertion and first-field cursor",
       "stage": "S4",
-      "tests": []
+      "tests": ["emmet2-insert-plain-and-yas-share-text-and-cursor"]
     },
     {
       "id": "undo",
       "contract": "one expansion per undo, atomic failure, stale source rejected",
       "stage": "S4",
-      "tests": []
+      "tests": ["emmet2-insert-one-undo-restores-source", "emmet2-insert-failure-rolls-back-text-point-and-fields", "emmet2-insert-rejects-stale-snapshots"]
     },
     {
       "id": "corfu",
@@ -305,7 +305,7 @@
       "id": "grammar-missing",
       "contract": "capf nil, explicit missing-grammar error; HTML/CSS still works",
       "stage": "S3",
-      "tests": []
+      "tests": ["emmet2-context-missing-grammar-preserves-source", "emmet2-context-html-css-need-no-tree-sitter", "emmet2-expand-missing-grammar-and-cancellation-leave-source"]
     }
   ],
   "intentionalChanges": [
@@ -313,13 +313,13 @@
       "id": "first-field",
       "behavior": "Initial cursor is the first editable field; yas TAB exits at text end.",
       "stage": "S4",
-      "tests": []
+      "tests": ["emmet2-insert-plain-and-yas-share-text-and-cursor"]
     },
     {
       "id": "css-fields",
       "behavior": "Independent CSS values have separate stops; collapsed defaults such as bd have one.",
       "stage": "S2/S4",
-      "tests": []
+      "tests": ["emmet2-insert-css-fields-tab-and-final-exit"]
     },
     {
       "id": "safe-context",
@@ -331,7 +331,7 @@
       "id": "emacs-30",
       "behavior": "New runtime requires Emacs 30; JS/TS/JSX analysis needs matching grammar.",
       "stage": "S4",
-      "tests": []
+      "tests": ["emmet2-mode-lifecycle-and-lazy-backend"]
     }
   ]
 }

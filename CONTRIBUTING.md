@@ -488,3 +488,56 @@ strings, comments, nesting, Unicode, part switches, hidden buffer regions and
 configuration changes and nested hook edits. A scan error preserves the pending change and restores
 narrowing/point. The current measurements and retained failures are recorded in
 [test/performance-context-2026-09-27.md](test/performance-context-2026-09-27.md).
+
+## Native command and insertion boundary (S4)
+
+`emmet2-mode` now loads context, extensions and the single `emmet2-insert`
+writer. It no longer requires or starts deno-bridge. Node starts lazily for an
+actual expansion; disabling a buffer releases its context owner, while package
+unload also stops the shared interim backend. The old TS implementation remains
+only for migration/reference tests until S8 removes it.
+
+`emmet2--expand-analysis` derives layout before calling the existing extension
+layer. The formatter's final result is shared with insertion and the upcoming
+S5 preview. Indentation uses the active mode's width, tabs where aligned, and
+the abbreviation's display column. The writer checks buffer/mode/tick/point,
+visible bounds and original text, then uses a single atomic undo group. A yas
+before-expand hook cannot silently replace changed source. No-yas insertion
+uses the identical canonical text and cursor.
+
+The optional yas adapter escapes literal body/default text and creates the
+final `$0` itself. It restores escaped Y last to avoid collisions with yas's
+internal `YASESCAPE...PROTECTGUARD` strings, including authored guard strings.
+One lazy module-owned advice suppresses the newline that yas's protection
+overlay helper otherwise inserts for EOF fields, only inside Emmet's snippet
+environment. Emacs clips the protection overlay to the buffer end; normal yas
+fields keep their behavior. Unloading `emmet2-insert` removes the advice.
+Only web-mode's built-in reindent exit hook is excluded for these snippets;
+other user hooks and buffer settings are preserved. These narrow adaptations
+have regression tests against the locked yasnippet/web-mode dependencies.
+
+Run the stage-scoped editor suite after bootstrap:
+
+```sh
+rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_SUITE=editor emacs --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit
+```
+
+The suite exercises actual command/backend/host buffers, independent CSS stops,
+mirrors, hostile literal text, EOF fields, cursor/undo/rollback, stale source,
+project options and mode/unload cleanup. Batch editor checks are not GUI,
+completion or actual package-installation acceptance; those remain S5 work.
+
+Local S4 evidence (2026-09-27): 24 editor ERT tests pass on both pinned Emacs
+versions, both from source and with project/yasnippet/web-mode bytecode. The 68
+context/extraction tests remain green. Project warning-as-error compilation,
+actionlint and diff checks pass. The compiled editor runner owns and removes
+its temporary runtime copy; fixed web-mode dependency warnings are reported,
+not treated as project warnings or hidden by editing the dependency.
+
+```sh
+rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps emacs --batch -Q -L . -l test/editor-bytecode.el
+```
+
+The copied test payload is not a package-manager install. Hosted CI and GUI
+acceptance are still unverified; the source and compiled editor checks are
+registered in the existing 30/31 workflow for its next run.

@@ -88,6 +88,12 @@ jobs:
         env:
           EMMET2_TEST_SUITE: css-extensions
         run: '"$EMMET2_EMACS" --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit'
+      - name: Native command and insertion contracts
+        env:
+          EMMET2_TEST_SUITE: editor
+        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit'
+      - name: Byte-compiled editor and optional dependencies
+        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/editor-bytecode.el'
       - name: Node protocol and core oracle
         env:
           EMMET2_TEST_SUITE: node
