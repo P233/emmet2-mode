@@ -44,5 +44,6 @@
 	(error "Missing test grammar: %s; rerun test/setup.mjs" language)))))
 
 (add-to-list 'load-path emmet2-test-root)
+(add-to-list 'load-path (expand-file-name "test" emmet2-test-root))
 (provide 'emmet2-test-bootstrap)
 ;;; bootstrap.el ends here

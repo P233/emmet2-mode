@@ -17,7 +17,7 @@
           (copy-directory (expand-file-name name emmet2-test-root) (expand-file-name name directory)))
         (dolist (name (directory-files emmet2-test-root nil "\\.mjs\\'"))
           (copy-file (expand-file-name name emmet2-test-root) (expand-file-name name directory)))
-        (dolist (name '("yasnippet" "web-mode"))
+        (dolist (name '("yasnippet" "web-mode" "corfu" "corfu-auto"))
           ;; Locked third-party code has existing warnings; report them.
           ;; The project's warning-as-error policy remains below and in compile.el.
           (let ((byte-compile-error-on-warn nil))
@@ -26,15 +26,18 @@
           (load (expand-file-name (concat name ".elc") directory) nil t))
         (let ((byte-compile-error-on-warn t))
           (dolist (name '("emmet2-engine" "emmet2-engine-node" "emmet2-fuzzy" "emmet2-extensions"
-                          "emmet2-extract" "emmet2-context" "emmet2-insert" "emmet2-mode"))
+                          "emmet2-extract" "emmet2-context" "emmet2-insert" "emmet2-mode" "emmet2-capf"))
             (unless (byte-compile-file (expand-file-name (concat name ".el") emmet2-test-root))
               (error "Project compilation failed: %s" name))
             (load (expand-file-name (concat name ".elc") directory) nil t)))
         (unless (and (byte-code-function-p (symbol-function 'emmet2-insert))
+                     (byte-code-function-p (symbol-function 'emmet2-capf))
+                     (byte-code-function-p (symbol-function 'corfu--in-region-1))
                      (byte-code-function-p (symbol-function 'yas-expand-snippet))
                      (byte-code-function-p (symbol-function 'web-mode-scan)))
           (error "Editor checks require byte-compiled paths"))
         (load (expand-file-name "test/emmet2-insert-test.el" emmet2-test-root) nil t)
+        (load (expand-file-name "test/emmet2-capf-test.el" emmet2-test-root) nil t)
         (let ((stats (ert-run-tests-batch t)))
           (when (> (ert-stats-completed-unexpected stats) 0)
             (error "Unexpected editor test result"))))

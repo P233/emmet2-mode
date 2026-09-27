@@ -92,6 +92,10 @@ jobs:
         env:
           EMMET2_TEST_SUITE: editor
         run: '"$EMMET2_EMACS" --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit'
+      - name: Native completion and Corfu integration
+        env:
+          EMMET2_TEST_SUITE: completion
+        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit'
       - name: Byte-compiled editor and optional dependencies
         run: '"$EMMET2_EMACS" --batch -Q -L . -l test/editor-bytecode.el'
       - name: Node protocol and core oracle

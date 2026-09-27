@@ -34,6 +34,8 @@
 (require 'emmet2-extensions)
 (require 'emmet2-insert)
 (declare-function emmet2-node-stop "emmet2-engine-node" (&optional process))
+(autoload 'emmet2-capf "emmet2-capf" nil nil)
+(autoload 'emmet2-complete "emmet2-capf" nil t)
 
 (defgroup emmet2 nil "Emmet abbreviation expansion." :group 'convenience)
 
@@ -79,12 +81,17 @@ This shared read-only path produces the final insertion and preview result."
 
 ;;;###autoload
 (define-minor-mode emmet2-mode
-  "Expand Emmet abbreviations with C-j in supported host contexts."
+  "Expand with C-j and offer confident Emmet abbreviations for completion."
   :lighter " emmet2"
   :keymap (let ((map (make-sparse-keymap)))
             (define-key map (kbd "C-j") #'emmet2-expand)
             map)
-  (if emmet2-mode (emmet2-context-start) (emmet2-context-stop)))
+  (if emmet2-mode
+      (progn
+        (add-hook 'completion-at-point-functions #'emmet2-capf -50 t)
+        (emmet2-context-start))
+    (remove-hook 'completion-at-point-functions #'emmet2-capf t)
+    (emmet2-context-stop)))
 
 (defun emmet2-mode-unload-function ()
   "Release mode-owned context resources and the interim backend."

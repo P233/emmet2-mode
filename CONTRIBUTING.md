@@ -121,7 +121,8 @@ rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps emacs --batch -Q -L . -l te
 ```
 
 Run setup after changing the lock. `EMMET2_TEST_SUITE` selects `contracts` (the
-default), `results`, `node`, `fuzzy`, `css-extensions` or `markup-extensions`; unknown suites fail explicitly. Missing
+default), `editor`, `completion`, `results`, `node`, `fuzzy`, `css-extensions`
+or `markup-extensions`; unknown suites fail explicitly. Missing
 packages or local grammars fail bootstrap instead of skipping integration or
 falling back to a grammar in the user's configuration.
 
@@ -129,10 +130,10 @@ The four Corfu tests exercise its pinned completion control flow with only
 popup drawing replaced. They cover the original candidate, effective styles
 and category override, all four exact-match policies, automatic/manual entry,
 prefix threshold, cancellation and explicit acceptance.
-This is feasibility evidence, not GUI or Emmet integration
-acceptance: S5 must run the same matrix against the real capf and insertion.
-The probe uses private Corfu functions only in tests; production must use the
-public completion API. It never changes the user's completion settings.
+S5 now runs these same cases through production context, Node and insertion;
+the S0 table implementation has been deleted. This is batch integration evidence,
+not GUI acceptance. Private Corfu calls remain confined to tests; production
+uses the public completion API and never changes completion settings.
 
 The host probe calls the bounded `emmet2-extract` scanner with real buffer point,
 then confirms context using a tagged tree-sitter parser. It keeps one identifier
@@ -541,3 +542,38 @@ rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps emacs --batch -Q -L . -l te
 The copied test payload is not a package-manager install. Hosted CI and GUI
 acceptance are still unverified; the source and compiled editor checks are
 registered in the existing 30/31 workflow for its next run.
+
+### S5 completion session integration
+
+`emmet2-capf` owns one immutable source snapshot and one lazy result per returned
+completion table. Metadata and a frontend's prefix check do not expand. Text
+edits, mode/settings changes, narrowing away from the range, disabling the mode,
+or leaving the original point/end invalidate the session. Every candidate query
+and acceptance rechecks the production context. No global expansion cache,
+source-restoration logic, frontend advice or frontend configuration binding is
+used. The table returns the original abbreviation for exact `try-completion`;
+all/test matching and predicates retain their standard semantics.
+
+Real Corfu acceptance of an identical abbreviation preserves the character tick
+but may move point to END. The capf validates that transition and captures a fresh
+strict insertion snapshot immediately before calling the unchanged writer.
+Other frontends that rewrite identical text are conservatively rejected if the
+character tick changes. Only `finished` inserts; `exact`, prompt acceptance and
+cancellation leave text alone. Annotation is bounded to 60 display columns plus
+a two-space separator. The optional documentation preview follows separately.
+
+`emmet2-complete` initializes context explicitly (including grammar diagnostics),
+then invokes public `completion-at-point` with only Emmet in the temporary hook.
+It keeps the automatic host/confidence gate and does not fall through to other
+providers. Mode enable/disable owns registration at local depth -50.
+
+```sh
+rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_SUITE=completion emacs --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit
+```
+
+The scoped suite covers real frontend policy/acceptance, middle-point completion,
+prompt selection, stale-source refusal, lazy expansion, confidence gates and
+mode/command isolation. `editor-bytecode.el` also compiles the pinned Corfu core
+and auto extension and reruns these contracts alongside insertion tests. Neither
+batch drawing stubs nor the bytecode resource copy constitute GUI or actual
+package-manager installation acceptance. M1 remains open.

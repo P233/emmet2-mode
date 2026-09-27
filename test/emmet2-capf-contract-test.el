@@ -1,4 +1,4 @@
-;;; emmet2-capf-contract-test.el --- Completion feasibility contracts -*- lexical-binding: t; -*-
+;;; emmet2-capf-contract-test.el --- Completion integration contracts -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -7,19 +7,20 @@
 (require 'corfu)
 (require 'corfu-auto)
 
-;; S0 probe only: S5 must run these same scenarios against the actual Emmet capf.
-;; Private Corfu calls here inspect the pinned frontend; production may not use them.
-(defun emmet2-test--table (abbreviation)
-  "Return the proposed single-candidate table for ABBREVIATION."
-  (lambda (string predicate action)
-    (cond
-     ((eq action 'metadata) '(metadata (category . emmet2)))
-     ((and (null action) (equal string abbreviation)
-           (test-completion string (list abbreviation) predicate)) string)
-     (t (complete-with-action action (list abbreviation) string predicate)))))
+(require 'emmet2-capf)
+(require 'web-mode)
+
+;; Private Corfu calls inspect the pinned frontend; production uses public APIs.
+(defmacro emmet2-test--with-capf (text &rest body)
+  "Run BODY in a web buffer with TEXT and a real production capf."
+  (declare (indent 1))
+  `(with-temp-buffer
+     (insert ,text) (web-mode) (emmet2-mode 1)
+     (setq-local indent-tabs-mode nil)
+     (let ((table (nth 2 (emmet2-capf)))) (ignore table) ,@body)))
 
 (ert-deftest emmet2-contract-table-is-original-text ()
-  (let ((table (emmet2-test--table "ul>li*3")))
+  (emmet2-test--with-capf "ul>li*3"
     (should (equal (all-completions "ul>li*3" table) '("ul>li*3")))
     (should (test-completion "ul>li*3" table))
     (should (equal (try-completion "ul>li*3" table) "ul>li*3"))
@@ -37,21 +38,25 @@
     (pcase-let ((`(,completion-styles ,completion-category-overrides ,expected)
                  configuration)
                 (completion-category-defaults nil))
-      (let ((result (completion-try-completion
-                     "ul>li*3" (emmet2-test--table "ul>li*3") nil 7)))
-        (if (eq expected 'cons)
-            (should (equal result '("ul>li*3" . 7)))
-          (should (eq result t)))))))
+      (emmet2-test--with-capf "ul>li*3"
+        (let ((result (completion-try-completion "ul>li*3" table nil 7)))
+          (if (eq expected 'cons)
+              (should (equal result '("ul>li*3" . 7)))
+            (should (eq result t))))))))
 
 (defun emmet2-test--completion-session (styles overrides exact automatic
-                                            &optional abbreviation prefix accept)
-  "Probe real completion control flow, replacing only UI drawing.
+                                            &optional abbreviation prefix accept
+                                            preselect middle command action)
+  "Exercise real analysis, Node, insertion and Corfu, replacing only drawing.
 STYLES, OVERRIDES, EXACT and AUTOMATIC select the configuration.
 ABBREVIATION defaults to ul>li*3.  PREFIX is the user's auto threshold.
-ACCEPT accepts the selected candidate; otherwise the probe cancels it."
+ACCEPT accepts the selected candidate; otherwise cancel.  PRESELECT, MIDDLE
+and COMMAND select the frontend policy, starting point and manual entry.
+ACTION runs after presentation instead of ordinary acceptance."
   (with-temp-buffer
     (let* ((input (or abbreviation "ul>li*3"))
-           (table (emmet2-test--table input))
+           (css (equal input "m1"))
+           (before (if css (concat ".a{" input "}") input))
            (completion-styles styles)
            (completion-category-defaults nil)
            (completion-category-overrides overrides)
@@ -61,33 +66,47 @@ ACCEPT accepts the selected candidate; otherwise the probe cancels it."
            (corfu-auto-prefix (or prefix 3))
            (corfu-auto-trigger nil)
            (corfu-preview-current nil)
-           (corfu-preselect 'valid)
+           (corfu-preselect (or preselect 'valid))
            (last-command-event ?x)
-           shown status selected
-           (completion-at-point-functions
-            (list (lambda ()
-                    (list (point-min) (point-max) table :exclusive 'no
-                          :exit-function (lambda (candidate result)
-                                           (should (equal candidate input))
-                                           (setq status result)))))))
-      (insert input)
-      (cl-letf (((symbol-function 'corfu--candidates-popup)
-                 (lambda (&rest _) (setq shown t)))
-                ((symbol-function 'corfu--popup-hide) #'ignore)
-                ;; Surface internal errors as ERT failures instead of debug UI.
-                ((symbol-function 'corfu--protect) #'funcall))
-        (unwind-protect
-            (progn
-              (if automatic
-                  (corfu-auto--complete-deferred)
-                (completion-at-point)
-                (when completion-in-region-mode (corfu--exhibit)))
-              (setq selected corfu--index)
-              (when (and accept completion-in-region-mode) (corfu-insert))
-              (when completion-in-region-mode (corfu-quit))
-              (should (equal (buffer-string) input))
-              (list shown status selected))
-          (when completion-in-region-mode (corfu-quit)))))))
+           shown status selected accepted)
+      (insert before)
+      (if css (css-mode) (web-mode))
+      (emmet2-mode 1)
+      (setq-local indent-tabs-mode nil)
+      (goto-char (if css (1- (point-max)) (point-max)))
+      (when middle (backward-char 3))
+      (let* ((analysis (emmet2-context-analyze))
+             (expected (emmet2--expand-analysis analysis))
+             (expand (symbol-function 'emmet2-insert)))
+        (cl-letf (((symbol-function 'corfu--candidates-popup)
+                   (lambda (&rest _) (setq shown t)))
+                  ((symbol-function 'corfu--popup-hide) #'ignore)
+                  ((symbol-function 'corfu--protect) #'funcall)
+                  ((symbol-function 'emmet2-insert)
+                   (lambda (snapshot result)
+                     (setq accepted t status 'finished)
+                     (funcall expand snapshot result))))
+          (unwind-protect
+              (progn
+                (if automatic
+                    (corfu-auto--complete-deferred)
+                  (funcall (or command #'completion-at-point))
+                  (when completion-in-region-mode (corfu--exhibit)))
+                (setq selected corfu--index)
+                (if action (funcall action)
+                  (when (and accept completion-in-region-mode) (corfu-insert)))
+                (when completion-in-region-mode (corfu-quit))
+                (unless action
+                  (should (equal (buffer-string)
+                                 (if accepted
+                                     (concat (substring before 0 (1- (plist-get analysis :beg)))
+                                             (plist-get expected :text)
+                                             (substring before (1- (plist-get analysis :end))))
+                                   before)))
+                  (when accepted
+                    (should (= (point) (+ (plist-get analysis :beg) (plist-get expected :cursor))))))
+                (list shown status selected))
+            (when completion-in-region-mode (corfu-quit))))))))
 
 (ert-deftest emmet2-contract-corfu-configuration-matrix ()
   (dolist (style '(((basic partial-completion emacs22) nil cons)

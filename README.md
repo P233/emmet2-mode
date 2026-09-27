@@ -53,9 +53,29 @@ Example using straight.el and use-package:
 ```
 
 Enable `yas-minor-mode` separately for editable fields and mirrors. Without
-it, expansion produces the same text and first-field cursor. No completion
-popup is connected yet; that integration follows this command migration.
+it, expansion produces the same text and first-field cursor.
 Actual packaged-installation and GUI acceptance remain the next milestone.
+
+### Completion
+
+The mode registers a buffer-local completion-at-point function. The candidate
+is the original abbreviation; its annotation summarizes the expansion.
+Accepting a current candidate expands it through the same insertion path as
+`C-j`. Bare markup identifiers (including tag names), bare CSS property names,
+and unconfirmed host positions are left to other completion providers. Use
+`C-j` for explicit expansion, or `M-x emmet2-complete` to request only Emmet
+completion with the same confidence gate.
+
+Corfu is optional. Automatic presentation respects your Corfu prefix, delay
+and trigger settings. With the default `basic`-first completion styles, the
+single candidate can remain visible for all exact-match policies. With
+`partial-completion` first, or an `emmet2` category override selecting it,
+automatic completion skips the exact candidate unless your persistent
+`corfu-on-exact-match` is `show`; manual completion may immediately expand it.
+The mode changes none of these settings. With `corfu-preselect` set to `prompt`,
+select the candidate before accepting it; accepting the prompt keeps the
+abbreviation unchanged. Editing or moving away ends an obsolete session.
+Colored documentation preview is the next integration slice.
 
 ### Field behavior after upgrading
 
