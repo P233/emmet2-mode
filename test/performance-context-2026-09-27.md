@@ -1,8 +1,9 @@
 # Context measurements: 2026-09-27
 
-S3 remains **OPEN**. The initial measurements below exposed scale-ratio
-variation and large web-mode programmatic edits; the follow-up section records
-the bounded web scanner fix. Historical failures are retained.
+S3 local context correctness and performance gates **PASS** on the fixed
+environment below. The final interleaved cohort passes every existing budget.
+Initial scale-ratio and web scan failures remain documented as history; this
+does not establish editor/GUI, hosted CI, installation or engine acceptance.
 
 Machine: Apple M1 Pro, arm64 Darwin 27.0.0; pinned GNU Emacs 31.1 and dependencies
 from `test/dependencies.json`. Project code is byte compiled. Pinned web-mode is
@@ -82,8 +83,62 @@ Correctness and warning-free compilation pass on both pinned Emacs versions:
 68 scoped ERT tests, including property parity with a full rescan, exceptions,
 cleanup, indirect changes, narrowing, configuration changes, nested hook edits and partial scan errors.
 
-Next, compare sizes with interleaved sampling and 10000 samples per path to
+The next measurement step compared sizes with interleaved sampling and 10000 samples per path to
 reduce time-order bias. Keep the same complete operations, raw GC-inclusive
 samples, three fresh processes and existing budgets. The exploratory paired
 measurement is diagnostic only; a versioned runner and complete matrix are
-still required before S3 closes.
+required before S3 could close. The final cohort below supplies that evidence.
+
+## Final S3 cohort: interleaved complete paths
+
+Three fresh, serial Emacs 31.1 processes ran all 22 unchanged fixtures and
+three paths, with 100 warmups and 10000 samples per path: 1980000 measured
+operations. Comparable sizes of one fixture kind were interleaved, rotating
+the first buffer each round. No other tests ran concurrently. Project sources
+were byte compiled; pinned web-mode remained source loaded and normal GC
+settings stayed at 800000/1.0. No runtime code changed between these runs.
+
+| Process | TSX p99 range (ms) | Worst TSX size ratio | Worst ordinary CSS/web size ratio | Large style read / typing / programmatic p99 (ms) |
+| --- | --- | --- | --- | --- |
+| 1 | 0.019–0.047 | 1.053 | 1.125 | 2.561 / 2.900 / 2.970 |
+| 2 | 0.021–0.062 | 1.148 | 1.125 | 2.637 / 2.938 / 2.976 |
+| 3 | 0.022–0.067 | 1.205 | 1.136 | 2.627 / 2.939 / 2.926 |
+
+Ratios use max/min p99 across all sizes of each kind and path, including the
+negative JSX fixture. This is stricter than comparing only the largest size
+against the smallest. All TSX p99 values are below 1 ms and ratios below 1.5;
+ordinary ratios are below 2 and large style p99 values below 5 ms. Sampling
+order and count changed to address demonstrated time variation, not budgets
+or inputs. These results do not attribute that variation to a specific cause.
+
+GC remains visible: timed operations include 65/64/65 collections, totaling
+2.185/2.143/2.238 seconds per process. Maximum individual operations are
+73.408/75.316/78.215 ms. Passing p99 does not imply the absence of long pauses.
+Cold analysis and mode initialization remain separate in each raw case.
+
+Independent checks recomputed p50/p99/max and GC totals from every raw sample,
+verified 10000 samples for each of the 66 paths, compared all 22 fixture hashes
+with the initial baseline, and matched the measured source hashes to disk.
+Both Emacs versions pass warning-as-error compilation. Three focused harness
+checks on each version cover rotating order/counts, raw GC aggregation and
+cleanup when the second fixture fails. The unchanged production path retains
+its dual-version 68-test context/extraction correctness evidence.
+
+Raw files, archived alongside the earlier failures:
+
+| File | Uncompressed SHA256 |
+| --- | --- |
+| `emmet2-interleaved-31-1.json.gz` | `935058dbd1092c9701ce8cdc048a1750615d273feef1984589b155f570eac02a` |
+| `emmet2-interleaved-31-2.json.gz` | `86987dcea1041a72d2ce4dd416e550183068ca77be7515e7df101d3f3e72f211` |
+| `emmet2-interleaved-31-3.json.gz` | `a874a62e9705c8dc09d2e57dd099d110c1b4864c740e5870be91e324dc2ea2e0` |
+
+Final source identity:
+
+- `emmet2-context.el`: `7ba5e79f9c14471e717d1fc3bf02d400eed72d9a5a836dd47dc77c74cabc1c02`
+- `emmet2-extract.el`: `315b6b3a3b3de2b7be050e335808153dfc251d495368246bedae3f62c7883ad0`
+- `emmet2-engine.el`: `fc47373962a6a20e3966859e77900e14f8e6c7500e514c53429e83ba6f4567df`
+- `test/bootstrap.el`: `1445dafdc18d775e5bb14bebae9a664972f0dba0e5d6d29fcefa53d644ad25aa`
+- `test/bench-context.el`: `a8f832d37cb33e1108971f8137dc7ac4d477c3b52801e2f95d71ddf6449cf778`
+
+The next stage is S4 rendering, atomic insertion and command integration. The
+installed minor mode still uses Deno until that separate gate passes.

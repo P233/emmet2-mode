@@ -467,8 +467,11 @@ the inputs. Filters are for diagnosis, never acceptance.
 
 Local correctness evidence: 68 scoped context/extraction tests pass on pinned
 Emacs 30.2 and 31.1, including local-unit invalidation, indirect edits, malformed
-host structure and unterminated comments. The S3 performance gate remains open pending stable scale-ratio measurements.
-No editor entry point has been switched, and no GUI or hosted acceptance is implied.
+host structure and unterminated comments. S3 local correctness and performance
+gates now pass: three fresh interleaved processes, 22 fixtures and 10000 samples
+per path meet every existing budget. See the measured report below for raw
+hashes, GC maxima and earlier failures. No editor entry point has been switched,
+and no GUI or hosted acceptance is implied.
 
 For HTML with web-mode's `none` engine, the context owner can retain one pending
 insertion extent: two rule markers, the exact change positions and the expected modification tick. Before a

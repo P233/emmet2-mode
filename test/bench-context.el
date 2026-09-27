@@ -94,71 +94,116 @@
                         (if changed (concat abbr "1") abbr))))
     (error "Wrong benchmark result: %S expected %S changed %S" result spec changed)))
 
-(defun emmet2-bench--samples (spec edit)
-  "Measure SPEC for 100 warmups and 1000 operations.
-EDIT is nil, `typing', or `programmatic'; both edit paths include change hooks."
-  (let ((samples (make-vector 1000 nil)) (initial-gcs gcs-done)
-        (initial-gc-time gc-elapsed) measurement-gcs measurement-gc-time)
-    (dotimes (i 1100)
-      (when (= i 100) (setq measurement-gcs gcs-done measurement-gc-time gc-elapsed))
-      (let ((t0 (current-time)) (gcs gcs-done) (gc-time gc-elapsed)
-            (changed (and edit (zerop (% i 2)))) result)
-        (when edit
-          (if changed
-              (if (eq edit 'typing)
-                  (let ((last-command-event ?1)) (self-insert-command 1))
-                (insert "1"))
-            (delete-char -1)))
-        (setq result (emmet2-context-analyze t))
-        (when (>= i 100)
-          (aset samples (- i 100)
-                (vector (* 1000 (float-time (time-subtract (current-time) t0)))
-                        (- gcs-done gcs) (- gc-elapsed gc-time))))
-        (emmet2-bench--verify result spec changed)))
-    (let ((sorted (sort (mapcar (lambda (entry) (aref entry 0)) samples) #'<)))
-      (list :path (pcase edit ('typing "typing-and-analyze")
-                                ('programmatic "programmatic-edit-and-analyze") (_ "analyze"))
-            :warmups 100 :count 1000
-            :p50-ms (nth 499 sorted) :p99-ms (nth 989 sorted) :max-ms (car (last sorted))
-            :gc-count (- gcs-done measurement-gcs) :gc-seconds (- gc-elapsed measurement-gc-time)
-            :warmup-gc-count (- measurement-gcs initial-gcs)
-            :warmup-gc-seconds (- measurement-gc-time initial-gc-time)
-            :sample-columns ["milliseconds" "gc-count" "gc-seconds"] :samples samples))))
+(cl-defstruct (emmet2-bench--case (:constructor emmet2-bench--case-create))
+  buffer report)
 
-(defun emmet2-bench--run (name kind statement-lines file-lines)
-  "Measure one NAME fixture of KIND with STATEMENT-LINES and FILE-LINES."
-  (with-temp-buffer
-    (let* ((spec (emmet2-bench--fixture kind statement-lines file-lines))
-           (gcs gcs-done) (gc-time gc-elapsed) (t0 (current-time))
-           (result (emmet2-context-analyze))
-           (cold-ms (* 1000 (float-time (time-subtract (current-time) t0))))
-           (cold-gcs (- gcs-done gcs)) (cold-gc-time (- gc-elapsed gc-time)))
-      (emmet2-bench--verify result spec)
-      (let* ((read (emmet2-bench--samples spec nil))
-             (typing (emmet2-bench--samples spec 'typing))
-             (edit (emmet2-bench--samples spec 'programmatic)))
-        (message "%s read p99 %.3f ms; typing %.3f ms; programmatic %.3f ms; cold %.3f ms"
-                 name (plist-get read :p99-ms) (plist-get typing :p99-ms)
-                 (plist-get edit :p99-ms) cold-ms)
-        (list :name name :fixture spec :cold-ms cold-ms :cold-gc-count cold-gcs
-              :cold-gc-seconds cold-gc-time :paths (vector read typing edit))))))
+(defun emmet2-bench--sample (spec edit changed)
+  "Time one complete operation for SPEC, then verify it outside the clock.
+EDIT is nil, `typing', or `programmatic'; CHANGED selects insertion or deletion."
+  (let ((t0 (current-time)) (gcs gcs-done) (gc-time gc-elapsed) result sample)
+    (when edit
+      (if changed
+          (if (eq edit 'typing)
+              (let ((last-command-event ?1)) (self-insert-command 1))
+            (insert "1"))
+        (delete-char -1)))
+    (setq result (emmet2-context-analyze t)
+          sample (vector (* 1000 (float-time (time-subtract (current-time) t0)))
+                         (- gcs-done gcs) (- gc-elapsed gc-time)))
+    (emmet2-bench--verify result spec changed)
+    sample))
+
+(defun emmet2-bench--summary (samples warmup-gcs warmup-gc-time edit)
+  "Summarize SAMPLES for EDIT, with separately accumulated warmup GC deltas."
+  (let ((sorted (sort (mapcar (lambda (entry) (aref entry 0)) samples) #'<)))
+    (list :path (pcase edit ('typing "typing-and-analyze")
+                          ('programmatic "programmatic-edit-and-analyze") (_ "analyze"))
+          :warmups 100 :count (length samples)
+          :p50-ms (nth (1- (ceiling (* 0.50 (length samples)))) sorted)
+          :p99-ms (nth (1- (ceiling (* 0.99 (length samples)))) sorted)
+          :max-ms (car (last sorted))
+          ;; Only this fixture's timed operations count, not other buffers,
+          ;; verification, or storage between interleaved samples.
+          :gc-count (cl-loop for sample across samples sum (aref sample 1))
+          :gc-seconds (cl-loop for sample across samples sum (aref sample 2))
+          :warmup-gc-count warmup-gcs :warmup-gc-seconds warmup-gc-time
+          :sample-columns ["milliseconds" "gc-count" "gc-seconds"] :samples samples)))
+
+(defun emmet2-bench--path (cases edit)
+  "Interleave EDIT across CASES, rotating the first buffer every round."
+  (let* ((count (length cases))
+         (samples (vconcat (mapcar (lambda (_) (make-vector 10000 nil)) cases)))
+         (warmup-gcs (make-vector count 0)) (warmup-gc-time (make-vector count 0.0))
+         (entries (vconcat cases)))
+    (dotimes (i 10100)
+      (dotimes (j count)
+        (let* ((index (% (+ i j) count))
+               (entry (aref entries index))
+               (spec (plist-get (emmet2-bench--case-report entry) :fixture))
+               (sample (with-current-buffer (emmet2-bench--case-buffer entry)
+                         (emmet2-bench--sample spec edit (and edit (zerop (% i 2)))))))
+          (if (< i 100)
+              (progn
+                (cl-incf (aref warmup-gcs index) (aref sample 1))
+                (cl-incf (aref warmup-gc-time index) (aref sample 2)))
+            (aset (aref samples index) (- i 100) sample)))))
+    (dotimes (i count)
+      (let* ((entry (aref entries i)) (report (emmet2-bench--case-report entry))
+             (path (emmet2-bench--summary (aref samples i) (aref warmup-gcs i)
+                                         (aref warmup-gc-time i) edit)))
+        (setf (emmet2-bench--case-report entry)
+              (plist-put report :paths (append (plist-get report :paths) (list path))))))))
+
+(defun emmet2-bench--group (kind dimensions filter)
+  "Measure KIND at DIMENSIONS together; FILTER selects diagnostic cases only.
+At most five owned buffers survive until this group finishes, even on failure."
+  (let (cases)
+    (unwind-protect
+        (progn
+          (dolist (size dimensions)
+            (let ((name (if (eq kind 'web-large-style) "web-large-style-135kb"
+                          (if (zerop (car size)) (format "%s-%d" kind (cadr size))
+                            (format "%s-%d-%d" kind (car size) (cadr size))))))
+              (when (or (not filter) (string-match-p filter name))
+                (let ((entry (emmet2-bench--case-create :buffer (generate-new-buffer " *emmet2-bench*"))))
+                  (push entry cases)
+                  (with-current-buffer (emmet2-bench--case-buffer entry)
+                    ;; Match the original with-temp-buffer fixture lifecycle.
+                    (buffer-disable-undo)
+                    (let* ((spec (emmet2-bench--fixture kind (car size) (cadr size)))
+                           (gcs gcs-done) (gc-time gc-elapsed) (t0 (current-time))
+                           (result (emmet2-context-analyze))
+                           (cold-ms (* 1000 (float-time (time-subtract (current-time) t0))))
+                           (cold-gcs (- gcs-done gcs)) (cold-gc-time (- gc-elapsed gc-time)))
+                      (emmet2-bench--verify result spec)
+                      (setf (emmet2-bench--case-report entry)
+                            (list :name name :fixture spec :cold-ms cold-ms
+                                  :cold-gc-count cold-gcs :cold-gc-seconds cold-gc-time))))))))
+          (setq cases (nreverse cases))
+          (when cases
+            (dolist (edit '(nil typing programmatic)) (emmet2-bench--path cases edit)))
+          (mapcar (lambda (entry)
+                    (let* ((report (emmet2-bench--case-report entry)) (paths (plist-get report :paths)))
+                      (message "%s read p99 %.3f ms; typing %.3f ms; programmatic %.3f ms; cold %.3f ms"
+                               (plist-get report :name) (plist-get (nth 0 paths) :p99-ms)
+                               (plist-get (nth 1 paths) :p99-ms) (plist-get (nth 2 paths) :p99-ms)
+                               (plist-get report :cold-ms))
+                      (plist-put report :paths (vconcat paths)))) cases))
+      (dolist (entry cases) (kill-buffer (emmet2-bench--case-buffer entry))))))
 
 (defun emmet2-bench-context ()
   "Run the S3 matrix and write raw samples to EMMET2_BENCH_OUTPUT."
   (let ((output (or (getenv "EMMET2_BENCH_OUTPUT") (error "Set EMMET2_BENCH_OUTPUT")))
         (filter (getenv "EMMET2_BENCH_FILTER")) cases)
     (when (file-exists-p output) (error "Refusing to overwrite %s" output))
-    (cl-labels ((run (name kind statement-lines file-lines)
-                  (when (or (not filter) (string-match-p filter name))
-                    (push (emmet2-bench--run name kind statement-lines file-lines) cases))))
-      (dolist (dimensions '((56 500) (56 5000) (56 20000) (306 5000) (1006 5000)))
-        (dolist (kind '(tsx-markup tsx-style tsx-negative))
-          (run (format "%s-%s-%s" kind (car dimensions) (cadr dimensions))
-               kind (car dimensions) (cadr dimensions))))
-      (dolist (size '(500 20000))
-        (dolist (kind '(css web-css web-markup))
-          (run (format "%s-%d" kind size) kind 0 size)))
-      (run "web-large-style-135kb" 'web-large-style 0 0))
+    (dolist (kind '(tsx-markup tsx-style tsx-negative css web-css web-markup web-large-style))
+      (setq cases
+            (append cases
+                    (emmet2-bench--group
+                     kind (cond ((memq kind '(tsx-markup tsx-style tsx-negative))
+                                 '((56 500) (56 5000) (56 20000) (306 5000) (1006 5000)))
+                                ((eq kind 'web-large-style) '((0 0)))
+                                (t '((0 500) (0 20000)))) filter))))
     (unless cases (error "Benchmark filter matched no fixtures"))
     (unless (equal emmet2-bench--sources (emmet2-bench--source-hashes))
       (error "Measured sources changed during the benchmark; refusing mixed evidence"))
@@ -181,8 +226,9 @@ EDIT is nil, `typing', or `programmatic'; both edit paths include change hooks."
                      :web-mode-compilation (if (byte-code-function-p (symbol-function 'web-mode-scan))
                                                "bytecode" "source")
                      :compilation "bytecode" :filter filter
+                     :sampling "same-kind sizes interleaved; first buffer rotates each round"
                      :gc-cons-threshold gc-cons-threshold :gc-cons-percentage gc-cons-percentage
-                     :cases (vconcat (nreverse cases)))))
+                     :cases (vconcat cases))))
       (insert "\n"))))
 
 ;; Compile only the measured production path into an owned temporary directory.

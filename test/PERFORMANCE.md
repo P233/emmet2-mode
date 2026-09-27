@@ -73,3 +73,14 @@ Both edit paths include modification hooks and pending scanning. A programmatic
 gate stays open when either measured edit path fails. Baseline and optimized
 samples belong in the ignored plan measurements directory, with a concise
 result summary and hashes in versioned documentation once measured.
+
+The S3 runner uses 100 warmups and 10,000 measured operations per path. It
+interleaves comparable sizes of each fixture kind and rotates the first buffer
+every round to reduce time-order bias. Up to five buffers are alive within a
+group; all are released before the next kind. Buffer selection and correctness
+checks are outside the clock. Per-fixture GC totals sum its timed samples;
+they do not include other fixtures or between-sample work. Every sample,
+including GC, is retained. Earlier sequential measurements remain evidence,
+not discarded failures. Cold analysis is the first call per fixture after its
+mode setup; only the first fixture in a fresh process includes process-wide
+initialization that later fixtures share.
