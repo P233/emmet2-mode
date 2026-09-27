@@ -34,6 +34,7 @@
 (require 'emmet2-extensions)
 (require 'emmet2-insert)
 (declare-function emmet2-node-stop "emmet2-engine-node" (&optional process))
+(declare-function emmet2-preview-clear "emmet2-preview" ())
 (autoload 'emmet2-capf "emmet2-capf" nil nil)
 (autoload 'emmet2-complete "emmet2-capf" nil t)
 
@@ -52,6 +53,14 @@
   "Authored JavaScript reference for joining JSX class names."
   :type 'string :safe #'stringp :group 'emmet2)
 
+(defun emmet2--output-syntax (analysis)
+  "Return the syntax of ANALYSIS's final output under current project options."
+  (pcase (plist-get analysis :lang)
+    ('markup (if (or (eq (plist-get analysis :syntax) 'jsx)
+                     (equal emmet2-markup-variant "solid")) 'jsx 'html))
+    ('css-in-js 'jsx)
+    ('css 'css)))
+
 (defun emmet2--expand-analysis (analysis)
   "Expand ANALYSIS using current project options and formatter layout.
 This shared read-only path produces the final insertion and preview result."
@@ -60,7 +69,7 @@ This shared read-only path produces the final insertion and preview result."
     (pcase (plist-get analysis :lang)
       ('markup
        (apply #'emmet2-extensions-markup abbreviation
-              :jsx (or (eq (plist-get analysis :syntax) 'jsx) (equal emmet2-markup-variant "solid"))
+              :jsx (eq (emmet2--output-syntax analysis) 'jsx)
               :variant emmet2-markup-variant :css-modules-object emmet2-css-modules-object
               :class-names-constructor emmet2-class-names-constructor options))
       ((or 'css 'css-in-js)
@@ -100,6 +109,7 @@ This shared read-only path produces the final insertion and preview result."
       (if (bound-and-true-p emmet2-mode) (emmet2-mode -1)
         (when (emmet2-context--owner) (emmet2-context-stop)))))
   (when (fboundp 'emmet2-node-stop) (emmet2-node-stop))
+  (when (fboundp 'emmet2-preview-clear) (emmet2-preview-clear))
   nil)
 
 (provide 'emmet2-mode)

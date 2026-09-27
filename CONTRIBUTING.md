@@ -560,7 +560,7 @@ strict insertion snapshot immediately before calling the unchanged writer.
 Other frontends that rewrite identical text are conservatively rejected if the
 character tick changes. Only `finished` inserts; `exact`, prompt acceptance and
 cancellation leave text alone. Annotation is bounded to 60 display columns plus
-a two-space separator. The optional documentation preview follows separately.
+a two-space separator. The optional documentation preview is described below.
 
 `emmet2-complete` initializes context explicitly (including grammar diagnostics),
 then invokes public `completion-at-point` with only Emmet in the temporary hook.
@@ -577,3 +577,26 @@ mode/command isolation. `editor-bytecode.el` also compiles the pinned Corfu core
 and auto extension and reruns these contracts alongside insertion tests. Neither
 batch drawing stubs nor the bytecode resource copy constitute GUI or actual
 package-manager installation acceptance. M1 remains open.
+
+### S5 colored documentation
+
+The capf's `company-doc-buffer` callback reuses the session's canonical result;
+annotation, documentation and acceptance cause only one expansion. The shared
+`emmet2--output-syntax` derives HTML/JSX/CSS from the existing host analysis and
+project options, so Solid and CSS-in-JS use the JSX highlighter.
+
+`emmet2-preview` owns at most three lazily created, read-only, non-file buffers.
+Built-in `html-mode`, `js-jsx-mode` and `css-mode` provide fontification without
+additional grammar requirements. User mode hooks are delayed and discarded;
+mode-change hooks are isolated during creation. There is no timer, background
+work or second result cache. Deleted buffers are recreated on demand. Module
+unload and package unload clear owned buffers, bypassing close-confirmation
+queries only for those buffers so ownership cannot be silently lost. Ordinary
+kill hooks still run. A failed mode initialization also releases its buffer.
+
+The completion suite tests exact preview text, fontification, three-buffer
+capacity, reuse/recreation, hook isolation, failed initialization, unload and
+the pinned popupinfo documentation callback. The bytecode runner includes the
+preview module and popupinfo extension. The real popupinfo callback preserves
+font properties; its popup drawing is still outside batch acceptance. Cold and
+repeated preview costs belong to the forthcoming complete-flow measurements.

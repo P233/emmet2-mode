@@ -10,7 +10,7 @@
        (byte-compile-dest-file-function
         (lambda (file) (expand-file-name (concat (file-name-nondirectory file) "c") directory))))
   (unwind-protect
-      (dolist (file '("emmet2-capf.el" "test/emmet2-capf-test.el" "emmet2-insert.el" "emmet2-mode.el" "test/emmet2-insert-test.el" "test/editor-bytecode.el" "test/emmet2-extensions-markup-test.el" "emmet2-extensions.el" "test/emmet2-extensions-css-test.el"
+      (dolist (file '("emmet2-preview.el" "test/emmet2-preview-test.el" "emmet2-capf.el" "test/emmet2-capf-test.el" "emmet2-insert.el" "emmet2-mode.el" "test/emmet2-insert-test.el" "test/editor-bytecode.el" "test/emmet2-extensions-markup-test.el" "emmet2-extensions.el" "test/emmet2-extensions-css-test.el"
                       "emmet2-fuzzy.el" "test/emmet2-fuzzy-test.el" "emmet2-context.el" "test/emmet2-context-test.el" "emmet2-extract.el" "emmet2-engine.el" "emmet2-engine-node.el"
                       "test/bootstrap.el" "test/compile.el" "test/bench-context.el" "test/emmet2-context-lexical-test.el"
                       "test/emmet2-capf-contract-test.el" "test/emmet2-extract-test.el"

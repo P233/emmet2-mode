@@ -75,7 +75,10 @@ automatic completion skips the exact candidate unless your persistent
 The mode changes none of these settings. With `corfu-preselect` set to `prompt`,
 select the candidate before accepting it; accepting the prompt keeps the
 abbreviation unchanged. Editing or moving away ends an obsolete session.
-Colored documentation preview is the next integration slice.
+For the full colored expansion beside Corfu's candidate popup, enable the
+optional `corfu-popupinfo-mode` separately. The documentation shows the same
+final text that acceptance inserts, including project JSX/Solid options.
+The package does not enable Corfu, popupinfo or yasnippet for you.
 
 ### Field behavior after upgrading
 

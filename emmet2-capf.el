@@ -9,6 +9,7 @@
 
 ;;; Code:
 (require 'emmet2-mode)
+(autoload 'emmet2-preview "emmet2-preview")
 
 (defun emmet2-capf--confident-p (analysis)
   "Whether ANALYSIS has a completion signal beyond a bare identifier."
@@ -68,6 +69,10 @@ Expansion is lazy so a frontend can apply its prefix threshold first."
                (complete-with-action action (list abbreviation) string predicate)))))
          :exclusive 'no
          :company-kind (lambda (_) 'snippet)
+         :company-doc-buffer
+         (lambda (candidate)
+           (when (and (equal candidate abbreviation) (expanded))
+             (emmet2-preview (plist-get result :text) (emmet2--output-syntax analysis))))
          :annotation-function
          (lambda (candidate)
            (when (and (equal candidate abbreviation) (expanded))

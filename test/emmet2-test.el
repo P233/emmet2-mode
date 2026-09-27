@@ -15,7 +15,8 @@
      (load (expand-file-name "test/emmet2-context-lexical-test.el" emmet2-test-root) nil t))
     ("completion"
      (load (expand-file-name "test/emmet2-capf-contract-test.el" emmet2-test-root) nil t)
-     (load (expand-file-name "test/emmet2-capf-test.el" emmet2-test-root) nil t))
+     (load (expand-file-name "test/emmet2-capf-test.el" emmet2-test-root) nil t)
+     (load (expand-file-name "test/emmet2-preview-test.el" emmet2-test-root) nil t))
     ("editor"
      (load (expand-file-name "test/emmet2-insert-test.el" emmet2-test-root) nil t))
     ("results"
