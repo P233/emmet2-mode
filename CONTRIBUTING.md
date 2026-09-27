@@ -627,3 +627,19 @@ at runtime revision `1bd9b5c`. This is a real package-manager build, including t
 bundled Node files, data and license files; it does not claim the GitHub fetch,
 hosted Linux CI or GUI matrix has been accepted. The 30/31 workflow now includes
 this installation check for its next execution.
+
+### JSX text under parser error recovery
+
+The S5 complete-flow fixture exposed `ul>li.item$*5>a{Link $}` inside TSX being
+truncated before expansion: tree-sitter recovered the attached text as an
+`object` under `ERROR`, and the host boundary clipped everything before its
+opening brace. Only such recovered, attached objects now defer to the existing
+projection check; real object boundaries are preserved. The ambiguity query
+also includes recovered objects, so plain `Hello{...}` remains excluded from
+automatic completion. Explicit text, numbered text, middle/end point, adjacent
+return/arrow objects and ordinary expressions are tested in TSX and both web
+JSX modes. Preview/acceptance also exercises the original failing abbreviation.
+
+This fixes host classification without changing the extractor, parser owners,
+caches or CSS lexical paths. The affected TSX performance matrix was rerun;
+see the supplementary results in `test/performance-context-2026-09-27.md`.

@@ -44,7 +44,7 @@
              (unless (eq language 'typescript)
                (treesit-query-compile language '([(jsx_opening_element) (jsx_expression)] @host)))
              (unless (eq language 'typescript)
-               (treesit-query-compile language '((jsx_expression) @expression)))
+               (treesit-query-compile language '([(jsx_expression) (object)] @expression)))
              (treesit-query-compile language '((ERROR (regex_pattern) @pattern)))))
      '(tsx javascript typescript)))
   "Ten fixed queries, lazily compiled for their grammars.
@@ -316,7 +316,16 @@ LANGUAGE selects the query vocabulary.  Bounds still belong to the extractor."
                    left right t))
       (when (<= (treesit-node-start node) position (treesit-node-end node))
         (pcase (treesit-node-type node)
-          ("object" (setq left (max left (1+ (treesit-node-start node)))))
+          ("object"
+           (let ((begin (treesit-node-start node)))
+             ;; Broken JSX such as a{Link $} can recover as an object under
+             ;; ERROR.  Do not cut off attached Emmet text before projection
+             ;; can prove its host.  Real objects retain their boundary.
+             (unless (and (not (eq language 'typescript))
+                          (equal (treesit-node-type (treesit-node-parent node)) "ERROR")
+                          (not (memq (char-before begin)
+                                     '(nil ?> ?\s ?\t ?\n ?{ ?= ?\( ?\[ ?: ?,))))
+               (setq left (max left (1+ begin))))))
           ((or "arrow_function" "return_statement")
            (let ((body (if (equal (treesit-node-type node) "arrow_function")
                            (treesit-node-child-by-field-name node "body")
@@ -393,6 +402,7 @@ AUTOMATIC disallows root JS expressions."
 
 (defun emmet2-context--ambiguous-text-p (parser beg end language)
   "Whether projecting BEG..END would erase a JSX expression after plain text.
+Include objects produced by error recovery, which carry the same ambiguity.
 LANGUAGE without JSX cannot have this ambiguity.  The explicit command may
 interpret tag{text} as Emmet; automatic completion must leave it alone."
   (unless (eq language 'typescript)

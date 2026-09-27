@@ -140,5 +140,46 @@ Final source identity:
 - `test/bootstrap.el`: `1445dafdc18d775e5bb14bebae9a664972f0dba0e5d6d29fcefa53d644ad25aa`
 - `test/bench-context.el`: `a8f832d37cb33e1108971f8137dc7ac4d477c3b52801e2f95d71ddf6449cf778`
 
-The next stage is S4 rendering, atomic insertion and command integration. The
-installed minor mode still uses Deno until that separate gate passes.
+At this S3 checkpoint, S4 rendering, atomic insertion and command integration
+were next; the installed mode still used Deno. S4 subsequently switched the
+runtime to the native frontend and temporary Node backend.
+
+
+## S5 recovery-boundary regression check
+
+The complete-flow benchmark uncovered numbered Emmet text being parsed as an
+`object` under tree-sitter `ERROR`, which wrongly clipped the abbreviation.
+The original failing fixture was retained. The fix changes only JS host-boundary
+and ambiguity checks, without new state, parsers or caches. The CSS/web lexical
+paths are unchanged; this is a focused regression measurement of the affected
+TSX matrix, not a rerun or replacement of the earlier complete 22-fixture gate.
+
+Three fresh serial Emacs 31.1 processes ran the unchanged 15 TSX fixtures and
+three paths with `EMMET2_BENCH_FILTER=tsx`: 100 warmups and 10000 samples per
+path, totaling 1350000 measured operations. No concurrent tests or source edits
+ran during timing. Bytecode, normal GC 800000/1.0, interleaving and budgets stayed
+unchanged. Quantiles and GC totals were independently recomputed from raw data.
+
+| Process | p99 range (ms) | Worst same-kind/path size ratio | Max operation (ms) | GC count / seconds |
+| --- | --- | --- | --- | --- |
+| 1 | 0.023–0.081 | 1.138 | 48.509 | 56 / 1.748 |
+| 2 | 0.024–0.070 | 1.167 | 48.158 | 56 / 1.704 |
+| 3 | 0.027–0.078 | 1.148 | 46.373 | 53 / 1.627 |
+
+The affected paths remain below the original 1 ms and 1.5 ratio budgets. This
+check makes no performance-improvement claim; GC pauses remain visible.
+
+Raw JSON is archived under the same ignored measurement directory:
+
+| File | SHA256 of uncompressed JSON |
+| --- | --- |
+| `emmet2-recovery-context31-1.json.gz` | `e19198fa8533fd676013693a9c8bbb83e636c3b4c84d62317d637e25a2e9e2b0` |
+| `emmet2-recovery-context31-2.json.gz` | `3dcfbef82c212aa0c382452ad88e0526d45d0774cef05d9d767ac8c22aec4961` |
+| `emmet2-recovery-context31-3.json.gz` | `24f56a9b2b93890948aa25dc78097f84ad925539fc514a2b2d4fa6bb14a4dcb1` |
+
+Measured `emmet2-context.el` SHA256:
+`da4206f25ba60d954cd65b366e348ccdc07a34c37ff7d2a3a8eb1826c8e606e7`.
+Dual-version validation also passed 68 context/extraction ERT tests and 48
+byte-compiled editor/completion/preview tests, including the original failing
+abbreviation and ordinary-object/expression exclusions. The S5 complete-flow
+measurement restarts from this corrected implementation.

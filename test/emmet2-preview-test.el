@@ -96,6 +96,7 @@
                       (web-mode "div.card│" "solid" js-jsx-mode)
                       (css-mode ".a{m10+p20│}" nil css-mode)
                       (tsx-ts-mode "const A=(<main>div.card│</main>);" nil js-jsx-mode)
+                      (tsx-ts-mode "const A=(<main>ul>li.item$*5>a{Link $}│</main>);" nil js-jsx-mode)
                       (tsx-ts-mode "const A=(<main style={{m10│}} />);" nil js-jsx-mode)))
         (with-temp-buffer
           (insert (nth 1 case)) (search-backward "│") (delete-char 1)
