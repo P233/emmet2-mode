@@ -2,7 +2,7 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 (require 'ert)
 (require 'emmet2-mode)
-(require 'emmet2-engine-node)
+(declare-function emmet2-node-stop "emmet2-engine-node" (&optional process))
 (require 'yasnippet)
 (require 'web-mode)
 (require 'typescript-ts-mode)
@@ -217,11 +217,12 @@
     (should (equal (buffer-string) "<p>😀a\tb</p>"))))
 
 (ert-deftest emmet2-mode-lifecycle-and-lazy-backend ()
-  (emmet2-node-stop)
+  (when (fboundp 'emmet2-node-stop) (emmet2-node-stop))
   (with-temp-buffer
     (insert "const A=(<main>ul>li*2</main>);") (tsx-ts-mode)
     (emmet2-mode 1)
-    (should-not (and emmet2-node--process (process-live-p emmet2-node--process)))
+    (when-let* ((process (bound-and-true-p emmet2-node--process)))
+      (should-not (process-live-p process)))
     (let* ((owner (emmet2-context--owner)) (timer (emmet2-context--state-timer owner)))
       (emmet2-mode 1)
       (should (eq owner (emmet2-context--owner)))

@@ -4,7 +4,6 @@
 
 (require 'ert)
 (require 'emmet2-extensions)
-(require 'emmet2-engine-node)
 
 (dolist (entry (with-temp-buffer
                  (insert-file-contents (expand-file-name "test/fixtures/markup-legacy.json" emmet2-test-root))
