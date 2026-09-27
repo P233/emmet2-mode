@@ -7,7 +7,7 @@
 ;; pass acceptance.  The editor still uses the Node backend.
 ;; Grammar, snippet resolution and HTML formatting follow vendored Emmet 2.4.11
 ;; (vendor/emmet-LICENSE).  All mutable trees and output belong to one call.
-;; Project JSX transforms and seeded lorem remain subsequent S6 slices.
+;; Seeded lorem and final native integration remain subsequent S6 slices.
 
 ;;; Code:
 
@@ -532,8 +532,80 @@ fresh nodes before resolution or transformation can change them."
            thereis (if (member (emmet2-markup--node-name node) '("input" "textarea")) node
                      (emmet2-markup--find-input (emmet2-markup--node-children node)))))
 
-(defun emmet2-markup--transform (nodes &optional parent-name)
-  "Resolve implicit tags, attributes and label associations in NODES."
+(defun emmet2-markup--class-escape (character)
+  "Escape CHARACTER for a JavaScript double-quoted property key."
+  (pcase character
+    (#x2028 "\\u2028") (#x2029 "\\u2029")
+    ;; json-serialize returns UTF-8 bytes; offsets below must count characters.
+    (_ (substring (decode-coding-string (json-serialize (char-to-string character)) 'utf-8) 1 -1))))
+
+(defun emmet2-markup--class-expression (value object constructor)
+  "Convert class VALUE tokens to OBJECT members joined by CONSTRUCTOR.
+All intermediate offsets count characters.  Fields spanning several class
+names include the intervening expression syntax in their new defaults."
+  (let ((offset 0) source fields words empty)
+    (dolist (token (or value '((0 . ""))))
+      (let ((text (if (stringp token) token (cdr token))))
+        (unless (stringp token)
+          (push (list offset (+ offset (length text)) (car token)) fields))
+        (push text source)
+        (cl-incf offset (length text))))
+    (setq fields (nreverse fields))
+    (let* ((text (apply #'concat (nreverse source)))
+           (case-fold-search nil)
+           (word-pattern (concat "[^" (substring emmet2-markup--format-space 1 -1) "]+"))
+           (position 0))
+      (while (string-match word-pattern text position)
+        (push (cons (match-beginning 0) (match-end 0)) words)
+        (setq position (match-end 0)))
+      (setq words (nreverse words))
+      (let ((remaining words))
+        (dolist (field fields)
+          (let ((beg (nth 0 field)) (end (nth 1 field)))
+            (while (and remaining (or (< (cdar remaining) beg)
+                                      (and (/= beg end) (= (cdar remaining) beg))))
+              (setq remaining (cdr remaining)))
+            (unless (and remaining (if (= beg end) (<= (caar remaining) beg)
+                                     (and (< (caar remaining) end) (< beg (cdar remaining)))))
+              (unless (eql (caar empty) beg) (push (cons beg end) empty))))))
+      (setq words (cl-stable-sort (append words (nreverse empty)) #'< :key #'car))
+      (let ((offsets (make-vector (1+ (length text)) nil))
+            (size 0) (index 0) parts)
+        (cl-labels ((emit (part) (push part parts) (cl-incf size (length part))))
+          (when (cdr words) (emit (concat constructor "(")))
+          (dolist (span words)
+            (let* ((beg (car span)) (end (cdr span))
+                   (word (string-trim (substring text beg end)
+                                      (concat emmet2-markup--format-space "+")
+                                      (concat emmet2-markup--format-space "+")))
+                   (dot (string-match-p "\\`[a-zA-Z_$][a-zA-Z0-9_$]*\\'" word))
+                   (position beg))
+              (when (> index 0) (emit ", "))
+              (unless (string-empty-p word) (emit (concat object (if dot "." "[\""))))
+              (aset offsets beg size)
+              (seq-doseq (character word)
+                (emit (if dot (char-to-string character) (emmet2-markup--class-escape character)))
+                (aset offsets (cl-incf position) size))
+              (aset offsets end size)
+              (when (and (not (string-empty-p word)) (not dot)) (emit "\"]"))
+              (cl-incf index)))
+          (let ((last 0))
+            (dotimes (i (length offsets))
+              (setq last (or (aref offsets i) last))
+              (aset offsets i last)))
+          (when (cdr words) (emit ")")))
+        (let ((output (apply #'concat (nreverse parts))) (start 0) tokens)
+          (dolist (field fields)
+            (let ((beg (aref offsets (nth 0 field))) (end (aref offsets (nth 1 field))))
+              (push (substring output start beg) tokens)
+              (push (cons (nth 2 field) (substring output beg end)) tokens)
+              (setq start end)))
+          (push (substring output start) tokens)
+          (nreverse tokens))))))
+
+(defun emmet2-markup--transform (nodes &optional parent-name class-attribute jsx)
+  "Transform owned NODES under PARENT-NAME before serialization.
+CLASS-ATTRIBUTE renames class for JSX; JSX supplies project expression options."
   (dolist (node nodes)
     (when (and (null (emmet2-markup--node-name node)) (emmet2-markup--node-attributes-present node))
       (setf (emmet2-markup--node-name node)
@@ -548,8 +620,19 @@ fresh nodes before resolution or transformation can change them."
                 (cl-remove-if (lambda (attr) (and (equal (emmet2-markup--attribute-name attr) (cdr pair))
                                                   (emmet2-markup--empty-attribute-p attr)))
                               (emmet2-markup--node-attributes (car pair)))))))
+    (when class-attribute
+      (dolist (attr (emmet2-markup--node-attributes node))
+        (when (equal (emmet2-markup--attribute-name attr) "class")
+          (setf (emmet2-markup--attribute-name attr) class-attribute)
+          (when jsx
+            (unless (eq (emmet2-markup--attribute-kind attr) 'expression)
+              (setf (emmet2-markup--attribute-value attr)
+                    (emmet2-markup--class-expression (emmet2-markup--attribute-value attr)
+                                                    (plist-get jsx :cssModulesObject)
+                                                    (plist-get jsx :classConstructor))))
+            (setf (emmet2-markup--attribute-kind attr) 'expression)))))
     (emmet2-markup--transform (emmet2-markup--node-children node)
-                             (downcase (or (emmet2-markup--node-name node) "")))))
+                             (downcase (or (emmet2-markup--node-name node) "")) class-attribute jsx)))
 
 (cl-defstruct (emmet2-markup--output (:constructor emmet2-markup--output (indent base-indent jsx)))
   indent base-indent jsx parts fields (offset 0) (field 1) (level 0) (line 0))
@@ -625,7 +708,6 @@ fresh nodes before resolution or transformation can change them."
                         (and (emmet2-markup--output-jsx out) (emmet2-markup--attribute-multiple attr)))))
     (when (and name (not (string-empty-p name)) (or (not (emmet2-markup--attribute-implied attr))
                        (emmet2-markup--attribute-kind attr) (and value (not (equal value '(""))))))
-      (when (and (emmet2-markup--output-jsx out) (equal name "class")) (setq name "classList"))
       (unless value
         (setq value (if (or (emmet2-markup--attribute-boolean attr) (member (downcase name) emmet2-markup--booleans))
                         (list name) '((0 . "")))))
@@ -700,18 +782,24 @@ fresh nodes before resolution or transformation can change them."
     (emmet2-result-create (apply #'concat (nreverse (emmet2-markup--output-parts out)))
                           fields)))
 
-(cl-defun emmet2-engine-markup-expand (abbreviation &key (preset 'html) (indent "\t") (base-indent ""))
+(cl-defun emmet2-engine-markup-expand (abbreviation &key (preset 'html) (indent "\t") (base-indent "") jsx)
   "Expand ABBREVIATION through the native markup pipeline.
 PRESET is html or jsx.  INDENT and BASE-INDENT affect layout before fields.
-This S6.0 entry is independent of the editor's temporary Node backend."
+JSX is nil or the existing project rendering options plist.
+This native entry is independent of the editor's temporary Node backend."
   (unless (and (stringp abbreviation) (memq preset '(html jsx)) (stringp indent) (stringp base-indent))
     (signal 'emmet2-error '("Invalid markup abbreviation, preset or indentation")))
+  (unless (or (null jsx)
+              (and (eq preset 'jsx) (proper-list-p jsx)
+                   (member (plist-get jsx :classAttribute) '("className" "class"))
+                   (stringp (plist-get jsx :cssModulesObject)) (stringp (plist-get jsx :classConstructor))))
+    (signal 'emmet2-error '("Invalid JSX extension options")))
   (emmet2-engine-with-expansion
-    (let* ((jsx (eq preset 'jsx))
-           (nodes (emmet2-markup--resolve (emmet2-markup--convert (emmet2-markup--parse abbreviation jsx))
-                                           (make-hash-table :test #'equal) nil jsx))
-           (out (emmet2-markup--output indent base-indent jsx)))
-      (emmet2-markup--transform nodes)
+    (let* ((jsx-p (eq preset 'jsx))
+           (nodes (emmet2-markup--resolve (emmet2-markup--convert (emmet2-markup--parse abbreviation jsx-p))
+                                           (make-hash-table :test #'equal) nil jsx-p))
+           (out (emmet2-markup--output indent base-indent jsx-p)))
+      (emmet2-markup--transform nodes nil (and jsx-p (or (plist-get jsx :classAttribute) "classList")) jsx)
       (emmet2-markup--emit out nodes)
       (emmet2-markup--result out))))
 

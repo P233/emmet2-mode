@@ -225,7 +225,7 @@ Stopping/unloading the backend and exiting Emacs clean up its owned resources.
 rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_SUITE=node emacs --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit
 ```
 
-This suite compares all 710 core oracle cases across the real process boundary
+This suite compares all 794 core oracle cases across the real process boundary
 and has independent field/Unicode/error assertions. Its fault process covers
 partial/malformed replies, invalid fields/IDs, split UTF-8, request/idle death,
 shared startup/multiple-call deadlines, missing Node, cross-buffer reentry,
@@ -755,3 +755,37 @@ scoped Deno lint and warnings-fatal Lisp compilation pass on the pinned builds.
 Wallaby has no project data, ESLint MCP has no configuration, and Console Ninja
 has no matching live error; repository checks supply the available evidence.
 Project JSX/CSS Modules/Solid transforms and seeded lorem are the next S6 slice.
+
+### S6.2 project JSX transformations
+
+The native AST transform now consumes the existing internal project JSX options:
+React uses `className`, Solid uses `class`, and literal class values become CSS
+Modules member expressions. Authored expressions remain intact. Core JSX without
+project options still uses `classList`. The formatter emits the final attribute
+name; it no longer repeats class renaming after the transform.
+
+Class fields and mirrors retain their boundaries through property-key escaping,
+collapsed whitespace and constructor syntax. Intermediate offsets count Emacs
+characters, including when decoding the UTF-8 bytes returned by `json-serialize`.
+All converted trees, expression chunks and offset maps belong to one expansion;
+shared syntax, caller options and editor state remain unchanged.
+
+The corpus adds 84 explicit project JSX cases to the unchanged 710 earlier cases:
+526 markup and 268 stylesheet cases. These include quote/backslash escaping,
+emoji, control characters, empty/spanning/mirrored fields, custom object and
+constructor names, Solid naming and layout options. Handwritten assertions cover
+character offsets, invalid options and input immutability independently of the
+oracle. This native entry remains separate from the editor's Node backend.
+
+The Unicode corpus exposed a Node 24 `readline` framing bug: U+2028/U+2029 inside
+a JSON string were treated as request boundaries. The interim server now splits
+only LF and decodes fragmented UTF-8 through stdin's decoder. CRLF and a final
+unterminated request still work. Malformed envelopes stop the process before any
+later request executes. Run the dedicated process tests with:
+
+```sh
+rtk proxy node --test test/node-server.test.mjs
+```
+
+Seeded lorem, independent native integration and the full S6 performance gate
+remain open. This slice does not switch the editor backend.

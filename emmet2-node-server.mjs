@@ -1,10 +1,27 @@
 // INTERIM since 2026-09-26; retired after S6/S7 validate the Elisp engine.
-import { createInterface } from "node:readline";
 import process from "node:process";
 import { EmmetParseError, expand } from "./emmet2-engine-node.mjs";
 
-const input = createInterface({ input: process.stdin, crlfDelay: Infinity });
-for await (const line of input) {
+// readline also splits U+2028/U+2029, which are valid inside JSON strings.
+async function* requestLines() {
+  process.stdin.setEncoding("utf8");
+  let parts = [];
+  for await (const chunk of process.stdin) {
+    let start = 0;
+    let end;
+    while ((end = chunk.indexOf("\n", start)) !== -1) {
+      parts.push(chunk.slice(start, end));
+      const line = parts.join("");
+      parts = [];
+      yield line;
+      start = end + 1;
+    }
+    if (start < chunk.length) parts.push(chunk.slice(start));
+  }
+  if (parts.length) yield parts.join("");
+}
+
+for await (const line of requestLines()) {
   let request;
   try {
     request = JSON.parse(line);
@@ -15,7 +32,6 @@ for await (const line of input) {
   } catch (error) {
     process.stderr.write(`${error.message}\n`);
     process.exitCode = 1;
-    input.close();
     process.stdin.destroy();
     break;
   }

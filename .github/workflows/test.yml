@@ -26,9 +26,9 @@ jobs:
       - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
         with:
           deno-version: ${{ steps.versions.outputs.deno }}
-      - run: node --test test/oracle/adapter.test.mjs test/oracle/gen.test.mjs test/css-data.test.mjs test/jsx.test.mjs
+      - run: node --test test/oracle/adapter.test.mjs test/oracle/gen.test.mjs test/css-data.test.mjs test/jsx.test.mjs test/node-server.test.mjs
       - run: node test/oracle/gen.mjs --check
-      - run: deno lint emmet2-jsx.mjs emmet2-engine-node.mjs emmet2-node-server.mjs test/oracle test/setup.mjs test/build-emacs.mjs test/node-fixture.mjs data/update-web-data.mjs test/css-data.test.mjs test/jsx.test.mjs
+      - run: deno lint emmet2-jsx.mjs emmet2-engine-node.mjs emmet2-node-server.mjs test/oracle test/setup.mjs test/build-emacs.mjs test/node-fixture.mjs data/update-web-data.mjs test/css-data.test.mjs test/jsx.test.mjs test/node-server.test.mjs
       - name: Legacy behavior baseline (until migrated)
         run: |
           deno task test:css

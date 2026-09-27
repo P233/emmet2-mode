@@ -21,7 +21,7 @@ export function generate() {
     const { id, abbreviation, preset, source, ...options } = input;
     if (typeof id !== "string" || ids.has(id) || typeof source !== "string" ||
         !["html", "jsx", "stylesheet"].includes(preset) ||
-        Object.keys(options).some((key) => !["indent", "baseIndent"].includes(key))) {
+        Object.keys(options).some((key) => !["indent", "baseIndent", "jsx"].includes(key))) {
       throw new Error(`Invalid or duplicate oracle input: ${id}`);
     }
     ids.add(id);
