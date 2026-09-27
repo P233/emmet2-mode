@@ -847,3 +847,22 @@ removes the source fallback and requires installed bytecode for the engine,
 extensions, context, command, completion, preview and insertion paths. CI includes
 these source and installed runs for both Emacs versions; hosted execution still
 needs an actual pushed CI run. Performance and GUI gates remain separate.
+
+### S6.4 complete markup measurements
+
+The full markup gate passes locally on the pinned Emacs 30.2/31.1 builds:
+15 inputs, three fresh serial processes per version, normal GC, 100 warmups and
+1,000 retained samples per input. All 90 fixture/process p99 values are below
+1 ms; the highest is 0.210 ms and the largest individual sample is 12.398 ms.
+The original nine inputs remain, with three project JSX cases and three seeded
+lorem cases added. Every output is checked outside the clock. Lorem's first
+output must pass the independent structural contract before later complete
+results are compared; seed 42 reproduces identical output across all processes.
+
+No runtime optimization was made during this measurement slice. The report keeps
+all GC and slow samples and does not infer a speedup from historical cohorts.
+See [the S6.4 results and source hashes](test/performance-markup-2026-09-27.md#s64-complete-markup-gate)
+and [the reproduction protocol](test/PERFORMANCE.md#running-the-native-markup-benchmark).
+S6 local correctness, isolated integration, packaging and engine performance
+evidence are complete. S7 stylesheet, default switching and external M1 gates
+remain open; the editor still uses Node.

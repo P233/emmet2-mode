@@ -8,6 +8,8 @@
 (defvar emmet2-test-root)
 (declare-function emmet2-engine-markup-expand "emmet2-engine-markup")
 (declare-function emmet2-markup-test--cases "emmet2-engine-markup-test" (&optional ids))
+(declare-function emmet2-lorem-test--json "emmet2-lorem-contract" (path))
+(declare-function emmet2-lorem-test--check-result "emmet2-lorem-contract" (fixture result))
 
 (defun emmet2-markup-bench--command (program &rest args)
   "Return successful metadata PROGRAM output for ARGS."
@@ -23,15 +25,25 @@
                (insert-file-contents-literally (expand-file-name file emmet2-test-root))
                (list :file file :sha256 (secure-hash 'sha256 (current-buffer)))))
            '("emmet2-engine.el" "emmet2-engine-markup.el" "data/emmet/html.json" "data/emmet/variables.json"
+             "data/emmet/lorem/latin.json" "data/emmet/lorem/russian.json" "data/emmet/lorem/spanish.json"
              "test/emmet2-engine-markup-test.el" "test/fixtures/core-inputs.json"
+             "test/emmet2-lorem-contract.el" "test/fixtures/lorem.json" "vendor/emmet-source.json"
              "test/fixtures/oracle/markup.json" "test/bench-markup.el" "test/dependencies.json"))))
 
 (defun emmet2-markup-bench--sample (case)
-  "Time the full expansion in CASE, then check the complete oracle result."
+  "Time the full expansion in CASE, then verify its result.
+Lorem's first result must pass structural checks before becoming this run's
+reference for all later complete-result comparisons."
   (let* ((start (current-time)) (gcs gcs-done) (gc-time gc-elapsed)
          (result (apply #'emmet2-engine-markup-expand (nth 1 case)))
-         (sample (vector (* 1000 (float-time (time-subtract (current-time) start)))
-                         (- gcs-done gcs) (- gc-elapsed gc-time))))
+         ;; Snapshot GC before allocating the duration/sample representation.
+         ;; Its bookkeeping must not charge a later collection to this call.
+         (end-gcs gcs-done) (end-gc-time gc-elapsed) (end (current-time))
+         (sample (vector (* 1000 (float-time (time-subtract end start)))
+                         (- end-gcs gcs) (- end-gc-time gc-time))))
+    (when (functionp (nth 2 case))
+      (funcall (nth 2 case) result)
+      (setf (nth 2 case) result))
     (unless (equal result (nth 2 case)) (error "Benchmark output differs: %s" (car case)))
     sample))
 
@@ -44,7 +56,7 @@
           :gc-seconds (cl-loop for sample across samples sum (aref sample 2)))))
 
 (defun emmet2-markup-bench--run ()
-  "Compile isolated bytecode and measure every required S6.0 fixture."
+  "Compile isolated bytecode and measure the complete S6 markup fixture set."
   (let* ((output (getenv "EMMET2_BENCH_OUTPUT"))
          (hashes (emmet2-markup-bench--hashes))
          (directory (make-temp-file "emmet2-markup-bytecode-" t))
@@ -72,15 +84,26 @@
           (load (expand-file-name "test/emmet2-engine-markup-test.el" emmet2-test-root) nil t)
           (when (featurep 'emmet2-engine-node) (error "Node loaded into native benchmark"))
           (let* ((ids '("html-contract-01" "html-contract-02" "html-contract-03" "html-snippet:!"
-                        "html-contract-04" "jsx-contract-03" "jsx-contract-04" "html-contract-14" "html-contract-10"))
-                 (all (emmet2-markup-test--cases))
-                 (cases (mapcar (lambda (id) (or (assoc id all) (error "Missing %s" id))) ids))
+                        "html-contract-04" "jsx-contract-03" "jsx-contract-04" "html-contract-14" "html-contract-10"
+                        "jsx-project-007" "jsx-project-038" "jsx-project-084"))
+                 (lorem (emmet2-lorem-test--json "test/fixtures/lorem.json"))
+                 (cases (append (emmet2-markup-test--cases ids)
+                                (mapcar (lambda (id)
+                                          (let ((fixture (or (cl-find id lorem :key (lambda (row) (alist-get 'id row)) :test #'equal)
+                                                             (error "Missing lorem fixture: %s" id))))
+                                            (list id (list (alist-get 'abbreviation fixture) :preset 'html
+                                                           :indent "\t" :base-indent "" :seed 42)
+                                                  (apply-partially #'emmet2-lorem-test--check-result fixture))))
+                                        '("lorem-006" "lorem-012" "lorem-015"))))
                  ;; No external runtime can participate in the measured path.
                  (exec-path nil))
             (setq rows (vconcat (mapcar (lambda (case)
                                          (list :id (car case) :arguments
                                                (vconcat (mapcar (lambda (arg) (if (symbolp arg) (symbol-name arg) arg)) (nth 1 case)))
                                                :cold (emmet2-markup-bench--sample case)
+                                               :expected (let ((result (nth 2 case)))
+                                                           (list :text (plist-get result :text) :cursor (plist-get result :cursor)
+                                                                 :fields (vconcat (mapcar #'vconcat (plist-get result :fields)))))
                                                :warmup (make-vector 100 nil) :samples (make-vector 1000 nil))) cases)))
             (dotimes (round 1100)
               (dotimes (offset (length cases))

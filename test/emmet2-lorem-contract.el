@@ -49,15 +49,10 @@
     (dolist (sentence entries)
       (should (= (length sentence) (length (delete-dups (copy-sequence sentence))))))))
 
-(defun emmet2-lorem-test--run (expand)
-  "Run the same structural fixtures through independently chosen EXPAND."
-  (dolist (fixture (emmet2-lorem-test--json "test/fixtures/lorem.json"))
-    (ert-info ((format "%s %s" (alist-get 'id fixture) (alist-get 'abbreviation fixture)))
-      (let* ((result (funcall expand (alist-get 'abbreviation fixture)
-                              :preset (intern (or (alist-get 'preset fixture) "html"))
-                              :indent (or (alist-get 'indent fixture) "\t")
-                              :base-indent (or (alist-get 'baseIndent fixture) "")))
-             (text (plist-get result :text))
+(defun emmet2-lorem-test--check-result (fixture result)
+  "Check RESULT against structural FIXTURE without calling either engine."
+  (ert-info ((format "%s %s" (alist-get 'id fixture) (alist-get 'abbreviation fixture)))
+      (let* ((text (plist-get result :text))
              (parts (split-string (alist-get 'template fixture) "~"))
              (contracts (alist-get 'paragraphs fixture))
              (fields (plist-get result :fields))
@@ -75,7 +70,16 @@
         (should (equal (mapcar (lambda (field) (nth 3 field)) fields) (alist-get 'fields fixture)))
         (dolist (field fields)
           (should (equal (substring text (nth 0 field) (nth 1 field)) (nth 3 field))))
-        (should (= (plist-get result :cursor) (if fields (caar fields) (length text))))))))
+        (should (= (plist-get result :cursor) (if fields (caar fields) (length text)))))))
+
+(defun emmet2-lorem-test--run (expand)
+  "Run the same structural fixtures through independently chosen EXPAND."
+  (dolist (fixture (emmet2-lorem-test--json "test/fixtures/lorem.json"))
+    (emmet2-lorem-test--check-result
+     fixture (funcall expand (alist-get 'abbreviation fixture)
+                      :preset (intern (or (alist-get 'preset fixture) "html"))
+                      :indent (or (alist-get 'indent fixture) "\t")
+                      :base-indent (or (alist-get 'baseIndent fixture) "")))))
 
 (provide 'emmet2-lorem-contract)
 ;;; emmet2-lorem-contract.el ends here
