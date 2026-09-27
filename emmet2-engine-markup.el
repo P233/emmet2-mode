@@ -47,6 +47,9 @@
   '("contenteditable" "seamless" "async" "autofocus" "autoplay" "checked" "controls"
     "defer" "disabled" "formnovalidate" "hidden" "ismap" "loop" "multiple" "muted"
     "novalidate" "readonly" "required" "reversed" "selected" "typemustmatch"))
+(defconst emmet2-markup--format-space
+  "[\t-\r \u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]"
+  "ECMAScript whitespace used by the pinned HTML formatter.")
 
 (cl-defstruct (emmet2-markup--scanner (:constructor emmet2-markup--scanner (text)))
   text (pos 0))
@@ -274,18 +277,27 @@ hold numbering width, direction, base and parent depth until conversion."
     root))
 
 (defun emmet2-markup--convert-value (tokens repeaters)
-  "Resolve numbering in TOKENS using innermost-first REPEATERS."
-  (mapcar
-   (lambda (token)
-     (if (not (vectorp token)) token
-       (let* ((repeat (car repeaters))
-              (parent (and repeaters (nth (min (aref token 3) (1- (length repeaters))) repeaters)))
-              (value (if repeat
-                         (+ (aref token 2) (if (aref token 1) (- (cdr repeat) (car repeat) 1) (car repeat)))
-                       1)))
-         (when (and parent (not (eq parent repeat))) (cl-incf value (* (cdr repeat) (car parent))))
-         (format (concat "%0" (number-to-string (aref token 0)) "d") value))))
-   tokens))
+  "Resolve TOKENS with innermost-first REPEATERS and coalesce literal text.
+Return fresh list cells so conversion never modifies shared syntax."
+  (let (result literals)
+    (cl-labels ((flush ()
+                 (when literals
+                   (push (apply #'concat (nreverse literals)) result)
+                   (setq literals nil))))
+      (dolist (token tokens)
+        (when (vectorp token)
+          (let* ((repeat (car repeaters))
+                 (parent (and repeaters (nth (min (aref token 3) (1- (length repeaters))) repeaters)))
+                 (value (if repeat
+                            (+ (aref token 2) (if (aref token 1) (- (cdr repeat) (car repeat) 1) (car repeat)))
+                          1)))
+            (when (and parent (not (eq parent repeat))) (cl-incf value (* (cdr repeat) (car parent))))
+            (setq token (format (concat "%0" (number-to-string (aref token 0)) "d") value))))
+        (if (stringp token) (push token literals)
+          (flush)
+          (push token result)))
+      (flush))
+    (nreverse result)))
 
 (defun emmet2-markup--convert (node &optional repeaters)
   "Convert parsed NODE into fresh nodes, unrolling with REPEATERS."
@@ -317,7 +329,15 @@ hold numbering width, direction, base and parent depth until conversion."
                              (emmet2-markup--attribute-value copy)
                              (emmet2-markup--convert-value (emmet2-markup--attribute-value attr) context))
                        copy)) (emmet2-markup--node-attributes node)))
-            (push copy result)))))
+            (push copy result)
+            ;; Text without a field cannot wrap children: conversion places
+            ;; them after the text in the same parent, before formatting.
+            (when (and (not (emmet2-markup--node-name copy))
+                       (not (emmet2-markup--node-attributes copy))
+                       (emmet2-markup--node-value copy)
+                       (not (cl-some #'consp (emmet2-markup--node-value copy))))
+              (setf (emmet2-markup--node-children copy) nil)
+              (dolist (child children) (push child result)))))))
     (nreverse result)))
 
 (defun emmet2-markup--resolve (nodes parsed &optional stack)
@@ -402,7 +422,7 @@ fresh nodes before resolution or transformation can change them."
                              (downcase (or (emmet2-markup--node-name node) "")))))
 
 (cl-defstruct (emmet2-markup--output (:constructor emmet2-markup--output (indent base-indent jsx)))
-  indent base-indent jsx parts fields (offset 0) (field 1) (level 0))
+  indent base-indent jsx parts fields (offset 0) (field 1) (level 0) (line 0))
 
 (defun emmet2-markup--push (out text)
   "Append literal TEXT to OUT, counting characters."
@@ -412,6 +432,7 @@ fresh nodes before resolution or transformation can change them."
 (defun emmet2-markup--newline (out &optional level)
   "Append a formatted newline at LEVEL to OUT."
   (emmet2-markup--push out (concat "\n" (emmet2-markup--output-base-indent out)))
+  (cl-incf (emmet2-markup--output-line out))
   (dotimes (_ (max 0 (or level (emmet2-markup--output-level out))))
     (emmet2-markup--push out (emmet2-markup--output-indent out))))
 
@@ -481,6 +502,14 @@ fresh nodes before resolution or transformation can change them."
       (emmet2-markup--emit-tokens out value)
       (emmet2-markup--push out (if expression "}" "\"")))))
 
+(defun emmet2-markup--block-value-p (value)
+  "Whether VALUE starts with a literal block tag, as in the HTML formatter."
+  (let ((case-fold-search nil))
+    (and (stringp (car value))
+         (string-match (concat "\\`<\\([a-zA-Z0-9_:-]+\\)\\(?:>\\|" emmet2-markup--format-space "\\)")
+                       (car value))
+         (not (member (downcase (match-string 1 (car value))) emmet2-markup--inline)))))
+
 (defun emmet2-markup--emit (out nodes &optional parent)
   "Format resolved NODES under PARENT into OUT."
   (cl-loop
@@ -503,10 +532,15 @@ fresh nodes before resolution or transformation can change them."
        (if (and value children (cl-some #'consp value))
            (let ((split (cl-position-if #'consp value)))
              (emmet2-markup--emit-tokens out (seq-take value split))
-             (emmet2-markup--emit out children node)
-             (emmet2-markup--emit-tokens out (nthcdr (1+ split) value)))
+             (let ((line (emmet2-markup--output-line out)) (suffix (nthcdr (1+ split) value)))
+               (emmet2-markup--emit out children node)
+               (when (and (/= line (emmet2-markup--output-line out)) (stringp (car suffix)))
+                 (emmet2-markup--string out (string-trim-left (car suffix) (concat emmet2-markup--format-space "+")))
+                 (setq suffix (cdr suffix)))
+               (emmet2-markup--emit-tokens out suffix)))
          (when value
-           (let ((inner (and name (cl-some (lambda (v) (and (stringp v) (string-match-p "[\r\n]" v))) value))))
+           (let ((inner (and name (or (emmet2-markup--block-value-p value)
+                                     (cl-some (lambda (v) (and (stringp v) (string-match-p "[\r\n]" v))) value)))))
              (when inner (cl-incf (emmet2-markup--output-level out)) (emmet2-markup--newline out))
              (emmet2-markup--emit-tokens out value)
              (when inner (cl-decf (emmet2-markup--output-level out)) (emmet2-markup--newline out))))

@@ -225,7 +225,7 @@ Stopping/unloading the backend and exiting Emacs clean up its owned resources.
 rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_SUITE=node emacs --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit
 ```
 
-This suite compares all 515 core oracle cases across the real process boundary
+This suite compares all 578 core oracle cases across the real process boundary
 and has independent field/Unicode/error assertions. Its fault process covers
 partial/malformed replies, invalid fields/IDs, split UTF-8, request/idle death,
 shared startup/multiple-call deadlines, missing Node, cross-buffer reentry,
@@ -673,7 +673,7 @@ rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_SUITE=markup-sp
 ```
 
 This suite directly calls the native entry; the existing editor entry remains
-entirely Node. Six ERT tests cover all 241 current markup oracle cases, a selected
+entirely Node. At the S6.0 checkpoint, six ERT tests covered 241 markup oracle cases, a selected
 40-case spike, independent field/error assertions and input/syntax immutability.
 The existing bytecode runner now checks 54 editor/native tests. The core corpus
 adds 15 cases without changing any of the original 494 results; the Node suite
@@ -692,8 +692,8 @@ carry `pos` without the source `string` attached by the character scanner.
 Their offsets are converted from UTF-16 to characters by the existing adapter.
 Six frozen cases cover unmatched tokens, repeated operators, unclosed quotes
 and errors after emoji; all previous results remain unchanged. The native
-attribute parser reports the same unexpected-operator diagnostic. Markup now
-has 247 core cases and the combined core corpus has 515.
+attribute parser reports the same unexpected-operator diagnostic. This checkpoint
+had 247 markup cases and 515 combined core cases.
 
 Ten Node adapter tests and both Emacs versions' six native and thirteen real
 protocol ERT tests pass. The protocol regression verifies multiple real parse
@@ -701,3 +701,26 @@ failures reuse the same healthy process and a following expansion succeeds.
 Backend failures retain their existing failure/disposal behavior. Wallaby has
 no project data and ESLint MCP has no configuration; scoped Deno lint and the
 repository's Node runner provide the available evidence.
+
+### S6.1 text conversion and HTML formatting
+
+An additional 63 explicit cases, selected from the pinned upstream parser/HTML
+formatter contracts and extended for canonical fields, raise markup coverage to
+310 cases and the combined corpus to 578. All previous inputs/results are
+unchanged. Text-only nodes without fields place children beside the text during
+conversion. Adjacent literal tokens coalesce without modifying shared syntax.
+The formatter recognizes literal block tags and trims the first suffix string
+after a snippet slot only when its children emitted a formatted newline. Its
+request-owned line count excludes raw field-default newlines, matching upstream;
+both tag detection and suffix trimming use ECMAScript whitespace.
+
+These cases cover repeated/nested slots, inline break thresholds, raw HTML,
+Unicode whitespace, escapes, CR/LF, JSX self-closing layout and nondefault
+indentation, with full text/fields/cursor comparison. Broader attribute grammar,
+repeat metadata, JSX AST extensions and seeded lorem remain S6 work; this slice
+does not change the editor backend or claim complete grammar acceptance.
+
+Both pinned Emacs builds pass seven native ERT tests (including all 310 cases,
+shared-syntax immutability and search-setting independence), thirteen real Node
+protocol tests (578 cases), and warnings-fatal compilation of the changed Lisp
+files. Oracle regeneration checks and previous-result prefix comparisons pass.

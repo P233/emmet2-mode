@@ -4754,5 +4754,1271 @@
       "message": "Unexpected \"Operator\" token",
       "position": 4
     }
+  },
+  {
+    "id": "markup-format-01",
+    "result": {
+      "text": "<div>\n\t<p></p>\n</div>",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "markup-format-02",
+    "result": {
+      "text": "<div id=\"a\">\n\t<p class=\"b\"><span></span></p>\n\t<p class=\"b\"><span></span></p>\n</div>",
+      "fields": [
+        [
+          33,
+          33,
+          1,
+          ""
+        ],
+        [
+          65,
+          65,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 33
+    }
+  },
+  {
+    "id": "markup-format-03",
+    "result": {
+      "text": "<div>\n\t<div>\n\t\t<div></div>\n\t</div>\n</div>",
+      "fields": [
+        [
+          20,
+          20,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 20
+    }
+  },
+  {
+    "id": "markup-format-04",
+    "result": {
+      "text": "<table>\n\t<tr>\n\t\t<td>item</td>\n\t\t<td>item</td>\n\t</tr>\n\t<tr>\n\t\t<td>item</td>\n\t\t<td>item</td>\n\t</tr>\n</table>",
+      "fields": [],
+      "cursor": 106
+    }
+  },
+  {
+    "id": "markup-format-05",
+    "result": {
+      "text": "<div>\n\t<a href=\"\">\n\t\t<b></b>\n\t\t<b></b>\n\t\t<b></b>\n\t</a>\n</div>",
+      "fields": [
+        [
+          16,
+          16,
+          1,
+          ""
+        ],
+        [
+          24,
+          24,
+          2,
+          ""
+        ],
+        [
+          34,
+          34,
+          3,
+          ""
+        ],
+        [
+          44,
+          44,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "markup-format-06",
+    "result": {
+      "text": "<p><i></i></p>",
+      "fields": [
+        [
+          6,
+          6,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 6
+    }
+  },
+  {
+    "id": "markup-format-07",
+    "result": {
+      "text": "<p><i></i><i></i></p>",
+      "fields": [
+        [
+          6,
+          6,
+          1,
+          ""
+        ],
+        [
+          13,
+          13,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 6
+    }
+  },
+  {
+    "id": "markup-format-08",
+    "result": {
+      "text": "<p>\n\t<i></i>\n\t<i></i>\n\t<i></i>\n</p>",
+      "fields": [
+        [
+          8,
+          8,
+          1,
+          ""
+        ],
+        [
+          17,
+          17,
+          2,
+          ""
+        ],
+        [
+          26,
+          26,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 8
+    }
+  },
+  {
+    "id": "markup-format-09",
+    "result": {
+      "text": "<i></i><i></i>",
+      "fields": [
+        [
+          3,
+          3,
+          1,
+          ""
+        ],
+        [
+          10,
+          10,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 3
+    }
+  },
+  {
+    "id": "markup-format-10",
+    "result": {
+      "text": "<i></i>\n<i></i>\n<i></i>",
+      "fields": [
+        [
+          3,
+          3,
+          1,
+          ""
+        ],
+        [
+          11,
+          11,
+          2,
+          ""
+        ],
+        [
+          19,
+          19,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 3
+    }
+  },
+  {
+    "id": "markup-format-11",
+    "result": {
+      "text": "<i>a</i><i>b</i>",
+      "fields": [],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "markup-format-12",
+    "result": {
+      "text": "<div>\n\t<img src=\"\" alt=\"\">\n\t<p></p>\n</div>",
+      "fields": [
+        [
+          17,
+          17,
+          1,
+          ""
+        ],
+        [
+          24,
+          24,
+          2,
+          ""
+        ],
+        [
+          31,
+          31,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "markup-format-13",
+    "result": {
+      "text": "<div>\n\t<p></p>\n\t<img src=\"\" alt=\"\">\n</div>",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ],
+        [
+          26,
+          26,
+          2,
+          ""
+        ],
+        [
+          33,
+          33,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "markup-format-14",
+    "result": {
+      "text": "<div>\n\t<p></p>\n\t<img src=\"\" alt=\"\">\n\t<p></p>\n</div>",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ],
+        [
+          26,
+          26,
+          2,
+          ""
+        ],
+        [
+          33,
+          33,
+          3,
+          ""
+        ],
+        [
+          40,
+          40,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "markup-format-15",
+    "result": {
+      "text": "<div>\n\t<p></p>\n\t<img src=\"\" alt=\"\"><img src=\"\" alt=\"\">\n\t<p></p>\n</div>",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ],
+        [
+          26,
+          26,
+          2,
+          ""
+        ],
+        [
+          33,
+          33,
+          3,
+          ""
+        ],
+        [
+          45,
+          45,
+          4,
+          ""
+        ],
+        [
+          52,
+          52,
+          5,
+          ""
+        ],
+        [
+          59,
+          59,
+          6,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "markup-format-16",
+    "result": {
+      "text": "<div>\n\t<p></p>\n\t<img src=\"\" alt=\"\">\n\t<img src=\"\" alt=\"\">\n\t<img src=\"\" alt=\"\">\n\t<p></p>\n</div>",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ],
+        [
+          26,
+          26,
+          2,
+          ""
+        ],
+        [
+          33,
+          33,
+          3,
+          ""
+        ],
+        [
+          47,
+          47,
+          4,
+          ""
+        ],
+        [
+          54,
+          54,
+          5,
+          ""
+        ],
+        [
+          68,
+          68,
+          6,
+          ""
+        ],
+        [
+          75,
+          75,
+          7,
+          ""
+        ],
+        [
+          82,
+          82,
+          8,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "markup-format-17",
+    "result": {
+      "text": "<a href=\"\"></a><a href=\"\"></a>",
+      "fields": [
+        [
+          9,
+          9,
+          1,
+          ""
+        ],
+        [
+          11,
+          11,
+          2,
+          ""
+        ],
+        [
+          24,
+          24,
+          3,
+          ""
+        ],
+        [
+          26,
+          26,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 9
+    }
+  },
+  {
+    "id": "markup-format-18",
+    "result": {
+      "text": " foo bar\n foo bar",
+      "fields": [
+        [
+          0,
+          0,
+          1,
+          ""
+        ],
+        [
+          1,
+          4,
+          2,
+          "foo"
+        ],
+        [
+          5,
+          8,
+          3,
+          "bar"
+        ],
+        [
+          9,
+          9,
+          4,
+          ""
+        ],
+        [
+          10,
+          13,
+          5,
+          "foo"
+        ],
+        [
+          14,
+          17,
+          6,
+          "bar"
+        ]
+      ],
+      "cursor": 0
+    }
+  },
+  {
+    "id": "markup-format-19",
+    "result": {
+      "text": "<div><img src=\"\" alt=\"\"></div>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ],
+        [
+          22,
+          22,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "markup-format-20",
+    "result": {
+      "text": "<div>foo</div>",
+      "fields": [],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "markup-format-21",
+    "result": {
+      "text": "<div>foo</div>",
+      "fields": [],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "markup-format-22",
+    "result": {
+      "text": "<div>\n\tfoo\n\tbar\n</div>",
+      "fields": [],
+      "cursor": 22
+    }
+  },
+  {
+    "id": "markup-format-23",
+    "result": {
+      "text": "<div>\n\tfoo\n\tbar\n\t<p></p>\n</div>",
+      "fields": [
+        [
+          20,
+          20,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 20
+    }
+  },
+  {
+    "id": "markup-format-24",
+    "result": {
+      "text": "<div>\n\tfoo\n\tbar\n\t<p></p>\n\tfoo\n\tbar\n\t<p></p>\n</div>",
+      "fields": [
+        [
+          20,
+          20,
+          1,
+          ""
+        ],
+        [
+          39,
+          39,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 20
+    }
+  },
+  {
+    "id": "markup-format-25",
+    "result": {
+      "text": "<div>\n\tfoo\n\t<p></p>\n\tbar\n</div>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "markup-format-26",
+    "result": {
+      "text": "<div>\n\tfoo\n\t<p></p>\n</div>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "markup-format-27",
+    "result": {
+      "text": "<div><!--  --></div>",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "markup-format-28",
+    "result": {
+      "text": "<div>\n\t<!--  -->\n\t<p></p>\n</div>",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ],
+        [
+          21,
+          21,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "markup-format-29",
+    "result": {
+      "text": "<div>\n\t<p></p>\n\t<!--  -->\n</div>",
+      "fields": [
+        [
+          10,
+          10,
+          1,
+          ""
+        ],
+        [
+          21,
+          21,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "markup-format-30",
+    "result": {
+      "text": "<div>\n\t<!-- <p></p> -->\n</div>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "markup-format-31",
+    "result": {
+      "text": "<div>\n\t<!-- <p></p> -->\n\t<!-- <p></p> -->\n</div>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ],
+        [
+          33,
+          33,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "markup-format-32",
+    "result": {
+      "text": "<div>\n\t<!-- \n\t<p></p>\n\t<p></p>\n\t-->\n</div>",
+      "fields": [
+        [
+          17,
+          17,
+          1,
+          ""
+        ],
+        [
+          26,
+          26,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "markup-format-33",
+    "result": {
+      "text": "<div>\n\t<!-- \n\t<p></p>\n\t<p></p>\n\t-->\n\t<!-- \n\t<p></p>\n\t<p></p>\n\t-->\n</div>",
+      "fields": [
+        [
+          17,
+          17,
+          1,
+          ""
+        ],
+        [
+          26,
+          26,
+          2,
+          ""
+        ],
+        [
+          47,
+          47,
+          3,
+          ""
+        ],
+        [
+          56,
+          56,
+          4,
+          ""
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "markup-format-34",
+    "result": {
+      "text": "<div>\n\t<!-- <b></b> -->\n</div>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "markup-format-35",
+    "result": {
+      "text": "<div>\n\t<!-- <b></b><b></b> -->\n</div>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ],
+        [
+          22,
+          22,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "markup-format-36",
+    "result": {
+      "text": "<div>\n\t<!-- \n\t<b></b>\n\t<b></b>\n\t<b></b>\n\t-->\n</div>",
+      "fields": [
+        [
+          17,
+          17,
+          1,
+          ""
+        ],
+        [
+          26,
+          26,
+          2,
+          ""
+        ],
+        [
+          35,
+          35,
+          3,
+          ""
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "markup-format-37",
+    "result": {
+      "text": "<div>\n\t<section>raw</section>\n</div>",
+      "fields": [],
+      "cursor": 36
+    }
+  },
+  {
+    "id": "markup-format-38",
+    "result": {
+      "text": "<div><span>raw</span></div>",
+      "fields": [],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "markup-format-39",
+    "result": {
+      "text": "<div>\n\t<SECTION>raw</SECTION>\n</div>",
+      "fields": [],
+      "cursor": 36
+    }
+  },
+  {
+    "id": "markup-format-40",
+    "result": {
+      "text": "<div> <section>raw</section></div>",
+      "fields": [],
+      "cursor": 34
+    }
+  },
+  {
+    "id": "markup-format-41",
+    "result": {
+      "text": "<div>\n\t<x-card data-x=\"1\">raw</x-card>\n</div>",
+      "fields": [],
+      "cursor": 45
+    }
+  },
+  {
+    "id": "markup-format-42",
+    "result": {
+      "text": "<div><input/></div>",
+      "fields": [],
+      "cursor": 19
+    }
+  },
+  {
+    "id": "markup-format-43",
+    "result": {
+      "text": "<div>\n\tone\n\ttwo\n\tthree\n\tfour\n</div>",
+      "fields": [],
+      "cursor": 35
+    }
+  },
+  {
+    "id": "markup-format-44",
+    "result": {
+      "text": "<div>one\ntwo</div>",
+      "fields": [
+        [
+          5,
+          12,
+          1,
+          "one\ntwo"
+        ]
+      ],
+      "cursor": 5
+    }
+  },
+  {
+    "id": "markup-format-45",
+    "result": {
+      "text": "<p>\n\tfoo\n\t<div></div>\n</p>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "markup-format-46",
+    "result": {
+      "text": "<p>\n\tfoo <div></div>\n</p>",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "markup-format-47",
+    "result": {
+      "text": "<p>\n\tfoo\n\t<div></div>\n</p>\n<p>\n\tfoo\n\t<div></div>\n</p>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ],
+        [
+          42,
+          42,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "markup-format-48",
+    "result": {
+      "text": "<div>\n\t😀 \n\t<p></p>\n\t<p></p>\n\t \n\t after\n</div>",
+      "fields": [
+        [
+          14,
+          14,
+          1,
+          ""
+        ],
+        [
+          23,
+          23,
+          2,
+          ""
+        ],
+        [
+          29,
+          29,
+          3,
+          ""
+        ],
+        [
+          33,
+          38,
+          4,
+          "after"
+        ]
+      ],
+      "cursor": 14
+    }
+  },
+  {
+    "id": "markup-format-49",
+    "result": {
+      "text": "<div>\n\t<!-- <b></b> \n\t end -->\n</div>",
+      "fields": [
+        [
+          15,
+          15,
+          1,
+          ""
+        ],
+        [
+          23,
+          26,
+          2,
+          "end"
+        ]
+      ],
+      "cursor": 15
+    }
+  },
+  {
+    "id": "markup-format-50",
+    "result": {
+      "text": "<div>\n\t<!-- \n\t<b></b>\n\t<b></b>\n\t<b></b>\n\tend -->\n</div>",
+      "fields": [
+        [
+          17,
+          17,
+          1,
+          ""
+        ],
+        [
+          26,
+          26,
+          2,
+          ""
+        ],
+        [
+          35,
+          35,
+          3,
+          ""
+        ],
+        [
+          41,
+          44,
+          4,
+          "end"
+        ]
+      ],
+      "cursor": 17
+    }
+  },
+  {
+    "id": "markup-format-51",
+    "result": {
+      "text": "<div>\n\t<span></span>\n\t<section></section>\nsuffix</div>",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ],
+        [
+          31,
+          31,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "markup-format-52",
+    "result": {
+      "text": "<div>\n\ta\n\tbsuffix\n</div>",
+      "fields": [],
+      "cursor": 24
+    }
+  },
+  {
+    "id": "markup-format-53",
+    "result": {
+      "text": "<div>\n\t<section>text</section>\n</div>\n<p></p>",
+      "fields": [
+        [
+          16,
+          20,
+          1,
+          "text"
+        ],
+        [
+          41,
+          41,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 16
+    }
+  },
+  {
+    "id": "markup-format-54",
+    "result": {
+      "text": "<div>\n\t<p>😀 body</p>\nsuffix</div>",
+      "fields": [
+        [
+          12,
+          16,
+          1,
+          "body"
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "markup-format-layout",
+    "result": {
+      "text": "<div>\n      <!-- \n      <p></p>\n      <p></p>\n      -->\n    </div>",
+      "fields": [
+        [
+          27,
+          27,
+          1,
+          ""
+        ],
+        [
+          41,
+          41,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 27
+    }
+  },
+  {
+    "id": "markup-format-jsx",
+    "result": {
+      "text": "<div>\n    <p></p>\n    <img src=\"\" alt=\"\" />\n    <img src=\"\" alt=\"\" />\n    <img src=\"\" alt=\"\" />\n    <p></p>\n  </div>",
+      "fields": [
+        [
+          13,
+          13,
+          1,
+          ""
+        ],
+        [
+          32,
+          32,
+          2,
+          ""
+        ],
+        [
+          39,
+          39,
+          3,
+          ""
+        ],
+        [
+          58,
+          58,
+          4,
+          ""
+        ],
+        [
+          65,
+          65,
+          5,
+          ""
+        ],
+        [
+          84,
+          84,
+          6,
+          ""
+        ],
+        [
+          91,
+          91,
+          7,
+          ""
+        ],
+        [
+          103,
+          103,
+          8,
+          ""
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "markup-format-edge-01",
+    "result": {
+      "text": "<div>\n\t\n\t<p></p>\n\t<p></p>\n\tsuffix\n</div>",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ],
+        [
+          21,
+          21,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "markup-format-edge-02",
+    "result": {
+      "text": "<div>\n\t<section data-x=\"1\">raw</section>\n</div>",
+      "fields": [],
+      "cursor": 47
+    }
+  },
+  {
+    "id": "markup-format-edge-03",
+    "result": {
+      "text": "<div>\n\t<section>raw</section>\n</div>",
+      "fields": [],
+      "cursor": 36
+    }
+  },
+  {
+    "id": "markup-format-edge-04",
+    "result": {
+      "text": "<div>\n\t\n\t<p></p>\n\t<p></p>\n\tsuffix\n</div>",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ],
+        [
+          21,
+          21,
+          2,
+          ""
+        ]
+      ],
+      "cursor": 12
+    }
+  },
+  {
+    "id": "markup-format-edge-05",
+    "result": {
+      "text": "<div>\n\t<b>a\nb</b> suffix\n</div>",
+      "fields": [
+        [
+          10,
+          13,
+          1,
+          "a\nb"
+        ]
+      ],
+      "cursor": 10
+    }
+  },
+  {
+    "id": "markup-format-edge-06",
+    "result": {
+      "text": "<div><section>raw</section></div>",
+      "fields": [
+        [
+          13,
+          14,
+          1,
+          ">"
+        ]
+      ],
+      "cursor": 13
+    }
+  },
+  {
+    "id": "markup-format-edge-07",
+    "result": {
+      "text": "<div>\n\t\n\t<p></p>\n\t<p></p>\n\t suffix\n</div>",
+      "fields": [
+        [
+          12,
+          12,
+          1,
+          ""
+        ],
+        [
+          21,
+          21,
+          2,
+          ""
+        ],
+        [
+          27,
+          34,
+          3,
+          " suffix"
+        ]
+      ],
+      "cursor": 12
+    }
   }
 ]

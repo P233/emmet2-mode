@@ -40,7 +40,7 @@
   ;; This corpus covers all shipped aliases, but is not the full grammar suite.
   (let* ((oracle (emmet2-markup-test--json "test/fixtures/oracle/markup.json"))
          (cases (emmet2-markup-test--cases (mapcar (lambda (entry) (alist-get 'id entry)) oracle))))
-    (should (= (length cases) 247))
+    (should (= (length cases) 310))
     (dolist (case cases)
       (ert-info ((car case))
         (should (equal (condition-case err (apply #'emmet2-engine-markup-expand (nth 1 case))
@@ -55,13 +55,20 @@
         (should (equal (apply #'emmet2-engine-markup-expand (nth 1 case)) (nth 2 case)))))))
 
 (ert-deftest emmet2-markup-conversion-does-not-mutate-shared-syntax ()
-  (let* ((syntax (emmet2-markup--parse "(ul>li.item$*2>a[title=${1:x}])*2"))
-         (before (prin1-to-string syntax))
-         (first (emmet2-markup--convert syntax))
-         (converted (prin1-to-string first)))
-    (emmet2-markup--transform (emmet2-markup--resolve first (make-hash-table :test #'equal)))
-    (should (equal (prin1-to-string syntax) before))
-    (should (equal (prin1-to-string (emmet2-markup--convert syntax)) converted))))
+  (dolist (input '("(ul>li.item$*2>a[title=${1:x}])*2"
+                   "(p>{foo}>div)*2"
+                   "div{<se\\ction>${1:text}</section>}"
+                   "div>{${0} \\ suffix}>p*2"))
+    (let* ((syntax (emmet2-markup--parse input))
+           (before (prin1-to-string syntax))
+           (first (emmet2-markup--convert syntax))
+           (converted (prin1-to-string first))
+           (out (emmet2-markup--output "\t" "" nil)))
+      (setq first (emmet2-markup--resolve first (make-hash-table :test #'equal)))
+      (emmet2-markup--transform first)
+      (emmet2-markup--emit out first)
+      (should (equal (prin1-to-string syntax) before))
+      (should (equal (prin1-to-string (emmet2-markup--convert syntax)) converted)))))
 
 (ert-deftest emmet2-markup-fields-have-token-scope-and-character-offsets ()
   (should (equal (emmet2-engine-markup-expand "div{${1:a\nb}}")
@@ -76,6 +83,14 @@
   (should (equal (emmet2-engine-markup-expand "div{${1:x}}+span{${1:x}}")
                  '(:text "<div>x</div>\n<span>x</span>"
                          :fields ((5 6 1 "x") (19 20 2 "x")) :cursor 5))))
+
+(ert-deftest emmet2-markup-formatter-is-independent-of-search-settings ()
+  (dolist (case-fold-search '(nil t))
+    (should (equal (emmet2-engine-markup-expand "div{<SECTION>raw</SECTION>}")
+                   (emmet2-result-create "<div>\n\t<SECTION>raw</SECTION>\n</div>" nil)))
+    ;; JavaScript's tag regexp is ASCII; Emacs case folding also matches K to K.
+    (should (equal (emmet2-engine-markup-expand "div{<K>raw</K>}")
+                   (emmet2-result-create "<div><K>raw</K></div>" nil)))))
 
 (ert-deftest emmet2-markup-inputs-data-and-editor-state-are-unchanged ()
   (let* ((input "ul>li.item$*2>a{😀 ${1:x}}") (original (copy-sequence input))
