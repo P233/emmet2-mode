@@ -52,11 +52,10 @@ tests as migrated coverage.
   effective styles/category settings instead of guessing from `basic` membership.
   Do not mutate the user's completion settings or add label-recovery state.
 
-The Node backend is temporary: one process and one request, with a deadline for
-the whole expansion. Cancellation before a complete response destroys that
-process. S7 must prove the complete Elisp backend before Node runtime files and
-their protocol tests are retired. The offline development oracle may still use
-Node after the package runtime becomes pure Elisp.
+The public engine now dispatches directly to native markup/stylesheet code.
+Node remains only as an independent test reference until S8 retires its runtime
+files and protocol tests. No production backend switch or fallback exists.
+The offline development oracle may still use Node after that retirement.
 
 ## Data and test authority
 
@@ -233,18 +232,22 @@ Project raw CSS, rhythm, ms, aliases, CSS-in-JS and default removal remain owned
 by `emmet2-extensions.el`; the core does not duplicate them.
 
 S7 stylesheet integration, installed native acceptance and the six-property
-p99 budget pass locally; see the S7.3 evidence below. The production entry uses
-Node until the separate GUI and hosted CI gates close.
+p99 budget pass locally; see the S7.3 evidence below. The production entry now
+uses these native engines. Real GUI acceptance remains a separate final gate.
 
-## Temporary Node API
+## Public native API
 
 `emmet2-engine-expand` accepts an abbreviation, a preset symbol (`html`, `jsx`
 or `stylesheet`), and literal `:indent`/`:base-indent` strings. It returns the
-canonical result. `emmet2-engine-with-expansion` gives a group of core calls one
-shared one-second deadline, including startup, decoding and result transforms.
-S2 must wrap an entire extension expansion so multiple properties do not each
-receive a fresh second. The installed minor mode still uses the old bridge;
-this developer API does not switch editor commands or add insertion yet.
+canonical result. `:jsx` passes project rendering options to markup; `:seed`
+defaults to zero and uses its integer low 32 bits for call-local lorem generation.
+Seed has no effect on CSS; invalid seed types fail for every preset. No global
+random state is read or modified. `emmet2-engine-with-expansion` gives nested
+core calls one shared one-second deadline, including loading and transforms.
+Extensions wrap the entire expansion so multiple properties share that budget.
+Commands, completion and previews all call this public entry.
+
+## Temporary Node test reference
 
 The channel owns one process and one pending request. Reply fragments are
 attached to their originating process, validated by request ID and result
@@ -260,7 +263,7 @@ Stopping/unloading the backend and exiting Emacs clean up its owned resources.
 rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_SUITE=node emacs --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit
 ```
 
-This suite compares all 794 core oracle cases across the real process boundary
+This suite compares all 973 core oracle cases across the real process boundary
 and has independent field/Unicode/error assertions. Its fault process covers
 partial/malformed replies, invalid fields/IDs, split UTF-8, request/idle death,
 shared startup/multiple-call deadlines, missing Node, cross-buffer reentry,
@@ -930,3 +933,21 @@ See [the results and source hashes](test/performance-stylesheet-2026-09-27.md)
 and [the reproduction protocol](test/PERFORMANCE.md#running-the-native-stylesheet-benchmark).
 Together with installed integration, this closes S7.3 locally. GUI/hosted M1
 evidence still precedes the S7.4 default switch and S8 runtime retirement.
+
+## S7.4 native default checkpoint (2026-09-27)
+
+The public entry now calls the existing native cores, with one enclosing
+expansion deadline and call-local `:seed`. Native integration invokes that real
+entry; only the reference Node run replaces it. On Emacs 30.2 and 31.1, each
+native run passed 257 tests / 1699 core calls, and each Node reference passed
+253 tests / 1674 calls. The 75 bytecode editor/core checks reject both async
+and synchronous process creation; all 14 legacy protocol tests still pass.
+Warnings-as-errors compilation passed on both versions. The install runner now
+uses an empty executable path and rejects process creation; the new committed
+revision must be reinstalled before claiming actual-package acceptance.
+
+GUI interactions remain unverified because Computer Use cannot read Emacs.
+This is a final acceptance gap, not a prerequisite for S8 development. Existing
+performance reports describe their recorded revisions; no new speedup is claimed
+from changing dispatch. The complete-flow runner now identifies the native engine
+and records lazy-load cold samples without pretending to restart a Node process.

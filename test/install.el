@@ -10,7 +10,6 @@
 (defvar straight-recipe-repositories)
 (defvar straight-check-for-modifications)
 (declare-function straight-use-package "straight" (recipe &optional no-clone no-build cause interactive))
-(declare-function emmet2-node-stop "emmet2-engine-node" (&optional process))
 
 (defun emmet2-install--git (directory &rest arguments)
   "Run Git ARGUMENTS in DIRECTORY and return its output."
@@ -22,7 +21,6 @@
 (let* ((destination (or (getenv "EMMET2_INSTALL_ROOT") (error "Set EMMET2_INSTALL_ROOT")))
        (source emmet2-test-root)
        (revision (emmet2-install--git source "rev-parse" "HEAD"))
-       (node (or (executable-find "node") (error "Node is required for the interim installation")))
        (straight-source (locate-library "straight"))
        (locked
         (with-temp-buffer
@@ -72,37 +70,38 @@
       (let ((library (locate-library (file-name-sans-extension name))))
         (unless (and library (file-in-directory-p library package-directory))
           (error "Runtime library escaped the installed package: %s" library))))
-    ;; After installation, only Node is available to the runtime.  This proves
-    ;; Deno, deno-bridge and npm are not needed by the installed mode.
+    ;; Git is needed to build the package, never to expand an abbreviation.
+    ;; Runtime checks have an empty executable path and reject process creation.
     (make-directory binary-directory)
-    (make-symbolic-link node (expand-file-name "node" binary-directory))
-    (setq exec-path (list binary-directory exec-directory))
+    (setq exec-path nil)
     (setenv "PATH" binary-directory)
-    (when (or (executable-find "deno") (executable-find "npm"))
+    (when (seq-some #'executable-find '("node" "deno" "npm" "git"))
       (error "Runtime PATH isolation failed"))
     (require 'emmet2-mode)
     (unless (byte-code-function-p (symbol-function 'emmet2-expand))
       (error "The actual package installation must be byte-compiled"))
-    (dolist (entry load-history)
-      (when (and (stringp (car entry))
-                 (string-match-p "/emmet2-[^/]+\\.elc?\\'" (car entry))
-                 (not (file-in-directory-p (car entry) destination)))
-        (error "Loaded runtime escaped the installation: %s" (car entry))))
-    (unwind-protect
-        (progn
-          (load (expand-file-name "test/emmet2-insert-test.el" source) nil t)
-          (load (expand-file-name "test/emmet2-capf-test.el" source) nil t)
-          (load (expand-file-name "test/emmet2-preview-test.el" source) nil t)
-          (let ((stats (ert-run-tests-batch t)))
-            (when (> (ert-stats-completed-unexpected stats) 0)
-              (error "Installed editor/completion checks failed"))
-            (with-temp-file (expand-file-name "acceptance.json" destination)
-              (insert (json-serialize
-                       `(:revision ,revision :emacs ,emacs-version :straight ,straight-revision
-                         :packageDirectory ,package-directory :node ,node
-                         :resourceCount ,(length resources)
-                         :tests ,(ert-stats-completed-expected stats) :runtimePath ,(getenv "PATH")))))))
-      (when (fboundp 'emmet2-node-stop) (emmet2-node-stop)))
+    (cl-letf (((symbol-function 'make-process) (lambda (&rest _) (error "Installed runtime must not start a process")))
+              ((symbol-function 'call-process) (lambda (&rest _) (error "Installed runtime must not call a process"))))
+      (load (expand-file-name "test/emmet2-insert-test.el" source) nil t)
+      (load (expand-file-name "test/emmet2-capf-test.el" source) nil t)
+      (load (expand-file-name "test/emmet2-preview-test.el" source) nil t)
+      (require 'emmet2-engine-native-test)
+      (let ((stats (ert-run-tests-batch t)))
+        (when (> (ert-stats-completed-unexpected stats) 0)
+          (error "Installed editor/completion checks failed"))
+        (when (featurep 'emmet2-engine-node) (error "Installed runtime loaded Node"))
+        (dolist (entry load-history)
+          (when (and (stringp (car entry))
+                     (string-match-p "/emmet2-[^/]+\\.elc?\\'" (car entry))
+                     (not (file-in-directory-p (car entry) (expand-file-name "test" source)))
+                     (not (file-in-directory-p (car entry) destination)))
+            (error "Loaded runtime escaped the installation: %s" (car entry))))
+        (with-temp-file (expand-file-name "acceptance.json" destination)
+          (insert (json-serialize
+                   `(:revision ,revision :emacs ,emacs-version :straight ,straight-revision
+                     :packageDirectory ,package-directory :externalRuntime :false
+                     :resourceCount ,(length resources)
+                     :tests ,(ert-stats-completed-expected stats) :runtimePath ,(getenv "PATH")))))))
     (message "Verified installed package: %s" package-directory)))
 
 ;;; install.el ends here

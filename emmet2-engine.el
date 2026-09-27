@@ -18,7 +18,7 @@
 (define-error 'emmet2-result-error "Invalid Emmet result" 'emmet2-error)
 
 (defvar emmet2-engine--deadline nil "Dynamically scoped deadline for one expansion.")
-(defvar emmet2-engine--timeout 1.0 "Seconds allowed for a complete Node expansion.")
+(defvar emmet2-engine--timeout 1.0 "Seconds allowed for a complete expansion.")
 
 (defun emmet2-engine--check-deadline ()
   "Reject an expired expansion deadline."
@@ -33,18 +33,26 @@
      (emmet2-engine--check-deadline)
      (prog1 (progn ,@body) (emmet2-engine--check-deadline))))
 
-(autoload 'emmet2-engine-node-expand "emmet2-engine-node")
+(autoload 'emmet2-engine-markup-expand "emmet2-engine-markup")
+(autoload 'emmet2-engine-stylesheet-expand "emmet2-engine-stylesheet")
 
-(cl-defun emmet2-engine-expand (abbreviation &key (preset 'html) (indent "\t") (base-indent "") jsx)
+(cl-defun emmet2-engine-expand (abbreviation &key (preset 'html) (indent "\t") (base-indent "") jsx (seed 0))
   "Expand ABBREVIATION with PRESET and the internal rendering parameters.
 PRESET is html, jsx or stylesheet.  INDENT and BASE-INDENT are literal strings.
 JSX is nil or the internal structured JSX extension options.
-Return a canonical result.  The Node backend is temporary until S6/S7 pass."
+SEED is an integer for call-local lorem generation, normalized to 32 bits;
+it has no effect on stylesheet expansion.  Return a canonical result."
   (unless (and (stringp abbreviation) (memq preset '(html jsx stylesheet))
                (stringp indent) (stringp base-indent))
     (signal 'emmet2-error '("Invalid abbreviation, preset or indentation")))
+  (unless (integerp seed) (signal 'emmet2-error '("Lorem seed must be an integer")))
   (emmet2-engine-with-expansion
-    (emmet2-engine-node-expand abbreviation preset indent base-indent jsx)))
+    (if (eq preset 'stylesheet)
+        (progn
+          (when jsx (signal 'emmet2-error '("JSX options require markup")))
+          (emmet2-engine-stylesheet-expand abbreviation :preset preset :indent indent :base-indent base-indent))
+      (emmet2-engine-markup-expand abbreviation :preset preset :indent indent :base-indent base-indent
+                                  :jsx jsx :seed seed))))
 
 (defun emmet2-result-create (text &optional fields)
   "Create a canonical result from TEXT and FIELDS.

@@ -16,7 +16,6 @@
 (declare-function emmet2-context--prepare "emmet2-context" ())
 (declare-function emmet2-context-analyze "emmet2-context" (&optional automatic))
 (declare-function emmet2-insert-render-options "emmet2-insert" (analysis))
-(declare-function emmet2-node-stop "emmet2-engine-node" (&optional process))
 (declare-function emmet2-preview-clear "emmet2-preview" ())
 
 (defun emmet2-flow--command (program &rest arguments)
@@ -95,9 +94,9 @@ Return six triples: total, request, annotation, doc, repeated doc, accept."
       (buffer-enable-undo)
       (goto-char position) (emmet2-mode 1)
       (let ((preparation (emmet2-flow--time #'emmet2-context--prepare)))
-        ;; First command includes the first backend request for this fixture.
-        ;; Later fixtures restart Node, but may share loaded Lisp/data/modes.
-        (emmet2-node-stop) (emmet2-preview-clear)
+        ;; First use includes lazy engine loading; later fixtures share loaded
+        ;; Lisp/data/modes.  These cold samples do not include Emacs startup.
+        (emmet2-preview-clear)
         (setq analysis (emmet2-context-analyze t)
               abbreviation (plist-get analysis :abbr) beg (plist-get analysis :beg) end (plist-get analysis :end))
         (unless analysis (error "Fixture has no confirmed automatic context: %s" name))
@@ -123,7 +122,7 @@ Return six triples: total, request, annotation, doc, repeated doc, accept."
                    (error "Benchmark skipped editable fields: %s" name))
                  sample)))
           (reset)
-          (emmet2-node-stop) (emmet2-preview-clear)
+          (emmet2-preview-clear)
           (push (cons 'completion (run 'completion)) cold)
           (verify) (reset)
           (yas-minor-mode 1)
@@ -180,16 +179,20 @@ Return six triples: total, request, annotation, doc, repeated doc, accept."
         (unless (equal (plist-get entry :sha256) (emmet2-flow--hash (expand-file-name name package)))
           (error "Installed source differs from current runtime: %s" name)))))
   (setq load-path (cons package (delete emmet2-test-root load-path)))
-  (require 'emmet2-mode) (require 'emmet2-capf) (require 'emmet2-preview) (require 'emmet2-engine-node)
-  (dolist (function '(emmet2-expand emmet2-capf emmet2-preview emmet2-context-analyze emmet2-engine-node-expand))
+  (require 'emmet2-mode) (require 'emmet2-capf) (require 'emmet2-preview)
+  (dolist (function '(emmet2-expand emmet2-capf emmet2-preview emmet2-context-analyze emmet2-engine-expand))
     (unless (and (byte-code-function-p (symbol-function function))
                  (file-in-directory-p (symbol-file function 'defun) package))
       (error "Measured function is not installed bytecode: %s" function)))
   (unwind-protect
       (progn
-        (dolist (fixture fixtures)
-          (when (or (not filter) (string-match-p filter (car fixture)))
-            (push (apply #'emmet2-flow--fixture fixture) reports)))
+        (let ((exec-path nil))
+          (cl-letf (((symbol-function 'make-process) (lambda (&rest _) (error "Native flow must not start a process")))
+                    ((symbol-function 'call-process) (lambda (&rest _) (error "Native flow must not call a process"))))
+            (dolist (fixture fixtures)
+              (when (or (not filter) (string-match-p filter (car fixture)))
+                (push (apply #'emmet2-flow--fixture fixture) reports)))))
+        (when (featurep 'emmet2-engine-node) (error "Measured flow loaded Node"))
         (unless reports (error "No matching fixture"))
         (unless (equal sources (emmet2-flow--sources)) (error "Measured sources changed"))
         (with-temp-file output
@@ -202,14 +205,14 @@ Return six triples: total, request, annotation, doc, repeated doc, accept."
                          :cpu (if (eq system-type 'darwin)
                                   (emmet2-flow--command "sysctl" "-n" "machdep.cpu.brand_string")
                                 (emmet2-flow--command "uname" "-m"))
-                         :node (emmet2-flow--command "node" "--version") :package package
-                         :backend "temporary Node" :project-compilation "bytecode"
+                         :package package
+                         :backend "native Elisp" :project-compilation "bytecode"
                          :optional-packages "locked source; built-in modes from this Emacs build"
                          :display "real Corfu control, annotation formatting and popupinfo; screen drawing replaced"
                          :gc-cons-threshold gc-cons-threshold :gc-cons-percentage gc-cons-percentage
                          :filter filter :sample-columns ["milliseconds" "gc-count" "gc-seconds"]
                          :cases (vconcat (nreverse reports)))))
           (insert "\n")))
-    (emmet2-node-stop) (emmet2-preview-clear)))
+    (emmet2-preview-clear)))
 
 ;;; bench-completion.el ends here

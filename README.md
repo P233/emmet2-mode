@@ -1,9 +1,8 @@
 # emmet2-mode
 
 Emmet2-mode expands [Emmet](https://emmet.io/) abbreviations in Emacs. The native
-front-end now analyzes the host buffer, renders structured fields and inserts
-atomically. A bundled Node backend is temporary while the pure Emacs Lisp
-engine is being implemented. Features include:
+engine and front-end run entirely in Emacs Lisp: analyze the host buffer,
+expand structured fields and insert atomically. Features include:
 
 - Expand abbreviation from any character
 - Expand JSX class attribute with CSS modules object and class names constructor
@@ -33,11 +32,10 @@ Only a still-valid source snapshot can be replaced, and failures roll back.
 
 ## Installation
 
-The current transition release requires **Emacs 30 or later** and **Node 24**
-on Emacs's `exec-path`. Deno, deno-bridge, websocket and `npm install` are no
-longer needed to run the mode. The bundled Emmet runtime and data must be
-included in the installation. Restart Emacs after upgrading from the old
-Deno release so its already-loaded bridge and callbacks are retired.
+Requires **Emacs 30 or later**. Expansion needs no Node, Deno, deno-bridge,
+websocket or `npm install`. Keep the bundled data in the installation. The
+transition recipe below still includes reference files pending their removal.
+Restart Emacs after upgrading from the old Deno release so its already-loaded bridge and callbacks are retired.
 
 Example using straight.el and use-package:
 
@@ -55,7 +53,7 @@ Example using straight.el and use-package:
 Enable `yas-minor-mode` separately for editable fields and mirrors. Without
 it, expansion produces the same text and first-field cursor.
 The file recipe is tested through an isolated straight installation on Emacs
-30/31. GUI and hosted CI acceptance remain open during the transition.
+30/31. Real GUI acceptance remains open; automated checks run on both versions.
 
 ### Completion
 

@@ -26,7 +26,7 @@
               (error "Dependency compilation failed: %s" name)))
           (load (expand-file-name (concat name ".elc") directory) nil t))
         (let ((byte-compile-error-on-warn t))
-          (dolist (name '("emmet2-engine" "emmet2-engine-node" "emmet2-engine-markup" "emmet2-fuzzy" "emmet2-engine-stylesheet" "emmet2-extensions"
+          (dolist (name '("emmet2-engine" "emmet2-engine-markup" "emmet2-fuzzy" "emmet2-engine-stylesheet" "emmet2-extensions"
                           "emmet2-extract" "emmet2-context" "emmet2-insert" "emmet2-mode" "emmet2-preview" "emmet2-capf"))
             (unless (byte-compile-file (expand-file-name (concat name ".el") emmet2-test-root))
               (error "Project compilation failed: %s" name))
@@ -45,10 +45,14 @@
         (load (expand-file-name "test/emmet2-engine-markup-test.el" emmet2-test-root) nil t)
         (load (expand-file-name "test/emmet2-engine-stylesheet-test.el" emmet2-test-root) nil t)
         (require 'emmet2-stylesheet-integration-test)
-        (let ((stats (ert-run-tests-batch t)))
-          (when (> (ert-stats-completed-unexpected stats) 0)
-            (error "Unexpected editor test result"))))
-    (when (fboundp 'emmet2-node-stop) (emmet2-node-stop))
+        (require 'emmet2-engine-native-test)
+        (let ((exec-path nil))
+          (cl-letf (((symbol-function 'make-process) (lambda (&rest _) (error "Native editor must not start a process")))
+                    ((symbol-function 'call-process) (lambda (&rest _) (error "Native editor must not call a process"))))
+            (let ((stats (ert-run-tests-batch t)))
+              (when (> (ert-stats-completed-unexpected stats) 0)
+                (error "Unexpected editor test result")))))
+        (when (featurep 'emmet2-engine-node) (error "Native editor loaded Node")))
     (delete-directory directory t)))
 
 ;;; editor-bytecode.el ends here

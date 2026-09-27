@@ -858,8 +858,7 @@ RANDOM-STATE belongs to this call; REPEAT is the nearest ancestor's repeater."
   "Expand ABBREVIATION through the native markup pipeline.
 PRESET is html or jsx.  INDENT and BASE-INDENT affect layout before fields.
 JSX is nil or the existing project rendering options plist.
-SEED is an integer for call-local lorem generation, normalized to 32 bits.
-This native entry is independent of the editor's temporary Node backend."
+SEED is an integer for call-local lorem generation, normalized to 32 bits."
   (unless (and (stringp abbreviation) (memq preset '(html jsx)) (stringp indent) (stringp base-indent))
     (signal 'emmet2-error '("Invalid markup abbreviation, preset or indentation")))
   (unless (integerp seed) (signal 'emmet2-error '("Lorem seed must be an integer")))

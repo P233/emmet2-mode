@@ -14,7 +14,7 @@
                       "emmet2-fuzzy.el" "test/emmet2-fuzzy-test.el" "emmet2-context.el" "test/emmet2-context-test.el" "emmet2-extract.el" "emmet2-engine.el" "emmet2-engine-node.el"
                       "test/bootstrap.el" "test/compile.el" "test/install.el" "test/bench-context.el" "test/bench-completion.el" "test/emmet2-context-lexical-test.el"
                       "test/emmet2-capf-contract-test.el" "test/emmet2-extract-test.el"
-                      "test/emmet2-host-contract-test.el" "test/emmet2-engine-test.el"
+                      "test/emmet2-host-contract-test.el" "test/emmet2-engine-test.el" "test/emmet2-engine-native-test.el"
                       "test/emmet2-engine-node-test.el" "emmet2-engine-markup.el"
                       "emmet2-engine-stylesheet.el" "test/emmet2-engine-stylesheet-test.el"
                       "test/emmet2-engine-markup-test.el" "test/emmet2-lorem-contract.el" "test/bench-markup.el"
