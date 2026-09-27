@@ -233,7 +233,8 @@ Project raw CSS, rhythm, ms, aliases, CSS-in-JS and default removal remain owned
 by `emmet2-extensions.el`; the core does not duplicate them.
 
 S7 stylesheet integration, installed native acceptance and the six-property
-p99 budget are still separate pending gates. The production entry uses Node.
+p99 budget pass locally; see the S7.3 evidence below. The production entry uses
+Node until the separate GUI and hosted CI gates close.
 
 ## Temporary Node API
 
@@ -849,9 +850,9 @@ entries. Ranges preserve the pinned implementation's exclusive upper bound when
 it exceeds the minimum. The pinned version does not recognize `lipsum`; it remains
 an ordinary element name.
 
-The default editor entry still uses Node. S6 markup integration, installation and
-performance passed locally; S7 stylesheet and external acceptance remain separate
-gates before switching that entry.
+The default editor entry still uses Node. S6 markup and S7 stylesheet integration,
+installation and performance passed locally; external acceptance remains a
+separate gate before switching that entry.
 
 ### Independent complete backend integration (S7.3)
 
@@ -892,8 +893,9 @@ After `test/install.el`, set `EMMET2_TEST_PACKAGE` to its
 `straight/build/emmet2-mode` directory and run both commands again. The runner
 removes the source fallback before any runtime module loads and requires installed
 bytecode for both native engines and the editor paths. CI includes source and
-installed runs for both Emacs versions. Hosted CI, GUI and full stylesheet
-performance require their own acceptance evidence.
+installed runs for both Emacs versions. Local installations of `a2c62d5` each
+contain 31 resources and pass 48 editor tests; both backends then pass all 250
+integration tests from installed bytecode. Hosted CI and GUI remain unverified.
 
 ### S6.4 complete markup measurements
 
@@ -911,5 +913,20 @@ all GC and slow samples and does not infer a speedup from historical cohorts.
 See [the S6.4 results and source hashes](test/performance-markup-2026-09-27.md#s64-complete-markup-gate)
 and [the reproduction protocol](test/PERFORMANCE.md#running-the-native-markup-benchmark).
 S6 local correctness, isolated integration, packaging and engine performance
-evidence are complete. S7 stylesheet, default switching and external M1 gates
-remain open; the editor still uses Node.
+evidence are complete. Default switching and external M1 gates remain open;
+the editor still uses Node.
+
+### S7.3 complete stylesheet measurements
+
+The fixed six-property input passes the 0.5 ms p99 gate on both Emacs versions:
+three fresh serial processes each, highest p99 0.366 ms. Twelve fixed oracle
+inputs cover ordinary values, gradients/functions, independent fields, Unicode
+mirrors and multiline templates, totaling 72,000 measured expansions. Every
+complete result is checked; all 447 CSS success/error contracts also pass in
+each process. Normal GC and every pause are retained, including the 25.281 ms
+maximum across all rows. Production code was unchanged in this measurement slice.
+
+See [the results and source hashes](test/performance-stylesheet-2026-09-27.md)
+and [the reproduction protocol](test/PERFORMANCE.md#running-the-native-stylesheet-benchmark).
+Together with installed integration, this closes S7.3 locally. GUI/hosted M1
+evidence still precedes the S7.4 default switch and S8 runtime retirement.

@@ -164,3 +164,37 @@ bytecode loads are reported separately and exclude Emacs startup, compilation
 and fixture loading. The budget covers the complete native expansion only.
 See [the S6.0 report](performance-markup-2026-09-27.md) for accepted results,
 the retained initial failure and the remaining engine acceptance limits.
+
+## Running the native stylesheet benchmark
+
+```sh
+EMMET2_TEST_DEPS=/tmp/emmet2-test-deps \
+EMMET2_BENCH_OUTPUT=/tmp/stylesheet-31-1.json \
+/path/to/pinned/emacs --batch -Q -L . -l test/bootstrap.el -l test/bench-stylesheet.el
+```
+
+Use three fresh serial processes per pinned Emacs build on the fixed machine,
+without concurrent tests or builds. The runner compiles the core, stylesheet
+engine and shared fuzzy matcher into an owned temporary directory, verifies
+their loaded bytecode paths and copies their data beside them. It refuses an
+existing output, a preloaded backend or source changes during measurement.
+Native calls have no executable search path and process creation is rejected.
+
+Twelve unchanged oracle fixtures cover the fixed six-property budget input,
+independent property defaults, colors, variables, gradient/function arguments,
+Unicode mirrors/conflicting defaults and multiline raw templates. The original
+0.5 ms gate applies to `stylesheet-contract-10`; the other rows provide additional
+coverage and reported measurements, without inventing a new aggregate budget.
+Each operation includes tokenization, parsing, fuzzy/value resolution, formatting,
+canonical field normalization and cursor construction. Full result equality is
+checked outside every clock. All 447 CSS success/error contracts are also checked
+after cold samples and before warmups.
+
+The runner rotates the first fixture each round and interleaves 100 warmups and
+1,000 samples per fixture. Normal GC remains 800000/1.0 and all pauses are kept.
+End GC counters are captured before duration/sample allocation. Raw triples and
+per-process statistics use the same units and quantile rule as S6. First expansion
+per fixture and explicit bytecode loading (including snippet preprocessing) are
+separate cold values. Compilation and dependencies precede that load; these values
+do not measure whole Emacs startup. Actual package installation, editor flow and
+GUI acceptance remain separate checks.
