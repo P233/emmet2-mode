@@ -123,6 +123,36 @@
     (ert-info ((car pair))
       (should (equal (plist-get (emmet2-extensions-css (car pair)) :text) (cdr pair))))))
 
+(ert-deftest emmet2-css-raw-and-nested-selector-regressions ()
+  ;; Raw values belong to the extension layer; the core rejects the first input.
+  ;; Pinned Emmet resolves `tn' to top; transition's abbreviation is `trs'.
+  (should (equal (emmet2-extensions-css "tn[all 0.3s]")
+                 '(:text "top: all 0.3s;" :fields nil :cursor 14)))
+  (should (equal (emmet2-extensions-css "trs[all 0.3s]")
+                 '(:text "transition: all 0.3s;" :fields nil :cursor 21)))
+  (should (equal (emmet2-extensions-css "ff[Arial,sans-serif]")
+                 '(:text "font-family: Arial,sans-serif;" :fields nil :cursor 30)))
+  (should (equal (emmet2-extensions-css ":hv:n(:fc)")
+                 '(:text "&:hover:not(:first-child) {\n\t\n}"
+                         :fields ((29 29 1 "")) :cursor 29))))
+
+(ert-deftest emmet2-css-alias-precedence-and-empty-alias-fallback ()
+  (should (equal (emmet2-extensions-css ":fu")
+                 '(:text "&:focus {\n\t\n}" :fields ((11 11 1 "")) :cursor 11)))
+  (should (equal (emmet2-extensions-css "@fa")
+                 '(:text "@font-face " :fields nil :cursor 11)))
+  ;; Replace only the alias maps in a private copy.  Names, functions and
+  ;; templates remain available, and the packaged overrides stay untouched.
+  (let ((emmet2-extensions--overrides (copy-hash-table emmet2-extensions--overrides)))
+    (dolist (key '("pseudoAliases" "atRuleAliases"))
+      (puthash key (make-hash-table :test #'equal) emmet2-extensions--overrides))
+    (should (equal (emmet2-extensions-css ":fu")
+                   '(:text "&:future {\n\t\n}" :fields ((12 12 1 "")) :cursor 12)))
+    (should (equal (emmet2-extensions-css "@fa")
+                   '(:text "@forward \"\";" :fields ((10 10 1 "")) :cursor 10))))
+  (should (equal (gethash ":fu" (gethash "pseudoAliases" emmet2-extensions--overrides)) ":focus"))
+  (should (equal (gethash "@fa" (gethash "atRuleAliases" emmet2-extensions--overrides)) "@font-face")))
+
 (ert-deftest emmet2-css-coalescing-preserves-distant-mirrors ()
   (let ((source (emmet2-result-create "x: a b/cb;"
                  '((3 4 1 "a") (5 6 2 "b") (7 8 3 "c") (8 9 2 "b")))))

@@ -54,5 +54,13 @@
       (should (= (point) 3))
       (should (equal (buffer-string) "source")))))
 
+(ert-deftest emmet2-markup-extension-hyphenated-class-regression ()
+  (should (equal (emmet2-extensions-markup ".btn-primary" :jsx t)
+                 '(:text "<div className={css[\"btn-primary\"]}></div>"
+                         :fields ((36 36 1 "")) :cursor 36)))
+  (should (equal (emmet2-extensions-markup ".btn-primary" :jsx t :variant "solid")
+                 '(:text "<div class={css[\"btn-primary\"]}></div>"
+                         :fields ((32 32 1 "")) :cursor 32))))
+
 (provide 'emmet2-extensions-markup-test)
 ;;; emmet2-extensions-markup-test.el ends here
