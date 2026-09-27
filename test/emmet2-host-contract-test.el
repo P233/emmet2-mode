@@ -59,7 +59,7 @@
                   (should (equal (plist-get result :abbr) abbreviation))
                   (should (equal (buffer-string) original))
                   (should (= (point) position))
-                  (should (= (length (emmet2-context--parsers)) 1))
+                  (should (= (length (emmet2-context--parsers)) 2))
                   (emmet2-context-stop)
                   (should-not (emmet2-context--parsers)))))))))))
 

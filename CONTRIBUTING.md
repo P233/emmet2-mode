@@ -151,8 +151,9 @@ manual text expansion without treating valid JSX expressions as abbreviations.
 
 The original 93 host paths now call `emmet2-context.el`; the test-only classifier
 has been removed. The production JS/TS/JSX path derives its parser inventory
-from Emacs. Each buffer view owns a unique tag named `emmet2`, at most one parser
-per supported grammar, and one pending idle timer. A literal shared tag would
+from Emacs. Each buffer view owns distinct `emmet2` and `emmet2-projection` tags, one
+source/projection parser pair per supported grammar (six parsers at most),
+and one pending idle timer. A literal shared tag would
 be unsafe because indirect buffers share base-buffer parser storage. Default
 `treesit-parser-list` also hides tagged parsers, so all ownership checks and
 cleanup use the explicit tag. Major-mode parsers and other views are preserved.
@@ -160,9 +161,19 @@ cleanup use the explicit tag. Major-mode parsers and other views are preserved.
 Automatic analysis uses warmed parsers; a cold call schedules idle preparation
 and returns nil. Explicit analysis initializes on demand and names a missing
 grammar. Original comments, strings and regexes are rejected before projection.
-Source edits and web script-part switches reuse the owned parser with fresh
-ranges. Stop, major-mode change and kill cancel resources; stale callbacks
-cannot act on a replacement owner.
+Source edits reuse separate source/projection trees and ten fixed compiled
+queries. Initial analysis uses the complete host. A valid projection can retain
+the nearest complete JSX element or closed top-level declaration as a local
+unit. Each grammar retains at most one marker pair; no abbreviation, result or
+source node is cached. Edits touching or outside the unit, cursor/part switches,
+and modifications from another indirect view invalidate it. Character ticks
+also detect edits with modification hooks inhibited. Automatic analysis waits
+for idle preparation after invalidation; explicit analysis initializes on demand.
+Every local projection must still parse as one complete, error-free unit or
+retry once against the full host. Unterminated block comments recovered as
+invalid regex syntax remain forbidden. Stop, major-mode change and kill detach
+markers, remove hooks and cancel resources; stale callbacks cannot act on a
+replacement owner.
 
 Local S3.0 evidence (2026-09-27): the 93 paths and ten ownership/context tests
 pass on pinned GNU Emacs 30.2/31.1, including missing grammars, empty/narrowed
@@ -437,3 +448,25 @@ Local evidence (2026-09-27): 51 context/extraction ERT tests, including the 93
 JS host paths and 38 lexical probes, pass on both pinned GNU Emacs 30.2/31.1
 builds; warning-free compilation also passes. This completes the current S3
 functional slice. Full-path timing remains the next gate before the S4 switch.
+
+### S3 context performance work
+
+`test/bench-context.el` measures complete analysis using 22 fixed fixtures,
+including source edits and web-mode pending scans. It records cold setup,
+100 warmups and 1,000 raw samples per fixture/path with normal GC. The paths
+are unchanged reads, `self-insert-command` typing, and programmatic `insert`,
+each followed by analysis. These edit methods exercise different web-mode
+property inheritance and must be reported separately. Pinned web-mode is loaded
+from source by the isolated bootstrap; the report records this explicitly.
+
+Run three fresh processes with distinct output paths, as documented in
+[test/PERFORMANCE.md](test/PERFORMANCE.md). The runner compiles production code
+into a temporary directory and rejects mixed evidence if measured source files
+change while it runs. Fixture/source hashes and the dependency lock identify
+the inputs. Filters are for diagnosis, never acceptance.
+
+Local correctness evidence: 60 scoped context/extraction tests pass on pinned
+Emacs 30.2 and 31.1, including local-unit invalidation, indirect edits, malformed
+host structure and unterminated comments. The S3 performance gate remains open:
+large web-mode programmatic edits still trigger a full pending scan. No editor
+entry point has been switched, and no GUI or hosted acceptance is implied.

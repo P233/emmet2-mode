@@ -25,8 +25,27 @@
 (declare-function web-mode-attribute-beginning-position "web-mode")
 
 (cl-defstruct (emmet2-context--state (:constructor emmet2-context--state-create))
-  buffer (tag (make-symbol "emmet2")) timer)
+  buffer (tag (make-symbol "emmet2"))
+  (projection-tag (make-symbol "emmet2-projection")) timer units tick)
 (defvar-local emmet2-context--state nil)
+
+(defconst emmet2-context--queries
+  (when (treesit-available-p)
+    (mapcar
+     (lambda (language)
+       (list language
+             (treesit-query-compile language
+                                    '([(object) (return_statement) (arrow_function)
+                                       (parenthesized_expression)] @host))
+             (unless (eq language 'typescript)
+               (treesit-query-compile language '([(jsx_opening_element) (jsx_expression)] @host)))
+             (unless (eq language 'typescript)
+               (treesit-query-compile language '((jsx_expression) @expression)))
+             (treesit-query-compile language '((ERROR (regex_pattern) @pattern)))))
+     '(tsx javascript typescript)))
+  "Ten fixed queries, lazily compiled for their grammars.
+They have module lifetime and no source-dependent invalidation.  Parser trees
+remain buffer owned; these queries retain no analysis results or source nodes.")
 
 (defun emmet2-context--owner (&optional create)
   "Return this buffer's context owner, allocating it when CREATE is non-nil.
@@ -36,36 +55,86 @@ verify owner identity and give each view its own tag, without shared cleanup."
            (eq (emmet2-context--state-buffer emmet2-context--state) (current-buffer)))
       emmet2-context--state
     (when create
-      (setq emmet2-context--state (emmet2-context--state-create :buffer (current-buffer)))
+      (setq emmet2-context--state
+            (emmet2-context--state-create :buffer (current-buffer) :tick (buffer-chars-modified-tick)))
       (add-hook 'kill-buffer-hook #'emmet2-context-stop nil t)
       (add-hook 'change-major-mode-hook #'emmet2-context-stop nil t)
+      (add-hook 'before-change-functions #'emmet2-context--before-change nil t)
+      (add-hook 'after-change-functions #'emmet2-context--after-change nil t)
       emmet2-context--state)))
+
+(defun emmet2-context--forget-units (owner &optional language)
+  "Detach OWNER's unit markers, optionally for only LANGUAGE."
+  (setf (emmet2-context--state-units owner)
+        (cl-delete-if
+         (lambda (entry)
+           (when (or (not language) (eq (car entry) language))
+             (set-marker (cadr entry) nil) (set-marker (caddr entry) nil)
+             t))
+         (emmet2-context--state-units owner))))
+
+(defun emmet2-context--remember-unit (owner language bounds)
+  "Replace OWNER's LANGUAGE unit with marker-backed BOUNDS."
+  (emmet2-context--forget-units owner language)
+  (push (list language (copy-marker (car bounds)) (copy-marker (cdr bounds) t))
+        (emmet2-context--state-units owner)))
+
+(defun emmet2-context--check-tick (owner)
+  "Invalidate OWNER after changes that bypassed this view's hooks."
+  (unless (eql (emmet2-context--state-tick owner) (buffer-chars-modified-tick))
+    (emmet2-context--forget-units owner)
+    (setf (emmet2-context--state-tick owner) (buffer-chars-modified-tick))))
+
+(defun emmet2-context--before-change (beg end)
+  "Invalidate units whose boundaries or surroundings overlap BEG..END."
+  (when-let* ((owner (emmet2-context--owner)))
+    (emmet2-context--check-tick owner)
+    (dolist (entry (copy-sequence (emmet2-context--state-units owner)))
+      (unless (and (< (marker-position (cadr entry)) beg)
+                   (< end (marker-position (caddr entry))))
+        (emmet2-context--forget-units owner (car entry))))))
+
+(defun emmet2-context--after-change (_beg _end _length)
+  "Record the completed edit; markers already follow valid interior changes."
+  (when-let* ((owner (emmet2-context--owner)))
+    (setf (emmet2-context--state-tick owner) (buffer-chars-modified-tick))))
 
 (defun emmet2-context--parsers ()
   "Return only parsers belonging to this buffer's context owner."
   (when (treesit-available-p)
     (when-let* ((owner (emmet2-context--owner)))
-      (treesit-parser-list nil nil (emmet2-context--state-tag owner)))))
+      (append (treesit-parser-list nil nil (emmet2-context--state-tag owner))
+              (treesit-parser-list nil nil (emmet2-context--state-projection-tag owner))))))
 
 (defun emmet2-context-stop ()
   "Cancel this buffer's warmup and delete only its owned parsers."
   (when-let* ((owner (emmet2-context--owner)))
     (when-let* ((timer (emmet2-context--state-timer owner))) (cancel-timer timer))
+    (emmet2-context--forget-units owner)
     (dolist (parser (emmet2-context--parsers)) (treesit-parser-delete parser)))
   (setq emmet2-context--state nil)
   (remove-hook 'kill-buffer-hook #'emmet2-context-stop t)
-  (remove-hook 'change-major-mode-hook #'emmet2-context-stop t))
+  (remove-hook 'change-major-mode-hook #'emmet2-context-stop t)
+  (remove-hook 'before-change-functions #'emmet2-context--before-change t)
+  (remove-hook 'after-change-functions #'emmet2-context--after-change t))
 
-(defun emmet2-context--parser (language initialize)
+(defun emmet2-context--parser (language initialize &optional projection)
   "Return the owned LANGUAGE parser.
-INITIALIZE permits creation or a missing-grammar error."
-  (let ((parser (cl-find language (emmet2-context--parsers) :key #'treesit-parser-language)))
+INITIALIZE permits creation or a missing-grammar error.  PROJECTION selects
+the second tree; keeping each input view stable avoids full reparses."
+  (let* ((owner (emmet2-context--owner))
+         (tag (when owner (if projection (emmet2-context--state-projection-tag owner)
+                            (emmet2-context--state-tag owner))))
+         (parser (when (and tag (treesit-available-p))
+                   (car (treesit-parser-list nil language tag)))))
     (or parser
         (when initialize
           (unless (and (treesit-available-p) (treesit-language-available-p language))
             (signal 'emmet2-error (list (format "Missing tree-sitter grammar: %s" language))))
+          (setq owner (emmet2-context--owner t))
           (treesit-parser-create language nil nil
-                                 (emmet2-context--state-tag (emmet2-context--owner t)))))))
+                                 (if projection (emmet2-context--state-projection-tag owner)
+                                   (emmet2-context--state-tag owner)))))))
 
 (defun emmet2-context--js-region ()
   "Return (LANGUAGE BEG END) for a supported JS host at point, or nil."
@@ -90,14 +159,72 @@ INITIALIZE permits creation or a missing-grammar error."
   "Prepare the current JS region during idle time.
 Return its parser when the grammar is available."
   (save-restriction
-    (when (derived-mode-p 'web-mode) (widen))
+    (widen)
     (when-let* ((region (emmet2-context--js-region)))
       (pcase-let ((`(,language ,beg ,end) region))
         (when (and (treesit-available-p) (treesit-language-available-p language))
-          (let ((parser (emmet2-context--parser language t)))
-            (treesit-parser-set-included-ranges parser (list (cons beg end)))
-            (treesit-parser-root-node parser)
-            parser))))))
+          (dolist (query (cdr (assq language emmet2-context--queries)))
+            (when query (treesit-query-compile language query t)))
+          (let* ((parser (emmet2-context--parser language t))
+                 (unit (emmet2-context--unit language beg end parser t))
+                 (projection (emmet2-context--parser language t t)))
+            (treesit-parser-set-included-ranges projection (list (cons (car unit) (cdr unit))))
+            (treesit-parser-root-node projection))
+          (emmet2-context--parser language nil))))))
+
+(defun emmet2-context--closed-unit-p (node start end)
+  "Whether NODE spans START..END as a closed declaration or JSX element.
+Require a real terminal delimiter, not tree-sitter error recovery.  Internal
+errors can be the abbreviation itself; projection checks the remaining syntax."
+  (when (equal (treesit-node-type node) "expression_statement")
+    (setq node (treesit-node-child node 0 t)))
+  (and node
+       (= (treesit-node-start node) start) (= (treesit-node-end node) end)
+       (member (treesit-node-type node)
+               '("lexical_declaration" "variable_declaration" "function_declaration"
+                 "class_declaration" "export_statement" "jsx_element" "jsx_self_closing_element"))
+       (let ((last (treesit-node-child node -1)))
+         (when (member (treesit-node-type last) '("statement_block" "class_body" "jsx_closing_element"))
+           (setq last (treesit-node-child last -1)))
+         (and last (not (treesit-node-check last 'missing))
+              (member (treesit-node-type last) '(";" "}" ">" "/>"))))))
+
+(defun emmet2-context--tree-unit (parser position)
+  "Find a closed unit containing POSITION in PARSER.
+Require complete valid projected syntax; select the nearest JSX element or
+top-level declaration.  Full-host analysis established the original identity."
+  (let* ((root (treesit-parser-root-node parser))
+         (node (treesit-node-on position (min (point-max) (1+ position)) parser t)))
+    (while (and (treesit-node-parent node)
+                (not (treesit-node-eq (treesit-node-parent node) root))
+                (not (and (member (treesit-node-type node) '("jsx_element" "jsx_self_closing_element"))
+                          (not (treesit-node-check node 'has-error)))))
+      (setq node (treesit-node-parent node)))
+    (when (and (not (treesit-node-check node 'has-error))
+               (emmet2-context--closed-unit-p node (treesit-node-start node) (treesit-node-end node)))
+      (cons (treesit-node-start node) (treesit-node-end node)))))
+
+(defun emmet2-context--unit (language start end parser initialize)
+  "Return confirmed LANGUAGE unit bounds within START..END for PARSER.
+INITIALIZE permits full-host discovery.  Only a later confirmed projection
+can replace the full host with a smaller unit."
+  (let* ((owner (emmet2-context--owner t)) entry bounds)
+    (emmet2-context--check-tick owner)
+    (setq entry (assq language (emmet2-context--state-units owner)))
+    (when entry
+      (setq bounds (cons (marker-position (cadr entry)) (marker-position (caddr entry))))
+      (unless (<= start (car bounds) (point) (cdr bounds) end)
+        (emmet2-context--forget-units owner language)
+        (setq bounds nil)))
+    (when bounds
+      (treesit-parser-set-included-ranges parser (list bounds)))
+    (when (and (not bounds) initialize)
+      (treesit-parser-set-included-ranges parser (list (cons start end)))
+      (setq bounds (cons start end))
+      (emmet2-context--remember-unit owner language bounds)
+      (treesit-parser-set-included-ranges parser (list bounds))
+      (treesit-parser-root-node parser))
+    bounds))
 
 (defun emmet2-context--warm (buffer owner)
   "Warm BUFFER only while OWNER still belongs to an enabled mode."
@@ -121,8 +248,7 @@ LANGUAGE selects the query vocabulary.  Bounds still belong to the extractor."
         (right (min end (line-end-position)))
         (position (point)))
     (dolist (node (treesit-query-capture
-                   parser '([(object) (return_statement) (arrow_function)
-                             (parenthesized_expression)] @host)
+                   parser (nth 1 (assq language emmet2-context--queries))
                    left right t))
       (when (<= (treesit-node-start node) position (treesit-node-end node))
         (pcase (treesit-node-type node)
@@ -139,7 +265,7 @@ LANGUAGE selects the query vocabulary.  Bounds still belong to the extractor."
              (setq left (max left (1+ (treesit-node-start node)))))))))
     (unless (eq language 'typescript)
       (dolist (node (treesit-query-capture
-                     parser '([(jsx_opening_element) (jsx_expression)] @host)
+                     parser (nth 2 (assq language emmet2-context--queries))
                      (line-beginning-position) right t))
         (pcase (treesit-node-type node)
           ("jsx_opening_element"
@@ -212,7 +338,7 @@ interpret tag{text} as Emmet; automatic completion must leave it alone."
          (and (< beg brace end)
               (string-match-p "\\`[[:alnum:]_-]+\\'"
                               (buffer-substring-no-properties beg brace)))))
-     (treesit-query-capture parser '((jsx_expression) @expression) beg end t))))
+     (treesit-query-capture parser (nth 3 (assq language emmet2-context--queries)) beg end t))))
 
 (defun emmet2-context--forbidden-origin-p (parser beg)
   "Whether candidate BEG starts in a host string, comment or regex in PARSER."
@@ -221,35 +347,67 @@ interpret tag{text} as Emmet; automatic completion must leave it alone."
       (when (member (treesit-node-type node) '("string" "template_string" "comment" "regex"))
         (setq found t))
       (setq node (treesit-node-parent node)))
-    found))
+    (or found
+        ;; An unterminated /* may recover as an invalid regular expression,
+        ;; ending at a later JSX tag's slash.  Never project away that evidence.
+        (and (treesit-node-check (treesit-parser-root-node parser) 'has-error)
+             (cl-some
+              (lambda (pattern)
+                (let ((start (treesit-node-start pattern)))
+                  (and (eq (char-before start) ?/) (eq (char-after start) ?*)
+                       (< start beg)
+                       (not (save-excursion
+                              (goto-char start) (search-forward "*/" beg t))))))
+              (treesit-query-capture
+               parser (nth 4 (assq (treesit-parser-language parser) emmet2-context--queries))
+               nil beg t))))))
 
 (defun emmet2-context--analyze-js (region automatic)
   "Analyze JS REGION; AUTOMATIC requires a warmed parser and trusted position."
   (pcase-let* ((`(,language ,start ,end) region)
-               (parser (emmet2-context--parser language (not automatic))))
-    (if (not parser)
+               (parser (emmet2-context--parser language (not automatic)))
+               (projection (emmet2-context--parser language (not automatic) t))
+               (unit (when parser (emmet2-context--unit language start end parser (not automatic)))))
+    (if (not (and unit projection))
         (progn
           (when (bound-and-true-p emmet2-mode) (emmet2-context-start))
           nil)
-      (treesit-parser-set-included-ranges parser (list (cons start end)))
-      (pcase-let* ((`(,left . ,right) (emmet2-context--host-region parser start end language))
-                   (candidate (emmet2-extract left right))
-                   (beg (plist-get candidate :beg)) (finish (plist-get candidate :end)))
-        (when (and candidate (< beg finish)
-                   (not (emmet2-context--forbidden-origin-p parser beg))
-                   (not (and automatic (emmet2-context--ambiguous-text-p parser beg finish language))))
-          (let ((anchor (save-excursion
-                          (goto-char beg)
-                          (when (re-search-forward "[A-Za-z_]" finish t) (1- (point))))))
-            (when anchor
-              (treesit-parser-set-included-ranges
-               parser (delq nil (list (and (< start beg) (cons start beg))
-                                      (cons anchor (1+ anchor))
-                                      (and (< finish end) (cons finish end)))))
-              (when-let* ((context (emmet2-context--projected parser anchor automatic)))
-                (append candidate (list :lang context :syntax 'jsx
-                                        :position (if (eq context 'css-in-js)
-                                                      'declaration-start 'markup)))))))))))
+      (let ((bounded (not (equal unit (cons start end)))))
+        (setq start (car unit) end (cdr unit))
+        (pcase-let* ((`(,left . ,right) (emmet2-context--host-region parser start end language))
+                     (candidate (emmet2-extract left right))
+                     (beg (plist-get candidate :beg)) (finish (plist-get candidate :end)))
+          (when (and candidate (< beg finish)
+                     (not (emmet2-context--forbidden-origin-p parser beg))
+                     (not (and automatic (emmet2-context--ambiguous-text-p parser beg finish language))))
+            (let ((anchor (save-excursion
+                            (goto-char beg)
+                            (when (re-search-forward "[A-Za-z_]" finish t) (1- (point))))))
+              (when anchor
+                (treesit-parser-set-included-ranges
+                 projection (delq nil (list (and (< start beg) (cons start beg))
+                                            (cons anchor (1+ anchor))
+                                            (and (< finish end) (cons finish end)))))
+                (if (and bounded
+                         (let ((root (treesit-parser-root-node projection)))
+                           (not (and (not (treesit-node-check root 'has-error))
+                                     (= (treesit-node-child-count root t) 1)
+                                     (emmet2-context--closed-unit-p
+                                      (treesit-node-child root 0 t) start end)))))
+                    (progn
+                      ;; Retry once with the complete host.  Unrelated syntax
+                      ;; errors must not suppress an otherwise valid position.
+                      (emmet2-context--remember-unit
+                       (emmet2-context--owner) language (cons (nth 1 region) (nth 2 region)))
+                      (emmet2-context--analyze-js region automatic))
+                  (progn
+                    (when-let* ((refined (emmet2-context--tree-unit projection anchor)))
+                      (unless (equal refined unit)
+                        (emmet2-context--remember-unit (emmet2-context--owner) language refined)))
+                    (when-let* ((context (emmet2-context--projected projection anchor automatic)))
+                      (append candidate (list :lang context :syntax 'jsx
+                                              :position (if (eq context 'css-in-js)
+                                                            'declaration-start 'markup))))))))))))))
 
 (defun emmet2-context--web-attribute (position)
   "Return (NAME BEG END) of a quoted value at POSITION, `name', or nil."
@@ -344,9 +502,9 @@ initialize required grammars and allow manual markup in other major modes."
   (save-match-data
     (let ((visible-start (point-min)) (visible-end (point-max)))
       (save-restriction
-        ;; web-mode pending scan ranges refer to the full host document.
-        ;; Restore that view for classification, never for candidate acceptance.
-        (when (derived-mode-p 'web-mode) (widen))
+        ;; Host syntax must include hidden enclosing constructs.  Restore that
+        ;; view for classification, never for candidate acceptance.
+        (widen)
         (let ((result
                (if-let* ((region (emmet2-context--js-region)))
                    (emmet2-context--analyze-js region automatic)

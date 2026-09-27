@@ -51,3 +51,25 @@ wall-clock budgets across different hosted machines. A budget failure keeps
 its milestone open: retain samples, identify the expensive stage, change the
 smallest responsible implementation and remeasure. Do not silently weaken a
 budget, omit a size, or replace a full-path result with a microbenchmark.
+
+## Running the implemented S3 benchmark
+
+```sh
+EMMET2_TEST_DEPS=/tmp/emmet2-test-deps \
+EMMET2_BENCH_OUTPUT=/tmp/context-31-1.json \
+/path/to/pinned/emacs --batch -Q -L . -l test/bootstrap.el -l test/bench-context.el
+```
+
+Use three fresh processes and unique output names. The optional
+`EMMET2_BENCH_FILTER` is an Emacs regexp for diagnosis only. The runner refuses
+existing output files and source changes during measurement. It compiles only
+project code into an owned temporary directory; package source/bytecode status
+is reported rather than silently altered in the dependency checkout.
+
+Keep `analyze`, `typing-and-analyze` and `programmatic-edit-and-analyze` separate.
+Both edit paths include modification hooks and pending scanning. A programmatic
+`insert` does not necessarily inherit the same web-mode part properties as
+`self-insert-command`; dropping its slow samples would hide real work. The S3
+gate stays open when either measured edit path fails. Baseline and optimized
+samples belong in the ignored plan measurements directory, with a concise
+result summary and hashes in versioned documentation once measured.
