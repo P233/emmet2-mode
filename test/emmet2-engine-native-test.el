@@ -42,5 +42,22 @@
       (should (= emmet2-engine--deadline 0))))
   (should (equal (plist-get (emmet2-engine-expand "div{after}") :text) "<div>after</div>")))
 
+(ert-deftest emmet2-native-entry-handwritten-fields-and-permissive-input ()
+  (should (equal (emmet2-engine-expand "c+bg" :preset 'stylesheet)
+                 '(:text "color: #000;\nbackground: #000;"
+                         :fields ((7 11 1 "#000") (25 29 2 "#000")) :cursor 7)))
+  (should (equal (plist-get (emmet2-engine-expand "div{😀}") :text) "<div>😀</div>"))
+  (should (equal (emmet2-engine-expand "p${9007199254740992:x}-${9007199254740993:x}" :preset 'stylesheet)
+                 '(:text "padding: x x;" :fields ((9 10 1 "x") (11 12 1 "x")) :cursor 9)))
+  (should (stringp (plist-get (emmet2-engine-expand "a{") :text)))
+  (should (stringp (plist-get (emmet2-engine-expand "ul>") :text)))
+  (should-error (emmet2-engine-expand "tn[all 0.3s]" :preset 'stylesheet) :type 'emmet2-parse-error)
+  ;; The pinned CSS parser cannot attach a position after consuming a
+  ;; delimiter-only input; preserve backend-error instead of inventing one.
+  (dolist (input '(":" "-" "," ":-" "+:"))
+    (should (equal (should-error (emmet2-engine-expand input :preset 'stylesheet) :type 'emmet2-backend-error)
+                   '(emmet2-backend-error "Unexpected token"))))
+  (should (equal (emmet2-engine-expand ":+" :preset 'stylesheet) '(:text "" :fields nil :cursor 0))))
+
 (provide 'emmet2-engine-native-test)
 ;;; emmet2-engine-native-test.el ends here

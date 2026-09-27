@@ -33,9 +33,7 @@
      (load (expand-file-name "test/emmet2-extensions-css-test.el" emmet2-test-root) nil t))
     ("fuzzy"
      (load (expand-file-name "test/emmet2-fuzzy-test.el" emmet2-test-root) nil t))
-    ("node"
-     (load (expand-file-name "test/emmet2-engine-node-test.el" emmet2-test-root) nil t))
-    (_ (error "Suite %s is not implemented; available: completion, editor, contracts, results, native, markup-spike, stylesheet, node, fuzzy, css-extensions, markup-extensions" suite)))
+    (_ (error "Suite %s is not implemented; available: completion, editor, contracts, results, native, markup-spike, stylesheet, fuzzy, css-extensions, markup-extensions" suite)))
   (message "Selected %s suite" suite))
 
 ;;; emmet2-test.el ends here

@@ -84,7 +84,7 @@ verify owner identity and give each view its own tag, without shared cleanup."
         (emmet2-context--state-units owner)))
 
 (defun emmet2-context--check-tick (owner)
-  "Invalidate OWNER after changes that bypassed this view's hooks.
+  "Invalidate OWNER after an edit that bypassed this view's hooks.
 Return non-nil when evidence was stale."
   (unless (eql (emmet2-context--state-tick owner) (buffer-chars-modified-tick))
     (emmet2-context--forget-units owner)
@@ -98,7 +98,7 @@ Return non-nil when evidence was stale."
     (setf (emmet2-context--state-web-insertion owner) nil)))
 
 (defun emmet2-context--remember-web-insertion (owner beg end)
-  "Remember a previously scanned CSS rule before insertion at BEG..END.
+  "Remember in OWNER a scanned CSS rule before insertion at BEG..END.
 The one pending entry is (EDIT-BEG EDIT-END RULE-BEG RULE-END EXPECTED-TICK).
 EDIT-END is filled only after a single ordinary character was inserted."
   (emmet2-context--forget-web-insertion owner)
@@ -132,7 +132,8 @@ EDIT-END is filled only after a single ordinary character was inserted."
         (emmet2-context--forget-units owner (car entry))))))
 
 (defun emmet2-context--after-change (beg end length)
-  "Record the completed edit; markers already follow valid interior changes."
+  "Record the edit at BEG..END replacing LENGTH characters.
+Markers already follow valid interior changes."
   (when-let* ((owner (emmet2-context--owner)))
     (when-let* ((entry (emmet2-context--state-web-insertion owner)))
       (if (and (zerop length) (= beg (car entry)) (= end (1+ beg))
@@ -299,7 +300,8 @@ can replace the full host with a smaller unit."
         (when (bound-and-true-p emmet2-mode) (emmet2-context--prepare))))))
 
 (defun emmet2-context-start ()
-  "Schedule one buffer-owned idle warmup; repeated calls do not add timers."
+  "Schedule one buffer-owned idle warmup.
+Repeated invocations do not add timers."
   (let ((owner (emmet2-context--owner t)))
     (unless (emmet2-context--state-timer owner)
       (setf (emmet2-context--state-timer owner)
@@ -420,7 +422,8 @@ AUTOMATIC disallows root JS expressions."
          'markup)))))
 
 (defun emmet2-context--ambiguous-text-p (parser beg end language)
-  "Whether projecting BEG..END would erase a JSX expression after plain text.
+  "Whether PARSER projection at BEG..END would erase a JSX expression.
+Detect expressions after plain text.
 Include objects produced by error recovery, which carry the same ambiguity.
 LANGUAGE without JSX cannot have this ambiguity.  The explicit command may
 interpret tag{text} as Emmet; automatic completion must leave it alone."
@@ -434,7 +437,7 @@ interpret tag{text} as Emmet; automatic completion must leave it alone."
      (treesit-query-capture parser (nth 3 (assq language emmet2-context--queries)) beg end t))))
 
 (defun emmet2-context--forbidden-origin-p (parser beg)
-  "Whether candidate BEG starts in a host string, comment or regex in PARSER."
+  "Return non-nil for BEG inside a host string, comment or regex in PARSER."
   (let ((node (treesit-node-on beg (1+ beg) parser t)) found)
     (while (and node (not found))
       (when (member (treesit-node-type node) '("string" "template_string" "comment" "regex"))

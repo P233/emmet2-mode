@@ -29,8 +29,8 @@
        (straight-revision (alist-get 'revision (alist-get 'straight.el (alist-get 'packages locked))))
        (resources
         (seq-filter
-         (lambda (name) (or (string-match-p "\\`[^/]+\\.\\(?:el\\|mjs\\)\\'" name)
-                            (string-prefix-p "vendor/" name) (string-prefix-p "data/" name)))
+         (lambda (name) (or (string-match-p "\\`[^/]+\\.el\\'" name)
+                            (string-prefix-p "data/" name)))
          (split-string (emmet2-install--git source "ls-files" "-z") "\0" t))))
   (unless (and (file-name-absolute-p destination) (not (file-exists-p destination)))
     (error "Installation destination must be new and absolute: %s" destination))
@@ -59,7 +59,7 @@
     ;; cloned rather than an unpushed remote branch.  The file recipe is exact.
     (straight-use-package
      `(emmet2-mode :type git :repo ,source :local-repo "emmet2-mode"
-                   :files (:defaults "*.mjs" "vendor" "data")))
+                   :files (:defaults "data")))
     (unless (and (equal revision (emmet2-install--git source "rev-parse" "HEAD"))
                  (equal revision (emmet2-install--git repository "rev-parse" "HEAD")))
       (error "Installation source revision changed"))
@@ -70,6 +70,10 @@
       (let ((library (locate-library (file-name-sans-extension name))))
         (unless (and library (file-in-directory-p library package-directory))
           (error "Runtime library escaped the installed package: %s" library))))
+    (when (or (directory-files-recursively package-directory "\\.\\(?:mjs\\|ts\\)\\'")
+              (file-exists-p (expand-file-name "emmet2-engine-node.el" package-directory))
+              (file-exists-p (expand-file-name "test" package-directory)))
+      (error "Installed package contains development or retired runtime files"))
     ;; Git is needed to build the package, never to expand an abbreviation.
     ;; Runtime checks have an empty executable path and reject process creation.
     (make-directory binary-directory)

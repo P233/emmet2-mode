@@ -47,7 +47,7 @@
 (defun emmet2-test--completion-session (styles overrides exact automatic
                                             &optional abbreviation prefix accept
                                             preselect middle command action)
-  "Exercise real analysis, Node, insertion and Corfu, replacing only drawing.
+  "Exercise real analysis, expansion, insertion and Corfu; replace only drawing.
 STYLES, OVERRIDES, EXACT and AUTOMATIC select the configuration.
 ABBREVIATION defaults to ul>li*3.  PREFIX is the user's auto threshold.
 ACCEPT accepts the selected candidate; otherwise cancel.  PRESELECT, MIDDLE

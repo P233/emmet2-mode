@@ -3,13 +3,13 @@ import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
-import { EmmetParseError, expand } from "../../emmet2-engine-node.mjs";
+import { EmmetParseError, expand } from "./adapter.mjs";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const fixtures = join(root, "test/fixtures");
 
 export function generate() {
-  const provenance = JSON.parse(readFileSync(join(root, "vendor/emmet-source.json")));
+  const provenance = JSON.parse(readFileSync(join(root, "data/emmet/source.json")));
   for (const [file, { sha256 }] of Object.entries(provenance.files)) {
     const actual = createHash("sha256").update(readFileSync(join(root, file))).digest("hex");
     if (actual !== sha256) throw new Error(`Vendor checksum mismatch: ${file}`);

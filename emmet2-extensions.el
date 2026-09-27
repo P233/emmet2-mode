@@ -18,7 +18,7 @@
   (expand-file-name "data" (file-name-directory (or load-file-name buffer-file-name))))
 
 (defun emmet2-extensions--read-data (name)
-  "Read packaged JSON data NAME once when this module loads."
+  "Read packaged JSON data NAME once at module load time."
   (with-temp-buffer
     (insert-file-contents (expand-file-name name emmet2-extensions--data-directory))
     (json-parse-buffer :array-type 'list)))
@@ -288,8 +288,8 @@ rendering strings.  Generated layout uses them; literal raw text is preserved."
   "Expand markup ABBREVIATION, optionally with JSX project semantics.
 VARIANT equal to \"solid\" emits class instead of className.  CSS-MODULES-OBJECT
 and CLASS-NAMES-CONSTRUCTOR are authored JavaScript references.  INDENT and
-BASE-INDENT affect generated layout only.  Until S6, JSX transformation lives
-beside the Node AST because rendered attribute text loses quoting boundaries."
+BASE-INDENT affect generated layout only.  JSX transformation operates on
+the markup AST because rendered attribute text loses quoting boundaries."
   (emmet2-engine-with-expansion
     (emmet2-engine-expand
      abbreviation :preset (if jsx 'jsx 'html) :indent indent :base-indent base-indent

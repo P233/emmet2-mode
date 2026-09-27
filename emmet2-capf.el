@@ -17,7 +17,7 @@
     (pcase (plist-get analysis :lang)
       ('markup (not (string-match-p "\\`[[:alnum:]_:-]+\\'" abbreviation)))
       ((or 'css 'css-in-js)
-       (or (string-match-p (rx (or digit upper (any "#!%,(+["))) abbreviation)
+       (or (string-match-p (rx (or digit upper (in "#!%,(+["))) abbreviation)
            (and (eq (plist-get analysis :lang) 'css)
                 (string-match-p "\\`\\(?:@[[:alpha:]]\\|[^:]*::?[[:alpha:]]\\)" abbreviation)))))))
 

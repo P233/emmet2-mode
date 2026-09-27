@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import assert from "node:assert/strict";
 import test from "node:test";
-import { cssNames } from "../data/update-web-data.mjs";
+import { cssNames } from "./update-web-data.mjs";
 
 const source = { schemaVersion: 1.1, counts: { atDirectives: 2, pseudoClasses: 3, pseudoElements: 1 } };
 const data = {

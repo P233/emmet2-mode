@@ -33,11 +33,10 @@
   "Hash measured project source, resources, lock and harness."
   (vconcat
    (mapcar (lambda (name) (list :file name :sha256 (emmet2-flow--hash (expand-file-name name emmet2-test-root))))
-           (append (directory-files emmet2-test-root nil "\\.\\(?:el\\|mjs\\)\\'")
+           (append (directory-files emmet2-test-root nil "\\.el\\'")
                    '("test/bench-completion.el" "test/bootstrap.el" "test/dependencies.json")
                    (mapcar (lambda (file) (file-relative-name file emmet2-test-root))
-                           (append (directory-files-recursively (expand-file-name "data" emmet2-test-root) ".")
-                                   (directory-files-recursively (expand-file-name "vendor" emmet2-test-root) ".")))))))
+                           (directory-files-recursively (expand-file-name "data" emmet2-test-root) "."))))))
 
 (defun emmet2-flow--time (function)
   "Call FUNCTION and return [milliseconds gc-count gc-seconds]."

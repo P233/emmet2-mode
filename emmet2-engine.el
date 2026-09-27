@@ -26,7 +26,8 @@
     (signal 'emmet2-backend-error '("Expansion deadline exceeded"))))
 
 (defmacro emmet2-engine-with-expansion (&rest body)
-  "Run BODY within one shared expansion deadline, including nested core calls."
+  "Run BODY within one shared expansion deadline.
+Nested core invocations inherit the same deadline."
   (declare (indent 0) (debug t))
   `(let ((emmet2-engine--deadline
           (or emmet2-engine--deadline (+ (float-time) emmet2-engine--timeout))))

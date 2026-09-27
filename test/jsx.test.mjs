@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import assert from "node:assert/strict";
 import test from "node:test";
-import { expand } from "../emmet2-engine-node.mjs";
-import { transformClasses } from "../emmet2-jsx.mjs";
-import { parseMarkup, resolveConfig } from "../vendor/emmet-2.4.11.mjs";
+import { expand } from "./oracle/adapter.mjs";
+import { transformClasses } from "./oracle/jsx.mjs";
+import { parseMarkup, resolveConfig } from "./vendor/emmet-2.4.11.mjs";
 
 const jsx = { classAttribute: "className", cssModulesObject: "css", classConstructor: "clsx" };
 const run = (input, options = jsx) => expand(input, { preset: "jsx", jsx: options });

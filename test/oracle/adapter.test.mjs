@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { EmmetParseError, expand } from "../../emmet2-engine-node.mjs";
-import upstream from "../../vendor/emmet-2.4.11.mjs";
+import { EmmetParseError, expand } from "./adapter.mjs";
+import upstream from "../vendor/emmet-2.4.11.mjs";
 
 const css = (abbreviation, options = {}) =>
   expand(abbreviation, { preset: "stylesheet", ...options });

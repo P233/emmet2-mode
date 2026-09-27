@@ -33,16 +33,16 @@ Only a still-valid source snapshot can be replaced, and failures roll back.
 ## Installation
 
 Requires **Emacs 30 or later**. Expansion needs no Node, Deno, deno-bridge,
-websocket or `npm install`. Keep the bundled data in the installation. The
-transition recipe below still includes reference files pending their removal.
-Restart Emacs after upgrading from the old Deno release so its already-loaded bridge and callbacks are retired.
+websocket or `npm install`. Keep the bundled data in the installation.
+Restart Emacs after upgrading from a Node or Deno version so its already-loaded
+backend and callbacks are retired.
 
 Example using straight.el and use-package:
 
 ```elisp
 (use-package emmet2-mode
   :straight (:type git :host github :repo "p233/emmet2-mode"
-             :files (:defaults "*.mjs" "vendor" "data"))
+             :files (:defaults "data"))
   :hook ((web-mode css-mode tsx-ts-mode) . emmet2-mode)
   :config
   ;; Optional alternative key:
@@ -286,7 +286,7 @@ _:fu  ->
 
 ## Credits
 
-- [deno-bridge](https://github.com/manateelazycat/deno-bridge)
+- [deno-bridge](https://github.com/manateelazycat/deno-bridge) (used by the original implementation)
 - [Emmet](https://emmet.io/)
 - [emmet-mode](https://github.com/smihica/emmet-mode).
 - [VS Code Custom Data](https://github.com/microsoft/vscode-custom-data)

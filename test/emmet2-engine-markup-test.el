@@ -183,4 +183,5 @@
                    '(emmet2-backend-error "Unknown token Repeater")))
     (should (equal (emmet2-engine-markup-expand "ul>li.i$*") before))))
 
+(provide 'emmet2-engine-markup-test)
 ;;; emmet2-engine-markup-test.el ends here

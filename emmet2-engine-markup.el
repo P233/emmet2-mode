@@ -3,11 +3,9 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;;; Commentary:
-;; S6 implementation, called directly by its tests until both native engines
-;; pass acceptance.  The editor still uses the Node backend.
+;; Native markup pipeline shared by commands, completion and previews.
 ;; Grammar, snippet resolution and HTML formatting follow vendored Emmet 2.4.11
-;; (vendor/emmet-LICENSE).  All mutable trees and output belong to one call.
-;; Final native integration remains a subsequent S6 slice.
+;; (data/emmet/LICENSE).  All mutable trees and output belong to one call.
 
 ;;; Code:
 
@@ -471,7 +469,8 @@ Return fresh list cells so conversion never modifies shared syntax."
 (defun emmet2-markup--resolve (nodes parsed &optional stack jsx)
   "Resolve call-owned NODES with the request-local PARSED table and cycle STACK.
 Only snippet syntax trees are shared within this call; conversion creates
-fresh nodes before resolution or transformation can change them."
+fresh nodes before resolution or transformation can change them.
+JSX enables JSX syntax while parsing snippets."
   (mapcan
    (lambda (node)
      (let ((snippet (gethash (emmet2-markup--node-name node) emmet2-markup--snippets)))
@@ -750,7 +749,7 @@ RANDOM-STATE belongs to this call; REPEAT is the nearest ancestor's repeater."
               (and (emmet2-markup--node-value node) (not (emmet2-markup--node-attributes-present node))))))
 
 (defun emmet2-markup--format-p (node index siblings parent)
-  "Whether NODE at INDEX in SIBLINGS under PARENT starts on a new line."
+  "Return non-nil to put NODE at INDEX in SIBLINGS under PARENT on a new line."
   (cond
    ((and (= index 0) (not parent)) nil)
    ((and parent (not (emmet2-markup--node-name parent)) (= (length siblings) 1)) nil)
@@ -788,7 +787,7 @@ RANDOM-STATE belongs to this call; REPEAT is the nearest ancestor's repeater."
       (emmet2-markup--push out (if expression "}" "\"")))))
 
 (defun emmet2-markup--block-value-p (value)
-  "Whether VALUE starts with a literal block tag, as in the HTML formatter."
+  "Return non-nil for VALUE with a literal block tag prefix."
   (let ((case-fold-search nil))
     (and (stringp (car value))
          (string-match (concat "\\`<\\([a-zA-Z0-9_:-]+\\)\\(?:>\\|" emmet2-markup--format-space "\\)")

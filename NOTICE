@@ -1,25 +1,31 @@
+Project license: GPL-3.0-or-later; see data/COPYING.
+
 Third-party material
 ====================
 
-vendor/emmet-2.4.11.mjs is the unmodified ES module bundle from the published
+test/vendor/emmet-2.4.11.mjs is the unmodified ES module bundle from the published
 emmet 2.4.11 npm archive. It includes @emmetio/abbreviation,
 @emmetio/css-abbreviation and @emmetio/scanner. These packages and the Emmet
-snippet data use the MIT license reproduced in vendor/emmet-LICENSE.
+snippet data use the MIT license reproduced in data/emmet/LICENSE.
 
 data/emmet/{html,css,variables}.json are unmodified upstream files from the
 published package's source commit a96c77a84dc4519de695f3a1625011d908dbe9c0.
 Package integrity, individual SHA-256 checksums and source locations are
-recorded in vendor/emmet-source.json. Do not substitute files from upstream
+recorded in data/emmet/source.json. Do not substitute files from upstream
 HEAD: its snippets differ from the published 2.4.11 package.
 
 Upstream: https://github.com/emmetio/emmet
 Package: https://www.npmjs.com/package/emmet/v/2.4.11
 
-emmet2-fuzzy.el ports the scoring algorithm from the same Emmet bundle.
+emmet2-fuzzy.el and the native markup/stylesheet engines port algorithms from
+the same Emmet source. The Latin, Russian and Spanish lorem JSON dictionaries
+in data/emmet/lorem/ are also copied unmodified from that source commit.
+The bundle and its oracle adapters under test/ are development-only and are
+not included in the installed package.
 
 data/css-names.json contains names derived from Microsoft VS Code Custom Data
 commit 01df47ad7cc0b140624fc941ff57618c36ed46a1. Its MIT license is reproduced
 in data/vscode-custom-data-LICENSE; data/css-source.json records source paths,
 checksums and input counts. data/css-overrides.json is authored project behavior
-and is never generated from upstream names. The old data/css-data.json and its
-Deno updater remain solely for the legacy runtime until S8 retirement.
+and is never generated from upstream names. test/update-web-data.mjs performs
+explicit, pinned updates; it is not included in the installed package.

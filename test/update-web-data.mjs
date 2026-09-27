@@ -21,8 +21,8 @@ export function cssNames(data, source) {
 }
 
 if (import.meta.main) {
-  if (process.argv.length !== 2) throw new Error("Usage: node data/update-web-data.mjs");
-  const source = JSON.parse(await readFile(new URL("css-source.json", import.meta.url), "utf8"));
+  if (process.argv.length !== 2) throw new Error("Usage: node test/update-web-data.mjs");
+  const source = JSON.parse(await readFile(new URL("../data/css-source.json", import.meta.url), "utf8"));
   const files = {};
   for (const [path, hash] of Object.entries(source.files)) {
     const url = `https://raw.githubusercontent.com/microsoft/vscode-custom-data/${source.commit}/${path}`;
@@ -35,8 +35,8 @@ if (import.meta.main) {
     files[path] = bytes;
   }
   const names = cssNames(JSON.parse(files["web-data/data/browsers.css-data.json"]), source);
-  // Validate every input before writing; local overrides and legacy data are never outputs.
-  await writeFile(new URL("css-names.json", import.meta.url), JSON.stringify(names, null, 2) + "\n");
-  await writeFile(new URL("vscode-custom-data-LICENSE", import.meta.url), files.LICENSE);
+  // Validate every input before writing; local overrides are never outputs.
+  await writeFile(new URL("../data/css-names.json", import.meta.url), JSON.stringify(names, null, 2) + "\n");
+  await writeFile(new URL("../data/vscode-custom-data-LICENSE", import.meta.url), files.LICENSE);
   console.log(`Pinned CSS names: ${names.atRules.length} at-rules, ${names.pseudos.length} pseudos`);
 }

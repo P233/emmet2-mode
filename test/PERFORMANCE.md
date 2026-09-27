@@ -26,7 +26,7 @@ do not average away a failed p99. Verify output/context before timing it.
 | S3 TSX | `ul>li*3` and style `m10`, including edits, region, extraction and confirmation; 56/306/1006-line containing statements, 500/5k/20k-line files | Warm p99 <= 1 ms; scale ratios < 1.5 |
 | S3 CSS/web ordinary positions | A fixed CSS part/markup position in 500 and 20k lines; include pending scan and syntax updates after edit | Warm p99 scale ratio < 2 |
 | S3 web large style | A 135 KB CSS part with the active declaration near its end; include pending scan and classification | Warm p99 <= 5 ms |
-| S5 editor flow | Real context, Node, annotation/popupinfo and acceptance; markup plus the six-property CSS case below | Report cold and warm stages and total; no invented aggregate budget |
+| S5 editor flow | Real context, engine, annotation/popupinfo and acceptance; markup plus the six-property CSS case below | Report cold and warm stages and total; no invented aggregate budget |
 | S6 markup | Four inputs below, plus JSX, emoji and mirrored fields; parse, resolve, formatting, offsets and cursor | Bytecode warm p99 <= 1 ms |
 | S7 CSS | `m10+p5+bd1#2s+posa+dib+fz16`; include parsing, matching, values, formatting and fields | Bytecode warm p99 <= 0.5 ms |
 
@@ -126,15 +126,19 @@ stage times/GC deltas must not be added to the already inclusive total. These
 batch results do not measure screen painting, input-to-display latency, idle
 scheduling or Eglot interaction.
 
-Mode initialization and context preparation are reported separately. Cold
-command and cold completion each restart Node; cold completion also creates
-its first preview buffer. Cold yas follows with that Node/preview already
-warm. Package/dependency loading precedes timing, so these cold values do not
-measure Emacs startup or total package loading. Loaded Lisp/mode features can
-remain warm between fixtures, including preview mode features whose buffers
-are recreated. Raw warmup and measured triples are milliseconds, GC count,
-and GC seconds. Keep per-process p50, p99, max and GC totals, with no aggregate
-S5 pass/fail budget or cross-process percentile averaging.
+Mode initialization and context preparation are reported separately. The first
+command includes lazy native engine/data loading; later fixtures can share those
+features. Cold completion creates its first preview buffer; cold yas follows
+with that preview warm. Front-end/dependency loading precedes timing, so cold
+values do not measure Emacs startup or total package loading. The installed
+runtime has no external executable path and the measured flows reject process
+creation. The report identifies `native Elisp`; the historical S5 report and
+its archived raw data describe the former Node implementation at their recorded
+revisions and are not measurements of today's default entry.
+
+Raw warmup and measured triples are milliseconds, GC count and GC seconds.
+Keep per-process p50, p99, max and GC totals, with no aggregate S5 pass/fail
+budget or cross-process percentile averaging.
 
 ## Running the native markup benchmark
 

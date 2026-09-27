@@ -1,10 +1,10 @@
 ;;; emmet2-engine-stylesheet.el --- Native stylesheet expansion -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
-;; Grammar and resolution derived from Emmet 2.4.11 (MIT); see vendor/emmet-LICENSE.
+;; Grammar and resolution derived from Emmet 2.4.11 (MIT); see data/emmet/LICENSE.
 
 ;;; Commentary:
-;; S7 pure engine, called directly until native acceptance permits the switch.
+;; Pure stylesheet pipeline shared by commands, completion and previews.
 ;; Packaged snippets and their lookup index are immutable after module loading.
 ;; Parsed input, resolved values and output belong to one expansion.  CSS
 ;; extension syntax and default removal remain in emmet2-extensions.
@@ -435,7 +435,7 @@ The upstream trimming also applies to scientific notation at 1e21 and above."
        (emmet2-stylesheet--push out ")")))))
 
 (defun emmet2-stylesheet--emit-value (out fragment)
-  "Format property or argument FRAGMENT, preserving adjacent fields."
+  "Format property or argument FRAGMENT into OUT, preserving adjacent fields."
   (let ((first t) (previous-end -1))
     (dolist (token fragment)
       (unless (or first (and (eq (aref token 0) 'field) (eql (aref token 2) previous-end)))

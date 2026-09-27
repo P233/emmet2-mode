@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Temporary structured JSX extension owner. S6 moves this contract to Elisp.
+// Independent JSX reference for the offline development oracle.
 // Operate before serialization: quoted class values cannot be recovered safely
 // from Emmet's rendered markup (it does not escape embedded attribute quotes).
 

@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  oracle-and-legacy:
+  oracle:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -17,25 +17,17 @@ jobs:
         with:
           persist-credentials: false
       - id: versions
-        run: |
-          node -e 'const d=require("./test/dependencies.json"); console.log("node="+d.node); console.log("deno="+d.deno)' >> "$GITHUB_OUTPUT"
+        run: node -e 'console.log("node="+require("./test/dependencies.json").node)' >> "$GITHUB_OUTPUT"
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: ${{ steps.versions.outputs.node }}
           package-manager-cache: false
-      - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
-        with:
-          deno-version: ${{ steps.versions.outputs.deno }}
-      - run: node --test test/oracle/adapter.test.mjs test/oracle/gen.test.mjs test/css-data.test.mjs test/jsx.test.mjs test/node-server.test.mjs
-      - run: node test/oracle/gen.mjs --check
-      - run: deno lint emmet2-jsx.mjs emmet2-engine-node.mjs emmet2-node-server.mjs test/oracle test/setup.mjs test/build-emacs.mjs test/node-fixture.mjs data/update-web-data.mjs test/css-data.test.mjs test/jsx.test.mjs test/node-server.test.mjs
-      - name: Legacy behavior baseline (until migrated)
-        run: |
-          deno task test:css
-          deno task test:markup
-          deno task test:regex
-      - name: Oracle with networking denied
-        run: deno run --cached-only --frozen --allow-read=. test/oracle/gen.mjs --check
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run lint
+      - run: npm test
+      - run: npm run oracle:check
+      - name: Oracle with networking and writes denied
+        run: sudo unshare --net -- "$(command -v node)" --permission --allow-fs-read=. test/oracle/gen.mjs --check
 
   emacs:
     runs-on: ubuntu-24.04
@@ -68,66 +60,22 @@ jobs:
         run: |
           node test/setup.mjs "$RUNNER_TEMP/emmet2-deps"
           echo "EMMET2_TEST_DEPS=$RUNNER_TEMP/emmet2-deps" >> "$GITHUB_ENV"
-      - name: S0 contract probes
-        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit'
       - name: Byte compilation (warnings fail)
-        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/compile.el'
-      - name: Pure result contracts
-        env:
-          EMMET2_TEST_SUITE: results
-        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit'
-      - name: Emmet fuzzy contracts
-        env:
-          EMMET2_TEST_SUITE: fuzzy
-        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit'
-      - name: Native markup complete-path spike
-        env:
-          EMMET2_TEST_SUITE: markup-spike
-        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit'
-      - name: Native stylesheet core contracts
-        env:
-          EMMET2_TEST_SUITE: stylesheet
-        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit'
-      - name: Markup extensions and migrated behavior
-        env:
-          EMMET2_TEST_SUITE: markup-extensions
-        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit'
-      - name: Independent complete backend integration through Node
-        env:
-          EMMET2_TEST_BACKEND: node
-        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/backend-integration.el'
-      - name: Independent complete backend integration through native engine
-        env:
-          EMMET2_TEST_BACKEND: native
-        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/backend-integration.el'
-      - name: CSS extensions and migrated behavior
-        env:
-          EMMET2_TEST_SUITE: css-extensions
-        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit'
-      - name: Native command and insertion contracts
-        env:
-          EMMET2_TEST_SUITE: editor
-        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit'
-      - name: Native completion and Corfu integration
-        env:
-          EMMET2_TEST_SUITE: completion
-        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit'
+        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/byte-compile.el'
+      - name: Package metadata and documentation
+        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/package-quality.el'
+      - name: Complete native contracts without external processes
+        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/integration.el'
       - name: Byte-compiled editor and optional dependencies
         run: '"$EMMET2_EMACS" --batch -Q -L . -l test/editor-bytecode.el'
-      - name: Actual isolated package installation
+      - name: Actual isolated package installation without external runtimes
         env:
           EMMET2_INSTALL_ROOT: ${{ runner.temp }}/emmet2-install
         run: '"$EMMET2_EMACS" --batch -Q -l test/install.el'
-      - name: Independent complete backend integration from installed bytecode
+      - name: Complete native contracts from installed bytecode
         env:
           EMMET2_TEST_PACKAGE: ${{ runner.temp }}/emmet2-install/straight/build/emmet2-mode
-        run: |
-          EMMET2_TEST_BACKEND=node "$EMMET2_EMACS" --batch -Q -l test/backend-integration.el
-          EMMET2_TEST_BACKEND=native "$EMMET2_EMACS" --batch -Q -l test/backend-integration.el
-      - name: Node protocol and core oracle
-        env:
-          EMMET2_TEST_SUITE: node
-        run: '"$EMMET2_EMACS" --batch -Q -L . -l test/emmet2-test.el -f ert-run-tests-batch-and-exit'
+        run: '"$EMMET2_EMACS" --batch -Q -l test/integration.el'
       - name: Build diagnostics
         if: failure()
         run: |

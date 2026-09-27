@@ -1,9 +1,10 @@
-;;; emmet2-mode.el --- An Emmet-enhanced minor mode for Emacs.  -*- lexical-binding: t; -*-
+;;; emmet2-mode.el --- Expand Emmet abbreviations  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022-2023 Peiwen Lu
 
 ;; Author: Peiwen Lu <hi@peiwen.lu>
 ;; Created: 10 Oct 2022
+;; Version: 0.2.0
 ;; URL: https://github.com/P233/emmet2-mode
 ;; Compatibility: emacs-version >= 30
 ;; Package-Requires: ((emacs "30"))
@@ -33,7 +34,6 @@
 (require 'emmet2-context)
 (require 'emmet2-extensions)
 (require 'emmet2-insert)
-(declare-function emmet2-node-stop "emmet2-engine-node" (&optional process))
 (declare-function emmet2-preview-clear "emmet2-preview" ())
 (autoload 'emmet2-capf "emmet2-capf" nil nil)
 (autoload 'emmet2-complete "emmet2-capf" nil t)
@@ -90,7 +90,7 @@ This shared read-only path produces the final insertion and preview result."
 
 ;;;###autoload
 (define-minor-mode emmet2-mode
-  "Expand with C-j and offer confident Emmet abbreviations for completion."
+  "Expand with \\[emmet2-expand] and offer confident Emmet completion."
   :lighter " emmet2"
   :keymap (let ((map (make-sparse-keymap)))
             (define-key map (kbd "C-j") #'emmet2-expand)
@@ -103,12 +103,11 @@ This shared read-only path produces the final insertion and preview result."
     (emmet2-context-stop)))
 
 (defun emmet2-mode-unload-function ()
-  "Release mode-owned context resources and the interim backend."
+  "Release mode-owned context resources and preview buffers."
   (dolist (buffer (buffer-list))
     (with-current-buffer buffer
       (if (bound-and-true-p emmet2-mode) (emmet2-mode -1)
         (when (emmet2-context--owner) (emmet2-context-stop)))))
-  (when (fboundp 'emmet2-node-stop) (emmet2-node-stop))
   (when (fboundp 'emmet2-preview-clear) (emmet2-preview-clear))
   nil)
 

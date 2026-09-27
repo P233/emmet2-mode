@@ -215,7 +215,7 @@
       "id": "command-expand",
       "contract": "C-j expands the whole abbreviation from start/middle/end",
       "stage": "S3/S4",
-      "tests": []
+      "tests": ["emmet2-markup-command-completion-preview-and-yas"]
     },
     {
       "id": "host-css",
@@ -287,19 +287,20 @@
       "id": "corfu",
       "contract": "styles/category/exact-match/auto-prefix matrix, acceptance and cancellation",
       "stage": "S5",
-      "tests": []
+      "tests": ["emmet2-contract-corfu-configuration-matrix", "emmet2-capf-corfu-typing-and-movement-end-old-session", "emmet2-capf-corfu-buffer-switch-and-killed-source"]
     },
     {
       "id": "completion-command",
       "contract": "emmet2-complete uses only Emmet capf without changing Corfu options",
       "stage": "S5",
-      "tests": []
+      "tests": ["emmet2-capf-mode-registration-and-command-isolation", "emmet2-capf-explicit-command-warms-but-keeps-host-gate"]
     },
     {
       "id": "installation",
       "contract": "M1 installed files; M2 without Node/Deno",
       "stage": "S5/S7",
-      "tests": []
+      "runner": "test/install.el",
+      "tests": ["emmet2-native-entry-presets-and-layout", "emmet2-native-entry-seed-is-call-local"]
     },
     {
       "id": "grammar-missing",

@@ -1,6 +1,5 @@
 {
   "node": "24.21.0",
-  "deno": "2.9.7",
   "emacs": [
     {"version": "30.2", "revision": "636f166cfc86aa90d63f592fd99f3fdd9ef95ebd", "archive": "https://ftp.gnu.org/gnu/emacs/emacs-30.2.tar.xz", "sha256": "b3f36f18a6dd2715713370166257de2fae01f9d38cfe878ced9b1e6ded5befd9"},
     {"version": "31.1", "revision": "a360712c9d272d950d8d8255ef74570f7e90b7d9", "archive": "https://ftp.gnu.org/gnu/emacs/emacs-31.1.tar.xz", "sha256": "1da5790d9580c81932b5bf700633114468da7b3412d69faa767daebf974f4586"}
@@ -11,7 +10,8 @@
     "compat": {"repository": "https://github.com/emacs-straight/compat.git", "revision": "9f8a565ad8c9617a6f006115f50f4cf63286ec83"},
     "web-mode": {"repository": "https://github.com/fxbois/web-mode.git", "revision": "ce24723eb900c455b488d224910519bd36af580a"},
     "yasnippet": {"repository": "https://github.com/joaotavora/yasnippet.git", "revision": "c1e6ff23e9af16b856c88dfaab9d3ad7b746ad37"},
-    "straight.el": {"repository": "https://github.com/radian-software/straight.el.git", "revision": "0d5c4d9937c8c94f0b71574960f7957d560ef837"}
+    "straight.el": {"repository": "https://github.com/radian-software/straight.el.git", "revision": "0d5c4d9937c8c94f0b71574960f7957d560ef837"},
+    "package-lint": {"repository": "https://github.com/purcell/package-lint.git", "revision": "1865be780a16098f972fef50a52b21ca6ee04df9"}
   },
   "grammars": {
     "jsdoc": {"repository": "https://github.com/tree-sitter/tree-sitter-jsdoc.git", "revision": "b253abf68a73217b7a52c0ec254f4b6a7bb86665", "directory": "src"},

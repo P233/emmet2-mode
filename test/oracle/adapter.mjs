@@ -1,12 +1,13 @@
-// Fixed-version result adapter shared by the offline oracle and Node IPC.
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Fixed-version result adapter for the offline development oracle.
 import expandAbbreviation, {
   parseStylesheet,
   parseMarkup,
   resolveConfig,
   stringifyMarkup,
   stringifyStylesheet,
-} from "./vendor/emmet-2.4.11.mjs";
-import { transformClasses } from "./emmet2-jsx.mjs";
+} from "../vendor/emmet-2.4.11.mjs";
+import { transformClasses } from "./jsx.mjs";
 
 export class EmmetParseError extends Error {
   constructor(error, abbreviation) {

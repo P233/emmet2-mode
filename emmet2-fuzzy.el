@@ -1,7 +1,7 @@
 ;;; emmet2-fuzzy.el --- Emmet fuzzy matching -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
-;; Algorithm derived from Emmet 2.4.11 (MIT); see NOTICE and vendor/emmet-LICENSE.
+;; Algorithm derived from Emmet 2.4.11 (MIT); see NOTICE and data/emmet/LICENSE.
 
 ;;; Commentary:
 ;; Preserve upstream scoring, partial matching and later-item tie breaks.

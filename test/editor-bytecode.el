@@ -14,13 +14,10 @@
       (progn
         ;; Runtime resources resolve next to the compiled package files.
         ;; This is a test copy, not acceptance of a package manager's recipe.
-        (dolist (name '("data" "vendor"))
-          (copy-directory (expand-file-name name emmet2-test-root) (expand-file-name name directory)))
-        (dolist (name (directory-files emmet2-test-root nil "\\.mjs\\'"))
-          (copy-file (expand-file-name name emmet2-test-root) (expand-file-name name directory)))
+        (copy-directory (expand-file-name "data" emmet2-test-root) (expand-file-name "data" directory))
         (dolist (name '("yasnippet" "web-mode" "corfu" "corfu-auto" "corfu-popupinfo"))
           ;; Locked third-party code has existing warnings; report them.
-          ;; The project's warning-as-error policy remains below and in compile.el.
+          ;; The project's warning-as-error policy remains below and in byte-compile.el.
           (let ((byte-compile-error-on-warn nil))
             (unless (byte-compile-file (locate-library name))
               (error "Dependency compilation failed: %s" name)))

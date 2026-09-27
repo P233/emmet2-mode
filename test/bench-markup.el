@@ -27,7 +27,7 @@
            '("emmet2-engine.el" "emmet2-engine-markup.el" "data/emmet/html.json" "data/emmet/variables.json"
              "data/emmet/lorem/latin.json" "data/emmet/lorem/russian.json" "data/emmet/lorem/spanish.json"
              "test/emmet2-engine-markup-test.el" "test/fixtures/core-inputs.json"
-             "test/emmet2-lorem-contract.el" "test/fixtures/lorem.json" "vendor/emmet-source.json"
+             "test/emmet2-lorem-contract.el" "test/fixtures/lorem.json" "data/emmet/source.json"
              "test/fixtures/oracle/markup.json" "test/bench-markup.el" "test/dependencies.json"))))
 
 (defun emmet2-markup-bench--sample (case)

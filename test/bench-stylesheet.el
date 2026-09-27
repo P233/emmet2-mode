@@ -24,7 +24,7 @@
                (list :file file :sha256 (secure-hash 'sha256 (current-buffer)))))
            '("emmet2-engine.el" "emmet2-engine-stylesheet.el" "emmet2-fuzzy.el" "data/emmet/css.json"
              "test/emmet2-engine-stylesheet-test.el" "test/fixtures/core-inputs.json"
-             "test/fixtures/oracle/stylesheet.json" "vendor/emmet-source.json"
+             "test/fixtures/oracle/stylesheet.json" "data/emmet/source.json"
              "test/bootstrap.el" "test/bench-stylesheet.el" "test/dependencies.json"))))
 
 (defun emmet2-stylesheet-bench--sample (case)
