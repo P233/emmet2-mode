@@ -1,0 +1,842 @@
+[
+  {
+    "id": "lorem-001",
+    "abbreviation": "lorem",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          30,
+          30
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-002",
+    "abbreviation": "lorem0",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          1,
+          1
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-003",
+    "abbreviation": "lorem1",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          1,
+          1
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-004",
+    "abbreviation": "lorem5",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          5,
+          5
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-005",
+    "abbreviation": "lorem8",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          8,
+          8
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-006",
+    "abbreviation": "lorem80",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          80,
+          80
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-007",
+    "abbreviation": "lorem2-",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          2,
+          2
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-008",
+    "abbreviation": "lorem10-5",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          10,
+          10
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-009",
+    "abbreviation": "lorem5-10",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          5,
+          9
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-010",
+    "abbreviation": "loremru4",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          4,
+          4
+        ],
+        "language": "ru",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-011",
+    "abbreviation": "loremru10",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          10,
+          10
+        ],
+        "language": "ru",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-012",
+    "abbreviation": "loremru50",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          50,
+          50
+        ],
+        "language": "ru",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-013",
+    "abbreviation": "loremsp4",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          4,
+          4
+        ],
+        "language": "sp",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-014",
+    "abbreviation": "loremsp10",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          10,
+          10
+        ],
+        "language": "sp",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-015",
+    "abbreviation": "loremsp50",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          50,
+          50
+        ],
+        "language": "sp",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-016",
+    "abbreviation": "loremunknown6",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          6,
+          6
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-017",
+    "abbreviation": "LOREMru4",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          4,
+          4
+        ],
+        "language": "ru",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-018",
+    "abbreviation": "loremRU4",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          4,
+          4
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-019",
+    "abbreviation": "LoReM5",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          5,
+          5
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-020",
+    "abbreviation": "p>lorem",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "<p>~</p>",
+    "paragraphs": [
+      {
+        "count": [
+          30,
+          30
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-021",
+    "abbreviation": "(p)lorem2",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "<p></p>\n~",
+    "paragraphs": [
+      {
+        "count": [
+          2,
+          2
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ],
+    "fields": [
+      ""
+    ]
+  },
+  {
+    "id": "lorem-022",
+    "abbreviation": "p(lorem10)",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "<p></p>\n~",
+    "paragraphs": [
+      {
+        "count": [
+          10,
+          10
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ],
+    "fields": [
+      ""
+    ]
+  },
+  {
+    "id": "lorem-023",
+    "abbreviation": "lorem6*3",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~\n~\n~",
+    "paragraphs": [
+      {
+        "count": [
+          6,
+          6
+        ],
+        "language": "latin",
+        "opening": "common"
+      },
+      {
+        "count": [
+          6,
+          6
+        ],
+        "language": "latin",
+        "opening": "random"
+      },
+      {
+        "count": [
+          6,
+          6
+        ],
+        "language": "latin",
+        "opening": "random"
+      }
+    ]
+  },
+  {
+    "id": "lorem-024",
+    "abbreviation": "p*3>lorem4",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "<p>~</p>\n<p>~</p>\n<p>~</p>",
+    "paragraphs": [
+      {
+        "count": [
+          4,
+          4
+        ],
+        "language": "latin",
+        "opening": "common"
+      },
+      {
+        "count": [
+          4,
+          4
+        ],
+        "language": "latin",
+        "opening": "random"
+      },
+      {
+        "count": [
+          4,
+          4
+        ],
+        "language": "latin",
+        "opening": "random"
+      }
+    ]
+  },
+  {
+    "id": "lorem-025",
+    "abbreviation": "ul>lorem5*3",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "<ul>\n<li>~</li>\n<li>~</li>\n<li>~</li>\n</ul>",
+    "paragraphs": [
+      {
+        "count": [
+          5,
+          5
+        ],
+        "language": "latin",
+        "opening": "common"
+      },
+      {
+        "count": [
+          5,
+          5
+        ],
+        "language": "latin",
+        "opening": "random"
+      },
+      {
+        "count": [
+          5,
+          5
+        ],
+        "language": "latin",
+        "opening": "random"
+      }
+    ],
+    "indent": ""
+  },
+  {
+    "id": "lorem-026",
+    "abbreviation": "div>lorem3*2",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "<div>\n\t<div>~</div>\n\t<div>~</div>\n</div>",
+    "paragraphs": [
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "common"
+      },
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "random"
+      }
+    ]
+  },
+  {
+    "id": "lorem-027",
+    "abbreviation": "span>lorem3*2",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "<span><span>~</span><span>~</span></span>",
+    "paragraphs": [
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "common"
+      },
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "random"
+      }
+    ]
+  },
+  {
+    "id": "lorem-028",
+    "abbreviation": "p>lorem3*2",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "<p><span>~</span><span>~</span></p>",
+    "paragraphs": [
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "common"
+      },
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "random"
+      }
+    ]
+  },
+  {
+    "id": "lorem-029",
+    "abbreviation": "(ul>lorem3)*2",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "<ul>~</ul>\n<ul>~</ul>",
+    "paragraphs": [
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "common"
+      },
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "random"
+      }
+    ]
+  },
+  {
+    "id": "lorem-030",
+    "abbreviation": "ul>(lorem3+lorem4)*2",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "<ul>\n\t<li>~</li>\n\t<li>~</li>\n\t<li>~</li>\n\t<li>~</li>\n</ul>",
+    "paragraphs": [
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "common"
+      },
+      {
+        "count": [
+          4,
+          4
+        ],
+        "language": "latin",
+        "opening": "common"
+      },
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "random"
+      },
+      {
+        "count": [
+          4,
+          4
+        ],
+        "language": "latin",
+        "opening": "random"
+      }
+    ]
+  },
+  {
+    "id": "lorem-031",
+    "abbreviation": "ul>lorem3*",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "<ul>\n\t<li>~</li>\n</ul>",
+    "paragraphs": [
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-032",
+    "abbreviation": "ul>lorem3.x*2",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "<ul>\n\t<li>~</li>\n\t<li>~</li>\n</ul>",
+    "paragraphs": [
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "common"
+      },
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "random"
+      }
+    ]
+  },
+  {
+    "id": "lorem-033",
+    "abbreviation": "ul>lorem3*1",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "<ul>\n\t<li>~</li>\n</ul>",
+    "paragraphs": [
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-034",
+    "abbreviation": "lorem3/",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-035",
+    "abbreviation": "lorem3*0",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-036",
+    "abbreviation": "lorem3[foo.]",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-037",
+    "abbreviation": "lorem3.foo[id=x]{existing}",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~",
+    "paragraphs": [
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ]
+  },
+  {
+    "id": "lorem-038",
+    "abbreviation": "lorem3.foo[id=x]{existing}>b",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~<b></b>",
+    "paragraphs": [
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ],
+    "fields": [
+      ""
+    ]
+  },
+  {
+    "id": "lorem-039",
+    "abbreviation": "p>lorem3+span{${1:😀}}",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "<p>~<span>😀</span></p>",
+    "paragraphs": [
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "common"
+      }
+    ],
+    "fields": [
+      "😀"
+    ]
+  },
+  {
+    "id": "lorem-040",
+    "abbreviation": "ul>loremsp4*2",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "<ul>\n    <li>~</li>\n    <li>~</li>\n  </ul>",
+    "paragraphs": [
+      {
+        "count": [
+          4,
+          4
+        ],
+        "language": "sp",
+        "opening": "common"
+      },
+      {
+        "count": [
+          4,
+          4
+        ],
+        "language": "sp",
+        "opening": "random"
+      }
+    ],
+    "preset": "jsx",
+    "indent": "  ",
+    "baseIndent": "  "
+  },
+  {
+    "id": "lorem-041",
+    "abbreviation": "loremru20*2",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "~\n~",
+    "paragraphs": [
+      {
+        "count": [
+          20,
+          20
+        ],
+        "language": "ru",
+        "opening": "common"
+      },
+      {
+        "count": [
+          20,
+          20
+        ],
+        "language": "ru",
+        "opening": "random"
+      }
+    ]
+  },
+  {
+    "id": "lorem-042",
+    "abbreviation": "ul*2>lorem3*2",
+    "source": "Pinned Emmet 2.4.11 lorem tests and explicit count, locale, repeat and layout contracts",
+    "template": "<ul>\n\t<li>~</li>\n\t<li>~</li>\n</ul>\n<ul>\n\t<li>~</li>\n\t<li>~</li>\n</ul>",
+    "paragraphs": [
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "common"
+      },
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "random"
+      },
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "common"
+      },
+      {
+        "count": [
+          3,
+          3
+        ],
+        "language": "latin",
+        "opening": "random"
+      }
+    ]
+  }
+]

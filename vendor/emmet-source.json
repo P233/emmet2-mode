@@ -24,6 +24,18 @@
     "data/emmet/variables.json": {
       "source": "https://raw.githubusercontent.com/emmetio/emmet/a96c77a84dc4519de695f3a1625011d908dbe9c0/src/snippets/variables.json",
       "sha256": "58bb8e0278c2240973cf6fa2a663dafaee5137bc102a28f78c01f5fca0d7d851"
+    },
+    "data/emmet/lorem/latin.json": {
+      "source": "https://raw.githubusercontent.com/emmetio/emmet/a96c77a84dc4519de695f3a1625011d908dbe9c0/src/markup/lorem/latin.json",
+      "sha256": "41d36ec83d6f6f1e13e9f0fe5faeeb27e3ea98a6d152968860bb035fa88b54bf"
+    },
+    "data/emmet/lorem/russian.json": {
+      "source": "https://raw.githubusercontent.com/emmetio/emmet/a96c77a84dc4519de695f3a1625011d908dbe9c0/src/markup/lorem/russian.json",
+      "sha256": "96b9eec34568bd33eeb192134e5f5de53731216d3d691dd1b031ae9e6bfe86e5"
+    },
+    "data/emmet/lorem/spanish.json": {
+      "source": "https://raw.githubusercontent.com/emmetio/emmet/a96c77a84dc4519de695f3a1625011d908dbe9c0/src/markup/lorem/spanish.json",
+      "sha256": "ae5157cbc959856ffc73a0ff47babf9106603c3026a9feaa66f432563f143456"
     }
   }
 }

@@ -789,3 +789,31 @@ rtk proxy node --test test/node-server.test.mjs
 
 Seeded lorem, independent native integration and the full S6 performance gate
 remain open. This slice does not switch the editor backend.
+
+### S6.2 seeded lorem
+
+The native entry accepts integer `:seed` (default 0, normalized to 32 bits).
+One expansion owns one random state; all lorem nodes consume it in tree order.
+The generator never reads or mutates Emacs's global random state. Identical
+input/options/seed reproduce the complete result, including fields after lorem.
+Different seeds may produce the same short common opening. The integer generator
+is for placeholder text, not cryptographic use.
+
+Latin, Russian and Spanish vocabularies are copied verbatim from the same pinned
+Emmet source commit into `data/emmet/lorem/`; the existing provenance manifest
+checks their hashes. Module initialization reads them once. Generation modifies
+only local word vectors and the owned AST, including clearing dropped attributes.
+It reuses existing repeat metadata to choose common openings and implicit tags.
+
+`test/fixtures/lorem.json` stores 42 authored structural contracts rather than
+random text goldens. Both the independent native and real Node suites check
+layout, vocabulary, sentence capitalization/punctuation, count ranges, common
+openings, repeat ancestry and field slices. Native runs use five seeds and also
+check reproducibility, data immutability and the shared deadline inside paragraph
+generation. Russian entries can contain multiple words; counts refer to dictionary
+entries. Ranges preserve the pinned implementation's exclusive upper bound when
+it exceeds the minimum. The pinned version does not recognize `lipsum`; it remains
+an ordinary element name.
+
+The default editor entry still uses Node. Native integration and the complete S6
+performance and installation checks remain separate acceptance work.

@@ -4,6 +4,12 @@
 
 (require 'ert)
 (require 'emmet2-engine-node)
+(require 'emmet2-lorem-contract)
+
+(ert-deftest emmet2-node-lorem-structural-contract ()
+  (emmet2-node-stop)
+  (unwind-protect (emmet2-lorem-test--run #'emmet2-engine-expand)
+    (emmet2-node-stop)))
 
 (defmacro emmet2-test--with-node-fixture (&rest body)
   "Execute BODY with the fault fixture and no preexisting process."

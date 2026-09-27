@@ -4,6 +4,34 @@
 
 (require 'ert)
 (require 'emmet2-engine-markup)
+(require 'emmet2-lorem-contract)
+
+(ert-deftest emmet2-markup-lorem-structural-contract ()
+  (dolist (seed '(0 1 -1 1073741824 4294967295))
+    (ert-info ((format "seed %s" seed))
+      (emmet2-lorem-test--run
+       (lambda (&rest arguments) (apply #'emmet2-engine-markup-expand (append arguments (list :seed seed))))))))
+
+(ert-deftest emmet2-markup-lorem-seed-is-local-and-repeatable ()
+  (let* ((input "ul>lorem40*3") (before (copy-sequence input))
+         (data (prin1-to-string emmet2-markup--vocabularies))
+         (first (emmet2-engine-markup-expand input :seed 42)))
+    (cl-letf (((symbol-function 'random) (lambda (&rest _) (error "Global random must not be used"))))
+      (should-not (equal first (emmet2-engine-markup-expand input :seed 43)))
+      (emmet2-engine-markup-expand "loremru100")
+      (should (equal first (emmet2-engine-markup-expand input :seed 42)))
+      (should (equal first (emmet2-engine-markup-expand input :seed (+ 42 (expt 2 32))))))
+    (should (equal input before))
+    (should (equal data (prin1-to-string emmet2-markup--vocabularies))))
+  (dolist (seed '(nil t "1" 1.0))
+    (should-error (emmet2-engine-markup-expand "lorem" :seed seed) :type 'emmet2-error))
+  (let ((emmet2-engine--timeout 0.01))
+    (should-error
+     (emmet2-engine-with-expansion
+       (emmet2-markup--lorem-paragraph (cdar emmet2-markup--vocabularies) 1000000 t (list 0)))
+     :type 'emmet2-backend-error))
+  (should (equal (emmet2-engine-markup-expand "lipsum4")
+                 '(:text "<lipsum4></lipsum4>" :fields ((9 9 1 "")) :cursor 9))))
 
 (defun emmet2-markup-test--json (path)
   "Read JSON PATH relative to the repository root."

@@ -7,7 +7,7 @@
 ;; pass acceptance.  The editor still uses the Node backend.
 ;; Grammar, snippet resolution and HTML formatting follow vendored Emmet 2.4.11
 ;; (vendor/emmet-LICENSE).  All mutable trees and output belong to one call.
-;; Seeded lorem and final native integration remain subsequent S6 slices.
+;; Final native integration remains a subsequent S6 slice.
 
 ;;; Code:
 
@@ -33,6 +33,9 @@
              (emmet2-markup--read-data "html.json"))
     table))
 (defconst emmet2-markup--variables (emmet2-markup--read-data "variables.json"))
+(defconst emmet2-markup--vocabularies
+  (mapcar (lambda (entry) (cons (car entry) (emmet2-markup--read-data (cdr entry))))
+          '(("latin" . "lorem/latin.json") ("ru" . "lorem/russian.json") ("sp" . "lorem/spanish.json"))))
 (defconst emmet2-markup--inline
   '("a" "abbr" "acronym" "applet" "b" "basefont" "bdo" "big" "br" "button"
     "cite" "code" "del" "dfn" "em" "font" "i" "iframe" "img" "input" "ins"
@@ -603,16 +606,84 @@ names include the intervening expression syntax in their new defaults."
           (push (substring output start) tokens)
           (nreverse tokens))))))
 
-(defun emmet2-markup--transform (nodes &optional parent-name class-attribute jsx)
+(defun emmet2-markup--random (state from to)
+  "Draw from [FROM, TO) using the call-owned 32-bit integer in STATE.
+Equal bounds return FROM.  This generator never touches Emacs random state."
+  (emmet2-engine--check-deadline)
+  (setcar state (logand #xffffffff (+ (* 1664525 (car state)) 1013904223)))
+  (+ from (/ (* (- to from) (car state)) #x100000000)))
+
+(defun emmet2-markup--lorem-paragraph (dictionary count common state)
+  "Generate COUNT vocabulary entries from DICTIONARY with owned random STATE.
+COMMON starts with the dictionary's standard opening.  Entries may be phrases."
+  (let ((total 0) result)
+    (cl-labels
+        ((sentence (words &optional ending)
+           (let* ((size (length words))
+                  (commas (cond ((< size 2) 0)
+                                ((<= 4 size 6) (emmet2-markup--random state 0 1))
+                                ((<= 7 size 12) (emmet2-markup--random state 0 2))
+                                (t (emmet2-markup--random state 1 4)))))
+             (dotimes (_ commas)
+               (let ((i (emmet2-markup--random state 0 (- size 2))))
+                 (unless (string-suffix-p "," (aref words i))
+                   (aset words i (concat (aref words i) ",")))))
+             (when (> size 0)
+               (aset words 0 (concat (upcase (substring (aref words 0) 0 1))
+                                     (substring (aref words 0) 1))))
+             (concat (mapconcat #'identity words " ")
+                     (or ending (char-to-string (aref "?!..." (emmet2-markup--random state 0 4)))))))
+         (sample (size)
+           (let* ((source (gethash "words" dictionary)) (length (length source))
+                  (limit (min size length)) (selected 0) words)
+             (while (< selected limit)
+               (let ((word (aref source (emmet2-markup--random state 0 length))))
+                 (unless (member word words) (push word words) (cl-incf selected))))
+             (vconcat (nreverse words)))))
+      (when common
+        (let ((words (seq-take (gethash "common" dictionary) count)))
+          (setq total (length words))
+          (push (sentence (vconcat words) ".") result)))
+      (while (< total count)
+        (let ((words (sample (min (emmet2-markup--random state 2 30) (- count total)))))
+          (cl-incf total (length words))
+          (push (sentence words) result)))
+      (mapconcat #'identity (nreverse result) " "))))
+
+(defun emmet2-markup--implicit-name (parent-name)
+  "Return the implicit element name under PARENT-NAME."
+  (or (cdr (assoc parent-name emmet2-markup--implicit))
+      (if (member parent-name emmet2-markup--inline) "span" "div")))
+
+(defun emmet2-markup--lorem (node parent-name repeat state)
+  "Transform a lorem NODE using PARENT-NAME, inherited REPEAT and random STATE."
+  (let ((name (emmet2-markup--node-name node)) (case-fold-search nil))
+    (when (and name (string-match "\\`[lL][oO][rR][eE][mM]\\([a-zA-Z]*\\)\\([0-9]*\\)\\(-[0-9]*\\)?\\'" name))
+      (let* ((dictionary (or (cdr (assoc (match-string 1 name) emmet2-markup--vocabularies))
+                            (cdar emmet2-markup--vocabularies)))
+             (digits (match-string 2 name)) (range (match-string 3 name))
+             (min (if (string-empty-p digits) 30 (max 1 (string-to-number digits))))
+             (max (if range (max min (string-to-number (substring range 1))) min))
+             (repeat (or (emmet2-markup--node-repeat node) repeat)))
+        (setf (emmet2-markup--node-name node)
+              (and parent-name (emmet2-markup--node-repeat node) (emmet2-markup--implicit-name parent-name))
+              (emmet2-markup--node-attributes node) nil
+              (emmet2-markup--node-attributes-present node) nil
+              (emmet2-markup--node-value node)
+              (list (emmet2-markup--lorem-paragraph dictionary (emmet2-markup--random state min max)
+                                                     (or (null repeat) (= (emmet2-markup--repeat-index repeat) 0)) state)))))))
+
+(cl-defun emmet2-markup--transform (nodes &optional parent-name class-attribute jsx (random-state (list 0)) repeat)
   "Transform owned NODES under PARENT-NAME before serialization.
-CLASS-ATTRIBUTE renames class for JSX; JSX supplies project expression options."
+CLASS-ATTRIBUTE renames class for JSX; JSX supplies project expression options.
+RANDOM-STATE belongs to this call; REPEAT is the nearest ancestor's repeater."
   (dolist (node nodes)
     (when (and (null (emmet2-markup--node-name node)) (emmet2-markup--node-attributes-present node))
       (setf (emmet2-markup--node-name node)
-            (or (cdr (assoc parent-name emmet2-markup--implicit))
-                (if (member parent-name emmet2-markup--inline) "span" "div"))))
+            (emmet2-markup--implicit-name parent-name)))
     (setf (emmet2-markup--node-attributes node)
           (emmet2-markup--merge-attributes (emmet2-markup--node-attributes node)))
+    (emmet2-markup--lorem node parent-name repeat random-state)
     (when (equal (emmet2-markup--node-name node) "label")
       (when-let* ((input (emmet2-markup--find-input (emmet2-markup--node-children node))))
         (dolist (pair (list (cons node "for") (cons input "id")))
@@ -632,7 +703,8 @@ CLASS-ATTRIBUTE renames class for JSX; JSX supplies project expression options."
                                                     (plist-get jsx :classConstructor))))
             (setf (emmet2-markup--attribute-kind attr) 'expression)))))
     (emmet2-markup--transform (emmet2-markup--node-children node)
-                             (downcase (or (emmet2-markup--node-name node) "")) class-attribute jsx)))
+                             (downcase (or (emmet2-markup--node-name node) "")) class-attribute jsx random-state
+                             (or (emmet2-markup--node-repeat node) repeat))))
 
 (cl-defstruct (emmet2-markup--output (:constructor emmet2-markup--output (indent base-indent jsx)))
   indent base-indent jsx parts fields (offset 0) (field 1) (level 0) (line 0))
@@ -782,13 +854,15 @@ CLASS-ATTRIBUTE renames class for JSX; JSX supplies project expression options."
     (emmet2-result-create (apply #'concat (nreverse (emmet2-markup--output-parts out)))
                           fields)))
 
-(cl-defun emmet2-engine-markup-expand (abbreviation &key (preset 'html) (indent "\t") (base-indent "") jsx)
+(cl-defun emmet2-engine-markup-expand (abbreviation &key (preset 'html) (indent "\t") (base-indent "") jsx (seed 0))
   "Expand ABBREVIATION through the native markup pipeline.
 PRESET is html or jsx.  INDENT and BASE-INDENT affect layout before fields.
 JSX is nil or the existing project rendering options plist.
+SEED is an integer for call-local lorem generation, normalized to 32 bits.
 This native entry is independent of the editor's temporary Node backend."
   (unless (and (stringp abbreviation) (memq preset '(html jsx)) (stringp indent) (stringp base-indent))
     (signal 'emmet2-error '("Invalid markup abbreviation, preset or indentation")))
+  (unless (integerp seed) (signal 'emmet2-error '("Lorem seed must be an integer")))
   (unless (or (null jsx)
               (and (eq preset 'jsx) (proper-list-p jsx)
                    (member (plist-get jsx :classAttribute) '("className" "class"))
@@ -799,7 +873,8 @@ This native entry is independent of the editor's temporary Node backend."
            (nodes (emmet2-markup--resolve (emmet2-markup--convert (emmet2-markup--parse abbreviation jsx-p))
                                            (make-hash-table :test #'equal) nil jsx-p))
            (out (emmet2-markup--output indent base-indent jsx-p)))
-      (emmet2-markup--transform nodes nil (and jsx-p (or (plist-get jsx :classAttribute) "classList")) jsx)
+      (emmet2-markup--transform nodes nil (and jsx-p (or (plist-get jsx :classAttribute) "classList")) jsx
+                               (list (logand seed #xffffffff)))
       (emmet2-markup--emit out nodes)
       (emmet2-markup--result out))))
 
