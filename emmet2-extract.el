@@ -10,20 +10,31 @@
 
 (require 'cl-lib)
 
+(defconst emmet2-extract--tag
+  (concat "</?\\(?:[A-Za-z][-A-Za-z0-9:._]*"
+          "\\(?:[ \t]+\\(?:[^<>\"'{}]\\|\"[^\"]*\"\\|'[^']*'\\|{[^{}]*}\\)*\\)?\\)?/?>")
+  "An authored HTML or JSX tag, whose name and `>' are never Emmet syntax.")
+
+(defun emmet2-extract--tag-end ()
+  "Return the end of an authored tag starting at point, or nil."
+  (save-match-data (when (looking-at emmet2-extract--tag) (match-end 0))))
+
 (defun emmet2-extract (region-beg region-end &optional syntax)
   "Return (:beg BEG :end END :abbr TEXT) at point within the given region.
 REGION-BEG and REGION-END constrain host syntax.  Only the current line is
 scanned.  Balanced groups include spaces and quotes; unmatched host closing
-delimiters are excluded.  Point can be anywhere in the token, including its
-start and end.  Return nil outside a token.  SYNTAX `css' treats top-level
-and unmatched closing braces as host boundaries; balanced raw braces remain."
+delimiters and authored tags are excluded.  Point can be anywhere in the
+token, including its start and end.  Return nil outside a token.  SYNTAX
+`css' treats comments and top-level or unmatched closing braces as host
+boundaries and retains property-separating commas, including a pending one;
+balanced raw groups retain their contents."
   (let ((position (point))
         (begin (max region-beg (line-beginning-position)))
         (limit (min region-end (line-end-position))))
     (when (<= begin position limit)
       (save-excursion
         (goto-char begin)
-        (let (token stack quote escaped result)
+        (let (token stack quote escaped result tag-end)
           (cl-labels ((finish ()
                         (when (and token (<= token position (point)))
                           (setq result (list :beg token :end (point)
@@ -56,8 +67,20 @@ and unmatched closing braces as host boundaries; balanced raw braces remain."
                     (unless token (setq token (point)))
                     (push (pcase character (?\[ ?\]) (?\( ?\)) (_ ?})) stack)))
                  (stack nil)
+                 ((and (eq syntax 'css) (< (1+ (point)) limit) (looking-at "/\\*"))
+                  (finish)
+                  (unless result
+                    (forward-char 2)
+                    (goto-char (1- (or (search-forward "*/" limit t) limit)))))
+                 ((and (eq syntax 'css) (< (1+ (point)) limit) (looking-at "\\*/"))
+                  ;; The current line may begin inside a multiline comment.
+                  (finish)
+                  (unless result (forward-char)))
+                 ((and (eq character ?<) (setq tag-end (emmet2-extract--tag-end)))
+                  (finish)
+                  (unless result (goto-char (1- (min limit tag-end)))))
                  ((or (memq character '(?\s ?\t ?\n ?\r ?\; ?= ?< ?\" ?\' ?` ?} ?\] ?\)))
-                      (and (eq character ?,)
+                      (and (not (eq syntax 'css)) (eq character ?,)
                            (or (= (1+ (point)) limit)
                                (memq (char-after (1+ (point))) '(?\s ?\t ?} ?\))))))
                   (finish))

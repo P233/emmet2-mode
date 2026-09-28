@@ -88,14 +88,55 @@ Add these settings to your existing setup, or use:
   :hook ((web-mode css-mode tsx-ts-mode js-ts-mode) . yas-minor-mode))
 ```
 
-Each Emmet candidate keeps the original abbreviation and shows a compact expansion
-summary beside it. For example, in CSS:
+Candidate rows show expansion text, without repeating the abbreviation or a
+provider label. CSS prefixes offer matching snippet and keyword choices; for
+example, `ta` includes:
 
 ```text
-m10,p.5  margin: 10px; padding: 0.5rem;
+text-align: ;
+text-align: left;
+text-align: center;
+text-align: right;
+text-align: justify;
 ```
 
-The popupinfo panel shows the full expansion, including line breaks and highlighting.
+Menu rows fold line breaks and indentation into spaces, without package
+truncation. Single-line results appear in the list only. Multiline results also
+provide a complete popupinfo panel, even when the current fragment alone is one
+line. The panel starts at column zero: ordinary CSS properties align left,
+while HTML/JSX and nested CSS retain their relative
+indentation. Leading tabs use the source buffer's width. These display changes
+preserve the actual insertion text and editable fields.
+Matching word characters are highlighted when the abbreviation corresponds to a
+literal subsequence of the expansion. Aliases without such a correspondence stay
+unhighlighted. The frontend still controls how much text fits on screen.
+
+Typing or deleting within a valid abbreviation updates the existing completion
+session without closing and reopening the list. In CSS declarations, a trailing
+comma keeps the preceding choices visible while waiting for the next property.
+For `ovh,ta`, the list shows only the text-alignment choices, prefixed with `…`
+to indicate the omitted overflow property. The preview and insertion retain the
+complete expansion, including that property. A `+` inside
+the current fragment still displays all of that fragment's properties. Accepting
+while the comma is pending inserts the selected expansion and consumes that comma.
+`C-j` still reports an incomplete abbreviation until the next property is supplied.
+The menu label and complete preview are prepared once per candidate and reused
+for display requests; no formatter or expansion runs again on hover.
+
+Corfu preserves distinct choices for the same typed abbreviation. Frontends that
+discard candidate properties or merge identical candidate strings may offer only
+the default expansion.
+
+Popup timing is a personal Corfu setting. For example, `corfu-auto-delay` of `0.08`
+shortens the wait for candidates, and `corfu-popupinfo-delay` of `'(0 . 0)` removes
+the initial and subsequent documentation delay. Scope these settings to your web
+editing buffers if other modes should retain their defaults; other completion
+providers in the same buffer also use them. Emmet does not set these values.
+Set `corfu-auto-prefix` to `1` to see choices after a single CSS letter such as
+`m`; `corfu-count` controls visible rows, not the total number of candidates.
+Popup width and positioning also remain frontend settings; for example, set
+`corfu-max-width` to `24` in your web editing buffers to limit the menu width.
+
 With Corfu's default keys, select with **up/down**, accept with **RET**, or cancel
 with **C-g**. If `corfu-preselect` is `prompt`, select the candidate first;
 accepting the prompt leaves the abbreviation unchanged.
@@ -212,7 +253,18 @@ when you want the literal CSS, for example `m[10px 20px]`.
 `posa` and `posf` also create a `z-index` declaration. `all` expands to the four
 offsets in top/right/bottom/left order, with separate fields when no value is given.
 In stylesheet context, `:` starts a pseudo-selector; use camelCase aliases such
-as `mA` for keyword values.
+as `mA` for keyword values. Recognized lowercase property/value combinations such
+as `tac`, `dn`, `db`, and `posr` also offer completion, as do value aliases such as
+`wf`. Known snippet prefixes such as `m`, `bd`, and `ta` offer matching properties
+and literal keyword choices. Ordinary CSS property names such as `margin` and
+declaration values remain with the language completion provider. Corfu's prefix
+threshold still applies.
+
+For example, Emmet's `d:n` becomes a `d:not` selector here, so write `dn` or `dN`
+for `display: none;`. Inside declaration blocks,
+bare names followed by a single colon, such as `display:fl` or `button:hv`,
+are left to the language completion provider. Use `C-j` to explicitly expand
+a type/pseudo selector such as `button:hv`.
 
 | Abbreviation | Expansion |
 | --- | --- |
@@ -222,6 +274,7 @@ as `mA` for keyword values.
 | `all` | `top: │; right: ; bottom: ; left: ;` |
 | `all8` | `top: 8px; right: 8px; bottom: 8px; left: 8px;` |
 | `mA` | `margin: auto;` |
+| `dN` | `display: none;` |
 | `allA` | `top: auto; right: auto; bottom: auto; left: auto;` |
 | `fw7` | `font-weight: 700;` |
 | `wf` | `width: 100%;` |
@@ -245,7 +298,8 @@ as `0`. These are function calls for your stylesheet build to provide.
 
 ### CSS and SCSS at-rules
 
-Short names expand to at-rule names or templates with editable fields:
+In SCSS (`scss-mode` or `<style lang="scss">`), short names expand to at-rule
+names or Sass templates with editable fields:
 
 | Abbreviation | Expansion |
 | --- | --- |
@@ -256,12 +310,26 @@ Short names expand to at-rule names or templates with editable fields:
 | `@in` | `@if not │ { }` |
 | `@else` | `@else { │ }` |
 
+Plain CSS (`css-mode`, other `<style>` blocks and `style=""` attributes) keeps
+Emmet's own at-rule snippets and never offers Sass-only rules. Other short names
+resolve to CSS at-rule names:
+
+| Abbreviation | Expansion |
+| --- | --- |
+| `@m` or `@md` | `@media │screen { }` |
+| `@f` | `@font-face { font-family: │; src: url(); }` |
+| `@i` or `@im` | `@import url(│);` |
+| `@kf` | `@keyframes │identifier { }` |
+| `@sup` | `@supports │` |
+
 ### Pseudo-classes and pseudo-elements
 
 Use `:` for either kind, including short names such as `:af` for `::after`.
 Selectors start with `&` by default; prefix `_` to omit it, or supply a selector
-such as `.card:fu`. Comma-separated pseudo-function arguments expand into chained
-calls, and nested pseudo-functions are supported.
+such as `.card:fu`. Comma-separated `:not(...)` arguments retain the legacy
+expansion into chained calls. They match the same elements as a selector list,
+but their specificity adds up. Other pseudo-functions such as `:is(...)` keep
+one selector list. Nested pseudo-functions are supported.
 
 | Abbreviation | Expansion |
 | --- | --- |
@@ -271,6 +339,7 @@ calls, and nested pseudo-functions are supported.
 | `:hv:af` | `&:hover::after { │ }` |
 | `:n(:fc)` | `&:not(:first-child) { │ }` |
 | `:n(:fc,:lc):be` | `&:not(:first-child):not(:last-child)::before { │ }` |
+| `:is(:fu,:hv)` | `&:is(:focus, :hover) { │ }` |
 | `:nc(2n-1)` | `&:nth-child(2n-1) { │ }` |
 | `:h(+p)` | `&:has(+ p) { │ }` |
 

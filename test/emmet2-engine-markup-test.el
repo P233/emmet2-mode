@@ -175,6 +175,27 @@
   (let ((emmet2-engine--deadline 1))
     (should-error (emmet2-engine-markup-expand "li*100000") :type 'emmet2-backend-error)))
 
+(ert-deftest emmet2-markup-tree-walks-honour-an-expiring-deadline ()
+  (dolist (phase '(emmet2-markup--resolve emmet2-markup--transform emmet2-markup--emit))
+    (ert-info ((symbol-name phase))
+      (let ((original (symbol-function phase)) (calls 0))
+        (cl-letf (((symbol-function phase)
+                   (lambda (&rest arguments)
+                     ;; Expire the enclosing deadline as soon as this walk starts.
+                     (when (= (cl-incf calls) 1) (setq emmet2-engine--deadline 0))
+                     (apply original arguments))))
+          (should-error (emmet2-engine-markup-expand "ul>li*3") :type 'emmet2-backend-error))
+        (should (= calls 1))))))
+
+(ert-deftest emmet2-markup-sibling-formatting-work-is-linear ()
+  (cl-flet ((inline-checks (count)
+              (let ((original (symbol-function 'emmet2-markup--inline-p)) (calls 0))
+                (cl-letf (((symbol-function 'emmet2-markup--inline-p)
+                           (lambda (node) (cl-incf calls) (funcall original node))))
+                  (emmet2-engine-markup-expand (format "span*%d" count)))
+                calls)))
+    (should (< (inline-checks 400) (* 6 (inline-checks 100))))))
+
 (ert-deftest emmet2-markup-pinned-conversion-error-does-not-leak-state ()
   ;; Upstream tokenizes a leading * inside text as a repeater, then fails in
   ;; stringify.  Preserve the backend-error distinction outside parse goldens.

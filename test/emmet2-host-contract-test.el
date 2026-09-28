@@ -18,6 +18,7 @@
     (text-colon "const A=(<main>p{color:m10+p.5│}</main>);" markup "p{color:m10+p.5}" manual)
     (text-ambiguity "const A = () => (<main>Hello{items.ma│}</main>);" nil nil)
     (text-ambiguity-end "const A = () => (<main>Hello{items.ma}│</main>);" nil nil)
+    (expression-after-point "const A = () => (<main>ul>li│{x}</main>);" nil nil)
     (text-explicit "const A = () => (<main>p{hello│}</main>);" markup "p{hello}" manual)
     (numbered-text "const A=(<main>ul>li.item$*5>a{Link $}│</main>);" markup "ul>li.item$*5>a{Link $}")
     (numbered-text-middle "const A=(<main>ul>li.item$*5>a{Link │$}</main>);" markup "ul>li.item$*5>a{Link $}")

@@ -27,6 +27,8 @@
 (declare-function web-mode-part-beginning-position "web-mode")
 (declare-function web-mode-part-end-position "web-mode")
 (declare-function web-mode-attribute-beginning-position "web-mode")
+(declare-function web-mode-tag-beginning-position "web-mode")
+(declare-function web-mode-attribute-next-position "web-mode")
 
 (cl-defstruct (emmet2-context--state (:constructor emmet2-context--state-create))
   buffer (tag (make-symbol "emmet2"))
@@ -146,7 +148,7 @@ Markers already follow valid interior changes."
 
 (defun emmet2-context--scan-web ()
   "Flush web-mode's pending scan, using proven CSS insertion bounds if valid.
-Tokenization belongs to web-mode.  Acknowledge its pending range only after a
+Tokenization belongs to `web-mode'.  Acknowledge its pending range only after a
 successful scan of that exact edit; preserve it on errors."
   (let ((owner (emmet2-context--owner)))
     (when owner (emmet2-context--check-tick owner))
@@ -238,21 +240,29 @@ Return its parser when the grammar is available."
           (emmet2-context--parser language nil))))))
 
 (defun emmet2-context--closed-unit-p (node start end)
-  "Whether NODE spans START..END as a closed declaration or JSX element.
-Require a real terminal delimiter, not tree-sitter error recovery.  Internal
-errors can be the abbreviation itself; projection checks the remaining syntax."
-  (when (equal (treesit-node-type node) "expression_statement")
-    (setq node (treesit-node-child node 0 t)))
+  "Whether NODE spans START..END as a closed statement or JSX element.
+Require a real terminal delimiter or, for semicolon-free code, a real last
+token ending its line; never tree-sitter error recovery.  Internal errors can
+be the abbreviation itself; projection checks the remaining syntax."
+  (let ((child (and (equal (treesit-node-type node) "expression_statement")
+                    (treesit-node-child node 0 t))))
+    ;; A JSX unit parsed alone is wrapped in an unterminated statement.
+    (when (member (treesit-node-type child) '("jsx_element" "jsx_self_closing_element"))
+      (setq node child)))
   (and node
        (= (treesit-node-start node) start) (= (treesit-node-end node) end)
        (member (treesit-node-type node)
                '("lexical_declaration" "variable_declaration" "function_declaration"
-                 "class_declaration" "export_statement" "jsx_element" "jsx_self_closing_element"))
-       (let ((last (treesit-node-child node -1)))
+                 "class_declaration" "export_statement" "expression_statement"
+                 "jsx_element" "jsx_self_closing_element"))
+       (let ((last (treesit-node-child
+                    (or (treesit-node-child-by-field-name node "declaration") node) -1)))
          (when (member (treesit-node-type last) '("statement_block" "class_body" "jsx_closing_element"))
            (setq last (treesit-node-child last -1)))
          (and last (not (treesit-node-check last 'missing))
-              (member (treesit-node-type last) '(";" "}" ">" "/>"))))))
+              (or (member (treesit-node-type last) '(";" "}" ">" "/>"))
+                  ;; Tree-sitter's automatic semicolon is a hidden zero-width token.
+                  (save-excursion (goto-char end) (skip-chars-forward " \t") (eolp)))))))
 
 (defun emmet2-context--tree-unit (parser position)
   "Find a closed unit containing POSITION in PARSER.
@@ -423,17 +433,19 @@ AUTOMATIC disallows root JS expressions."
 
 (defun emmet2-context--ambiguous-text-p (parser beg end language)
   "Whether PARSER projection at BEG..END would erase a JSX expression.
-Detect expressions after plain text.
-Include objects produced by error recovery, which carry the same ambiguity.
-LANGUAGE without JSX cannot have this ambiguity.  The explicit command may
-interpret tag{text} as Emmet; automatic completion must leave it alone."
+Detect expressions after plain text, and expressions starting at or after
+point, which the typed abbreviation merely touches.  Include objects produced
+by error recovery, which carry the same ambiguity.  LANGUAGE without JSX
+cannot have this ambiguity.  The explicit command may interpret tag{text} as
+Emmet; automatic completion must leave it alone."
   (unless (eq language 'typescript)
     (cl-some
      (lambda (node)
        (let ((brace (treesit-node-start node)))
          (and (< beg brace end)
-              (string-match-p "\\`[[:alnum:]_-]+\\'"
-                              (buffer-substring-no-properties beg brace)))))
+              (or (>= brace (point))
+                  (string-match-p "\\`[[:alnum:]_-]+\\'"
+                                  (buffer-substring-no-properties beg brace))))))
      (treesit-query-capture parser (nth 3 (assq language emmet2-context--queries)) beg end t))))
 
 (defun emmet2-context--forbidden-origin-p (parser beg)
@@ -522,7 +534,7 @@ interpret tag{text} as Emmet; automatic completion must leave it alone."
 
 (defun emmet2-context--web-region ()
   "Return (KIND BEG END ATTRIBUTE) for web HTML/CSS at point, or nil.
-The JS region probe has already flushed pending web-mode scanning."
+The JS region probe has already flushed pending `web-mode' scanning."
   (let* ((pos (max (point-min) (1- (point))))
          (part-pos (if (get-text-property (point) 'part-side) (point) pos))
          (attribute (emmet2-context--web-attribute (point)))
@@ -542,31 +554,97 @@ The JS region probe has already flushed pending web-mode scanning."
         ;; but a boundary elsewhere.  The property change is always exclusive.
         (list 'css start (next-single-property-change part-pos 'part-side nil (point-max)) nil)))
      ((member language '("" "html"))
-      (list 'markup
-            (if (get-text-property pos 'tag-end) (1+ pos)
-              (previous-single-property-change (point) 'tag-end nil (line-beginning-position)))
-            (if (get-text-property (point) 'tag-beg) (point)
-              (next-single-property-change (point) 'tag-beg nil (line-end-position))) nil)))))
+      (let ((start (if (get-text-property pos 'tag-end) (1+ pos)
+                     (previous-single-property-change (point) 'tag-end nil (line-beginning-position))))
+            (end (if (get-text-property (point) 'tag-beg) (point)
+                   (next-single-property-change (point) 'tag-beg nil (line-end-position)))))
+        ;; Template engine blocks such as {% endif %} or {{ msg }} are host
+        ;; syntax; attached braces must not become Emmet text.
+        (list 'markup
+              (if (and (> (point) start) (get-text-property pos 'block-side)) (point)
+                (previous-single-property-change (point) 'block-side nil start))
+              (if (get-text-property (point) 'block-side) (point)
+                (next-single-property-change (point) 'block-side nil end))
+              nil))))))
+
+(defun emmet2-context--web-style-lang (start attribute)
+  "Return the lowercase lang of the web style part starting at START, or nil.
+ATTRIBUTE hosts are style attributes, which are always plain CSS."
+  (unless attribute
+    (save-excursion
+      (save-match-data
+        (let ((position (and (> start (point-min))
+                             (web-mode-tag-beginning-position (1- start))))
+              (case-fold-search t) language)
+          (when (and position (equal (get-text-property position 'tag-name) "style"))
+            ;; Attribute markers exclude data-lang and text inside another value.
+            (while (and (not language)
+                        (setq position (web-mode-attribute-next-position position start)))
+              (goto-char position)
+              (when (looking-at
+                     "lang[ \t\n\r\f]*=[ \t\n\r\f]*\\(?:\"\\([^\"]*\\)\"\\|'\\([^']*\\)'\\|\\([^ \t\n\r\f>]+\\)\\)")
+                (setq language (downcase (or (match-string-no-properties 1)
+                                             (match-string-no-properties 2)
+                                             (match-string-no-properties 3)))))))
+          language)))))
+
+(defun emmet2-context--css-state (start position attribute)
+  "Return the lexical CSS state at POSITION in a host starting at START.
+Web hosts parse with CSS syntax, or SCSS syntax for a style part declaring
+lang=\"scss\" or lang=\"less\"; ATTRIBUTE hosts are plain CSS."
+  (save-excursion
+    (if (derived-mode-p 'web-mode)
+        ;; web-mode marks block comments with one-character delimiters.  Mixing
+        ;; those properties with SCSS's newline comment ending closes them early.
+        (let ((parse-sexp-lookup-properties nil))
+          (with-syntax-table
+              (if (member (emmet2-context--web-style-lang start attribute) '("scss" "less"))
+                  scss-mode-syntax-table css-mode-syntax-table)
+            (parse-partial-sexp start position)))
+      (syntax-ppss position))))
 
 (defun emmet2-context--css-position (start beg attribute state)
   "Classify CSS at BEG using parse STATE from START; ATTRIBUTE has no selectors."
-  (cond
-   ((nth 3 state) 'string)
-   ((or (nth 4 state)
-        (save-excursion (goto-char beg) (looking-at "/[/*]"))) 'comment)
-   ((and (nth 1 state) (eq (char-after (nth 1 state)) ?\()) 'paren-args)
-   ((and (nth 1 state) (eq (char-after (nth 1 state)) ?\[)) 'brackets)
-   ((save-excursion
-      (goto-char beg)
-      (let ((limit (save-excursion (skip-chars-backward "^{};\n" start) (point))))
-        (re-search-backward "@[[:alpha:]-]+[ \t]+" limit t)))
-    'at-rule-prelude)
-   ((and (null (nth 1 state)) (not attribute)) 'selector)
-   (t
-    (let ((previous (save-excursion (goto-char beg) (skip-chars-backward " \t\n" start) (point))))
-      (if (or (memq (char-before previous) '(?{ ?\; ?}))
-              (and attribute (= previous start)))
-          'declaration-start 'value)))))
+  (cl-flet ((code-p (position) (not (nth 8 (emmet2-context--css-state start position attribute)))))
+    (cond
+     ((nth 3 state) 'string)
+     ((or (nth 4 state)
+          (save-excursion (goto-char beg) (looking-at "/[/*]"))) 'comment)
+     ((and (nth 1 state) (eq (char-after (nth 1 state)) ?\()) 'paren-args)
+     ((and (nth 1 state) (eq (char-after (nth 1 state)) ?\[)) 'brackets)
+     ((save-excursion
+        (goto-char beg)
+        (let ((limit (save-excursion (skip-chars-backward "^{};\n" start) (point))) found)
+          (while (and (not found) (re-search-backward "@[[:alpha:]-]+[ \t]+" limit t))
+            (setq found (code-p (point))))
+          found))
+      'at-rule-prelude)
+     ((and (null (nth 1 state)) (not attribute)) 'selector)
+     (t
+      (let ((previous beg) done)
+        ;; Comments between declarations do not change the insertion position.
+        (save-excursion
+          (while (not done)
+            (goto-char previous)
+            (skip-chars-backward " \t\n\r\f" start)
+            (setq previous (point))
+            (let ((before (and (> previous start)
+                               ;; Only */ or a line holding // can end a comment here;
+                               ;; parsing from START is costly in large web parts.
+                               (or (eq (char-before previous) ?/)
+                                   (save-excursion (search-backward "//" (line-beginning-position) t)))
+                               (emmet2-context--css-state
+                                start
+                                ;; Inspect inside a closing */, but after both
+                                ;; slashes of an empty // line comment.
+                                (if (and (eq (char-before previous) ?/)
+                                         (eq (char-before (1- previous)) ?*))
+                                    (1- previous) previous)
+                                attribute))))
+              (if (nth 4 before) (setq previous (nth 8 before)) (setq done t)))))
+        (if (or (memq (char-before previous) '(?{ ?\; ?}))
+                (and attribute (= previous start)))
+            'declaration-start 'value))))))
 
 (defun emmet2-context--analyze-lexical (region automatic)
   "Analyze a CSS/markup REGION with only the host's lexical syntax.
@@ -579,18 +657,28 @@ AUTOMATIC limits CSS completion to declared insertion positions."
       (if (eq kind 'markup)
           (unless (equal (plist-get candidate :abbr) "()")
             (append candidate '(:lang markup :syntax html :position markup)))
-        (let* ((state (save-excursion
-                        (if (derived-mode-p 'web-mode)
-                            (with-syntax-table css-mode-syntax-table
-                              (parse-partial-sexp start beg))
-                          (syntax-ppss beg))))
+        (let* ((state (emmet2-context--css-state start beg attribute))
                (position (emmet2-context--css-position start beg attribute state)))
+          ;; Without whitespace, the extractor retains the property and colon.
+          ;; A bare name followed by one colon is a declaration here; explicit
+          ;; commands may still interpret it as an Emmet type/pseudo selector.
+          (when (and (eq position 'declaration-start)
+                     (not (string-prefix-p "_:" (plist-get candidate :abbr)))
+                     (string-match-p "\\`[-[:alpha:]_$][-[:alnum:]_$]*:\\(?:[^:]\\|\\'\\)"
+                                     (plist-get candidate :abbr)))
+            (setq position 'value))
           (when (and (not (memq position '(string comment)))
                      (or (not automatic)
                          (eq position 'declaration-start)
                          (and (eq position 'selector)
                               (string-match-p "\\`[@_:]" (plist-get candidate :abbr)))))
-            (append candidate (list :lang 'css :syntax 'css :position position))))))))
+            (append candidate
+                    (list :lang 'css
+                          :syntax (if (if (derived-mode-p 'web-mode)
+                                          (equal (emmet2-context--web-style-lang start attribute) "scss")
+                                        (derived-mode-p 'scss-mode))
+                                      'scss 'css)
+                          :position position))))))))
 
 (defun emmet2-context-analyze (&optional automatic)
   "Return a confirmed abbreviation at point, or nil.

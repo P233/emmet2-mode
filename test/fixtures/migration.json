@@ -287,7 +287,7 @@
       "id": "corfu",
       "contract": "styles/category/exact-match/auto-prefix matrix, acceptance and cancellation",
       "stage": "S5",
-      "tests": ["emmet2-contract-corfu-configuration-matrix", "emmet2-capf-corfu-typing-and-movement-end-old-session", "emmet2-capf-corfu-buffer-switch-and-killed-source"]
+      "tests": ["emmet2-contract-corfu-configuration-matrix", "emmet2-capf-corfu-typing-refreshes-without-hiding", "emmet2-capf-corfu-movement-outside-ends-session", "emmet2-capf-corfu-buffer-switch-and-killed-source"]
     },
     {
       "id": "completion-command",
@@ -311,6 +311,24 @@
   ],
   "intentionalChanges": [
     {
+      "id": "live-expansion-completion",
+      "behavior": "Typing updates one completion session; known CSS prefixes offer distinct expansion choices. Rows show expansion text and only multiline results provide a formatted documentation panel.",
+      "stage": "post-S8",
+      "tests": ["emmet2-capf-corfu-typing-refreshes-without-hiding", "emmet2-capf-css-prefix-choices-and-distinct-acceptance", "emmet2-capf-corfu-alternative-fields-and-one-undo", "emmet2-capf-multiline-only-formatted-preview", "emmet2-stylesheet-property-prefix-offers-completion"]
+    },
+    {
+      "id": "pending-css-completion-and-full-labels",
+      "behavior": "A pending CSS property comma retains completion choices; compound prefixes complete the final property. Menu labels retain all expansion text on one row and highlight literal word-character matches without changing insertion or multiline preview layout.",
+      "stage": "post-S8",
+      "tests": ["emmet2-extract-css-trailing-comma-is-part-of-the-abbreviation", "emmet2-capf-corfu-comma-retains-choices-and-continues-properties", "emmet2-capf-corfu-pending-comma-acceptance-and-undo", "emmet2-capf-pending-comma-keeps-strict-syntax-boundaries", "emmet2-capf-display-highlights-literal-matches-without-changing-results", "emmet2-capf-lazy-results-and-expansion-display"]
+    },
+    {
+      "id": "current-fragment-and-root-aligned-preview",
+      "behavior": "After a top-level CSS comma, menu rows show the current fragment with an ellipsis for the omitted prefix. Insertion and multiline previews retain the complete result. Previews remove source-column alignment and retain structural indentation; labels and previews are prepared once per candidate in the current revision.",
+      "stage": "post-S8",
+      "tests": ["emmet2-capf-corfu-comma-shows-only-the-current-fragment", "emmet2-capf-current-fragment-keeps-complete-insertion-and-undo", "emmet2-capf-current-fragment-preview-includes-confirmed-properties", "emmet2-capf-current-fragment-honors-nested-and-quoted-commas", "emmet2-capf-current-fragment-is-prepared-once-per-revision", "emmet2-capf-current-fragment-preserves-css-in-js-insertion", "emmet2-preview-capf-removes-source-column-and-keeps-structural-indent"]
+    },
+    {
       "id": "first-field",
       "behavior": "Initial cursor is the first editable field; yas TAB exits at text end.",
       "stage": "S4",
@@ -333,6 +351,18 @@
       "behavior": "New runtime requires Emacs 30; JS/TS/JSX analysis needs matching grammar.",
       "stage": "S4",
       "tests": ["emmet2-mode-lifecycle-and-lazy-backend"]
+    },
+    {
+      "id": "css-at-rules",
+      "behavior": "Plain CSS hosts keep upstream @m/@f/@i/@kf snippets and never offer Sass-only at-rules; SCSS hosts keep the legacy templates.",
+      "stage": "post-S8",
+      "tests": ["emmet2-css-at-rules-follow-host-syntax", "emmet2-stylesheet-at-rules-follow-host-syntax"]
+    },
+    {
+      "id": "pseudo-function-lists",
+      "behavior": "Only :not spreads comma arguments into a chain; other functional pseudos keep one selector list.",
+      "stage": "post-S8",
+      "tests": ["emmet2-css-pseudo-functions-aliases-and-fallback"]
     }
   ]
 }

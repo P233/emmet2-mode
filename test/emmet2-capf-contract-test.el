@@ -45,68 +45,70 @@
             (should (eq result t))))))))
 
 (defun emmet2-test--completion-session (styles overrides exact automatic
-                                            &optional abbreviation prefix accept
-                                            preselect middle command action)
+                                               &optional abbreviation prefix accept
+                                               preselect middle command action)
   "Exercise real analysis, expansion, insertion and Corfu; replace only drawing.
 STYLES, OVERRIDES, EXACT and AUTOMATIC select the configuration.
 ABBREVIATION defaults to ul>li*3.  PREFIX is the user's auto threshold.
 ACCEPT accepts the selected candidate; otherwise cancel.  PRESELECT, MIDDLE
 and COMMAND select the frontend policy, starting point and manual entry.
 ACTION runs after presentation instead of ordinary acceptance."
-  (with-temp-buffer
-    (let* ((input (or abbreviation "ul>li*3"))
-           (css (equal input "m1"))
-           (before (if css (concat ".a{" input "}") input))
-           (completion-styles styles)
-           (completion-category-defaults nil)
-           (completion-category-overrides overrides)
-           (completion-cycle-threshold nil)
-           (completion-in-region-function #'corfu--in-region-1)
-           (corfu-on-exact-match exact)
-           (corfu-auto-prefix (or prefix 3))
-           (corfu-auto-trigger nil)
-           (corfu-preview-current nil)
-           (corfu-preselect (or preselect 'valid))
-           (last-command-event ?x)
-           shown status selected accepted)
-      (insert before)
-      (if css (css-mode) (web-mode))
-      (emmet2-mode 1)
-      (setq-local indent-tabs-mode nil)
-      (goto-char (if css (1- (point-max)) (point-max)))
-      (when middle (backward-char 3))
-      (let* ((analysis (emmet2-context-analyze))
-             (expected (emmet2--expand-analysis analysis))
-             (expand (symbol-function 'emmet2-insert)))
-        (cl-letf (((symbol-function 'corfu--candidates-popup)
-                   (lambda (&rest _) (setq shown t)))
-                  ((symbol-function 'corfu--popup-hide) #'ignore)
-                  ((symbol-function 'corfu--protect) #'funcall)
-                  ((symbol-function 'emmet2-insert)
-                   (lambda (snapshot result)
-                     (setq accepted t status 'finished)
-                     (funcall expand snapshot result))))
-          (unwind-protect
-              (progn
-                (if automatic
-                    (corfu-auto--complete-deferred)
-                  (funcall (or command #'completion-at-point))
-                  (when completion-in-region-mode (corfu--exhibit)))
-                (setq selected corfu--index)
-                (if action (funcall action)
-                  (when (and accept completion-in-region-mode) (corfu-insert)))
-                (when completion-in-region-mode (corfu-quit))
-                (unless action
-                  (should (equal (buffer-string)
-                                 (if accepted
-                                     (concat (substring before 0 (1- (plist-get analysis :beg)))
-                                             (plist-get expected :text)
-                                             (substring before (1- (plist-get analysis :end))))
-                                   before)))
-                  (when accepted
-                    (should (= (point) (+ (plist-get analysis :beg) (plist-get expected :cursor))))))
-                (list shown status selected))
-            (when completion-in-region-mode (corfu-quit))))))))
+  (save-window-excursion
+    (with-temp-buffer
+      (set-window-buffer (selected-window) (current-buffer))
+      (let* ((input (or abbreviation "ul>li*3"))
+             (css (equal input "m1"))
+             (before (if css (concat ".a{" input "}") input))
+             (completion-styles styles)
+             (completion-category-defaults nil)
+             (completion-category-overrides overrides)
+             (completion-cycle-threshold nil)
+             (completion-in-region-function #'corfu--in-region-1)
+             (corfu-on-exact-match exact)
+             (corfu-auto-prefix (or prefix 3))
+             (corfu-auto-trigger nil)
+             (corfu-preview-current nil)
+             (corfu-preselect (or preselect 'valid))
+             (last-command-event ?x)
+             shown status selected accepted)
+        (insert before)
+        (if css (css-mode) (web-mode))
+        (emmet2-mode 1)
+        (setq-local indent-tabs-mode nil)
+        (goto-char (if css (1- (point-max)) (point-max)))
+        (when middle (backward-char 3))
+        (let* ((analysis (emmet2-context-analyze))
+               (expected (emmet2--expand-analysis analysis))
+               (expand (symbol-function 'emmet2-insert)))
+          (cl-letf (((symbol-function 'corfu--candidates-popup)
+                     (lambda (&rest _) (setq shown t)))
+                    ((symbol-function 'corfu--popup-hide) #'ignore)
+                    ((symbol-function 'corfu--protect) #'funcall)
+                    ((symbol-function 'emmet2-insert)
+                     (lambda (snapshot result)
+                       (setq accepted t status 'finished)
+                       (funcall expand snapshot result))))
+            (unwind-protect
+                (progn
+                  (if automatic
+                      (corfu-auto--complete-deferred)
+                    (funcall (or command #'completion-at-point))
+                    (when completion-in-region-mode (corfu--exhibit)))
+                  (setq selected corfu--index)
+                  (if action (funcall action)
+                    (when (and accept completion-in-region-mode) (corfu-insert)))
+                  (when completion-in-region-mode (corfu-quit))
+                  (unless action
+                    (should (equal (buffer-string)
+                                   (if accepted
+                                       (concat (substring before 0 (1- (plist-get analysis :beg)))
+                                               (plist-get expected :text)
+                                               (substring before (1- (plist-get analysis :end))))
+                                     before)))
+                    (when accepted
+                      (should (= (point) (+ (plist-get analysis :beg) (plist-get expected :cursor))))))
+                  (list shown status selected))
+              (when completion-in-region-mode (corfu-quit)))))))))
 
 (ert-deftest emmet2-contract-corfu-configuration-matrix ()
   (dolist (style '(((basic partial-completion emacs22) nil cons)

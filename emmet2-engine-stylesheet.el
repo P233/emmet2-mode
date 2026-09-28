@@ -253,6 +253,43 @@ no source span, matching the upstream parser's field-adjacency contract."
 
 (defconst emmet2-stylesheet--snippets (emmet2-stylesheet--load-snippets))
 
+(defun emmet2-stylesheet--find-snippet (name)
+  "Return the snippet selected by the core's fuzzy lookup for NAME."
+  (when (and (stringp name) (not (string-empty-p name)))
+    (emmet2-fuzzy-find name (gethash (aref (downcase name) 0) emmet2-stylesheet--snippets)
+                      nil t #'emmet2-stylesheet--snippet-key)))
+
+(defun emmet2-engine-stylesheet-snippet-p (name)
+  "Whether NAME is exactly the abbreviation of a pinned upstream snippet."
+  (and (stringp name) (not (string-empty-p name))
+       (cl-some (lambda (snippet) (equal (emmet2-stylesheet--snippet-key snippet) name))
+                (gethash (aref (downcase name) 0) emmet2-stylesheet--snippets))
+       t))
+
+(defun emmet2-engine-stylesheet-completions (prefix)
+  "Return snippet and literal keyword abbreviations matching PREFIX.
+Read the existing snippet index without expanding or modifying it.  Explicit
+bracket values avoid ambiguous property/keyword joins such as tal."
+  (when (string-match-p "\\`[a-z]+\\(?:\\[[^][]*\\]?\\)?\\'" prefix)
+    (let (matches)
+      (dolist (snippet (gethash (aref prefix 0) emmet2-stylesheet--snippets))
+        (let* ((snippet-key (emmet2-stylesheet--snippet-key snippet))
+               ;; Colon keys such as bg:n are selectors in the extension layer.
+               ;; Offer their literal keywords through the base property instead.
+               (key (car (split-string snippet-key ":")))
+               (tail (cond ((string-prefix-p prefix key) "")
+                           ((string-prefix-p (concat key "[") prefix)
+                            (string-remove-suffix "]" (substring prefix (1+ (length key)))))
+                           ((string-prefix-p key prefix) (substring prefix (length key))))))
+          (when (and (equal key snippet-key) (string-prefix-p prefix key)) (push key matches))
+          (when tail
+            (dolist (keyword (emmet2-stylesheet--snippet-keywords snippet))
+              (when (and (eq (aref (cdr keyword) 0) 'literal)
+                         (string-match-p "\\`[-a-zA-Z]+\\'" (car keyword))
+                         (string-prefix-p tail (car keyword)))
+                (push (concat key "[" (car keyword) "]") matches))))))
+      (nreverse matches))))
+
 (defun emmet2-stylesheet--keyword (name snippet)
   "Resolve NAME in SNIPPET, direct dependencies, then global keywords."
   (or (catch 'found
@@ -271,6 +308,15 @@ no source span, matching the upstream parser's field-adjacency contract."
           (unless next (setq tail (substring abbreviation i)) (throw 'done nil))
           (setq offset (1+ next)))))
     tail))
+
+(defun emmet2-engine-stylesheet-keyword-abbreviation-p (name)
+  "Whether NAME combines a known property abbreviation and keyword value.
+Use the core's lookup rules without formatting an expansion.  Bare property
+names and unrecognized suffixes do not provide a completion signal."
+  (when-let* ((snippet (emmet2-stylesheet--find-snippet name))
+              (_ (emmet2-stylesheet--snippet-property snippet))
+              (tail (emmet2-stylesheet--unmatched name (emmet2-stylesheet--snippet-key snippet))))
+    (not (null (emmet2-stylesheet--keyword tail snippet)))))
 
 (defun emmet2-stylesheet--has-field-p (values)
   "Whether VALUES contain a field, including nested functions."
@@ -360,8 +406,7 @@ The upstream trimming also applies to scientific notation at 1e21 and above."
                                 (cons "linear-gradient" (if gradient (cdr (aref single 1))
                                                           (list (list [field (0 . "") nil nil])))) nil nil)))))
      (name
-      (when-let* ((snippet (emmet2-fuzzy-find name (gethash (aref (downcase name) 0) emmet2-stylesheet--snippets)
-                                             nil t #'emmet2-stylesheet--snippet-key)))
+      (when-let* ((snippet (emmet2-stylesheet--find-snippet name)))
         (if-let* ((raw (emmet2-stylesheet--snippet-raw snippet)))
             (emmet2-stylesheet--resolve-raw node raw)
           (let* ((tail (emmet2-stylesheet--unmatched name (emmet2-stylesheet--snippet-key snippet)))

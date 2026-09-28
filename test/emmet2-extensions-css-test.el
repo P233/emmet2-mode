@@ -81,7 +81,9 @@
                    (":n(:l-c):af" . "&:not(:last-child)::after")
                    (":be" . "&::before") ("_:fc:be" . ":first-child::before")
                    (":n(.a,.b):be" . "&:not(.a):not(.b)::before")
-                   (":is(:h(+p),:fu)" . "&:is(:has(+ p)):is(:focus)")
+                   (":is(:h(+p),:fu)" . "&:is(:has(+ p), :focus)")
+                   (":w(.a,.b)" . "&:where(.a, .b)") (":lang(en,fr)" . "&:lang(en, fr)")
+                   (":h(>p,+q)" . "&:has(> p, + q)")
                    (":popov" . "&:popover-open")))
     (ert-info ((car pair))
       (let* ((text (concat (cdr pair) " {\n\t\n}")) (cursor (- (length text) 2)))
@@ -91,6 +93,21 @@
   (should (equal (plist-get (emmet2-extensions-css "@scop") :text) "@scope "))
   (should (equal (emmet2-extensions-css "@us")
                  '(:text "@use \"\";" :fields ((6 6 1 "")) :cursor 6))))
+
+(ert-deftest emmet2-css-at-rules-follow-host-syntax ()
+  ;; Plain CSS keeps pinned upstream snippets, directly or through an alias.
+  (dolist (abbreviation '("@m" "@media" "@f" "@i" "@kf"))
+    (should (equal (emmet2-extensions-css abbreviation :syntax 'css :indent "  ")
+                   (emmet2-engine-expand abbreviation :preset 'stylesheet :indent "  "))))
+  (should (equal (emmet2-extensions-css "@md" :syntax 'css)
+                 (emmet2-engine-expand "@media" :preset 'stylesheet)))
+  ;; Other names resolve among CSS at-rules only, never to Sass rules.
+  (dolist (pair '(("@sup" . "@supports ") ("@fo" . "@font-face ") ("@fa" . "@font-face ")
+                  ("@us" . "@us") ("@if" . "@if")))
+    (ert-info ((car pair))
+      (should (equal (plist-get (emmet2-extensions-css (car pair) :syntax 'css) :text) (cdr pair)))))
+  (should (equal (plist-get (emmet2-extensions-css "@fo") :text) "@for $ from 1 {\n\t\n}"))
+  (should (equal (plist-get (emmet2-extensions-css "@kf" :syntax 'scss) :text) "@keyframes ")))
 
 (ert-deftest emmet2-css-layout-does-not-rewrite-literal-tabs ()
   (should (equal (emmet2-extensions-css "m+p" :base-indent "  ")

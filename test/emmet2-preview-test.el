@@ -6,6 +6,13 @@
 (require 'corfu-popupinfo)
 (require 'typescript-ts-mode)
 
+(defun emmet2-test--root-render (analysis)
+  "Render ANALYSIS at column zero, independently of the CAPF display projection."
+  (let ((indent (make-string (emmet2-insert--indent-width analysis) ?\s)))
+    (cl-letf (((symbol-function 'emmet2-insert-render-options)
+               (lambda (_) (list :indent indent :base-indent ""))))
+      (plist-get (emmet2--expand-analysis analysis) :text))))
+
 (ert-deftest emmet2-preview-three-buffers-exact-text-and-fontification ()
   (emmet2-preview-clear)
   (unwind-protect
@@ -94,6 +101,8 @@
   (unwind-protect
       (dolist (case '((web-mode "div.card│" nil html-mode)
                       (web-mode "div.card│" "solid" js-jsx-mode)
+                      (web-mode "ul>li*2│" nil html-mode)
+                      (web-mode "ul>li*2│" "solid" js-jsx-mode)
                       (css-mode ".a{m10+p20│}" nil css-mode)
                       (tsx-ts-mode "const A=(<main>div.card│</main>);" nil js-jsx-mode)
                       (tsx-ts-mode "const A=(<main>ul>li.item$*5>a{Link $}│</main>);" nil js-jsx-mode)
@@ -106,6 +115,7 @@
             (emmet2-context--prepare)
             (let* ((analysis (emmet2-context-analyze))
                    (text (plist-get (emmet2--expand-analysis analysis) :text))
+                   (preview (emmet2-test--root-render analysis))
                    (abbr (plist-get analysis :abbr))
                    (expand (symbol-function 'emmet2--expand-analysis)) (calls 0)
                    (data (emmet2-capf)) (table (nth 2 data))
@@ -115,9 +125,11 @@
                 (should (equal (all-completions abbr table) (list abbr)))
                 (let ((buffer (funcall doc abbr)))
                   (should (eq buffer (funcall doc abbr)))
-                  (with-current-buffer buffer
-                    (should (eq major-mode (nth 3 case)))
-                    (should (equal (buffer-substring-no-properties (point-min) (point-max)) text))))
+                  (if (string-match-p "\n" text)
+                      (with-current-buffer buffer
+                        (should (eq major-mode (nth 3 case)))
+                        (should (equal (buffer-substring-no-properties (point-min) (point-max)) preview)))
+                    (should-not buffer)))
                 (should (= calls 1))
                 (should-not (funcall doc "unrelated"))
                 (funcall (plist-get props :exit-function) abbr 'finished)
@@ -139,6 +151,37 @@
              (should (string-prefix-p "<ul>" text))
              (should (text-property-not-all 0 (length text) 'face nil text))
              (should (equal (buffer-string) "ul>li*3")))))))
+    (emmet2-preview-clear)))
+
+(ert-deftest emmet2-preview-capf-removes-source-column-and-keeps-structural-indent ()
+  (unwind-protect
+      (dolist (case '((web-mode "<main>ul>li*2│</main>" 2 nil 8
+                                "<ul>\n  <li></li>\n  <li></li>\n</ul>")
+                      (web-mode "\tul>li*2│" 4 t 4
+                                "<ul>\n    <li></li>\n    <li></li>\n</ul>")
+                      (css-mode ".a{m10+p20│}" 2 nil 8
+                                "margin: 10px;\npadding: 20px;")
+                      (css-mode ".a{_:hv│}" 2 nil 8
+                                ":hover {\n  \n}")
+                      (scss-mode "\t_:hv│" 4 t 4
+                                 ":hover {\n    \n}")))
+        (ert-info ((cadr case))
+          (with-temp-buffer
+            (insert (cadr case)) (funcall (car case))
+            (search-backward "│") (delete-char 1)
+            (setq-local web-mode-markup-indent-offset (nth 2 case)
+                        css-indent-offset (nth 2 case)
+                        indent-tabs-mode (nth 3 case) tab-width (nth 4 case))
+            (let* ((source (buffer-string)) (tick (buffer-chars-modified-tick))
+                   (data (emmet2-capf)) (props (nthcdr 3 data))
+                   (candidate (car (all-completions
+                                    (buffer-substring-no-properties (car data) (cadr data))
+                                    (nth 2 data)))))
+              (with-current-buffer (funcall (plist-get props :company-doc-buffer) candidate)
+                (should (equal (buffer-substring-no-properties (point-min) (point-max))
+                               (nth 5 case))))
+              (should (equal (buffer-string) source))
+              (should (= (buffer-chars-modified-tick) tick))))))
     (emmet2-preview-clear)))
 
 (provide 'emmet2-preview-test)

@@ -25,10 +25,19 @@ Node is used only for development setup, lint and the independent offline oracle
   point, visible bounds and original text, then uses one atomic undo group.
   Layout derives from mode width and the abbreviation's display column before
   insertion; there is no subsequent `indent-region` pass.
-- `emmet2-capf` owns an immutable snapshot and one lazy result per completion
-  table. Candidate text is the original abbreviation. Only a current `finished`
-  callback inserts; metadata and prefix checks do not expand. No global expansion
-  cache, source-restoration state or frontend configuration mutation is allowed.
+- `emmet2-capf` owns the current immutable input snapshot and its lazy expansion
+  choices per completion table. A table query can advance this revision while
+  typing at the same anchor in the same confirmed host. Candidate text remains
+  the typed abbreviation; text properties identify distinct canonical results.
+  Each choice also owns its current-fragment menu label and complete preview,
+  derived once from the canonical result and released with the same input
+  revision. Presentation never
+  changes insertion text or field offsets.
+  Only a current `finished` callback inserts; metadata and frontend prefix checks
+  do not expand. Results are deduplicated and share one expansion budget. A failed
+  revision is not retried until the input changes; `C-j` reports explicit errors.
+  No global expansion cache, source-restoration state or frontend configuration
+  mutation is allowed.
 - `emmet2-preview` owns at most three lazy, read-only, non-file buffers. Built-in
   HTML/JSX/CSS modes fontify final text without extra grammars. Creation isolates
   user mode hooks. Failed initialization, module unload and package unload clear
@@ -53,7 +62,9 @@ cursor; one undo restores the abbreviation.
 
 ## Extension and host boundaries
 
-`emmet2-extensions-css` accepts `:css-in-js`, `:indent` and `:base-indent`.
+`emmet2-extensions-css` accepts `:css-in-js`, `:syntax`, `:indent` and
+`:base-indent`. Context reports `:syntax` `scss` for `scss-mode` and
+`<style lang="scss">`, otherwise `css`; the extension default is `scss`.
 A balanced scanner splits only top-level comma/plus separators. Aliases feed
 individual core expansions; default removal and first-whitespace normalization
 happen once per property. Fields collapsed to one position merge within that
@@ -65,7 +76,10 @@ fuzzy matching. The shared `emmet2-fuzzy` preserves candidate position reuse,
 partial suffixes, early exact hits and later nonzero tie wins. The stylesheet core
 builds a read-only first-character index at load time. No fuzzy cache is needed.
 Unknown at-rules stay literal; templates change only authored layout, leaving
-literal tabs untouched. Empty alias tables retain the fuzzy fallback.
+literal tabs untouched. Empty alias tables retain the fuzzy fallback. Plain
+`css` expands exact pinned upstream at-rule snippets, directly or through an
+authored alias, and resolves other names among CSS at-rules without Sass
+templates. Only `:not` spreads comma arguments into chained calls.
 
 `emmet2-extensions-markup` accepts `:jsx`, `:variant`, `:css-modules-object`,
 `:class-names-constructor`, `:indent` and `:base-indent`. Literal class names use
@@ -75,11 +89,15 @@ separate arguments. Authored class expressions are renamed for React/Solid witho
 interpretation. Project reference strings are emitted as source, never evaluated.
 
 CSS/SCSS context uses `syntax-ppss`; web-mode owns its pending scanner, attribute
-markers and part ranges. JS/TS/JSX requires the matching pinned tree-sitter grammar.
+markers, part ranges and engine blocks, which bound markup text. Its style parts
+parse with CSS syntax, or SCSS syntax for `lang` `scss` or `less`.
+JS/TS/JSX requires the matching pinned tree-sitter grammar.
 CSS classification starts at the extracted abbreviation, including when point is
 inside a balanced raw value. Comments and strings are forbidden. Automatic analysis
 also excludes values, at-rule preludes, ordinary selectors and unrelated script
-expressions; explicit commands retain supported manual positions. Unknown major
+expressions. A bare name and single colon at a declaration start belong to a
+value position even without whitespace; explicit commands retain supported
+manual positions, including type/pseudo selectors. Unknown major
 modes retain manual markup only. Missing grammars give capf nil and an explicit
 command diagnostic; HTML/CSS paths do not need additional grammars.
 
@@ -89,11 +107,17 @@ recovery must retain complete attached Emmet text while keeping ordinary object
 and expression exclusions. Astro expressions not identified by the pinned web-mode
 scanner retain the documented host limitation; do not weaken the JS grammar gate.
 
-Each candidate query and acceptance rechecks source and host. Editing, switching
-mode/settings, narrowing away, disabling the mode or leaving the original point/end
-invalidates the session. Corfu can accept identical text without changing the
-character tick and move point to END; acceptance takes a new strict insertion
-snapshot. Frontends that rewrite the same text and change the tick are rejected.
+Candidate queries, display batches, previews and acceptance recheck source and
+host. Source changes invalidate the previous revision. Only candidate queries
+can replace it when the abbreviation changes at the same source anchor, in the
+same host and with the same settings. Switching mode/settings, narrowing away,
+disabling the mode or leaving the original point/end invalidate the current
+revision. Acceptance never advances a revision, and an old choice identity
+cannot select a new revision's result.
+Corfu accepts identical text without changing the character tick and can move
+point to END; acceptance takes a fresh strict insertion snapshot. This preserves
+single-writer insertion, editable fields and one-step undo for every choice.
+Frontends that rewrite identical text and change the tick are rejected.
 `emmet2-complete` temporarily selects only Emmet capf and keeps its confidence gate.
 Mode enable/disable owns local registration at depth -50. Corfu styles/category/
 exact-match policies are described below; optional mode setup is in README.
@@ -101,10 +125,45 @@ Batch drawing replacements are never evidence of real GUI interaction.
 
 ## Completion behavior
 
-The candidate remains the original abbreviation; its annotation summarizes the
-expansion, and optional `corfu-popupinfo-mode` shows the final colored text.
-Bare markup identifiers, bare CSS property names and unconfirmed host positions
-are left to other providers. Use `C-j` for explicit expansion.
+Each menu label renders the current fragment, folding line breaks and indentation
+into spaces. It applies `completions-common-part` only when the
+abbreviation's word characters all occur in order in the label. This presentation
+scan does not alter matching, ranking or the canonical result. Only the display
+copy hides the typed candidate; acceptance keeps its original text and choice
+identity. There is no provider label or expansion annotation. Only multiline
+complete results supply documentation to `corfu-popupinfo-mode`, even if their
+current fragment alone is one line. Their preview text
+removes the renderer's source-column prefix from subsequent lines and expands
+leading tabs using the source width. HTML/JSX and nested CSS keep relative
+indentation; ordinary CSS declarations align at column zero. The canonical
+insertion result retains its original layout and fields.
+
+Known CSS snippet prefixes enumerate property and literal keyword choices from
+the engine's existing read-only index. Exact expansion ranks first; equivalent
+canonical results are deduplicated. Lowercase property/value combinations also
+use the core's keyword lookup; authored value aliases retain precedence. Metadata
+and confidence checks do not format results or maintain a second index. Bare
+markup identifiers, ordinary CSS property names and unconfirmed host positions
+remain with other providers. Use `C-j` for explicit expansion.
+
+Compound CSS completion enumerates the last property using the existing balanced
+splitter. A single trailing top-level comma in a CSS declaration requests the
+preceding choices against a fresh snapshot that includes the comma. Acceptance
+consumes it; old candidate identities still cannot insert. No previous-result
+cache is kept. Once the next fragment is nonempty, its menu label replaces the
+confirmed prefix with `… ` while documentation preserves the complete result.
+The prefix is expanded once per revision to locate its exact boundary in canonical
+text. Menu labels, highlights and root-aligned previews are prepared once per
+choice; display queries perform no expansion or indentation pass. Affixation
+returns a copy of each label so frontend text properties cannot change the stored
+projection. A plus-separated group remains one displayed fragment.
+Explicit expansion remains strict about empty properties, and JavaScript host
+commas and commas inside values retain their existing meaning.
+
+Corfu preserves candidates differing only in text properties, as for overloaded
+LSP methods. Other frontends may merge these choices or strip identity properties;
+they can still accept the default result. No private frontend APIs run in the
+package. Presentation tests use actual Corfu matching, affixation and acceptance.
 
 Automatic presentation respects Corfu's prefix, delay and trigger settings.
 With `basic` first, the exact candidate can remain visible for `nil`, `show`,
@@ -113,7 +172,7 @@ by an `emmet2` category override, automatic completion skips it unless the
 persistent `corfu-on-exact-match` is `show`; manual completion may expand directly.
 The package changes none of these settings. With `corfu-preselect` set to
 `prompt`, select the candidate before accepting it; accepting the prompt does
-not expand. Editing or moving away invalidates the old session.
+not expand. Valid edits refresh the table in place; leaving the context ends it.
 
 ## Data, oracle and migration authority
 
@@ -148,8 +207,8 @@ and runners have been removed. The complete native runner rejects missing
 replacement tests before running them. Text expectations, extraction boundaries,
 field behavior and editor integration remain separate contracts. No skipped suite
 or changed expected output counts as migration evidence. Intentional changes
-(first editable field, separate CSS stops, safe-context gating, Emacs 30 minimum)
-are recorded in that ledger and README.
+(first editable field, separate CSS stops, safe-context gating, Emacs 30 minimum,
+plain CSS at-rules, pseudo-function lists) are recorded in that ledger and README.
 
 ## Setup and validation
 

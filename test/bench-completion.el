@@ -53,8 +53,9 @@
           :gc-count (cl-loop for sample across samples sum (aref sample 1))
           :gc-seconds (cl-loop for sample across samples sum (aref sample 2)))))
 
-(defun emmet2-flow--completion (abbreviation)
+(defun emmet2-flow--completion (abbreviation multiline)
   "Measure real Corfu completion of ABBREVIATION, except screen drawing.
+MULTILINE determines whether the selected result should offer documentation.
 Return six triples: total, request, annotation, doc, repeated doc, accept."
   (let ((completion-styles '(basic partial-completion emacs22))
         (completion-category-defaults nil) (completion-category-overrides nil)
@@ -74,7 +75,8 @@ Return six triples: total, request, annotation, doc, repeated doc, accept."
                          repeated (emmet2-flow--time (lambda () (setq repeated-document (corfu-popupinfo--get-documentation abbreviation))))
                          accept (emmet2-flow--time #'corfu-insert)))))
         (when completion-in-region-mode (corfu-quit))))
-    (unless (and shown (stringp document) (not (string-empty-p document))
+    (unless (and shown (if multiline (and (stringp document) (not (string-empty-p document)))
+                        (null document))
                  (equal document repeated-document))
       (error "Benchmark skipped annotation or documentation"))
     (vector total request annotation doc repeated accept)))
@@ -115,7 +117,8 @@ Return six triples: total, request, annotation, doc, repeated doc, accept."
                  (error "Benchmark changed output/cursor: %s" name)))
              (run (path)
                (let ((sample (if (eq path 'command) (vector (emmet2-flow--time #'emmet2-expand))
-                               (emmet2-flow--completion abbreviation))))
+                               (emmet2-flow--completion
+                                abbreviation (string-match-p "\n" (substring expected (1- beg) (1- output-end)))))))
                  (when (and (eq path 'completion-yas) (< cursor output-end)
                             (not (yas-active-snippets)))
                    (error "Benchmark skipped editable fields: %s" name))

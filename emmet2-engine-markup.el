@@ -473,6 +473,7 @@ fresh nodes before resolution or transformation can change them.
 JSX enables JSX syntax while parsing snippets."
   (mapcan
    (lambda (node)
+     (emmet2-engine--check-deadline)
      (let ((snippet (gethash (emmet2-markup--node-name node) emmet2-markup--snippets)))
        (if (and snippet (not (member snippet stack)))
            (let* ((syntax (or (gethash snippet parsed)
@@ -677,6 +678,7 @@ COMMON starts with the dictionary's standard opening.  Entries may be phrases."
 CLASS-ATTRIBUTE renames class for JSX; JSX supplies project expression options.
 RANDOM-STATE belongs to this call; REPEAT is the nearest ancestor's repeater."
   (dolist (node nodes)
+    (emmet2-engine--check-deadline)
     (when (and (null (emmet2-markup--node-name node)) (emmet2-markup--node-attributes-present node))
       (setf (emmet2-markup--node-name node)
             (emmet2-markup--implicit-name parent-name)))
@@ -749,27 +751,32 @@ RANDOM-STATE belongs to this call; REPEAT is the nearest ancestor's repeater."
               (and (emmet2-markup--node-value node) (not (emmet2-markup--node-attributes-present node))))))
 
 (defun emmet2-markup--format-p (node index siblings parent)
-  "Return non-nil to put NODE at INDEX in SIBLINGS under PARENT on a new line."
-  (cond
-   ((and (= index 0) (not parent)) nil)
-   ((and parent (not (emmet2-markup--node-name parent)) (= (length siblings) 1)) nil)
-   ((and (not (emmet2-markup--node-name node))
-         (or (and (> index 0) (not (emmet2-markup--node-name (nth (1- index) siblings))))
-             (and (< (1+ index) (length siblings)) (not (emmet2-markup--node-name (nth (1+ index) siblings))))
-             (cl-some (lambda (v) (and (stringp v) (string-match-p "[\r\n]" v))) (emmet2-markup--node-value node))
-             (and (cl-some #'consp (emmet2-markup--node-value node)) (emmet2-markup--node-children node)))) t)
-   ((not (emmet2-markup--inline-p node)) t)
-   (t
-    (or (if (= index 0) (cl-some (lambda (n) (not (emmet2-markup--inline-p n))) siblings)
-          (not (emmet2-markup--inline-p (nth (1- index) siblings))))
-        (let ((before (1- index)) (after (1+ index)) (count 1))
-          (while (and (>= before 0) (emmet2-markup--inline-p (nth before siblings)))
-            (cl-incf count) (cl-decf before))
-          (while (and (< after (length siblings)) (emmet2-markup--inline-p (nth after siblings)))
-            (cl-incf count) (cl-incf after))
-          (>= count 3))
-        (cl-loop for child in (emmet2-markup--node-children node) for i from 0
-                 thereis (emmet2-markup--format-p child i (emmet2-markup--node-children node) parent))))))
+  "Return non-nil if NODE needs a new line.
+NODE is at INDEX in vector SIBLINGS under PARENT."
+  (let ((size (length siblings)))
+    (cl-flet ((sibling (i) (and (<= 0 i) (< i size) (aref siblings i))))
+      (cond
+       ((and (= index 0) (not parent)) nil)
+       ((and parent (not (emmet2-markup--node-name parent)) (= size 1)) nil)
+       ((and (not (emmet2-markup--node-name node))
+             (or (and (> index 0) (not (emmet2-markup--node-name (sibling (1- index)))))
+                 (and (< (1+ index) size) (not (emmet2-markup--node-name (sibling (1+ index)))))
+                 (cl-some (lambda (v) (and (stringp v) (string-match-p "[\r\n]" v))) (emmet2-markup--node-value node))
+                 (and (cl-some #'consp (emmet2-markup--node-value node)) (emmet2-markup--node-children node)))) t)
+       ((not (emmet2-markup--inline-p node)) t)
+       (t
+        (or (if (= index 0) (cl-some (lambda (n) (not (emmet2-markup--inline-p n))) siblings)
+              (not (emmet2-markup--inline-p (sibling (1- index)))))
+            ;; Three adjacent inline siblings break the line; counting further cannot change that.
+            (let ((before (1- index)) (after (1+ index)) (count 1))
+              (while (and (< count 3) (emmet2-markup--inline-p (sibling before)))
+                (cl-incf count) (cl-decf before))
+              (while (and (< count 3) (emmet2-markup--inline-p (sibling after)))
+                (cl-incf count) (cl-incf after))
+              (>= count 3))
+            (let ((children (vconcat (emmet2-markup--node-children node))))
+              (cl-loop for child across children for i from 0
+                       thereis (emmet2-markup--format-p child i children parent)))))))))
 
 (defun emmet2-markup--emit-attribute (out attr)
   "Emit ATTR into OUT, assigning fields after layout."
@@ -797,12 +804,14 @@ RANDOM-STATE belongs to this call; REPEAT is the nearest ancestor's repeater."
 (defun emmet2-markup--emit (out nodes &optional parent)
   "Format resolved NODES under PARENT into OUT."
   (cl-loop
-   for node in nodes for index from 0
+   with siblings = (vconcat nodes) with last = (1- (length siblings))
+   for node across siblings for index from 0
    do
+   (emmet2-engine--check-deadline)
    (let* ((name (emmet2-markup--node-name node))
           (value (emmet2-markup--node-value node))
           (children (emmet2-markup--node-children node))
-          (format (emmet2-markup--format-p node index nodes parent))
+          (format (emmet2-markup--format-p node index siblings parent))
           (indent (if (and parent (emmet2-markup--node-name parent)
                            (not (equal (emmet2-markup--node-name parent) "html"))) 1 0)))
      (cl-incf (emmet2-markup--output-level out) indent)
@@ -834,7 +843,7 @@ RANDOM-STATE belongs to this call; REPEAT is the nearest ancestor's repeater."
            (emmet2-markup--emit-tokens out '((0 . "")))
            (when (equal name "body") (cl-decf (emmet2-markup--output-level out)) (emmet2-markup--newline out))))
        (when name (emmet2-markup--push out (concat "</" name ">"))))
-     (when (and format (= index (1- (length nodes))) parent)
+     (when (and format (= index last) parent)
        (emmet2-markup--newline out (- (emmet2-markup--output-level out)
                                     (if (emmet2-markup--node-name parent) 1 0))))
      (cl-decf (emmet2-markup--output-level out) indent))))

@@ -96,6 +96,15 @@ only here, before concatenating properties.  Preserve mirrors elsewhere."
       (list (concat (match-string 1 token) (match-string 2 token) "100p" (match-string 3 token))))
      (t (list token)))))
 
+(defun emmet2-extensions-css-value-abbreviation-p (abbreviation)
+  "Whether a lowercase ABBREVIATION supplies a recognized CSS value.
+Honor authored aliases such as wf before consulting the core's keyword
+lookup.  Bare properties still belong to the host completion provider."
+  (cl-some (lambda (token)
+             (or (string-match-p "[0-9]" token)
+                 (emmet2-engine-stylesheet-keyword-abbreviation-p token)))
+           (emmet2-extensions--aliases abbreviation)))
+
 (defun emmet2-extensions--property (token)
   "Expand TOKEN and apply the sole CSS default cleanup."
   (let* ((case-fold-search nil)
@@ -203,19 +212,29 @@ only here, before concatenating properties.  Preserve mirrors elsewhere."
    result (lambda (ch) (cond ((= ch ?\t) indent) ((= ch ?\n) (concat "\n" base-indent))
                               (t (char-to-string ch))))))
 
-(defun emmet2-extensions--at-rule (abbreviation indent base-indent)
-  "Expand ABBREVIATION using names and local templates with INDENT and BASE-INDENT."
-  (let* ((templates (gethash "atRuleTemplates" emmet2-extensions--overrides))
-         (names (sort (delete-dups (append (gethash "atRules" emmet2-extensions--names)
-                                           (hash-table-keys templates))) #'string<))
-         (name (emmet2-extensions--resolve abbreviation names "atRuleAliases"))
-         (template (gethash name templates)))
-    (if template
-        (let ((cursor (gethash "cursor" template)))
-          (emmet2-extensions--render-template
-           (emmet2-result-create (gethash "text" template) (list (list cursor cursor 1 "")))
-           indent base-indent))
-      (emmet2-result-create (concat name (if (member name names) " " ""))))))
+(defun emmet2-extensions--at-rule (abbreviation syntax indent base-indent)
+  "Expand ABBREVIATION for host SYNTAX with INDENT and BASE-INDENT.
+Plain `css' keeps pinned upstream snippets, directly or through an authored
+alias, and resolves other names among CSS at-rules only; otherwise names and
+local Sass templates both apply."
+  (if-let* ((snippet (and (eq syntax 'css)
+                          (cl-find-if #'emmet2-engine-stylesheet-snippet-p
+                                    (list abbreviation
+                                          (gethash abbreviation
+                                                   (gethash "atRuleAliases" emmet2-extensions--overrides)))))))
+      (emmet2-engine-expand snippet :preset 'stylesheet :indent indent :base-indent base-indent)
+    (let* ((templates (if (eq syntax 'css) (make-hash-table)
+                        (gethash "atRuleTemplates" emmet2-extensions--overrides)))
+           (names (sort (delete-dups (append (gethash "atRules" emmet2-extensions--names)
+                                             (hash-table-keys templates))) #'string<))
+           (name (emmet2-extensions--resolve abbreviation names "atRuleAliases"))
+           (template (gethash name templates)))
+      (if template
+          (let ((cursor (gethash "cursor" template)))
+            (emmet2-extensions--render-template
+             (emmet2-result-create (gethash "text" template) (list (list cursor cursor 1 "")))
+             indent base-indent))
+        (emmet2-result-create (concat name (if (member name names) " " "")))))))
 
 (defun emmet2-extensions--pseudo-chain (text)
   "Expand a TEXT chain of pseudo selectors, including nested functional arguments."
@@ -238,14 +257,21 @@ only here, before concatenating properties.  Preserve mirrors elsewhere."
               (unless (zerop depth) (signal 'emmet2-parse-error (list "Unclosed pseudo function" start)))
               (setq name (emmet2-extensions--resolve
                           name (gethash "pseudoFunctions" emmet2-extensions--overrides) "pseudoAliases"))
-              (dolist (argument (emmet2-extensions--split (substring text start (1- pos)) '(?,)))
-                (setq argument (string-trim argument))
-                (cond ((string-prefix-p ":" argument)
-                       (setq argument (emmet2-extensions--pseudo-chain argument)))
-                      ((string-match "\\`[+>~]" argument)
-                       (setq argument (concat (substring argument 0 1) " "
-                                              (string-trim-left (substring argument 1))))))
-                (push (concat name "(" argument ")") pieces)))
+              (let ((arguments
+                     (mapcar (lambda (argument)
+                               (setq argument (string-trim argument))
+                               (cond ((string-prefix-p ":" argument)
+                                      (emmet2-extensions--pseudo-chain argument))
+                                     ((string-match "\\`[+>~]" argument)
+                                      (concat (substring argument 0 1) " "
+                                              (string-trim-left (substring argument 1))))
+                                     (t argument)))
+                             (emmet2-extensions--split (substring text start (1- pos)) '(?,)))))
+                ;; Keep legacy :not chaining; it matches the same elements but
+                ;; adds specificity.  Other lists must retain their OR semantics.
+                (if (equal name ":not")
+                    (dolist (argument arguments) (push (concat name "(" argument ")") pieces))
+                  (push (concat name "(" (string-join arguments ", ") ")") pieces))))
           (push (emmet2-extensions--resolve name (gethash "pseudos" emmet2-extensions--names)
                                             "pseudoAliases") pieces))))
     (apply #'concat (nreverse pieces))))
@@ -259,15 +285,17 @@ only here, before concatenating properties.  Preserve mirrors elsewhere."
     (emmet2-extensions--render-template (emmet2-result-create text (list (list cursor cursor 1 "")))
                                        indent base-indent)))
 
-(cl-defun emmet2-extensions-css (abbreviation &key css-in-js (indent "\t") (base-indent ""))
+(cl-defun emmet2-extensions-css (abbreviation &key css-in-js (syntax 'scss) (indent "\t") (base-indent ""))
   "Expand CSS ABBREVIATION to a canonical result.
-CSS-IN-JS requests object member syntax.  INDENT and BASE-INDENT are literal
-rendering strings.  Generated layout uses them; literal raw text is preserved."
+CSS-IN-JS requests object member syntax.  SYNTAX `css' limits at-rules to
+plain CSS; the default `scss' also offers Sass rules.  INDENT and BASE-INDENT
+are literal rendering strings.  Generated layout uses them; literal raw text
+is preserved."
   (emmet2-engine-with-expansion
     (let ((case-fold-search nil))
       (cond
        ((and (not css-in-js) (string-prefix-p "@" abbreviation))
-        (emmet2-extensions--at-rule abbreviation indent base-indent))
+        (emmet2-extensions--at-rule abbreviation syntax indent base-indent))
        ((and (not css-in-js) (string-match-p "\\`[a-zA-Z0-9_.#-]*:" abbreviation))
         (emmet2-extensions--selector abbreviation indent base-indent))
        (t

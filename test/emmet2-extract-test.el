@@ -55,11 +55,58 @@
                  (should (= (plist-get result :beg) 3))
                  (should (= (plist-get result :end) (+ 3 (length abbreviation)))))))))
 
+(ert-deftest emmet2-extract-authored-tags-are-boundaries ()
+  (dolist (case '(("<p>ul>li│</p>" "ul>li") ("<div><b>x</b>ul>li│</div>" "ul>li")
+                  ("<br/>ul>li│" "ul>li") ("<Icon onClick={() => go()} />ul>li│" "ul>li")
+                  ("<a title=\"x>y\">ul>li│</a>" "ul>li") ("</>ul>li│" "ul>li")
+                  ("div{<b>x</b>}│" "div{<b>x</b>}") ("<di│v>" nil)))
+    (ert-info ((car case))
+      (with-temp-buffer
+        (insert (car case)) (goto-char (point-min)) (search-forward "│") (delete-char -1)
+        (should (equal (plist-get (emmet2-extract (point-min) (point-max)) :abbr) (cadr case)))))))
+
 (ert-deftest emmet2-extract-incomplete-groups-use-region-limit ()
   (with-temp-buffer
     (insert "a{unfinished")
     (should (equal (plist-get (emmet2-extract 1 (point-max)) :abbr)
                    "a{unfinished"))))
+
+(ert-deftest emmet2-extract-css-comments-bound-abbreviations ()
+  (dolist (case '((".a{/* c */m10│}" "m10")
+                  (".a{/* c\n c */m10│}" "m10")
+                  (".a{m10│/* c */}" "m10")
+                  (".a{/*m10│*/}" nil)
+                  (".a{ct['/* literal */']│}" "ct['/* literal */']")
+                  (".a{p[calc(1px /* c */ + 2px)]│}" "p[calc(1px /* c */ + 2px)]")))
+    (ert-info ((car case))
+      (with-temp-buffer
+        (insert (car case)) (search-backward "│") (delete-char 1)
+        (should (equal (plist-get (emmet2-extract (point-min) (point-max) 'css) :abbr)
+                       (cadr case)))))))
+
+(ert-deftest emmet2-extract-css-comment-delimiters-respect-region-end ()
+  (dolist (input '("/* comment */m10" "*/m10"))
+    (with-temp-buffer
+      (insert input) (goto-char 2)
+      (let ((result (emmet2-extract 1 2 'css)))
+        (should (equal (plist-get result :abbr) (substring input 0 1)))
+        (should (= (plist-get result :end) 2))
+        (should (= (point) 2))))))
+
+(ert-deftest emmet2-extract-css-trailing-comma-is-part-of-the-abbreviation ()
+  (dolist (source '(".a{m10,│}" ".a{ta,│ }" ".a{m10,p20,│"
+                    ".a{p[calc(1px,2px)],│}"))
+    (with-temp-buffer
+      (insert source) (search-backward "│") (delete-char 1)
+      (let ((result (emmet2-extract (point-min) (point-max) 'css)))
+        (should (string-suffix-p "," (plist-get result :abbr)))
+        (should (= (plist-get result :end) (point))))))
+  ;; In JavaScript a trailing comma belongs to the enclosing object or call.
+  (with-temp-buffer
+    (insert "m10,")
+    (should-not (emmet2-extract (point-min) (point-max)))
+    (backward-char)
+    (should (equal (plist-get (emmet2-extract (point-min) (point-max)) :abbr) "m10"))))
 
 (ert-deftest emmet2-extract-honors-region-and-point ()
   (with-temp-buffer

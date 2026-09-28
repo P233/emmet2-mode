@@ -5,6 +5,19 @@
 (require 'ert)
 (require 'emmet2-engine-stylesheet)
 
+(ert-deftest emmet2-stylesheet-completion-prefixes-and-keywords ()
+  (dolist (name '("m" "mt" "mr" "mb" "ml" "maw"))
+    (should (member name (emmet2-engine-stylesheet-completions "m"))))
+  (dolist (prefix '("ta" "tac" "ta[c"))
+    (should (member "ta[center]" (emmet2-engine-stylesheet-completions prefix))))
+  (dolist (name '("d[inline]" "d[inline-block]" "d[inline-flex]"))
+    (should (member name (emmet2-engine-stylesheet-completions "di"))))
+  (should (member "bg[none]" (emmet2-engine-stylesheet-completions "bg")))
+  (should-not (cl-some (lambda (name) (string-match-p ":" name))
+                       (emmet2-engine-stylesheet-completions "bg")))
+  (dolist (prefix '("" "unknownword" "m10" "margin" "color:re"))
+    (should-not (emmet2-engine-stylesheet-completions prefix))))
+
 (defun emmet2-stylesheet-test--json (path)
   "Read JSON PATH relative to the repository root."
   (with-temp-buffer

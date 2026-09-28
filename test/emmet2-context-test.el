@@ -237,6 +237,24 @@
       (should-not (memq #'emmet2-context--before-change before-change-functions))
       (should-not (memq #'emmet2-context--after-change after-change-functions)))))
 
+(ert-deftest emmet2-context-unit-is-local-for-exported-and-semicolon-free-statements ()
+  (dolist (statement '("export const styles = StyleSheet.create({x: {m10}});"
+                       "export function f() { StyleSheet.create({x: {m10}}); }"
+                       "StyleSheet.create({x: {m10}});"
+                       "const styles = StyleSheet.create({x: {m10}})"
+                       "export const styles = StyleSheet.create({x: {m10}})"))
+    (ert-info (statement)
+      (with-temp-buffer
+        (insert "const before = 1\n" statement "\nconst after = 2\n")
+        (tsx-ts-mode)
+        (goto-char (point-min)) (search-forward "m10")
+        (should (eq (plist-get (emmet2-context-analyze) :lang) 'css-in-js))
+        (let ((unit (assq 'tsx (emmet2-context--state-units (emmet2-context--owner)))))
+          (should (equal (buffer-substring-no-properties (cadr unit) (caddr unit)) statement))
+          (insert "1")
+          (should (equal (plist-get (emmet2-context-analyze t) :abbr) "m101"))
+          (should (eq unit (assq 'tsx (emmet2-context--state-units (emmet2-context--owner))))))))))
+
 (ert-deftest emmet2-context-unit-boundary-and-outside-edits-invalidate ()
   (dolist (where '(start end outside))
     (emmet2-test-with-bounded-unit

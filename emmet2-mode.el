@@ -67,7 +67,7 @@ A single class uses the CSS Modules reference directly."
 
 (defun emmet2--expand-analysis (analysis)
   "Expand ANALYSIS using current project options and formatter layout.
-This shared read-only path produces the final insertion and preview result."
+This read-only path produces the canonical result for insertion and completion."
   (let ((options (emmet2-insert-render-options analysis))
         (abbreviation (plist-get analysis :abbr)))
     (pcase (plist-get analysis :lang)
@@ -76,9 +76,10 @@ This shared read-only path produces the final insertion and preview result."
               :jsx (eq (emmet2--output-syntax analysis) 'jsx)
               :variant emmet2-markup-variant :css-modules-object emmet2-css-modules-object
               :class-names-constructor emmet2-class-names-constructor options))
-      ((or 'css 'css-in-js)
-       (apply #'emmet2-extensions-css abbreviation
-              :css-in-js (eq (plist-get analysis :lang) 'css-in-js) options)))))
+      ('css
+       (apply #'emmet2-extensions-css abbreviation :syntax (plist-get analysis :syntax) options))
+      ('css-in-js
+       (apply #'emmet2-extensions-css abbreviation :css-in-js t options)))))
 
 ;;;###autoload
 (defun emmet2-expand ()

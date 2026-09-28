@@ -36,6 +36,9 @@ Nested core invocations inherit the same deadline."
 
 (autoload 'emmet2-engine-markup-expand "emmet2-engine-markup")
 (autoload 'emmet2-engine-stylesheet-expand "emmet2-engine-stylesheet")
+(autoload 'emmet2-engine-stylesheet-snippet-p "emmet2-engine-stylesheet")
+(autoload 'emmet2-engine-stylesheet-completions "emmet2-engine-stylesheet")
+(autoload 'emmet2-engine-stylesheet-keyword-abbreviation-p "emmet2-engine-stylesheet")
 
 (cl-defun emmet2-engine-expand (abbreviation &key (preset 'html) (indent "\t") (base-indent "") jsx (seed 0))
   "Expand ABBREVIATION with PRESET and the internal rendering parameters.
