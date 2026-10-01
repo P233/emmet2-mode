@@ -269,7 +269,7 @@
       "id": "fields",
       "contract": "independent CSS groups, markup mirrors, escaping, TAB and final exit",
       "stage": "S4",
-      "tests": ["emmet2-insert-css-fields-tab-and-final-exit", "emmet2-insert-plain-and-yas-share-text-and-cursor", "emmet2-insert-literals-never-evaluate", "emmet2-insert-yas-eof-navigation-and-advice-isolation"]
+      "tests": ["emmet2-insert-css-fields-tab-and-final-exit", "emmet2-insert-plain-and-yas-share-text-and-cursor", "emmet2-insert-literals-never-evaluate"]
     },
     {
       "id": "without-yas",

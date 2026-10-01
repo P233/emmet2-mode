@@ -97,5 +97,7 @@ below belong to this release and are relative to the earlier 0.2 implementation.
   the unused stylesheet value-parser mode and empty-declaration intermediate.
 - Remove the development-only `:selector-block` option together with automatic
   pseudo-element rule bodies. Hosts no longer need rule-body permission checks.
+- Remove the workarounds that relied on private yasnippet symbols. A field that
+  ends at the very end of a buffer gets yasnippet's usual trailing newline.
 
 See [Upgrading from 0.2](README.md#upgrading-from-02) for the configuration checklist.

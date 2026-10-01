@@ -20,14 +20,14 @@
 (ert-deftest emmet2-insert-plain-and-yas-share-text-and-cursor ()
   (dolist (yas '(nil t))
     (emmet2-test-with-insertion yas
-      (let ((result (emmet2-result-create "😀 x x" '((2 3 1 "x") (4 5 1 "x")))))
+      (let ((result (emmet2-result-create "😀 x x!" '((2 3 1 "x") (4 5 1 "x")))))
         (emmet2-insert snapshot result)
         (should (equal (buffer-string) (plist-get result :text)))
         (should (= (point) (+ 1 (plist-get result :cursor))))
         (when yas
           (insert "link")
           (yas-next-field)
-          (should (equal (buffer-string) "😀 link link"))
+          (should (equal (buffer-string) "😀 link link!"))
           (should (= (point) (point-max)))
           (run-hooks 'post-command-hook)
           (should-not (yas-active-snippets)))))))
@@ -103,23 +103,23 @@
         (emmet2-test-evaluated nil))
     (emmet2-test-with-insertion t
       (emmet2-insert snapshot
-                     (emmet2-result-create (concat literal "|" literal)
+                     (emmet2-result-create (concat literal "|" literal "|")
                                            (list (list (1+ (length literal))
                                                        (1+ (* 2 (length literal))) 1 literal))))
       (should-not emmet2-test-evaluated)
-      (should (equal (buffer-string) (concat literal "|" literal)))
+      (should (equal (buffer-string) (concat literal "|" literal "|")))
       (should (= (point) (+ 2 (length literal)))))))
 
 (ert-deftest emmet2-insert-boundary-fields-preserve-text ()
   (dolist (fields '(((0 1 2 "x") (0 0 1 "")) ((0 0 1 "") (0 0 2 ""))
                     ((0 1 1 "x") (1 1 2 ""))))
     (emmet2-test-with-insertion t
-      (let ((result (emmet2-result-create "x" fields)))
+      (let ((result (emmet2-result-create "x;" fields)))
         (emmet2-insert snapshot result)
-        (should (equal (buffer-string) "x"))
+        (should (equal (buffer-string) "x;"))
         (should (= (point) (1+ (plist-get result :cursor))))
         (insert "A") (yas-next-field) (insert "B") (yas-next-field)
-        (should (equal (buffer-string) (if (equal fields '((0 0 1 "") (0 0 2 ""))) "ABx" "AB")))))))
+        (should (equal (buffer-string) (if (equal fields '((0 0 1 "") (0 0 2 ""))) "ABx;" "AB;")))))))
 
 (ert-deftest emmet2-insert-one-undo-restores-source ()
   (dolist (yas '(nil t))
@@ -228,23 +228,6 @@
     (should-error (emmet2-test--complete-first) :type 'user-error)
     (should (equal (buffer-string) "const a = 'div';"))))
 
-(ert-deftest emmet2-insert-yas-eof-navigation-and-advice-isolation ()
-  (emmet2-test-with-insertion t
-    (emmet2-insert snapshot (emmet2-result-create "x y" '((0 1 1 "x") (2 3 2 "y"))))
-    (insert "one") (yas-next-field)
-    (should (equal (buffer-string) "one y"))
-    (insert "two") (yas-next-field) (run-hooks 'post-command-hook)
-    (should (equal (buffer-string) "one two"))
-    (should (= (point) (point-max)))
-    (should-not (yas-active-snippets)))
-  ;; Ordinary yas snippets retain their own newline policy.
-  (with-temp-buffer
-    (yas-minor-mode 1) (yas-expand-snippet "${1:x}$0")
-    (should (equal (buffer-string) "x\n")))
-  (emmet2-insert-unload-function)
-  (should-not (advice-member-p #'emmet2-insert--yas-protect-text
-                               'yas--make-move-field-protection-overlays)))
-
 (ert-deftest emmet2-insert-yas-before-hook-cannot-change-the-source ()
   (emmet2-test-with-insertion t
     (let ((yas-before-expand-snippet-hook (list (lambda () (insert "changed")))))
@@ -252,13 +235,6 @@
                     :type 'emmet2-error))
     (should (equal (buffer-string) "abbr"))
     (should-not (yas-active-snippets))))
-
-(ert-deftest emmet2-insert-literal-yas-guard-is-preserved ()
-  (emmet2-test-with-insertion t
-    (let* ((text "YASESCAPE96PROTECTGUARD ${1:x}")
-           (result (emmet2-result-create text (list (list 0 (length text) 1 text)))))
-      (emmet2-insert snapshot result)
-      (should (equal (buffer-string) text)))))
 
 (ert-deftest emmet2-complete-preserves-literal-tabs-and-emoji ()
   (with-temp-buffer
@@ -321,18 +297,6 @@
             (should (yas-active-snippets))
             (yas-exit-all-snippets)
             (should (= (point) (+ beg (length (plist-get result :text)))))))))))
-
-(ert-deftest emmet2-insert-guard-escapes-roundtrip-case-and-mirrors ()
-  (dolist (character '(92 96 34 39 36 125 123 40 41 89))
-    (dolist (format '("YASESCAPE%dPROTECTGUARD" "yasescape%dprotectguard" "\\YASESCAPE%dPROTECTGUARD"))
-      (emmet2-test-with-insertion t
-        (let* ((literal (format format character)) (length (length literal))
-               (text (concat literal " " literal "!")))
-          (emmet2-insert snapshot (emmet2-result-create text (list (list 0 length 1 literal)
-                                                                  (list (1+ length) (1+ (* 2 length)) 1 literal))))
-          (should (equal (buffer-string) text))
-          (insert "changed")
-          (should (equal (buffer-string) "changed changed!")))))))
 
 (ert-deftest emmet2-mode-unload-cleans-command-created-context ()
   (with-temp-buffer
