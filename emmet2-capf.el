@@ -136,6 +136,16 @@ Cancellation propagates, and `debug-on-error' retains the original debugger."
                         (user-error "Emmet: %s" (error-message-string ,error-data))))))
          (unless ,completed ,cleanup)))))
 
+(defun emmet2-capf--admit (explicit)
+  "Return (AUTOMATIC . ANALYSIS) for the abbreviation at point, or nil.
+EXPLICIT requests keep their host's explicit contract, except in built-in CSS,
+where every entry uses the automatic rules and offers the same choices."
+  (let ((automatic (or (not explicit)
+                       (and (derived-mode-p 'css-base-mode) (not emmet2-context-provider)))))
+    (when-let* ((analysis (and (not buffer-read-only) (emmet2-context-analyze automatic)))
+                (_ (or (not automatic) (emmet2-capf--confident-p analysis))))
+      (cons automatic analysis))))
+
 ;;;###autoload
 (defun emmet2-capf ()
   "Offer expansion choices and update them while typing in the same context.
@@ -144,11 +154,9 @@ Candidate properties distinguish choices with identical source text, as with
 overloaded language-server completions.  Frontends which discard properties
 can still accept the first expansion."
   (emmet2-capf--guard (not emmet2-capf--explicit) nil
-    (let ((automatic (or (not emmet2-capf--explicit)
-                         (and (derived-mode-p 'css-base-mode) (not emmet2-context-provider))))
-          (quiet (not emmet2-capf--explicit)))
-      (when-let* ((analysis (and (not buffer-read-only) (emmet2-context-analyze automatic)))
-                  (_ (or (not automatic) (emmet2-capf--confident-p analysis))))
+    (pcase-let ((quiet (not emmet2-capf--explicit))
+                (`(,automatic . ,analysis) (emmet2-capf--admit emmet2-capf--explicit)))
+      (when analysis
         (require 'emmet2-corfu)
         (emmet2-corfu--enable)
         (let* ((provider emmet2-context-provider)
@@ -265,6 +273,19 @@ this command does not choose or insert the first candidate itself."
           (emmet2-capf--explicit t))
       (unless (completion-at-point)
         (user-error "There is no Emmet completion at point")))))
+
+;;;###autoload
+(defun emmet2-expand-at-point ()
+  "Expand the abbreviation at point immediately, without showing choices.
+Context and expansion are those of `emmet2-complete'; CSS uses its first
+choice.  Fields, initial cursor and one-step undo match an accepted choice."
+  (interactive)
+  (emmet2-capf--guard nil nil
+    (barf-if-buffer-read-only)
+    (let* ((analysis (or (cdr (emmet2-capf--admit t))
+                         (user-error "There is no Emmet abbreviation at point")))
+           (snapshot (emmet2-insert-snapshot analysis)))
+      (emmet2-insert snapshot (emmet2-expand-analysis analysis)))))
 
 (provide 'emmet2-capf)
 ;;; emmet2-capf.el ends here

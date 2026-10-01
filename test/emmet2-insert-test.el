@@ -271,9 +271,40 @@
     (should-not emmet2-mode)
     (should-not (emmet2-context-js--owner)))
   (should-not (featurep 'deno-bridge))
-  ;; Expansion is always a visible completion choice; no key expands blindly.
+  ;; Direct expansion is an explicit command; the mode binds no key to it.
   (should-not (lookup-key emmet2-mode-map (kbd "C-j")))
   (should-not (fboundp 'emmet2-expand)))
+
+(ert-deftest emmet2-expand-at-point-uses-first-choice-and-one-undo ()
+  (dolist (case '((css-mode ".a{ta}" "ta") (text-mode "ul>li*2" "li*")))
+    (ert-info ((format "%S" case))
+      (with-temp-buffer
+        (insert (cadr case)) (funcall (car case)) (buffer-enable-undo)
+        (goto-char 1) (search-forward (nth 2 case))
+        (let* ((analysis (emmet2-context-analyze)) (beg (plist-get analysis :beg))
+               (end (plist-get analysis :end)) (before (buffer-string))
+               (expected (emmet2-expand-analysis analysis)))
+          (undo-boundary)
+          (emmet2-expand-at-point)
+          (should (equal (buffer-string) (concat (substring before 0 (1- beg))
+                                                (plist-get expected :text) (substring before (1- end)))))
+          (should (= (point) (+ beg (plist-get expected :cursor))))
+          (undo-only 1)
+          (should (equal (buffer-string) before))))))
+  (with-temp-buffer
+    (insert "const a = 'div';") (js-mode) (goto-char 13)
+    (should-error (emmet2-expand-at-point) :type 'user-error)
+    (should (equal (buffer-string) "const a = 'div';")))
+  ;; Built-in CSS admits exactly what `emmet2-complete' would offer.
+  (dolist (input '("xyz" "-webkit-transition"))
+    (with-temp-buffer
+      (css-mode) (insert ".a{" input "}") (backward-char)
+      (should-error (emmet2-expand-at-point) :type 'user-error)
+      (should (equal (buffer-string) (concat ".a{" input "}")))))
+  (with-temp-buffer
+    (insert "p") (setq buffer-read-only t)
+    (should-error (emmet2-expand-at-point) :type 'user-error)
+    (should (equal (buffer-string) "p"))))
 
 (ert-deftest emmet2-complete-yas-real-hosts-preserve-rendered-result ()
   (dolist (case '((css-mode ".a { m│+p }")

@@ -177,12 +177,18 @@ To request choices manually, run **`M-x emmet2-complete`**. In other major modes
 this command also offers plain markup, including in `text-mode` and `mhtml-mode`.
 It works without enabling the minor mode first.
 
-For manual requests, you can optionally bind **`C-c .`**; emmet2-mode binds no
-keys by default. This binding applies only while the minor mode is enabled:
+To expand immediately without a menu, run **`M-x emmet2-expand-at-point`**. It
+uses the same contexts as `emmet2-complete` and inserts the first choice, with
+the same fields and one-step undo. For CSS, the first choice is the top-ranked
+reading, so `fs` always gives `font-size`.
+
+emmet2-mode binds no keys by default. You can bind either command; these
+bindings apply only while the minor mode is enabled:
 
 ```elisp
 (with-eval-after-load 'emmet2-mode
-  (keymap-set emmet2-mode-map "C-c ." #'emmet2-complete))
+  (keymap-set emmet2-mode-map "C-c ." #'emmet2-complete)
+  (keymap-set emmet2-mode-map "C-j" #'emmet2-expand-at-point))
 ```
 
 ## Abbreviation reference
@@ -438,8 +444,9 @@ Host integrations and pure expansion interfaces are documented in [API.md](API.m
 ## Upgrading from 0.2
 
 - Remove the Deno, `deno-bridge` and `websocket` configuration, then restart Emacs.
-- Accept choices from automatic completion to expand abbreviations. If you keep
-  a manual completion key, replace `emmet2-expand` with `emmet2-complete`.
+- Accept choices from automatic completion to expand abbreviations. To keep a
+  direct expansion key, bind `emmet2-expand-at-point` in place of `emmet2-expand`,
+  or bind `emmet2-complete` to request choices.
 - Scale and rhythm values such as `p(1)` are opt-in; set
   `emmet2-css-scale-functions` to keep them.
 - Replace `:files (:defaults "*.ts" "src" "data")` with `:files (:defaults "data")`.

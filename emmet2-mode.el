@@ -40,6 +40,7 @@
 (autoload 'emmet2-capf "emmet2-capf" nil nil)
 (autoload 'emmet2-css-value-capf "emmet2-css-value" nil nil)
 (autoload 'emmet2-complete "emmet2-capf" nil t)
+(autoload 'emmet2-expand-at-point "emmet2-capf" nil t)
 
 ;;;###autoload
 (define-minor-mode emmet2-mode
