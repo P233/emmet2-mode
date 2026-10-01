@@ -78,6 +78,18 @@ declaration or implicit ampersand.")
     (should (equal (car choices) "top+right+bottom+left"))
     (should (equal (plist-get (emmet2-extensions-css (nth 1 choices) :syntax 'css) :text) "all: initial;"))))
 
+(ert-deftest emmet2-css-hex-colors-with-alpha-stay-authored ()
+  ;; Only 1, 2, 3 and 6 digits are Emmet color shorthands.
+  (dolist (pair '(("c#ffffff80" . "color: #ffffff80;") ("c#ABCD" . "color: #abcd;")
+                  ("bd1-s-#ffffff80" . "border: 1px solid #ffffff80;") ("c#e0" . "color: #e0e0e0;")
+                  ("c#f.5" . "color: rgba(255, 255, 255, 0.5);")
+                  ;; An explicit alpha suffix still replaces the color's own alpha.
+                  ("c#ffffff80.5" . "color: rgba(255, 255, 255, 0.5);")
+                  ("c#abcd.5" . "color: rgba(170, 187, 204, 0.5);")))
+    (ert-info ((car pair))
+      (should (equal (plist-get (emmet2-extensions-css (car pair) :syntax 'css) :text) (cdr pair)))))
+  (should (equal (plist-get (emmet2-extensions-css "c#abcd" :css-in-js t) :text) "color: \"#abcd\"")))
+
 (ert-deftest emmet2-css-scale-functions-are-opt-in-sass ()
   (should-error (emmet2-extensions-css "p(1)") :type 'emmet2-parse-error)
   (dolist (case '(("p(0)(2)" "padding: 0 rhythm(2);") ("fz(0)" "font-size: ms(0);")
