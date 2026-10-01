@@ -78,9 +78,10 @@ once here; a provider's spelling cannot substitute different source text."
 (defun emmet2-context-revision ()
   "Return the inputs of `emmet2-context-analyze', besides owned caches.
 An analysis stays valid while this is unchanged: the text by its modification
-tick, point, the visible region, the major mode, `emmet2-mode', and web-mode's
-engine and content type, or the external provider's revision.  Parser warmup
-can only turn a nil automatic analysis into a result."
+tick, point, the visible region, the major mode, `emmet2-mode', web-mode's
+engine and content type and the CSS-in-JS host options, or the external
+provider's revision.  Parser warmup can only turn a nil automatic analysis
+into a result."
   (list (buffer-chars-modified-tick) (point) (point-min) (point-max) major-mode
         (bound-and-true-p emmet2-mode)
         (if emmet2-context-provider
@@ -89,7 +90,8 @@ can only turn a nil automatic analysis into a result."
                     (save-excursion
                       (save-restriction
                         (funcall (emmet2-context--provider-function :revision))))))
-          (and (derived-mode-p 'web-mode) (emmet2-context-web-revision)))))
+          (list (and (derived-mode-p 'web-mode) (emmet2-context-web-revision))
+                (emmet2-context-js-revision)))))
 
 (defun emmet2-context-analyze (&optional automatic)
   "Return a confirmed abbreviation at point, or nil.

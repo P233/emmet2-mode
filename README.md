@@ -142,7 +142,8 @@ modes share the matching and initial cursor placement.
   Existing property values use your language mode's completion.
 - **Embedded styles:** `<style>` and `style=""` use CSS output; JSX `style={{...}}`
   and objects passed to `StyleSheet.create(...)` or `createTheme(...)` use
-  camelCase properties and JavaScript values.
+  camelCase properties and JavaScript values. Add other style attributes and
+  functions, such as `sx` or `css(...)`, in [project settings](#jsx-and-project-settings).
 
 In supported modes, emmet2-mode skips ordinary comments, strings and unrelated
 JavaScript.
@@ -400,6 +401,8 @@ can set `emmet2-jsx-class-style` to `plain` instead of typing `_` each time.
 | `emmet2-css-modules-object` | `"styles"` | With `css-modules`: import name or object reference, such as `cardStyles` or `styles.module` |
 | `emmet2-class-names-constructor` | `"clsx"` | With `css-modules`: function reference for joining classes, such as `cx` or `helpers.cx` |
 | `emmet2-markup-variant` | `nil` | Detect HTML/JSX from context; `"solid"` emits Solid JSX, with `class` instead of `className`, in every markup context |
+| `emmet2-css-in-js-attributes` | `("style")` | JSX attributes holding style objects, such as `"sx"` |
+| `emmet2-css-in-js-functions` | `("StyleSheet.create" "createTheme")` | Functions whose object arguments hold styles, written as called, such as `"css"` or `"stylex.create"` |
 | `emmet2-css-scale-functions` | `nil` | SCSS [scale and rhythm functions](#scale-and-rhythm-functions) |
 
 Set these globally with `setq` or per project in `.dir-locals.el`.
@@ -410,11 +413,13 @@ using it for JSX):
 ```elisp
 ((tsx-ts-mode . ((emmet2-markup-variant . "solid")
                 (emmet2-css-modules-object . "cardStyles")
-                (emmet2-class-names-constructor . "cx"))))
+                (emmet2-class-names-constructor . "cx")
+                (emmet2-css-in-js-functions . ("css")))))
 ```
 
-Then `.card.active` becomes `<div class={cx(cardStyles.card, cardStyles.active)}></div>`;
-the project must provide `cardStyles`, `cx` and CSS Modules support.
+Then `.card.active` becomes `<div class={cx(cardStyles.card, cardStyles.active)}></div>`,
+and `css({m10})` expands to `css({margin: 10})`; the project must provide
+`cardStyles`, `cx`, `css` and CSS Modules support.
 
 ## Troubleshooting
 
@@ -422,6 +427,8 @@ the project must provide `cardStyles`, `cx` and CSS Modules support.
   threshold, and try `M-x emmet2-complete` for a diagnostic.
 - No Emmet choice: check the [allowed contexts](#where-to-type-abbreviations).
   Existing property values and comments belong to the language mode.
+- No choice inside a style object: add its attribute or function to
+  `emmet2-css-in-js-attributes` or `emmet2-css-in-js-functions`.
 - Missing tree-sitter grammar: install the grammar for the host listed above.
 - Missing JSX names: configure and import the CSS Modules object and class helper
   used by your project, or use `_` or `plain` for string classes.

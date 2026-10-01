@@ -5,6 +5,7 @@
 (require 'ert)
 (require 'treesit)
 (require 'web-mode)
+(require 'typescript-ts-mode)
 (require 'emmet2-extract)
 
 (require 'emmet2-context)
@@ -103,6 +104,28 @@
                 (should-not result)
               (should (eq (plist-get result :lang) 'css-in-js))
               (should (equal (plist-get result :abbr) abbreviation))))))))))
+
+(ert-deftest emmet2-contract-host-configured-css-in-js-owners ()
+  (dolist (source '("const A=(<Box sx={{m10│}} />);" "const s=css({m10│});"
+                    "const s=stylex.create({x: {m10│}});"))
+    (ert-info (source)
+      (with-temp-buffer
+        (setq buffer-file-name "/tmp/emmet2-contract.tsx")
+        (insert source) (goto-char (point-min)) (search-forward "│") (delete-char -1)
+        (let ((position (point)))
+          (tsx-ts-mode) (goto-char position)
+          (emmet2-context-js-prepare)
+          (should-not (emmet2-context-analyze t))
+          (let ((revision (emmet2-context-revision)))
+            (setq-local emmet2-css-in-js-attributes '("style" "sx")
+                        emmet2-css-in-js-functions '("css" "stylex.create"))
+            (should-not (equal revision (emmet2-context-revision))))
+          (let ((result (emmet2-context-analyze t)))
+            (should (eq (plist-get result :lang) 'css-in-js))
+            (should (equal (plist-get result :abbr) "m10")))
+          (emmet2-context-stop)))))
+  (should (funcall (get 'emmet2-css-in-js-functions 'safe-local-variable) '("css")))
+  (should-not (funcall (get 'emmet2-css-in-js-attributes 'safe-local-variable) '(sx))))
 
 (provide 'emmet2-host-contract-test)
 ;;; emmet2-host-contract-test.el ends here

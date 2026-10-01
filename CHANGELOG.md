@@ -76,6 +76,8 @@ below belong to this release and are relative to the earlier 0.2 implementation.
   `emmet2-expand-analysis` for synchronous expansion.
 - Enclosing at-rules select descriptor names and values through the same CSS
   data, search and expansion paths as ordinary properties.
+- `emmet2-css-in-js-attributes` and `emmet2-css-in-js-functions` add style-object
+  hosts such as `sx={{...}}` or `css({...})`.
 - A leading `_` keeps an abbreviation's JSX classes as a string, as in `_.a.b`
   for `className="a b"`. `emmet2-jsx-class-style` set to `plain` does this for
   a whole project.

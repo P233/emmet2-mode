@@ -12,7 +12,7 @@ load paths and package recipes discover every library.
 | Host entry | `emmet2-context.el` | Route to one host, validate every confirmed analysis against the restored visible view, expose the context revision. |
 | Basic CSS host | `emmet2-context-css.el` | Use CSS Base syntax state and a small insertion-position policy. Also analyze bounded CSS supplied by the Web host. |
 | HTML and embedded languages | `emmet2-context-web.el` | Flush web-mode scanning and route HTML, style attributes, CSS and JS parts; own its pending bounded CSS scan. |
-| JSX and style objects | `emmet2-context-js.el` | Confirm JSX or supported CSS-in-JS objects using original and projected JS trees; own parser lifetimes and unit markers. |
+| JSX and style objects | `emmet2-context-js.el` | Confirm JSX or CSS-in-JS objects of the configured style attributes and functions using original and projected JS trees; own those options, parser lifetimes and unit markers. |
 | Extraction | `emmet2-extract.el` | Find balanced abbreviation bounds inside the host's range; recognize pseudo-chain boundaries without editor state. |
 | HTML / JSX expansion | `emmet2-engine-markup.el` | Parse one markup AST, apply one HTML/React/Solid profile, then render. |
 | CSS expansion | `emmet2-css.el`, `emmet2-engine-stylesheet.el` | Resolve choices, completion fragments and project rules; resolve property identities and authored values into declarations. The renderer emits CSS or JavaScript directly from those declarations. |

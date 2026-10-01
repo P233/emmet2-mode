@@ -18,6 +18,15 @@
 (defvar emmet2-mode)
 (defvar emmet2-context-provider)
 
+(defcustom emmet2-css-in-js-functions '("StyleSheet.create" "createTheme")
+  "Functions whose object arguments hold CSS-in-JS declarations.
+Write each callee as it appears in source, such as \"css\" or \"stylex.create\"."
+  :type '(repeat string) :safe #'list-of-strings-p :group 'emmet2)
+
+(defcustom emmet2-css-in-js-attributes '("style")
+  "JSX attributes whose object values hold CSS-in-JS declarations, such as \"sx\"."
+  :type '(repeat string) :safe #'list-of-strings-p :group 'emmet2)
+
 (cl-defstruct (emmet2-context-js--state (:constructor emmet2-context-js--state-create))
   buffer (tag (make-symbol "emmet2"))
   (projection-tag (make-symbol "emmet2-projection")) timer units tick)
@@ -130,6 +139,10 @@ the second tree; keeping each input view stable avoids full reparses."
           (treesit-parser-create language nil nil
                                  (if projection (emmet2-context-js--state-projection-tag owner)
                                    (emmet2-context-js--state-tag owner)))))))
+
+(defun emmet2-context-js-revision ()
+  "Return the user options that select CSS-in-JS hosts."
+  (list emmet2-css-in-js-functions emmet2-css-in-js-attributes))
 
 (defun emmet2-context-js-region ()
   "Return (LANGUAGE BEG END) for a supported JS host at point, or nil."
@@ -318,15 +331,15 @@ Projected acceptance still requires valid syntax."
          (let ((attribute (treesit-node-parent parent)))
            (setq result
                  (and (equal (treesit-node-type attribute) "jsx_attribute")
-                      (equal (treesit-node-text (treesit-node-child attribute 0 t) t)
-                             "style"))
+                      (member (treesit-node-text (treesit-node-child attribute 0 t) t)
+                              emmet2-css-in-js-attributes))
                  done t)))
         ("arguments"
          (let* ((call (treesit-node-parent parent))
                 (function (treesit-node-child-by-field-name call "function")))
            (setq result (and function
                              (member (treesit-node-text function t)
-                                     '("StyleSheet.create" "createTheme")))
+                                     emmet2-css-in-js-functions))
                  done t)))
         (_ (setq done t)))
       (setq parent (treesit-node-parent parent)))
