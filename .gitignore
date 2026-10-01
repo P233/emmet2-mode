@@ -2,3 +2,5 @@
 .serena
 /plans/
 /node_modules/
+*~
+*.elc

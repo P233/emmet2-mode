@@ -336,7 +336,7 @@ The package changes none of these settings. With `corfu-preselect` set to
 `prompt`, select the candidate before accepting it; accepting the prompt does
 not expand. Valid edits refresh the table in place; leaving the context ends it.
 
-## Data, oracle and migration authority
+## Data and oracle authority
 
 `data/emmet/source.json` pins Emmet 2.4.11's archive, source commit and individual
 SHA-256 hashes. `test/vendor/emmet-2.4.11.mjs`, HTML snippet JSON and lorem
@@ -383,17 +383,8 @@ its word and property aliases belong to the search and the others to the
 extension layer. The generator never writes it. Review upstream names and local
 targets together.
 
-`test/fixtures/migration.json` retains the exact baseline identities, file hashes
-and replacement test IDs for all 182 old cases: 93 CSS, 19 markup and 70 regex.
-Baseline files remain available at commit `3f9ddc6`; the old TS/Deno implementation
-and runners have been removed. The complete native runner rejects missing
-replacement tests before running them. Text expectations, extraction boundaries,
-field behavior and editor integration remain separate contracts. No skipped suite
-or changed expected output counts as migration evidence. Intentional changes
-(first editable field, separate CSS stops, safe-context gating, Emacs 30 minimum,
-plain CSS at-rules, pseudo-function lists, completion-first CSS) are recorded
-in that ledger and README. `CHANGELOG.md` states every user-visible change for
-users; list breaking changes first, with the configuration they must edit.
+`CHANGELOG.md` states every user-visible change for users; list breaking changes
+first, with the configuration they must edit.
 
 ## Setup and validation
 
@@ -404,21 +395,25 @@ rejects changed checkouts and never modifies a daily Emacs installation. Bootstr
 disables grammar auto-download and fails for missing locked dependencies.
 
 ```sh
-rtk proxy npm ci --ignore-scripts --no-audit --no-fund
-rtk proxy node test/setup.mjs /tmp/emmet2-test-deps
-rtk proxy npm run lint
-rtk proxy npm test
-rtk proxy npm run oracle:check
-rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps emacs --batch -Q -L . -l test/byte-compile.el
-rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps emacs --batch -Q -L . -l test/package-quality.el
-rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps emacs --batch -Q -L . -l test/integration.el
-rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps emacs --batch -Q -L . -l test/editor-bytecode.el
+npm ci --ignore-scripts --no-audit --no-fund
+node test/setup.mjs ~/.cache/emmet2-test-deps
+npm run lint
+npm test
+npm run oracle:check
+export EMMET2_TEST_DEPS=~/.cache/emmet2-test-deps
+emacs --batch -Q -L . -l test/byte-compile.el
+emacs --batch -Q -L . -l test/package-quality.el
+emacs --batch -Q -L . -l test/integration.el
+emacs --batch -Q -L . -l test/editor-bytecode.el
 ```
 
-Repeat Elisp checks with both pinned Emacs builds. Scoped development suites remain
-available through `EMMET2_TEST_SUITE`: contracts, results, native, markup-spike,
-stylesheet, markup-extensions, css-extensions, fuzzy, editor and completion. Invoke
-`test/emmet2-test.el -f ert-run-tests-batch-and-exit` after selecting one.
+Keep the dependency directory outside `/tmp`, which macOS clears periodically.
+Repeat Elisp checks with both pinned Emacs builds. With a native-compiling Emacs,
+add `--eval '(setq native-comp-enable-subr-trampolines nil)'` before
+`-l test/integration.el` and `-l test/editor-bytecode.el`: their process guards
+redefine primitives, and compiling trampolines would start a process. To run one
+test file, load it after the bootstrap:
+`emacs --batch -Q -L . -L test -l test/bootstrap.el -l test/emmet2-fuzzy-test.el -f ert-run-tests-batch-and-exit`.
 The full integration runner includes all of these contracts, compares the full
 canonical core results and rejects synchronous/asynchronous process creation with
 an empty `exec-path`. The bytecode runner exercises real compiled editor and
@@ -446,9 +441,13 @@ permission. Node's permission flag alone is not claimed to deny networking.
 After a reviewed commit, install that exact HEAD in a new directory:
 
 ```sh
-rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_INSTALL_ROOT=/tmp/emmet2-install-new emacs --batch -Q -l test/install.el
-rtk proxy env EMMET2_TEST_DEPS=/tmp/emmet2-test-deps EMMET2_TEST_PACKAGE=/tmp/emmet2-install-new/straight/build/emmet2-mode emacs --batch -Q -l test/integration.el
+export EMMET2_TEST_DEPS=~/.cache/emmet2-test-deps
+EMMET2_INSTALL_ROOT=/tmp/emmet2-install-new emacs --batch -Q -l test/install.el
+EMMET2_TEST_PACKAGE=/tmp/emmet2-install-new/straight/build/emmet2-mode emacs --batch -Q -l test/integration.el
 ```
+
+As above, a native-compiling Emacs needs the trampoline setting before
+`-l test/integration.el`.
 
 The runner uses pinned straight.el and README's `:files (:defaults "data")`
 recipe. Only the fetch source differs: it clones reviewed local HEAD. It removes
@@ -461,63 +460,13 @@ remain for inspection. The second command reruns all contracts against installed
 bytecode. No daily user configuration is loaded or changed. Node used to build
 test dependencies or verify the oracle is not a runtime package dependency.
 
-## Review, performance and acceptance evidence
+## Performance
 
-For each feature, identify its owning subsystem and check the architecture before
-implementation; then test, measure affected hot paths and review the final diff.
-Before adding state or synchronization, justify why the existing owner or a derived
-value cannot serve the requirement. Keep working plans consistent with implemented
-behavior. Commits, pushes, merges and publication require their own authorization;
-a successful local check does not authorize them.
-
-Performance protocol, exact inputs, budgets and reproduction commands live in
-[test/PERFORMANCE.md](test/PERFORMANCE.md). Measure bytecode on the fixed machine,
-normal GC and independent processes; retain raw samples, maxima, warmups, failures,
-source hashes and complete output validation. Parser-only timing cannot establish
-whole-flow performance. Screen painting, input latency and Eglot behavior require
-real GUI evidence; do not infer them from batch measurements.
-
-The [2026-09-28 search review](test/performance-search-2026-09-28.md) records the
-data-driven matcher, bounded completion reuse and current measurements. It keeps
-the remaining broad-candidate and S7 tail-latency limits explicit; the older
-performance reports do not establish acceptance for the new search implementation.
-
-Historical reports remain tied to their original revisions:
-
-| Evidence | Recorded scope |
-|---|---|
-| [Context](test/performance-context-2026-09-27.md) | Full analysis chain and later TSX regression checks |
-| [Editor](test/performance-editor-2026-09-27.md) | Former Node default; complete command/Corfu/yas paths with drawing replaced |
-| [Markup](test/performance-markup-2026-09-27.md) | Complete native core, JSX and seeded lorem |
-| [Stylesheet](test/performance-stylesheet-2026-09-27.md) | Complete native CSS, including six-property p99 budget |
-
-Detailed historical S0–S7.4 checkpoints remain in the
-[pre-retirement development ledger](https://github.com/P233/emmet2-mode/blob/cebefeb5248feff3558a1781f5464a7693dd68e6/CONTRIBUTING.md).
-They are historical evidence, not current development commands. At `cebefeb`, both
-versions passed native source/installed 257 tests (1699 public calls), reference
-253 tests (1674 calls), 75 bytecode and 52 actual-install checks. Hosted
-[run 36319117967](https://github.com/P233/emmet2-mode/actions/runs/36319117967)
-passed all jobs. New revisions require their own applicable validation.
-
-Real web-mode/TSX+Eglot/Corfu/yas functional GUI acceptance passed on Emacs 31.1
-through user-operated checks on 2026-09-27. The user confirmed the completion
-matrix, session invalidation, fields, host boundaries and final edge cases.
-The [acceptance record](test/gui-acceptance-2026-09-27.md) distinguishes the
-isolated installed-bytecode session from the final daily-configuration checks.
-Computer Use still could not read Emacs; this is user-reported manual evidence,
-not automated GUI success, screenshot evidence, GUI timing or Emacs 30 GUI coverage.
-
-S8 local checkpoint (2026-09-27): Emacs 30.2/31.1 each passed 277 complete native
-checks / 1711 public core calls, 76 bytecode checks, warning-free project compilation
-and package-lint/checkdoc across all 11 runtime libraries. All 257 S7.4 integration
-identities survive in the unified runner; all 182 baseline mappings and 973 oracle
-inputs/results remain unchanged. The bundle/license relocation preserves bytes.
-All 23 Node development tests, ESLint MCP and CLI lint, oracle checks with read-only
-permissions, and actionlint passed. Wallaby returned no data. Linux network
-isolation and the revised exact-commit installation remain post-commit CI/installation
-gates at that checkpoint; the later manual GUI result is recorded separately
-above. No new performance improvement is claimed.
-
-The [2026-09-30 architecture measurements](test/performance-architecture-2026-09-30.md)
-record the refactor's frozen A/B comparison and remaining acceptance work.
-Correctness passes do not close its two failed Web performance gates or GUI gap.
+Before adding state or synchronization, justify why the existing owner or a
+derived value cannot serve the requirement, and measure the affected hot path.
+The protocol, exact inputs, budgets and reproduction commands live in
+[test/PERFORMANCE.md](test/PERFORMANCE.md). Measure bytecode on a fixed machine,
+with normal GC and independent processes, and validate complete outputs.
+Parser-only timing cannot establish whole-flow performance. Screen painting,
+input latency and Eglot behavior require real GUI evidence; do not infer them
+from batch measurements.

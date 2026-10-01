@@ -1,27 +1,8 @@
 # Native rewrite performance acceptance
 
-This is the measurement protocol, not a performance result. S0 feasibility
-probes allocate temporary parsers and are not the production analysis path.
-The old research averages and parser-only timings do not satisfy these gates.
-
-[The 2026-10-01 follow-up](performance-followup-2026-10-01.md) records the current
-context/editor snapshot: 624/624 checks across twelve fixed full reports, with
-raw-sample verification. Historical tails and current GUI interaction retain
-their separate evidence limits; no production optimization is claimed.
-
-[The 2026-09-30 architecture report](performance-architecture-2026-09-30.md)
-compares the full refactor against its frozen input: 862/864 numerical checks
-pass, with two large-Web edit gates and editor tail questions still open.
-
-[The 2026-09-29 native-host report](performance-native-hosts-2026-09-29.md)
-records current installed correctness, allocation measurements, a three-process
-retest per build and the remaining performance/GUI gaps. Retained budget failures
-and subsequent runtime edits keep performance acceptance open.
-
-[The 2026-09-28 search review](performance-search-2026-09-28.md) measured the
-earlier fuzzy completion that searched beside Emmet's CSS snippets. CSS now uses
-`emmet2-css-search`; the CSS rows below replace that review's S7 gate.
-Implement each benchmark alongside the real path at S3, S5, S6 or S7.
+This is the measurement protocol, not a performance result. Parser-only timings
+do not satisfy these gates. Keep measurement reports and raw samples outside the
+repository; they belong to the revision and machine that produced them.
 
 Record the repository revision, dirty files, fixture hashes, machine/CPU/OS,
 Emacs build/configuration, dependency lock, backend, render options and GC
@@ -87,7 +68,7 @@ budget, omit a size, or replace a full-path result with a microbenchmark.
 ## Running the implemented S3 benchmark
 
 ```sh
-EMMET2_TEST_DEPS=/tmp/emmet2-test-deps \
+EMMET2_TEST_DEPS=~/.cache/emmet2-test-deps \
 EMMET2_BENCH_OUTPUT=/tmp/context-31-1.json \
 /path/to/pinned/emacs --batch -Q -L . -l test/bootstrap.el -l test/bench-context.el
 ```
@@ -128,7 +109,7 @@ First build the reviewed revision with `test/install.el` (see CONTRIBUTING).
 Then use its actual `straight/build/emmet2-mode` directory:
 
 ```sh
-EMMET2_TEST_DEPS=/tmp/emmet2-test-deps \
+EMMET2_TEST_DEPS=~/.cache/emmet2-test-deps \
 EMMET2_BENCH_PACKAGE=/tmp/emmet2-installed/straight/build/emmet2-mode \
 EMMET2_BENCH_OUTPUT=/tmp/editor-flow-31-1.json \
 /path/to/pinned/emacs --batch -Q -l test/bootstrap.el -l test/bench-completion.el
@@ -182,9 +163,7 @@ completion creates its first preview buffer; cold yas follows with that preview
 warm. Front-end/dependency loading also precedes timing, so cold values do not
 measure Emacs startup or total package loading. The installed
 runtime has no external executable path and the measured flows reject process
-creation. The report identifies `native Elisp`; the historical S5 report and
-its archived raw data describe the former Node implementation at their recorded
-revisions and are not measurements of today's default entry.
+creation. The report identifies `native Elisp`.
 
 Raw warmup and measured triples are milliseconds, GC count and GC seconds.
 Keep per-process p50, p99, max and GC totals, with no aggregate S5 pass/fail
@@ -193,7 +172,7 @@ budget or cross-process percentile averaging.
 ## Running the native markup benchmark
 
 ```sh
-EMMET2_TEST_DEPS=/tmp/emmet2-test-deps \
+EMMET2_TEST_DEPS=~/.cache/emmet2-test-deps \
 EMMET2_BENCH_OUTPUT=/tmp/markup-31-1.json \
 /path/to/pinned/emacs --batch -Q -L . -l test/bootstrap.el -l test/bench-markup.el
 ```
@@ -216,13 +195,11 @@ round, with 100 warmups and 1,000 retained measurements. GC uses the normal
 800000/1.0 settings; all pauses are retained. First expansions and explicit
 bytecode loads are reported separately and exclude Emacs startup, compilation
 and fixture loading. The budget covers the complete native expansion only.
-See [the S6.0 report](performance-markup-2026-09-27.md) for accepted results,
-the retained initial failure and the remaining engine acceptance limits.
 
 ## Running the native stylesheet benchmark
 
 ```sh
-EMMET2_TEST_DEPS=/tmp/emmet2-test-deps \
+EMMET2_TEST_DEPS=~/.cache/emmet2-test-deps \
 EMMET2_BENCH_OUTPUT=/tmp/stylesheet-31-1.json \
 /path/to/pinned/emacs --batch -Q -L . -l test/bootstrap.el -l test/bench-stylesheet.el
 ```

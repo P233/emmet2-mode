@@ -43,22 +43,6 @@
                               emmet2-extensions-css-test emmet2-markup-integration-test
                               emmet2-stylesheet-integration-test))
             (require feature))
-          ;; Retired test files remain identifiable by baseline commit and hash.
-          ;; Every legacy case must still have registered replacement tests.
-          (let ((migration (with-temp-buffer
-                             (insert-file-contents (expand-file-name "test/fixtures/migration.json" emmet2-test-root))
-                             (json-parse-buffer :object-type 'alist :array-type 'list))))
-            (dolist (group (alist-get 'groups migration))
-              (dolist (entry (alist-get 'cases group))
-                (unless (and (alist-get 'tests entry)
-                             (seq-every-p (lambda (name) (ert-test-boundp (intern name)))
-                                          (alist-get 'tests entry)))
-                  (error "Legacy case lost its replacement tests: %s" (alist-get 'id entry)))))
-            (dolist (entry (append (alist-get 'integration migration) (alist-get 'intentionalChanges migration)))
-              (unless (and (alist-get 'tests entry)
-                           (seq-every-p (lambda (name) (ert-test-boundp (intern name)))
-                                        (alist-get 'tests entry)))
-                (error "Migration contract lost its tests: %s" (alist-get 'id entry)))))
           (let ((stats (ert-run-tests-batch t)))
             (when (> (ert-stats-completed-unexpected stats) 0)
               (error "Native integration failed"))))
@@ -71,7 +55,7 @@
             (unless (and (file-in-directory-p (symbol-file symbol) package)
                          (byte-code-function-p (symbol-function symbol)))
               (error "Integration did not load installed bytecode: %s" symbol))))
-        (message "Verified complete native integration (%d core calls); all 182 legacy cases mapped" calls))
+        (message "Verified complete native integration (%d core calls)" calls))
     (when (fboundp 'emmet2-preview-clear) (emmet2-preview-clear))))
 
 ;;; integration.el ends here
