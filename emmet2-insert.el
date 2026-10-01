@@ -18,7 +18,7 @@
 
 (defun emmet2-insert--indent-width (analysis)
   "Read ANALYSIS's host width, or the active mode's indentation width."
-  (if (plist-member analysis :indent-width) (plist-get analysis :indent-width)
+  (or (plist-get analysis :indent-width)
     (let* ((variables
             (cond
              ((derived-mode-p 'web-mode)

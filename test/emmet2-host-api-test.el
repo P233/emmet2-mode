@@ -117,7 +117,12 @@
         (should (equal (plist-get (emmet2-insert-render-options analysis) :indent) ""))
         (should (equal (plist-get (emmet2-expand-analysis analysis) :text) "@else {\n   \n   }"))
         (setq analysis (plist-put analysis :indent-width -1))
-        (should-error (emmet2-insert-render-options analysis) :type 'emmet2-error)))))
+        (should-error (emmet2-insert-render-options analysis) :type 'emmet2-error)
+        ;; An explicit nil width is optional, like an omitted key.
+        (let ((omitted (copy-sequence analysis)))
+          (cl-remf omitted :indent-width)
+          (should (equal (emmet2-insert-render-options (plist-put analysis :indent-width nil))
+                         (emmet2-insert-render-options omitted))))))))
 
 (ert-deftest emmet2-host-dispatcher-works-without-the-minor-mode ()
   (emmet2-host-test--with-completion "m10"
