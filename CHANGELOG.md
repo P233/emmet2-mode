@@ -106,6 +106,7 @@ below belong to this release and are relative to the earlier 0.2 implementation.
   gives `all: unset;`. Other values, as in `all8`, keep the four-side alias.
 - Keep 4- and 8-digit hex colors such as `#ffffff80` instead of truncating them
   to six digits.
+- Apply a trailing `!` of `posa` or `posf` to both `position` and `z-index`.
 
 ### Internal organization
 

@@ -90,6 +90,13 @@ declaration or implicit ampersand.")
       (should (equal (plist-get (emmet2-extensions-css (car pair) :syntax 'css) :text) (cdr pair)))))
   (should (equal (plist-get (emmet2-extensions-css "c#abcd" :css-in-js t) :text) "color: \"#abcd\"")))
 
+(ert-deftest emmet2-css-important-position-alias-marks-both-declarations ()
+  (dolist (pair '(("posa!" . "position: absolute !important;\nz-index: !important;")
+                  ("posf100!" . "position: fixed !important;\nz-index: 100 !important;")
+                  ("posa1000" . "position: absolute;\nz-index: 1000;")))
+    (ert-info ((car pair))
+      (should (equal (plist-get (emmet2-extensions-css (car pair) :syntax 'css) :text) (cdr pair))))))
+
 (ert-deftest emmet2-css-scale-functions-are-opt-in-sass ()
   (should-error (emmet2-extensions-css "p(1)") :type 'emmet2-parse-error)
   (dolist (case '(("p(0)(2)" "padding: 0 rhythm(2);") ("fz(0)" "font-size: ms(0);")

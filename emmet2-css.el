@@ -74,7 +74,8 @@ Such values, as in allu or all[unset], are not the four-side alias."
      ((string-match "\\`pos\\([af]\\)\\(.*\\)\\'" token)
       (let ((value (if (equal (match-string 1 token) "a") "absolute" "fixed"))
             (suffix (match-string 2 token)))
-        (list (emmet2-css--choice (cons "position" value) "")
+        ;; A trailing ! marks both declarations, as with the four-side all alias.
+        (list (emmet2-css--choice (cons "position" value) (if (string-suffix-p "!" suffix) "!" ""))
               (emmet2-css--choice '("z-index") suffix))))
      ((and (string-prefix-p "all" token)
            (not (emmet2-css--all-keyword-p (string-remove-suffix "!" (substring token 3)))))
