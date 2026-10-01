@@ -19,16 +19,28 @@
   :type '(choice (const :tag "From context" nil) (const "solid"))
   :safe (lambda (value) (member value '(nil "solid"))) :group 'emmet2)
 
+(defcustom emmet2-jsx-class-style 'css-modules
+  "How JSX class names are written.
+`css-modules' references `emmet2-css-modules-object' members and joins
+several with `emmet2-class-names-constructor'.  `plain' keeps them as a
+string, as in className=\"card active\".  A leading _ in an abbreviation,
+as in _div.card, keeps that expansion's classes as a string."
+  :type '(choice (const :tag "Class name string" plain)
+                 (const :tag "CSS Modules references" css-modules))
+  :safe (lambda (value) (memq value '(plain css-modules))) :group 'emmet2)
+
 (defcustom emmet2-css-modules-object "styles"
   "JavaScript reference for the project's CSS Modules class name map.
-Use the name imported in the source file, such as styles or cardStyles.
-Emmet inserts the reference; add the matching import in the source file."
+Used when `emmet2-jsx-class-style' is `css-modules'.  Use the name imported
+in the source file, such as styles or cardStyles.  Emmet inserts the
+reference; add the matching import in the source file."
   :type 'string :safe #'stringp :group 'emmet2)
 
 (defcustom emmet2-class-names-constructor "clsx"
   "JavaScript function reference for joining multiple JSX class names.
-Use the function imported in the source file, such as clsx or cx.
-A single class uses the CSS Modules reference directly."
+Used when `emmet2-jsx-class-style' is `css-modules'.  Use the function
+imported in the source file, such as clsx or cx.  A single class uses the
+CSS Modules reference directly."
   :type 'string :safe #'stringp :group 'emmet2)
 
 (defun emmet2--output-syntax (analysis)
@@ -52,7 +64,8 @@ revalidates host context and rejects stale candidates before insertion."
       ('markup
        (apply #'emmet2-extensions-markup abbreviation
               :jsx (eq (emmet2--output-syntax analysis) 'jsx)
-              :variant emmet2-markup-variant :css-modules-object emmet2-css-modules-object
+              :variant emmet2-markup-variant :class-style emmet2-jsx-class-style
+              :css-modules-object emmet2-css-modules-object
               :class-names-constructor emmet2-class-names-constructor options))
       ('css
        (apply #'emmet2-extensions-css abbreviation :syntax (plist-get analysis :syntax)

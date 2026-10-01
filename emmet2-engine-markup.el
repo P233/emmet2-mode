@@ -871,15 +871,17 @@ NODE is at INDEX in vector SIBLINGS under PARENT."
   (unless (or (null classes)
               (and (eq preset 'jsx) (proper-list-p classes)
                    (member (plist-get classes :classAttribute) '("className" "class"))
-                   (cl-every (lambda (key)
-                               (let ((value (plist-get classes key)))
-                                 (stringp value)))
-                             '(:cssModulesObject :classConstructor))))
+                   (let ((object (plist-get classes :cssModulesObject))
+                         (constructor (plist-get classes :classConstructor)))
+                     (or (and (null object) (null constructor))
+                         (and (stringp object) (stringp constructor))))))
     (signal 'emmet2-error '("Invalid JSX extension options")))
   (let ((dialect (cond ((eq preset 'html) 'html)
                        ((equal (plist-get classes :classAttribute) "class") 'solid)
                        (t 'react))))
-    (append (cdr (assq dialect emmet2-markup--profiles)) (list :classes classes))))
+    ;; Without a CSS Modules object, class names stay a plain string.
+    (append (cdr (assq dialect emmet2-markup--profiles))
+            (list :classes (and (plist-get classes :cssModulesObject) classes)))))
 
 (cl-defun emmet2-engine-markup-expand (abbreviation &key (preset 'html) (indent "\t") (base-indent "") jsx (seed 0))
   "Expand ABBREVIATION through the native markup pipeline.

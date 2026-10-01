@@ -117,7 +117,16 @@ Search and expansion share a one-second deadline; expiry signals
 
 ;; Pure markup expansion is available through the same result contract.
 (emmet2-extensions-markup "ul>li*2" :indent "  ")
+
+(plist-get (emmet2-extensions-markup ".a.b" :jsx t) :text)
+;; => "<div className={clsx(styles.a, styles.b)}></div>"
+(plist-get (emmet2-extensions-markup "_.a.b" :jsx t) :text)
+;; => "<div className=\"a b\"></div>"
 ```
+
+`emmet2-extensions-markup` references JSX classes as `:css-modules-object` members
+joined by `:class-names-constructor` (`:class-style 'css-modules`, the default).
+`:class-style 'plain`, or a leading `_` in the abbreviation, keeps them a string.
 
 Choices are independently expandable strings for one property, pseudo chain or
 at-rule. Returned strings may contain a separator preserving an otherwise ambiguous

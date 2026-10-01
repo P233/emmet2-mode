@@ -210,8 +210,15 @@
       (insert "div.a.b") (emmet2-mode 1) (emmet2-test--complete-first)
       (should (equal (buffer-string) "<div class={classnames(style.a, style.b)}></div>"))
       (should-not (emmet2-context-js--owner)) (emmet2-mode -1) (should-not (emmet2-context-js--owner))))
+  (with-temp-buffer
+    (let ((emmet2-markup-variant "solid"))
+      (insert "_div.a.b") (emmet2-test--complete-first)
+      (should (equal (buffer-string) "<div class=\"a b\"></div>"))))
   (dolist (option '(emmet2-css-modules-object emmet2-class-names-constructor))
     (should (funcall (get option 'safe-local-variable) "project.reference")))
+  (dolist (style '(plain css-modules))
+    (should (funcall (get 'emmet2-jsx-class-style 'safe-local-variable) style)))
+  (should-not (funcall (get 'emmet2-jsx-class-style 'safe-local-variable) 'arbitrary))
   (should (funcall (get 'emmet2-markup-variant 'safe-local-variable) "solid"))
   (should-not (funcall (get 'emmet2-markup-variant 'safe-local-variable) "arbitrary")))
 

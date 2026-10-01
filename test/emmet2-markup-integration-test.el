@@ -83,6 +83,12 @@ MANUAL-ONLY covers hosts which support explicit markup requests only."
      (js-mode "const A=(<main>.card│</main>);" nil)
      (web-mode "<main>p>lorem5+span{${1:😀}}│</main>" nil))))
 
+(ert-deftest emmet2-markup-underscore-class-flows ()
+  (emmet2-integration-test--flows
+   '((tsx-ts-mode "const A=(<main>_.abc.xyz/│</main>);" nil "<div className=\"abc xyz\" />")
+     (tsx-ts-mode "const A=(<main>_.abc.xyz/│</main>);" "solid" "<div class=\"abc xyz\" />")
+     (web-mode "<main>_ul>li.x│</main>" nil))))
+
 (ert-deftest emmet2-markup-manual-hosts-preserve-fields-and-undo ()
   (emmet2-integration-test--flows
    '((html-mode "<main>ul>li│*2</main>" nil)

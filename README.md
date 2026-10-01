@@ -2,8 +2,8 @@
 
 emmet2-mode offers Emmet abbreviations as completion choices for HTML, JSX,
 CSS and SCSS in Emacs. Expansion runs locally in Emacs Lisp.
-JSX classes use CSS Modules and a project class-joining function; see
-[project settings](#jsx-and-project-settings).
+JSX classes use CSS Modules and a project class-joining function, or plain
+strings with a leading `_`; see [project settings](#jsx-and-project-settings).
 
 ## Supported modes
 
@@ -126,6 +126,7 @@ modes share the matching and initial cursor placement.
 | --- | --- | --- |
 | HTML | `ul>li*3` | A list with three items |
 | JSX | `.card.active` | `<div className={clsx(styles.card, styles.active)}></div>` |
+| JSX | `_.card.active` | `<div className="card active"></div>` |
 | CSS | `m10,p.5` or `m10+p.5` | `margin: 10px; padding: 0.5rem;` |
 | CSS | `ins32` | `inset: 32px;` |
 | CSS | `m--gutter` | `margin: var(--gutter);` |
@@ -200,6 +201,7 @@ syntax; the CSS examples below use emmet2-mode in built-in CSS/SCSS modes.
 | JSX | `Component/` | `<Component />` |
 | JSX | `Component./` | `<Component className={styles["│"]} />` |
 | JSX | `Component.card` | `<Component className={styles.card}>│</Component>` |
+| JSX | `_Component.card` | `<Component className="card">│</Component>` |
 | JSX | `Component.Subcomponent` | `<Component.Subcomponent>│</Component.Subcomponent>` |
 | JSX | `Component.Subcomponent.card` | `<Component.Subcomponent className={styles.card}>│</Component.Subcomponent>` |
 | JSX | `Component.Subcomponent.a.b/` | `<Component.Subcomponent className={clsx(styles.a, styles.b)} />` |
@@ -208,6 +210,7 @@ syntax; the CSS examples below use emmet2-mode in built-in CSS/SCSS modes.
 
 Uppercase dotted names select subcomponents; lowercase suffixes add classes.
 Use `/` for self-closing components and doubled braces for JSX text expressions.
+A leading `_` keeps the abbreviation's classes as a plain string.
 
 ### CSS search and aliases
 
@@ -373,15 +376,22 @@ import clsx from 'clsx';
 
 A single class uses `styles.abc` directly. Hyphenated names use bracket access:
 `.btn-primary` becomes `styles["btn-primary"]`. An empty class abbreviation such
-as `.` starts an editable key, as in `styles["│"]`. React maps `for` to `htmlFor`; Solid retains `for`.
+as `.` starts an editable key, as in `styles["│"]`. React maps `for` to `htmlFor`;
+Solid retains `for`.
+
+For global or library classes, start the abbreviation with `_`: `_.swiper.active/`
+gives `<div className="swiper active" />`, and `_ul>li.item` keeps every class in
+the expansion a string. Projects without CSS Modules, such as Tailwind projects,
+can set `emmet2-jsx-class-style` to `plain` instead of typing `_` each time.
 
 | Emacs option | Default | Purpose |
 | --- | --- | --- |
-| `emmet2-css-modules-object` | `"styles"` | CSS Modules import name or object reference, such as `cardStyles` or `styles.module` |
-| `emmet2-class-names-constructor` | `"clsx"` | Function reference for joining multiple classes, such as `cx` or `helpers.cx` |
+| `emmet2-jsx-class-style` | `css-modules` | `css-modules` references, or `plain` class strings |
+| `emmet2-css-modules-object` | `"styles"` | With `css-modules`: import name or object reference, such as `cardStyles` or `styles.module` |
+| `emmet2-class-names-constructor` | `"clsx"` | With `css-modules`: function reference for joining classes, such as `cx` or `helpers.cx` |
 | `emmet2-markup-variant` | `nil` | Detect HTML/JSX from context; `"solid"` emits Solid JSX, with `class` instead of `className`, in every markup context |
 
-Set object/helper names globally with `setq` or per project in `.dir-locals.el`.
+Set these globally with `setq` or per project in `.dir-locals.el`.
 Keep `emmet2-markup-variant` project-local: `"solid"` changes all markup output,
 including HTML contexts, to Solid JSX. For example (substitute `web-mode` when
 using it for JSX):
@@ -403,7 +413,7 @@ the project must provide `cardStyles`, `cx` and CSS Modules support.
   Existing property values and comments belong to the language mode.
 - Missing tree-sitter grammar: install the grammar for the host listed above.
 - Missing JSX names: configure and import the CSS Modules object and class helper
-  used by your project.
+  used by your project, or use `_` or `plain` for string classes.
 
 Host integrations and pure expansion interfaces are documented in [API.md](API.md).
 
