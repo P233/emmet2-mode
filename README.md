@@ -125,7 +125,8 @@ then skip the declaration's semicolon. Value completion creates no snippet field
 In CSS Base modes such as `css-mode`, `scss-mode` and `less-css-mode`, this value
 completion runs before css-mode's own `css-completion-at-point` and replaces its
 value list for known properties, which matches only by prefix and shows no
-documentation. Other positions are unaffected. To keep css-mode's value
+documentation. When no value matches, other completion sources such as Eglot
+still run. Other positions are unaffected. To keep css-mode's value
 completion instead:
 
 ```elisp

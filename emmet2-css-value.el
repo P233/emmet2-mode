@@ -11,16 +11,26 @@
 (declare-function emmet2-completion-capf "emmet2-completion" (begin end entries &rest arguments))
 
 (defun emmet2-css-value-capf ()
-  "Offer shared CSS values at a CSS Base declaration's value position."
+  "Offer shared CSS values at a CSS Base declaration's value position.
+Decline when no value matches the typed text, so `css-mode', Eglot and
+other sources can still complete a project value."
   (when-let* ((_ (not emmet2-context-provider))
               (context (emmet2-context-css-value)))
     (require 'emmet2-css-data)
     (require 'emmet2-completion)
-    (emmet2-completion-capf
-     (plist-get context :beg) (plist-get context :end)
-     (emmet2-css-data-query 'value :property (plist-get context :property)
-                            :at-rule (plist-get context :at-rule) :vendor t)
-     :annotation (concat "  " (plist-get context :property)))))
+    (let* ((beg (plist-get context :beg)) (end (plist-get context :end))
+           (property (plist-get context :property))
+           (capf (emmet2-completion-capf
+                  beg end (emmet2-css-data-query 'value :property property
+                                                 :at-rule (plist-get context :at-rule) :vendor t)
+                  :annotation (concat "  " property)))
+           (field (buffer-substring-no-properties beg end))
+           (point (- (point) beg)))
+      ;; Ask the user's completion styles, which then filter the offered table.
+      (when (completion-all-completions
+             field (nth 2 capf) nil point
+             (completion-metadata (substring field 0 point) (nth 2 capf) nil))
+        capf))))
 
 (provide 'emmet2-css-value)
 ;;; emmet2-css-value.el ends here

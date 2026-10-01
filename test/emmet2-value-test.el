@@ -51,6 +51,17 @@
     (completion-at-point)
     (should (equal (buffer-string) "@font-face { font-display: swap; }"))))
 
+(ert-deftest emmet2-value-falls-through-when-nothing-matches ()
+  ;; A project value unknown to the CSS data reaches the next source.
+  (with-temp-buffer
+    (css-mode) (insert ".a { color: zzbrand; }") (search-backward ";")
+    (emmet2-mode 1)
+    ;; A project source placed after Emmet's value completion, as Eglot would be.
+    (add-hook 'completion-at-point-functions
+              (lambda () (list (- (point) 7) (point) '("zzbrand-primary"))) -55 t)
+    (completion-at-point)
+    (should (equal (buffer-string) ".a { color: zzbrand-primary; }"))))
+
 (ert-deftest emmet2-value-function-cursor-and-undo-without-snippet-fields ()
   (dolist (yas '(nil t))
     (emmet2-value-test--with #'css-mode ".a { width: cal|; }"
