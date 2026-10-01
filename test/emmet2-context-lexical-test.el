@@ -474,5 +474,22 @@
           (should-not (equal revision (emmet2-context-revision)))))
       (set-buffer-modified-p nil))))
 
+(ert-deftest emmet2-context-css-declarations-carry-the-enclosing-at-rule ()
+  (dolist (case '((css-mode "@font-face {\n  sr│\n}" "@font-face" "src: ;")
+                  (scss-mode "@media screen {\n  .a { m10│ }\n}" nil "margin: 10px;")
+                  (web-mode "<style>@font-face { sr│ }</style>" "@font-face" "src: ;")
+                  ;; A delimiter inside a comment does not end the at-rule prelude.
+                  (css-mode "/* Inter; latin */\n@font-face {\n  sr│\n}" "@font-face" "src: ;")
+                  (web-mode "<style>.a{} /* x; y */ @font-face { sr│ }</style>" "@font-face" "src: ;")))
+    (ert-info ((format "%S" case))
+      (with-temp-buffer
+        (setq buffer-file-name "/tmp/emmet2-at-rule.html")
+        (insert (nth 1 case)) (goto-char (point-min)) (search-forward "│") (delete-char -1)
+        (let ((position (point)))
+          (funcall (car case)) (goto-char position)
+          (let ((analysis (emmet2-context-analyze t)))
+            (should (equal (plist-get analysis :at-rule) (nth 2 case)))
+            (should (equal (plist-get (emmet2-expand-analysis analysis) :text) (nth 3 case)))))))))
+
 (provide 'emmet2-context-lexical-test)
 ;;; emmet2-context-lexical-test.el ends here

@@ -107,6 +107,20 @@ manual custom-element selectors; built-in CSS always uses AUTOMATIC here."
       ;; although its lexical spelling first resembled a declaration value.
       (if (eq position 'value) 'selector position))))
 
+(defun emmet2-context-css--at-rule (region block)
+  "Return the lowercase at-rule whose prelude opens the brace at BLOCK, or nil.
+REGION supplies the lexical state and bounds the scan, as embedded CSS begins
+inside another language.  Delimiters inside comments do not end the prelude."
+  (save-excursion
+    (goto-char block)
+    (let (delimiter)
+      (while (and (setq delimiter (re-search-backward "[{};]" (nth 1 region) t))
+                  (nth 8 (emmet2-context-css--state region delimiter))))
+      (goto-char (if delimiter (1+ delimiter) (nth 1 region)))
+      (forward-comment (point-max))
+      (when (looking-at "@[[:alpha:]-]+")
+        (downcase (match-string-no-properties 0))))))
+
 (defun emmet2-context-css-analyze (region automatic)
   "Analyze CSS REGION using its host's position authority.
 REGION is (css START END ATTRIBUTE DIALECT EMBEDDED).  EMBEDDED selects the
@@ -116,20 +130,25 @@ for both manual and automatic completion."
   (pcase-let* ((`(,_ ,start ,end ,_attribute ,syntax ,embedded) region)
                (candidate (emmet2-extract start end 'css)))
     (when candidate
-      (cl-labels ((position (input)
-                    (let ((beg (plist-get input :beg)))
-                      (emmet2-context-css--position region beg (emmet2-context-css--state region beg)))))
-        (let* ((role (position candidate))
+      (cl-labels ((state (input) (emmet2-context-css--state region (plist-get input :beg)))
+                  (position (input state) (emmet2-context-css--position region (plist-get input :beg) state)))
+        (let* ((state (state candidate))
+               (role (position candidate state))
                (selector (emmet2-extract-css-pseudo (plist-get candidate :abbr))))
           (when (and selector (memq role '(selector declaration-start value)))
             (when-let* ((header (emmet2-extract start end 'css-selector))
                         (pseudo (emmet2-extract-css-pseudo (plist-get header :abbr)))
                         (_ (< (+ (plist-get header :beg) pseudo) (plist-get candidate :end))))
-              (setq candidate header role (position header))))
+              (setq candidate header state (state header) role (position header state))))
           (setq role (emmet2-context-css--allowed candidate role (or (not embedded) automatic)))
           (when role
-            (append candidate
-                    (list :lang 'css :syntax (if (eq syntax 'scss) 'scss 'css) :position role))))))))
+            ;; Declarations inside an at-rule such as @font-face use its descriptors.
+            (let* ((block (and (eq role 'declaration-start) (nth 1 state)))
+                   (at-rule (and block (eq (char-after block) ?{)
+                                 (emmet2-context-css--at-rule region block))))
+              (append candidate
+                      (list :lang 'css :syntax (if (eq syntax 'scss) 'scss 'css) :position role)
+                      (and at-rule (list :at-rule at-rule))))))))))
 
 (defun emmet2-context-css-value ()
   "Return a declaration value's bounds and property using CSS Base syntax.
@@ -150,11 +169,7 @@ left to their existing providers.  Scan only the current declaration."
                           (if (and (= (car syntax) depth) (not (nth 8 syntax)))
                               (progn (setq start (1+ (point))) nil)
                             t))))
-            (goto-char block)
-            (skip-chars-backward "^{};")
-            (forward-comment (point-max))
-            (when (looking-at "@[[:alpha:]-]+")
-              (setq at-rule (downcase (match-string-no-properties 0))))
+            (setq at-rule (emmet2-context-css--at-rule (list 'css (point-min)) block))
             (goto-char start) (forward-comment (point-max))
             (when (looking-at "[[:alpha:]_-][[:alnum:]_-]*")
               (setq property (downcase (match-string-no-properties 0)))
