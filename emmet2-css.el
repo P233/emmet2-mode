@@ -154,8 +154,10 @@ AT-RULE admits its descriptors.  Return nil when no property matches."
                               limit))))))
     (if exact (seq-take (cons authored (delete authored choices)) limit) choices)))
 
-(defun emmet2-css--declarations (property at-rule)
-  "Parse PROPERTY's value once and resolve its declarations in AT-RULE."
+(defun emmet2-css--declarations (property at-rule scale)
+  "Parse PROPERTY's value once and resolve its declarations in AT-RULE.
+SCALE is an alist of (PROPERTY . FUNCTION) for parenthesized values; t
+names the function of every other property."
   (let* ((case-fold-search nil)
          (name (emmet2-css--property-name property))
          (resolved name)
@@ -174,10 +176,13 @@ AT-RULE admits its descriptors.  Return nil when no property matches."
      ((string-match-p "\\`--[a-zA-Z0-9_-]+\\'" suffix)
       (setq value (mapconcat (lambda (part) (concat "var(--" part ")"))
                              (split-string suffix "--" t) " ")))
-     ((string-match-p "\\`\\(?:(-?\\(?:[0-9]+\\(?:\\.[0-9]*\\)?\\|\\.[0-9]+\\))\\)+\\'" suffix)
-      ;; Font sizes follow the modular scale; other lengths follow the rhythm.
-      (setq value (if (equal name "font-size") (concat "ms" suffix)
-                    (mapconcat (lambda (arg) (if (equal arg "0") "0" (concat "rhythm(" arg ")")))
+     ((and scale (string-match-p "\\`\\(?:(-?\\(?:[0-9]+\\(?:\\.[0-9]*\\)?\\|\\.[0-9]+\\))\\)+\\'" suffix))
+      (when-let* ((function (cdr (or (assoc name scale) (assq t scale)))))
+        (setq value (mapconcat (lambda (arg)
+                                 ;; A zero length needs no function, but scale step 0
+                                 ;; of font-size is the base size.
+                                 (if (and (equal arg "0") (not (equal name "font-size"))) "0"
+                                   (concat function "(" arg ")")))
                                (split-string suffix "[()]" t) " ")))))
     (if (or resolved value)
         (progn
@@ -373,14 +378,15 @@ their declarations; ordinary search choices contain one property reading."
         (push property properties)))
     (nreverse properties)))
 
-(defun emmet2-css--expand-properties (properties css-in-js base-indent at-rule)
+(defun emmet2-css--expand-properties (properties css-in-js base-indent at-rule scale)
   "Resolve PROPERTIES once and render their shared declarations.
-CSS-IN-JS chooses the renderer; BASE-INDENT and AT-RULE select layout/context."
+CSS-IN-JS chooses the renderer; BASE-INDENT and AT-RULE select layout/context.
+SCALE maps parenthesized values to functions, as in `emmet2-css--declarations'."
   (let (results)
     (dolist (reading properties)
       (dolist (property (if (equal (emmet2-css--property-name reading) "all")
                            (emmet2-css--all-properties reading) (list reading)))
-        (dolist (declaration (emmet2-css--declarations property at-rule))
+        (dolist (declaration (emmet2-css--declarations property at-rule scale))
         (emmet2-engine--check-deadline)
         (when results
           (push (emmet2-result-create (emmet2-css-property-separator css-in-js base-indent)) results))
@@ -443,10 +449,11 @@ This pure completion projection does not relax expansion's property grammar."
 
 (cl-defun emmet2-css-completions (abbreviation &key css-in-js (syntax 'scss) (limit 10)
                                              (indent "\t") (base-indent "") at-rule
-                                             declaration-start previous)
+                                             scale-functions declaration-start previous)
   "Build complete results and explicit labels for ABBREVIATION.
 CSS-IN-JS and SYNTAX select the language; INDENT and BASE-INDENT are literal
-layout.  AT-RULE selects descriptors.  DECLARATION-START admits a pending
+layout.  AT-RULE selects descriptors.  SCALE-FUNCTIONS is as in
+`emmet2-extensions-css'.  DECLARATION-START admits a pending
 separator.  LIMIT bounds the ranked choices.  PREVIOUS may be a preceding
 batch only under identical context and render settings.  Return a plist with
 :choices and an opaque :prefix cache; each choice has a result, label and query.
@@ -467,7 +474,8 @@ Only immutable results are reused; each call gives choices fresh identities."
                            (if (equal confirmed (car cached-prefix)) cached-prefix
                              (cons confirmed (emmet2-extensions-css
                                               confirmed :css-in-js css-in-js :syntax syntax :indent indent
-                                              :base-indent base-indent :at-rule at-rule)))))
+                                              :base-indent base-indent :at-rule at-rule
+                                              :scale-functions scale-functions)))))
                  (reuse-prefix (and confirmed (eq (emmet2-extensions-css-kind confirmed css-in-js) 'properties)
                                     (eq kind 'properties)))
                  (separator (emmet2-result-create (emmet2-css-property-separator css-in-js base-indent)))
@@ -479,9 +487,12 @@ Only immutable results are reused; each call gives choices fresh identities."
                (fragment (unless old
                            (condition-case nil
                                  (if (cdr alternative)
-                                     (emmet2-css--expand-properties (cdr alternative) css-in-js base-indent at-rule)
+                                     (emmet2-css--expand-properties
+                                      (cdr alternative) css-in-js base-indent at-rule
+                                      (emmet2-css--scale scale-functions syntax css-in-js))
                                    (emmet2-extensions-css (car alternative) :css-in-js css-in-js :syntax syntax
-                                                         :indent indent :base-indent base-indent :at-rule at-rule))
+                                                         :indent indent :base-indent base-indent :at-rule at-rule
+                                                         :scale-functions scale-functions))
                              (emmet2-parse-error nil))))
                (result (or (plist-get old :result)
                            (and fragment
@@ -489,7 +500,8 @@ Only immutable results are reused; each call gives choices fresh identities."
                                   (if confirmed
                                       (condition-case nil
                                           (emmet2-extensions-css name :css-in-js css-in-js :syntax syntax :indent indent
-                                                                :base-indent base-indent :at-rule at-rule)
+                                                                :base-indent base-indent :at-rule at-rule
+                                                                :scale-functions scale-functions)
                                         (emmet2-parse-error nil))
                                     fragment))))))
           (when (and result (not (gethash result seen)))
@@ -505,19 +517,27 @@ Only immutable results are reused; each call gives choices fresh identities."
               (push (list :abbreviation name :result result :label label :query query) entries)))))
       (list :choices (nreverse entries) :prefix prefix))))
 
+(defun emmet2-css--scale (scale-functions syntax css-in-js)
+  "Return SCALE-FUNCTIONS for SCSS SYNTAX outside CSS-IN-JS, otherwise nil.
+These are Sass functions, meaningless in plain CSS and JavaScript."
+  (and (eq syntax 'scss) (not css-in-js) scale-functions))
+
 (defun emmet2-css-property-separator (css-in-js base-indent)
   "Return the declaration separator for CSS-IN-JS and BASE-INDENT.
 Whole expansion and completion's cached prefix use the same layout."
   (if css-in-js ", " (concat "\n" base-indent)))
 
 (cl-defun emmet2-extensions-css (abbreviation &key css-in-js (syntax 'scss) (indent "\t") (base-indent "")
-                                              at-rule)
+                                              at-rule scale-functions)
   "Expand CSS ABBREVIATION to a canonical result.
 CSS-IN-JS requests object member syntax.  SYNTAX `css' limits at-rules to
 plain CSS; the default `scss' also offers Sass rules.  INDENT and BASE-INDENT
 are literal rendering strings.  Generated layout uses them; literal raw text
 is preserved.  Pseudo completion expands only selector names and arguments.
-AT-RULE names the enclosing rule whose descriptors are available."
+AT-RULE names the enclosing rule whose descriptors are available.
+SCALE-FUNCTIONS is an alist of (PROPERTY . FUNCTION), with t for every other
+property, as in `emmet2-css-scale-functions'.  In SCSS outside CSS-in-JS it
+writes each parenthesized group, as in p(1)(2), as a FUNCTION call."
   (emmet2-engine-with-expansion
     (let ((case-fold-search nil))
       (pcase (emmet2-extensions-css-kind abbreviation css-in-js)
@@ -526,7 +546,8 @@ AT-RULE names the enclosing rule whose descriptors are available."
         ('selector
          (emmet2-css--selector abbreviation))
         (_ (emmet2-css--expand-properties (emmet2-css--program abbreviation at-rule)
-                                          css-in-js base-indent at-rule))))))
+                                          css-in-js base-indent at-rule
+                                          (emmet2-css--scale scale-functions syntax css-in-js)))))))
 
 (provide 'emmet2-css)
 ;;; emmet2-css.el ends here

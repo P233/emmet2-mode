@@ -309,8 +309,7 @@
   (unwind-protect
       (dolist (pair '(("inset-block-10" . "inset-block: -10px;")
                        ("inset-block[10px]" . "inset-block: 10px;")
-                       ("inset-block--space" . "inset-block: var(--space);")
-                       ("inset-block(2)" . "inset-block: rhythm(2);")))
+                       ("inset-block--space" . "inset-block: var(--space);")))
         (emmet2-test--with-css-completion (concat "ovh," (car pair))
           (corfu-auto--complete-deferred)
           (should completion-in-region-mode)
@@ -639,13 +638,26 @@
       (funcall exit candidate 'finished)
       (should (equal (buffer-string) ".a{ovh,tac}")))))
 
+(ert-deftest emmet2-capf-scale-functions-reach-scss-completion ()
+  (with-temp-buffer
+    (scss-mode) (insert ".a{p(1)(2)}") (backward-char)
+    (should-not (all-completions "p(1)(2)" (nth 2 (emmet2-capf))))
+    (let* ((emmet2-css-scale-functions '((t . "rhythm")))
+           (table (nth 2 (emmet2-capf)))
+           (choice (car (all-completions "p(1)(2)" table))))
+      (should (equal (plist-get (plist-get (get-text-property 0 'emmet2--choice choice) :result) :text)
+                     "padding: rhythm(1) rhythm(2);"))
+      ;; A changed option ends the table's session.
+      (setq emmet2-css-scale-functions '((t . "space")))
+      (should-not (all-completions "p(1)(2)" table)))))
+
 (ert-deftest emmet2-capf-reuses-results-with-fresh-highlights-and-choice-identities ()
   (emmet2-test--with-css-completion "in"
     (let ((expand (symbol-function 'emmet2-css--declarations)) expanded)
       (cl-letf (((symbol-function 'emmet2-css--declarations)
-                 (lambda (property at-rule)
+                 (lambda (property at-rule scale)
                    (push (emmet2-css--choice-token property) expanded)
-                   (funcall expand property at-rule))))
+                   (funcall expand property at-rule scale))))
         (let* ((data (emmet2-capf)) (table (nth 2 data))
                (exit (plist-get (nthcdr 3 data) :exit-function))
                (old (cl-find-if (lambda (candidate)
@@ -675,9 +687,9 @@
   (emmet2-test--with-css-completion "in"
     (let ((expand (symbol-function 'emmet2-css--declarations)) expanded)
       (cl-letf (((symbol-function 'emmet2-css--declarations)
-                 (lambda (property at-rule)
+                 (lambda (property at-rule scale)
                    (push (emmet2-css--choice-token property) expanded)
-                   (funcall expand property at-rule))))
+                   (funcall expand property at-rule scale))))
         (let ((table (nth 2 (emmet2-capf))))
           (all-completions "in" table)
           (should (= 1 (cl-count "inline-size" expanded :test #'equal)))

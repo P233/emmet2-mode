@@ -47,6 +47,8 @@ below belong to this release and are relative to the earlier 0.2 implementation.
 - JSX class names use `styles` for CSS Modules and `clsx` to join multiple
   classes by default. Set `emmet2-css-modules-object` and
   `emmet2-class-names-constructor` to match your project's imports.
+- Scale and rhythm values such as `p(1)` and `fz(1)` are opt-in through
+  `emmet2-css-scale-functions`, and apply only to SCSS.
 - The Deno-era functions `emmet2-expand-css`, `emmet2-expand-markup`,
   `emmet2-expand-css-in-js` and the `emmet2-detect-*` helpers are removed.
 

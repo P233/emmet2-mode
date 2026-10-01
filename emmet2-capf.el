@@ -53,7 +53,8 @@
 (defun emmet2-capf--settings (analysis)
   "Return the source settings affecting ANALYSIS's result and lifetime."
   (list emmet2-mode emmet2-markup-variant emmet2-jsx-class-style emmet2-css-modules-object
-        emmet2-class-names-constructor (emmet2-insert-render-options analysis)))
+        emmet2-class-names-constructor emmet2-css-scale-functions
+        (emmet2-insert-render-options analysis)))
 
 (defun emmet2-capf--current-p (analysis snapshot settings automatic &optional analyzed)
   "Whether ANALYSIS, SNAPSHOT and SETTINGS still describe this input revision.

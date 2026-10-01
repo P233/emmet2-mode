@@ -256,7 +256,7 @@
         (should (equal (buffer-string) (concat ".a{" input "}")))))))
 
 (ert-deftest emmet2-host-css-provider-and-builtin-share-expansion-results ()
-  (dolist (abbreviation '("m10" "m10+p.5" "bg[none]" "m--gutter" "w(2)" "posa10"
+  (dolist (abbreviation '("m10" "m10+p.5" "bg[none]" "m--gutter" "p1-2" "posa10"
                           "ct['']" "ins32"))
     (ert-info (abbreviation)
       (with-temp-buffer

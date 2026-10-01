@@ -43,6 +43,23 @@ imported in the source file, such as clsx or cx.  A single class uses the
 CSS Modules reference directly."
   :type 'string :safe #'stringp :group 'emmet2)
 
+(defcustom emmet2-css-scale-functions nil
+  "Sass functions for parenthesized SCSS values, such as p(1)(2).
+Each entry is (PROPERTY . FUNCTION); PROPERTY t applies to every other
+property.  Each (N) group becomes FUNCTION(N).  A zero group stays 0, except
+for font-size, whose scale step 0 is the base size.  For example,
+\\='((\"font-size\" . \"ms\") (t . \"rhythm\")) expands p(0)(2) to
+padding: 0 rhythm(2).  nil offers no such values."
+  :type '(alist :key-type (choice (const :tag "Other properties" t) string)
+                :value-type string)
+  :safe (lambda (value)
+          (and (proper-list-p value)
+               (seq-every-p (lambda (entry)
+                              (and (consp entry) (or (eq (car entry) t) (stringp (car entry)))
+                                   (stringp (cdr entry))))
+                            value)))
+  :group 'emmet2)
+
 (defun emmet2--output-syntax (analysis)
   "Return the syntax of ANALYSIS's final output under current project options."
   (pcase (plist-get analysis :lang)
@@ -69,7 +86,8 @@ revalidates host context and rejects stale candidates before insertion."
               :class-names-constructor emmet2-class-names-constructor options))
       ('css
        (apply #'emmet2-extensions-css abbreviation :syntax (plist-get analysis :syntax)
-              :at-rule (plist-get analysis :at-rule) options))
+              :at-rule (plist-get analysis :at-rule) :scale-functions emmet2-css-scale-functions
+              options))
       ('css-in-js
        (apply #'emmet2-extensions-css abbreviation :css-in-js t
               :at-rule (plist-get analysis :at-rule) options)))))
@@ -84,7 +102,7 @@ Each choice carries its result, menu label and matching query together."
           (apply #'emmet2-css-completions abbreviation
                  :css-in-js (eq (plist-get analysis :lang) 'css-in-js)
                  :syntax (plist-get analysis :syntax) :at-rule (plist-get analysis :at-rule)
-                 :limit limit :previous previous
+                 :scale-functions emmet2-css-scale-functions :limit limit :previous previous
                  :declaration-start (eq (plist-get analysis :position) 'declaration-start)
                  (emmet2-insert-render-options analysis))
         (let ((result (emmet2-expand-analysis analysis)))

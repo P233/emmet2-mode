@@ -299,10 +299,20 @@ become strings. Leading zeros stay literal: `p[010px]` gives `padding: "010px"`.
 
 ### Scale and rhythm functions
 
-`fz(...)` emits `ms(...)`; other properties use `rhythm(...)`, with `(0)` kept
-as `0`. These are project conventions: your stylesheet build must provide both
-functions, for example `rhythm()` from [rhythm-sass](https://github.com/P233/rhythm-sass)
-and your own `ms()` scale helper.
+Parenthesized numbers can become Sass function calls. This is off by default,
+because your stylesheet build must provide the functions, for example `rhythm()`
+from [rhythm-sass](https://github.com/P233/rhythm-sass) and your own `ms()` scale
+helper. Set `emmet2-css-scale-functions` to map properties to functions; `t`
+covers the remaining properties. It applies to SCSS only, not to plain CSS or
+CSS-in-JS. A zero stays `0`, except for `font-size`, whose scale step 0 is the
+base size.
+
+```elisp
+;; .dir-locals.el
+((nil . ((emmet2-css-scale-functions . (("font-size" . "ms") (t . "rhythm"))))))
+```
+
+With that setting:
 
 | Abbreviation | Expansion |
 | --- | --- |
@@ -390,6 +400,7 @@ can set `emmet2-jsx-class-style` to `plain` instead of typing `_` each time.
 | `emmet2-css-modules-object` | `"styles"` | With `css-modules`: import name or object reference, such as `cardStyles` or `styles.module` |
 | `emmet2-class-names-constructor` | `"clsx"` | With `css-modules`: function reference for joining classes, such as `cx` or `helpers.cx` |
 | `emmet2-markup-variant` | `nil` | Detect HTML/JSX from context; `"solid"` emits Solid JSX, with `class` instead of `className`, in every markup context |
+| `emmet2-css-scale-functions` | `nil` | SCSS [scale and rhythm functions](#scale-and-rhythm-functions) |
 
 Set these globally with `setq` or per project in `.dir-locals.el`.
 Keep `emmet2-markup-variant` project-local: `"solid"` changes all markup output,
@@ -422,6 +433,8 @@ Host integrations and pure expansion interfaces are documented in [API.md](API.m
 - Remove the Deno, `deno-bridge` and `websocket` configuration, then restart Emacs.
 - Accept choices from automatic completion to expand abbreviations. If you keep
   a manual completion key, replace `emmet2-expand` with `emmet2-complete`.
+- Scale and rhythm values such as `p(1)` are opt-in; set
+  `emmet2-css-scale-functions` to keep them.
 - Replace `:files (:defaults "*.ts" "src" "data")` with `:files (:defaults "data")`.
 - CSS properties now leave an empty value field; replace value presets such as
   `lg` with property-and-value queries such as `bgilg`.

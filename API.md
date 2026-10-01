@@ -128,6 +128,11 @@ Search and expansion share a one-second deadline; expiry signals
 joined by `:class-names-constructor` (`:class-style 'css-modules`, the default).
 `:class-style 'plain`, or a leading `_` in the abbreviation, keeps them a string.
 
+`emmet2-extensions-css` writes SCSS values such as `p(1)` as Sass calls only when
+`:scale-functions` maps the property, as in `emmet2-css-scale-functions`;
+otherwise they are parse errors. `emmet2-expand-analysis` passes the
+corresponding user options.
+
 Choices are independently expandable strings for one property, pseudo chain or
 at-rule. Returned strings may contain a separator preserving an otherwise ambiguous
 property/value boundary; treat them as opaque expandable choices. The CSS pipeline
