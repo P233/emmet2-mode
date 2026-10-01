@@ -77,6 +77,9 @@ below belong to this release and are relative to the earlier 0.2 implementation.
   `emmet2-expand-analysis` for synchronous expansion.
 - Enclosing at-rules select descriptor names and values through the same CSS
   data, search and expansion paths as ordinary properties.
+- Property values complete fuzzily with documentation, and accepting a function
+  places point inside its parentheses. In CSS Base modes this replaces
+  css-mode's own value list for known properties.
 - `emmet2-css-in-js-attributes` and `emmet2-css-in-js-functions` add style-object
   hosts such as `sx={{...}}` or `css({...})`.
 - A leading `_` keeps an abbreviation's JSX classes as a string, as in `_.a.b`

@@ -117,11 +117,22 @@ With [automatic completion](#corfu-and-yasnippet) enabled in your frontend:
 You can keep point anywhere inside the abbreviation. Your completion frontend
 controls whether a sole match is accepted automatically.
 
-CSS property values also match fuzzily: `display: if` offers `inline-flex`.
-Accepting a function such as `calc()` places point inside its parentheses;
-`css2-mode` / `scss2-mode` use TAB to leave the parentheses, then skip the
-declaration's semicolon. Value completion creates no snippet fields. CSS Base
-modes share the matching and initial cursor placement.
+CSS property values also match fuzzily, with documentation: `display: if`
+offers `inline-flex`. Accepting a function such as `calc()` places point inside
+its parentheses; `css2-mode` / `scss2-mode` use TAB to leave the parentheses,
+then skip the declaration's semicolon. Value completion creates no snippet fields.
+
+In CSS Base modes such as `css-mode`, `scss-mode` and `less-css-mode`, this value
+completion runs before css-mode's own `css-completion-at-point` and replaces its
+value list for known properties, which matches only by prefix and shows no
+documentation. Other positions are unaffected. To keep css-mode's value
+completion instead:
+
+```elisp
+(add-hook 'emmet2-mode-hook
+          (lambda ()
+            (remove-hook 'completion-at-point-functions #'emmet2-css-value-capf t)))
+```
 
 | Context | Abbreviation | Result |
 | --- | --- | --- |
@@ -140,7 +151,7 @@ modes share the matching and initial cursor placement.
   abbreviations such as `ul>li*3` and standalone tags such as `div`.
 - **CSS and SCSS:** type property abbreviations at the start of a declaration
   inside braces. Pseudos and at-rules also work at the stylesheet root.
-  Existing property values use your language mode's completion.
+  Property values offer value completion, not abbreviations.
 - **Embedded styles:** `<style>` and `style=""` use CSS output; JSX `style={{...}}`
   and objects passed to `StyleSheet.create(...)` or `createTheme(...)` use
   camelCase properties and JavaScript values. Add other style attributes and
@@ -433,7 +444,7 @@ and `css({m10})` expands to `css({margin: 10})`; the project must provide
 - No automatic popup: enable the frontend's automatic completion, check its prefix
   threshold, and try `M-x emmet2-complete` for a diagnostic.
 - No Emmet choice: check the [allowed contexts](#where-to-type-abbreviations).
-  Existing property values and comments belong to the language mode.
+  Property values offer value completion; comments belong to the language mode.
 - No choice inside a style object: add its attribute or function to
   `emmet2-css-in-js-attributes` or `emmet2-css-in-js-functions`.
 - Missing tree-sitter grammar: install the grammar for the host listed above.
