@@ -42,9 +42,13 @@
 
 (defun emmet2-corfu--enable ()
   "Install the category-scoped display adapter without loading Corfu.
-Repeated installation is idempotent, including after package unload."
-  (advice-add 'corfu--format-candidates :filter-args #'emmet2-corfu--rows)
-  (advice-add 'corfu--candidates-popup :around #'emmet2-corfu--anchor))
+Repeated installation is idempotent, including after package unload.  An
+installed advice is left in place; re-adding it would move it outside advice
+added later by the user."
+  (unless (advice-member-p #'emmet2-corfu--rows 'corfu--format-candidates)
+    (advice-add 'corfu--format-candidates :filter-args #'emmet2-corfu--rows))
+  (unless (advice-member-p #'emmet2-corfu--anchor 'corfu--candidates-popup)
+    (advice-add 'corfu--candidates-popup :around #'emmet2-corfu--anchor)))
 
 (defun emmet2-corfu-unload-function ()
   "Remove the optional Corfu advice owned by this module."
