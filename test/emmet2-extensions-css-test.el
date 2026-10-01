@@ -58,6 +58,14 @@ declaration or implicit ampersand.")
   (dolist (abbr '("bd[solid]" "gtc[1fr 1fr]" "c--primary" "m(2)"))
     (should-not (plist-get (emmet2-extensions-css abbr :scale-functions emmet2-css-test--scale) :fields))))
 
+(ert-deftest emmet2-css-authored-values-keep-the-best-property ()
+  ;; A value need not be a keyword; the property abbreviation still expands.
+  (dolist (pair '(("ff-inter" . "font-family: inter;") ("bgc-brand" . "background-color: brand;")
+                  ("anim-fade" . "animation: fade;") ("c-brand10" . "color: brand 10px;")
+                  ("t-a" . "top: auto;") ("inset-b10" . "inset-block: 10px;") ("dN" . "display: none;")))
+    (ert-info ((car pair))
+      (should (equal (plist-get (emmet2-extensions-css (car pair) :syntax 'css) :text) (cdr pair))))))
+
 (ert-deftest emmet2-css-scale-functions-are-opt-in-sass ()
   (should-error (emmet2-extensions-css "p(1)") :type 'emmet2-parse-error)
   (dolist (case '(("p(0)(2)" "padding: 0 rhythm(2);") ("fz(0)" "font-size: ms(0);")
