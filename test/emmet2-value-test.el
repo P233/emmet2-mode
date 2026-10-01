@@ -34,6 +34,23 @@
 			     (undo-only 1)
 			     (should (equal (buffer-string) ".a { display: if; }")))))
 
+(ert-deftest emmet2-value-sole-fuzzy-match-completes ()
+  ;; wp is not a prefix of swap, yet swap is the only match.
+  (with-temp-buffer
+    (css-mode) (insert "@font-face { font-display: wp; }") (search-backward ";")
+    (emmet2-mode 1)
+    (completion-at-point)
+    (should (equal (buffer-string) "@font-face { font-display: swap; }"))
+    (should (looking-at ";"))))
+
+(ert-deftest emmet2-value-sole-match-replaces-the-whole-field ()
+  ;; Text after point matched inside the candidate is not appended again.
+  (with-temp-buffer
+    (css-mode) (insert "@font-face { font-display: wa; }") (search-backward "a;")
+    (emmet2-mode 1)
+    (completion-at-point)
+    (should (equal (buffer-string) "@font-face { font-display: swap; }"))))
+
 (ert-deftest emmet2-value-function-cursor-and-undo-without-snippet-fields ()
   (dolist (yas '(nil t))
     (emmet2-value-test--with #'css-mode ".a { width: cal|; }"

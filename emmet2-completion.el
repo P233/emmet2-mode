@@ -109,13 +109,11 @@ input unless every candidate extends it the same way."
                        input))
              (merged (concat result
                              (emmet2-completion--merge-suffix result suffix fold))))
-        (cond
-         ((cdr pairs) (cons merged (length result)))
-         ;; The whole field is its only candidate; point belongs after it.
-         ((and (equal merged string) (= point (length string))) t)
-         ((eq t (compare-strings merged nil nil (car spellings) nil nil fold))
-          (cons merged (length merged)))
-         (t (cons merged (length result))))))))
+        (if (cdr pairs) (cons merged (length result))
+          ;; A sole match replaces the whole field; matching found the text after point in it.
+          (let ((spelling (car spellings)))
+            (if (and (equal spelling string) (= point (length string))) t
+              (cons spelling (length spelling)))))))))
 
 (add-to-list 'completion-styles-alist
              '(emmet2-name emmet2-completion--style-try emmet2-completion--style-all
