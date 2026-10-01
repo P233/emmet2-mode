@@ -152,7 +152,6 @@ Hosts own subsequent navigation; this callback creates no snippet fields."
             (if (eq action 'metadata) metadata
               (complete-with-action action names string predicate)))
           :exclusive t :company-prefix-length prefix
-          :company-kind (lambda (_) 'value)
           :annotation-function (lambda (_) annotation)
           :company-docsig (lambda (candidate) (or (cdr (assoc candidate entries)) candidate))
           :exit-function

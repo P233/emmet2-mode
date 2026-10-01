@@ -28,6 +28,18 @@
           (undo-only 1)
           (should (equal (buffer-string) ".a{ta}")))))))
 
+(ert-deftest emmet2-corfu-rows-stay-plain-text-with-margin-formatters ()
+  (emmet2-test--with-css-completion "ta"
+    (let ((corfu-max-width 40)
+          (corfu-margin-formatters (list (lambda (_metadata) (lambda (_candidate) "[I] "))))
+          shown)
+      (cl-letf (((symbol-function 'corfu--popup-show)
+                 (lambda (&rest arguments) (setq shown arguments))))
+        (corfu-auto--complete-deferred)
+        (should (= (nth 1 shown) 0))
+        (should (member "text-align: center;" (mapcar #'substring-no-properties (nth 3 shown))))
+        (should-not (seq-some (lambda (line) (string-search "[I]" line)) (nth 3 shown)))))))
+
 (ert-deftest emmet2-corfu-anchor-refresh-and-new-session ()
   (emmet2-test--with-css-completion "ta"
     (let ((start (point)) shown)

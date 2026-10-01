@@ -85,6 +85,9 @@ below belong to this release and are relative to the earlier 0.2 implementation.
 
 ### Fixes included during development
 
+- Keep Emmet choice labels visible with Corfu icon margin formatters such as
+  kind-icon or nerd-icons-corfu. Emmet and value choices declare no completion
+  kind and stay plain text.
 - Keep numeric CSS properties such as `order`, `column-count`, Grid line numbers
   and SVG opacity unitless in direct expansion, completion and CSS-in-JS.
 - Keep full CSS property names such as `clip` consistent between direct

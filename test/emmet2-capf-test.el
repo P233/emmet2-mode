@@ -103,9 +103,11 @@
           (should (equal (get-text-property 0 'display (car row)) ""))
           (should (equal (cadr row)
                          (string-join (make-list 5 "<p>界😀abcdefghijklmnop</p>") " ")))
+          (should (equal (get-text-property 0 'emmet2--label (car row)) (cadr row)))
           (should (equal (caddr row) "")))
         (should-not (plist-member props :annotation-function))
-        (should (eq (funcall (plist-get props :company-kind) abbr) 'snippet))
+        ;; Plain-text rows: no kind, so icon margin formatters stay inactive.
+        (should-not (plist-member props :company-kind))
         (should-not (plist-member props :company-prefix-length))
         (should (= calls 1))
         (should (equal (buffer-string) abbr))))))

@@ -60,8 +60,9 @@ for **TAB** navigation and linked fields. Both are optional packages that you
 install and configure in your Emacs setup.
 
 Emmet2 automatically adapts its Corfu rows to show expansion labels in the main
-column, honoring your width limit. Each popup stays at its initial cursor
-position while typing. Other completion providers keep their normal display.
+column, honoring your width limit. Rows stay plain text, without icons from
+packages such as kind-icon or nerd-icons-corfu. Each popup stays at its initial
+cursor position while typing. Other completion providers keep their normal display.
 
 The following example uses straight.el and use-package:
 

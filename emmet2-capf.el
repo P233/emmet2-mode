@@ -231,7 +231,6 @@ can still accept the first expansion."
                          string
                        (complete-with-action action candidates string predicate)))))))
              :exclusive 'no
-             :company-kind (lambda (_) 'snippet)
              :company-doc-buffer
              (lambda (candidate)
                (emmet2-capf--guard quiet (invalidate)
@@ -246,12 +245,13 @@ can still accept the first expansion."
                  ;; Validate once for this synchronous display batch, not for each row.
                  (let ((entries (and (member abbreviation candidates) (expanded))))
                    (mapcar (lambda (candidate)
-                             ;; Preserve the candidate and its choice identity for native
-                             ;; *Completions* too.  Only this display copy is concealed.
-                             (list (propertize candidate 'display "")
-                                   (if-let* ((entry (and (equal candidate abbreviation)
-                                                         (choice candidate entries))))
-                                       (copy-sequence (plist-get entry :display)) "") ""))
+                             (let ((label (if-let* ((entry (and (equal candidate abbreviation)
+                                                                (choice candidate entries))))
+                                              (copy-sequence (plist-get entry :display)) "")))
+                               ;; Preserve the candidate and its choice identity for native
+                               ;; *Completions* too.  Only this display copy is concealed; it
+                               ;; also carries the label past frontend margin formatters.
+                               (list (propertize candidate 'display "" 'emmet2--label label) label "")))
                            candidates))))
              :exit-function
              (lambda (candidate status)

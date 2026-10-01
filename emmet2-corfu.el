@@ -15,10 +15,15 @@
   "Move Emmet labels to the main display column in Corfu's ARGUMENTS."
   (if (eq (corfu--metadata-get 'category) 'emmet2)
       ;; CAPF affixes keep candidate identities intact for other frontends.
-      ;; Only Corfu's display copy uses the label as the main column.
+      ;; Only Corfu's display copy uses the label as the main column.  Margin
+      ;; formatters such as icon packages replace the prefix, so rows read the
+      ;; label from the candidate and stay plain text.
       (let ((width (min corfu-max-width (- (frame-width) 4))))
         (list (mapcar (lambda (row)
-                        (list (truncate-string-to-width (cadr row) width nil nil "…") "" ""))
+                        (list (truncate-string-to-width
+                               (or (get-text-property 0 'emmet2--label (car row)) (cadr row))
+                               width nil nil "…")
+                              "" ""))
                       (car arguments))))
     arguments))
 
