@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Fixed-version result adapter for the offline development oracle.
 import expandAbbreviation, {
-  parseStylesheet,
   parseMarkup,
   resolveConfig,
   stringifyMarkup,
-  stringifyStylesheet,
 } from "../vendor/emmet-2.4.11.mjs";
 import { transformClasses } from "./jsx.mjs";
 
@@ -66,12 +64,13 @@ export function expand(abbreviation, {
       typeof indent !== "string" || typeof baseIndent !== "string") {
     throw new TypeError("Abbreviation and indentation must be strings");
   }
-  if (!["html", "jsx", "stylesheet"].includes(preset)) {
+  // Stylesheet output is project-owned and no longer compared with Emmet.
+  if (!["html", "jsx"].includes(preset)) {
     throw new TypeError(`Unknown preset: ${preset}`);
   }
   if (jsx && preset !== "jsx") throw new TypeError("JSX extensions require the JSX preset");
 
-  let localFields = [];
+  const localFields = [];
   const options = {
     "output.indent": indent,
     "output.baseIndent": baseIndent,
@@ -84,47 +83,29 @@ export function expand(abbreviation, {
     Object.assign(options, {
       "output.selfClosingStyle": "xhtml",
       "jsx.enabled": true,
-      "markup.attributes": { class: jsx ? jsx.classAttribute : "classList" },
+      // Keep upstream attribute names, but preserve the project's authored
+      // multiple-value expressions: it has never enabled styleName/prefixing.
+      "markup.attributes": {
+        ...resolveConfig({ type: "markup", syntax: "jsx" }).options["markup.attributes"],
+        "class*": jsx?.classAttribute ?? "className",
+        ...(jsx?.classAttribute === "class" && { class: "class", for: "for" }),
+      },
+      "markup.valuePrefix": {},
     });
-  } else if (preset === "stylesheet") {
-    options["stylesheet.floatUnit"] = "rem";
   }
 
+  const syntax = preset === "jsx" ? "jsx" : "html";
   let text;
   let fields;
   try {
-    if (preset === "stylesheet") {
-      const config = resolveConfig({ type: "stylesheet", options });
-      const nodes = parseStylesheet(abbreviation, config);
-      const separator = config.options["output.format"]
-        ? config.options["output.newline"] + baseIndent
-        : "";
-      const parts = [];
-      fields = [];
-      let length = 0;
-      let nextIndex = 1;
-      for (const node of nodes) {
-        if (parts.length) length += separator.length;
-        localFields = [];
-        const part = stringifyStylesheet([node], config);
-        nextIndex = renumber(localFields, nextIndex);
-        for (const field of localFields) {
-          fields.push({ ...field, offset: field.offset + length });
-        }
-        parts.push(part);
-        length += part.length;
-      }
-      text = parts.join(separator);
+    if (jsx) {
+      const config = resolveConfig({ type: "markup", syntax, options });
+      text = stringifyMarkup(transformClasses(parseMarkup(abbreviation, config), jsx), config);
     } else {
-      if (jsx) {
-        const config = resolveConfig({ type: "markup", options });
-        text = stringifyMarkup(transformClasses(parseMarkup(abbreviation, config), jsx), config);
-      } else {
-        text = expandAbbreviation(abbreviation, { type: "markup", options });
-      }
-      renumber(localFields, 1);
-      fields = localFields;
+      text = expandAbbreviation(abbreviation, { type: "markup", syntax, options });
     }
+    renumber(localFields, 1);
+    fields = localFields;
   } catch (error) {
     // Both upstream scanners identify parse errors by pos; token-parser
     // errors do not carry the source string found on character-scanner errors.

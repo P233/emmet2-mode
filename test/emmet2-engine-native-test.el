@@ -7,9 +7,8 @@
 (ert-deftest emmet2-native-entry-presets-and-layout ()
   (should (equal (emmet2-engine-expand "div>span" :indent "  " :base-indent " ")
                  '(:text "<div><span></span></div>" :fields ((11 11 1 "")) :cursor 11)))
-  (should (equal (emmet2-engine-expand "c+bg" :preset 'stylesheet :base-indent "  ")
-                 '(:text "color: #000;\n  background: #000;"
-                         :fields ((7 11 1 "#000") (27 31 2 "#000")) :cursor 7)))
+  (should (equal (emmet2-engine-expand "color+background" :preset 'stylesheet :base-indent "  ")
+                 '(:text "color: ;\n  background: ;" :fields ((7 7 1 "") (23 23 2 "")) :cursor 7)))
   (should (equal (emmet2-engine-expand ".btn-primary" :preset 'jsx
                                       :jsx '(:classAttribute "className" :cssModulesObject "css" :classConstructor ""))
                  '(:text "<div className={css[\"btn-primary\"]}></div>"
@@ -43,15 +42,15 @@
   (should (equal (plist-get (emmet2-engine-expand "div{after}") :text) "<div>after</div>")))
 
 (ert-deftest emmet2-native-entry-handwritten-fields-and-permissive-input ()
-  (should (equal (emmet2-engine-expand "c+bg" :preset 'stylesheet)
-                 '(:text "color: #000;\nbackground: #000;"
-                         :fields ((7 11 1 "#000") (25 29 2 "#000")) :cursor 7)))
+  (should (equal (emmet2-engine-expand "color+background" :preset 'stylesheet)
+                 '(:text "color: ;\nbackground: ;" :fields ((7 7 1 "") (21 21 2 "")) :cursor 7)))
   (should (equal (plist-get (emmet2-engine-expand "div{😀}") :text) "<div>😀</div>"))
-  (should (equal (emmet2-engine-expand "p${9007199254740992:x}-${9007199254740993:x}" :preset 'stylesheet)
+  (should (equal (emmet2-engine-expand "padding${9007199254740992:x}-${9007199254740993:x}" :preset 'stylesheet)
                  '(:text "padding: x x;" :fields ((9 10 1 "x") (11 12 1 "x")) :cursor 9)))
   (should (stringp (plist-get (emmet2-engine-expand "a{") :text)))
   (should (stringp (plist-get (emmet2-engine-expand "ul>") :text)))
-  (should-error (emmet2-engine-expand "tn[all 0.3s]" :preset 'stylesheet) :type 'emmet2-parse-error)
+  ;; Raw values belong to the extension layer; the core tokenizer rejects them.
+  (should-error (emmet2-engine-expand "top[all 0.3s]" :preset 'stylesheet) :type 'emmet2-parse-error)
   ;; The pinned CSS parser cannot attach a position after consuming a
   ;; delimiter-only input; preserve backend-error instead of inventing one.
   (dolist (input '(":" "-" "," ":-" "+:"))

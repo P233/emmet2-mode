@@ -1,31 +1,62 @@
-;;; emmet2-fuzzy-test.el --- Scoring contract tests -*- lexical-binding: t; -*-
+;;; emmet2-fuzzy-test.el --- Project search contracts -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 (require 'ert)
 (require 'emmet2-fuzzy)
 
-(ert-deftest emmet2-fuzzy-upstream-scoring ()
-  ;; Independent arithmetic anchors for the published algorithm, including
-  ;; its repeated-character position reuse and unmatched suffix semantics.
-  (dolist (case '(("" "" nil 1) ("" "x" nil 0) ("a" "" nil 0)
-                  ("a" "b" nil 0) ("AB" "ab" nil 1)
-                  ("abd" "abcde" nil 0.55) ("abd" "abc-de" nil 0.5)
-                  ("ab" "abc" nil 0.6666666666666666)
-                  ("ax" "ab" nil 0) ("ax" "ab" t 0.3333333333333333)
-                  ("abcx" "abc" nil 0) ("abcx" "abc" t 0.75)
-                  ("abb" "abc" nil 1.1666666666666667)))
-    (pcase-let ((`(,a ,b ,partial ,expected) case))
-      (should (< (abs (- (emmet2-fuzzy-score a b partial) expected)) 1e-12)))))
+(ert-deftest emmet2-fuzzy-ordered-characters-and-positions ()
+  (dolist (case '(("ins" "inset" (0 1 2))
+                  ("IS" "inline-size" (0 7))
+                  ("size" "inline-size" (7 8 9 10))
+                  ("bb" "a-bb" (2 3))
+                  ("aa" "a-aa" (0 2))
+                  ("😀c" "😀abc" (0 3))))
+    (let* ((query (nth 0 case)) (candidate (nth 1 case))
+           (match (emmet2-fuzzy-match query candidate)))
+      (should (equal (plist-get match :positions) (nth 2 case)))
+      (should (< 0 (plist-get match :score) 1))))
+  (dolist (case '(("" "") ("" "x") ("a" "") ("abb" "abc")
+                  ("ba" "ab") ("xyz" "inset")))
+    (should-not (emmet2-fuzzy-match (car case) (cadr case)))))
 
-(ert-deftest emmet2-fuzzy-selection-contract ()
-  (should (equal (emmet2-fuzzy-find "ab" '("abc" "abd")) "abd"))
+(ert-deftest emmet2-fuzzy-ranking-and-stable-ties ()
+  (let ((query "is") (ordered '("is" "isolation" "inline-size" "border-island" "inset")))
+    (cl-loop for (a b) on ordered while b
+             do (should (> (emmet2-fuzzy-score query a) (emmet2-fuzzy-score query b)))))
+  (should (= (emmet2-fuzzy-score "AB" "ab") 1.0))
+  (should (equal (emmet2-fuzzy-find "ab" '("abc" "abd")) "abc"))
   (should (equal (emmet2-fuzzy-find "ab" '("AB" "ab")) "AB"))
-  (should-not (emmet2-fuzzy-find "ab" '("abc") 0.7))
-  (should-not (emmet2-fuzzy-find "x" '("abc")))
-  (should (equal (emmet2-fuzzy-find "abcx" '("abc") 0.7 t) "abc"))
-  (should (equal (emmet2-fuzzy-find "ab" '(("abc" . 1) ("abd" . 2)) nil nil #'car)
-                 '("abd" . 2))))
+  (should-not (emmet2-fuzzy-find "ab" '("abc") 0.99))
+  (should (equal (emmet2-fuzzy-find "is" '(("inset" . 1) ("inline-size" . 2)) nil nil #'car)
+                 '("inline-size" . 2))))
+
+(ert-deftest emmet2-fuzzy-partial-is-explicit-and-never-reuses-characters ()
+  (should-not (emmet2-fuzzy-match "ovh" "ov"))
+  (should (equal (plist-get (emmet2-fuzzy-match "ovh" "ov" t) :positions) '(0 1)))
+  (should (< 0 (emmet2-fuzzy-score "ovh" "ov" t) 1))
+  (should (equal (plist-get (emmet2-fuzzy-match "abb" "abc" t) :positions) '(0 1))))
+
+(ert-deftest emmet2-fuzzy-filter-keeps-input-and-requires-complete-query ()
+  (let* ((items '(("inset" . 1) ("inline-size" . 2) ("insert" . 3)))
+         (before (copy-tree items)))
+    (should (equal (mapcar #'car (emmet2-fuzzy-filter "ins" items #'car))
+                   '("inset" "insert" "inline-size")))
+    (should-not (emmet2-fuzzy-filter "insetzz" items #'car))
+    (should (equal items before))
+    (should (equal items (emmet2-fuzzy-filter "" items #'car)))
+    (should-not (eq items (emmet2-fuzzy-filter "" items #'car)))))
+
+(ert-deftest emmet2-fuzzy-long-literal-match-keeps-only-viable-columns ()
+  (let* ((tail (make-string 4095 ?A))
+         (query (concat "m" tail)) (candidate (concat "m: " tail ";"))
+         (allocate (symbol-function 'make-vector)))
+    (cl-letf (((symbol-function 'make-vector)
+               (lambda (length initial)
+                 (should (<= length 4))
+                 (funcall allocate length initial))))
+      (should (equal (plist-get (emmet2-fuzzy-match query candidate) :positions)
+                     (cons 0 (number-sequence 3 (+ 2 (length tail)))))))))
 
 (provide 'emmet2-fuzzy-test)
 ;;; emmet2-fuzzy-test.el ends here

@@ -5,6 +5,11 @@
 (require 'json)
 (require 'emmet2-engine)
 
+(defun emmet2-core-test--result (result)
+  "Return the expansion plist that upstream RESULT describes."
+  (list :text (alist-get 'text result) :fields (alist-get 'fields result)
+        :cursor (alist-get 'cursor result)))
+
 (defun emmet2-core-test--json (path)
   "Read JSON PATH relative to the repository root."
   (with-temp-buffer
@@ -12,11 +17,11 @@
     (json-parse-buffer :object-type 'alist :array-type 'list)))
 
 (defun emmet2-core-test--check (expand)
-  "Check all frozen core results and errors through EXPAND."
+  "Check all frozen core results and errors through EXPAND.
+Only markup is compared with Emmet; stylesheet output is project-owned."
   (let ((inputs (emmet2-core-test--json "test/fixtures/core-inputs.json"))
         (expected (make-hash-table :test #'equal)) (checked 0))
-    (dolist (entry (append (emmet2-core-test--json "test/fixtures/oracle/markup.json")
-                          (emmet2-core-test--json "test/fixtures/oracle/stylesheet.json")))
+    (dolist (entry (emmet2-core-test--json "test/fixtures/oracle/markup.json"))
       (puthash (alist-get 'id entry) entry expected))
     (dolist (input inputs)
       (let* ((id (alist-get 'id input)) (entry (gethash id expected))
@@ -35,8 +40,7 @@
               (let ((error (should-error (apply expand arguments) :type 'emmet2-parse-error)))
                 (should (equal (cdr error) (list (alist-get 'message failure) (alist-get 'position failure)))))
             (should (equal (apply expand arguments)
-                           (list :text (alist-get 'text wanted) :fields (alist-get 'fields wanted)
-                                 :cursor (alist-get 'cursor wanted))))))
+                           (emmet2-core-test--result wanted)))))
         (cl-incf checked)))
     (should (= checked (hash-table-count expected)))
     (should (> checked 0))))

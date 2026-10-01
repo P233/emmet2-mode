@@ -3,12 +3,32 @@
   "commit": "01df47ad7cc0b140624fc941ff57618c36ed46a1",
   "schemaVersion": 1.1,
   "counts": {
+    "properties": 888,
     "atDirectives": 25,
     "pseudoClasses": 111,
     "pseudoElements": 90
   },
   "files": {
     "web-data/data/browsers.css-data.json": "556472347738581a7670849db10f5128198d34ee2162e1e1b375498bd1bfa6c2",
+    "web-data/data/browsers.html-data.json": "6b2649872362782e43b13f544550ca455db62c4b97f0c91e5f0d59787b50f04c",
     "LICENSE": "9906940f61b1f0b533fa7d99baf55178b2808fbe113ea51dfbfad8572ccd5f2b"
+  },
+  "html": {
+    "schemaVersion": 1.1,
+    "counts": {
+      "tags": 116
+    }
+  },
+  "mdn": {
+    "repository": "https://github.com/mdn/data",
+    "tag": "v2.37.0",
+    "commit": "3a465f974817d680aaeee81acb446464c8c4baa7",
+    "counts": {
+      "syntaxes": 378
+    },
+    "files": {
+      "css/syntaxes.json": "14217403b8b4909b9c9be17c6e20cdc69d56d7255c6ff2b5991767f206f07058",
+      "LICENSE": "36ffd9dc085d529a7e60e1276d73ae5a030b020313e6c5408593a6ae2af39673"
+    }
   }
 }

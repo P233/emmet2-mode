@@ -27,6 +27,7 @@
     "::view-transition-new",
     "::view-transition-old"
   ],
+  "pseudoOptionalFunctions": [":host", ":current", "::cue", "::cue-region"],
   "pseudoAliases": {
     ":fu": ":focus",
     ":hv": ":hover",
@@ -157,5 +158,21 @@
       "text": "@include ",
       "cursor": 9
     }
+  },
+  "wordAliases": {
+    "bg": "background",
+    "bd": "border",
+    "bx": "box",
+    "fx": "flex",
+    "trf": "transform",
+    "trs": "transition",
+    "ol": "outline",
+    "rs": "radius"
+  },
+  "propertyAliases": {
+    "b": "bottom",
+    "ct": "content",
+    "fz": "font-size",
+    "bxz": "box-sizing"
   }
 }

@@ -27,8 +27,9 @@
             (with-temp-buffer
               (insert-file-contents-literally (expand-file-name name emmet2-test-root))
               (secure-hash 'sha256 (current-buffer)))))
-    '("emmet2-context.el" "emmet2-extract.el" "emmet2-engine.el"
-      "test/bootstrap.el" "test/bench-context.el"))))
+    '("emmet2-context-web.el" "emmet2-context-js.el" "emmet2-context-css.el" "emmet2-context.el" "emmet2-extract.el" "emmet2-engine.el"
+      "emmet2-css-search.el" "data/css-index.json" "data/css-overrides.json"
+      "test/bootstrap.el" "test/bench-context.el" "test/dependencies.json"))))
 
 (defun emmet2-bench--command (program &rest args)
   "Capture successful PROGRAM output with ARGS."
@@ -53,12 +54,12 @@
                     (_ "    <section>ul>li*3│</section>\n")))
           (insert "\n  </main>\n);\n"))
       (dotimes (i (if (eq kind 'web-large-style) 0 (- file-lines 1)))
-        (insert (if (eq kind 'css)
+        (insert (if (memq kind '(css css-ts scss less))
                     (format ".b%d { margin: 0; }\n" i)
                   (format "<p>row %d</p>\n" i))))
       (insert
        (pcase kind
-         ('css ".last{m10│}\n")
+         ((or 'css 'css-ts 'scss 'less) ".last{m10│}\n")
          ('web-markup "<main>ul>li*3│</main>\n")
          ('web-css "<style>.last{m10│}</style>\n")
          ('web-large-style
@@ -72,7 +73,9 @@
             (concat "<style>" body "/*" (make-string padding ?x) "*/\n" ending "</style>\n"))))))
     (goto-char (point-min)) (search-forward "│") (delete-char -1)
     (let ((position (point))
-          (mode (cond (tsx 'tsx-ts-mode) ((eq kind 'css) 'css-mode) (t 'web-mode)))
+          (mode (if tsx 'tsx-ts-mode
+                  (pcase kind ('css 'css-mode) ('css-ts 'css-ts-mode)
+                         ('scss 'scss-mode) ('less 'less-css-mode) (_ 'web-mode))))
           (source (buffer-string)) (t0 (current-time)))
       (setq buffer-file-name (if tsx "/tmp/emmet2-benchmark.tsx" "/tmp/emmet2-benchmark.html"))
       (funcall mode)
@@ -83,7 +86,7 @@
             :lines (count-lines (point-min) (point-max)) :bytes (string-bytes source)
             :sha256 (secure-hash 'sha256 source) :part-bytes part-bytes
             :expected-lang (pcase kind ('tsx-style 'css-in-js) ('tsx-negative nil)
-                                  ((or 'css 'web-css 'web-large-style) 'css) (_ 'markup))
+                                  ((or 'css 'css-ts 'scss 'less 'web-css 'web-large-style) 'css) (_ 'markup))
             :abbr (pcase kind ('tsx-negative nil) ((or 'tsx-markup 'web-markup) "ul>li*3") (_ "m10"))))))
 
 (defun emmet2-bench--verify (result spec &optional changed)
@@ -198,7 +201,7 @@ At most five owned buffers survive until this group finishes, even on failure."
   (let ((output (or (getenv "EMMET2_BENCH_OUTPUT") (error "Set EMMET2_BENCH_OUTPUT")))
         (filter (getenv "EMMET2_BENCH_FILTER")) cases)
     (when (file-exists-p output) (error "Refusing to overwrite %s" output))
-    (dolist (kind '(tsx-markup tsx-style tsx-negative css web-css web-markup web-large-style))
+    (dolist (kind '(tsx-markup tsx-style tsx-negative css css-ts scss less web-css web-markup web-large-style))
       (setq cases
             (append cases
                     (emmet2-bench--group
@@ -242,12 +245,15 @@ At most five owned buffers survive until this group finishes, even on failure."
         (lambda (file) (expand-file-name (concat (file-name-nondirectory file) "c") directory))))
   (unwind-protect
       (progn
-        (dolist (name '("emmet2-engine.el" "emmet2-extract.el" "emmet2-context.el"))
+        (copy-directory (expand-file-name "data" emmet2-test-root) (expand-file-name "data" directory))
+        (dolist (name '("emmet2-engine.el" "emmet2-css-search.el" "emmet2-extract.el" "emmet2-context-web.el" "emmet2-context-js.el" "emmet2-context-css.el" "emmet2-context.el"))
           (unless (byte-compile-file (expand-file-name name emmet2-test-root))
             (error "Failed to byte compile %s" name))
           (load (expand-file-name (concat name "c") directory) nil t))
-        (unless (byte-code-function-p (symbol-function 'emmet2-context-analyze))
-          (error "Context is not byte compiled"))
+        (dolist (function '(emmet2-context-analyze emmet2-css-search-property-p))
+          (unless (and (byte-code-function-p (symbol-function function))
+                       (file-in-directory-p (symbol-file function 'defun) directory))
+            (error "Measured function is not isolated bytecode: %s" function)))
         (emmet2-bench-context))
     (delete-directory directory t)))
 

@@ -52,7 +52,7 @@ test("class fields preserve mirrors, numeric priority and multiword defaults", (
   const escaped = run('[class=\'${1:a"b}\']');
   assert.equal(escaped.fields[0][3], 'a\\"b');
   const blanks = run('[class="${1: } ${1: }"]');
-  assert.equal(blanks.text, '<div className={clsx(, )}></div>');
+  assert.equal(blanks.text, '<div className={clsx(css[""], css[""])}></div>');
   assert.equal(blanks.fields[0][2], blanks.fields[1][2]);
   assert.notEqual(blanks.fields[0][0], blanks.fields[1][0]);
   for (const result of [mirrors, order, spanning, escaped, run('[class="base ${1}"]'),
@@ -101,11 +101,33 @@ test("solid names and project references apply before layout and field collectio
   assert.equal(result.fields.length, 0);
   canonical(result);
   assert.deepEqual(run('.'), {
-    text: '<div className={}></div>', fields: [[16, 16, 1, ""], [18, 18, 2, ""]], cursor: 16,
+    text: '<div className={css[""]}></div>', fields: [[21, 21, 1, ""], [25, 25, 2, ""]], cursor: 21,
   });
 });
 
 test("JSX options are validated at the backend boundary", () => {
   assert.throws(() => run('.a', { ...jsx, classAttribute: "unknown" }), TypeError);
   assert.throws(() => expand('.a', { preset: "html", jsx }), /require the JSX preset/);
+});
+
+test("empty classes remain valid expressions and editable keys", () => {
+  for (const input of [".", '[class=""]', '[class="  "]', '[class="${1} ${2}"]',
+    '[class="${1: } ${1: }"]']) {
+    const result = run(input);
+    const expression = result.text.slice('<div className={'.length, result.text.indexOf('}></div>'));
+    const value = new Function("css", "clsx", `return (${expression});`)({ "": "empty" }, (...args) => args.join(" "));
+    assert.equal(typeof value, "string");
+    canonical(result);
+  }
+  for (const key of ["cssModulesObject", "classConstructor"]) {
+    for (const value of ["", " \t\n", null]) {
+      assert.throws(() => run(".a.b", { ...jsx, [key]: value }), TypeError);
+    }
+  }
+});
+
+test("React and Solid own both class and label attribute mappings", () => {
+  assert.equal(run("label.a[for=field]").text, '<label htmlFor="field" className={css.a}></label>');
+  assert.equal(run("label.a[for=field]", { ...jsx, classAttribute: "class" }).text,
+    '<label for="field" class={css.a}></label>');
 });

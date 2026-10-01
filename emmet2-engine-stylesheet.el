@@ -1,33 +1,62 @@
 ;;; emmet2-engine-stylesheet.el --- Native stylesheet expansion -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
-;; Grammar and resolution derived from Emmet 2.4.11 (MIT); see data/emmet/LICENSE.
+;; Grammar and formatting derived from Emmet 2.4.11 (MIT); see data/emmet/LICENSE.
 
 ;;; Commentary:
-;; Pure stylesheet pipeline shared by commands, completion and previews.
-;; Packaged snippets and their lookup index are immutable after module loading.
-;; Parsed input, resolved values and output belong to one expansion.  CSS
-;; extension syntax and default removal remain in emmet2-extensions.
+;; Pure stylesheet pipeline shared by completion and previews.  Property names
+;; arrive canonical from the extension layer; this module never guesses one.
+;; Keyword values resolve among the property's own and inherited keywords.
+;; Parsed declarations are the shared input of CSS and JavaScript rendering.
+;; Fields are emitted with their text; no rendered declaration is parsed back.
+;; Parsed input, resolved values and output belong to one expansion.
 
 ;;; Code:
 
 (require 'cl-lib)
-(require 'json)
 (require 'subr-x)
 (require 'emmet2-engine)
-(require 'emmet2-fuzzy)
+(require 'emmet2-css-search)
 
 (cl-defstruct (emmet2-stylesheet--node (:constructor emmet2-stylesheet--node))
-  name values important)
-(cl-defstruct (emmet2-stylesheet--snippet (:constructor emmet2-stylesheet--snippet))
-  key property choices keywords dependencies raw)
+  name values important clear-defaults)
 (cl-defstruct (emmet2-stylesheet--output (:constructor emmet2-stylesheet--output (base-indent)))
-  base-indent parts fields (offset 0))
+  base-indent parts fields (offset 0) clear-defaults trim-leading escape)
 
-(defun emmet2-stylesheet--tokenize (text &optional value-mode)
-  "Tokenize TEXT, using long literals in VALUE-MODE.
+(defconst emmet2-stylesheet--property-regexp
+  (concat (regexp-opt (emmet2-css-search-property-names t) t)
+          "\\(?:\\'\\|[^a-zA-Z-]\\|-[0-9]\\|-\\.[0-9]\\|--\\)")
+  "Recognize canonical property names before parsing abbreviation operators.")
+
+(defconst emmet2-stylesheet--unitless-properties
+  '("additive-symbols" "animation-iteration-count" "aspect-ratio" "base-palette"
+    "border-image-slice" "box-flex" "box-flex-group" "box-ordinal-group" "column-count"
+    "counter-increment" "counter-reset" "counter-set" "fill-opacity" "flex"
+    "flex-grow" "flex-shrink" "flood-opacity" "font-feature-settings" "font-size-adjust"
+    "font-variation-settings" "font-weight" "grid-area" "grid-column" "grid-column-end"
+    "grid-column-start" "grid-row" "grid-row-end" "grid-row-start" "hyphenate-limit-chars"
+    "initial-letter" "line-clamp" "line-height" "mask-border-slice" "math-depth"
+    "max-lines" "nav-index" "opacity" "order" "orphans" "override-colors" "pad" "range"
+    "reading-order" "scale" "shape-image-threshold" "stop-opacity" "stroke-miterlimit"
+    "stroke-opacity" "system" "text-combine-upright" "widows" "z-index" "zoom")
+  "Properties whose bare numbers must not acquire a length unit.
+Keep this formatting policy in the shared core.  Other number/length properties
+retain their existing defaults; explicit units always take precedence.")
+
+(defun emmet2-engine-stylesheet-property-end (text &optional start)
+  "Return the end of a canonical property at START in TEXT, or nil.
+START defaults to zero.  Hyphens within names stay intact; negative numbers
+and double-dash variable values can follow a complete name."
+  (let ((case-fold-search nil) (start (or start 0)))
+    (when (and (string-match emmet2-stylesheet--property-regexp text start)
+               (= (match-beginning 0) start))
+      (match-end 1))))
+
+(defun emmet2-stylesheet--tokenize (text &optional value-only)
+  "Tokenize stylesheet abbreviation TEXT.
 Tokens are [TYPE VALUE START END], with character offsets.  Functions have
-no source span, matching the upstream parser's field-adjacency contract."
+no source span, matching the upstream parser's field-adjacency contract.
+VALUE-ONLY means an initial variable is a value, not a property name."
   (let ((pos 0) (size (length text)) (depth 0) tokens)
     (cl-labels
         ((peek (&optional delta) (and (< (+ pos (or delta 0)) size) (aref text (+ pos (or delta 0)))))
@@ -132,10 +161,13 @@ no source span, matching the upstream parser's field-adjacency contract."
            (t
             (cond ((memq ch '(?@ ?$))
                    (cl-incf pos)
-                   (while (if (= start 0) (literal (peek)) (keyword (peek))) (cl-incf pos)))
+                   (while (if (and (= start 0) (not value-only)) (literal (peek)) (keyword (peek))) (cl-incf pos)))
+                  ((and (= depth 0)
+                        (let ((end (emmet2-engine-stylesheet-property-end text pos)))
+                          (when end (setq pos end)))))
                   ((word ch)
                    (cl-incf pos)
-                   (while (if (and (= depth 0) (not value-mode)) (literal (peek)) (keyword (peek)))
+                   (while (if (= depth 0) (literal (peek)) (keyword (peek)))
                      (cl-incf pos)))
                   (t (eat ?.) (while (literal (peek)) (cl-incf pos))))
             (when (= pos start) (fail "Unexpected character" pos))
@@ -148,9 +180,10 @@ no source span, matching the upstream parser's field-adjacency contract."
             (cl-incf pos)))))
     (nreverse tokens)))
 
-(defun emmet2-stylesheet--parse (text &optional value-mode)
-  "Parse TEXT into fresh property nodes, optionally in VALUE-MODE."
-  (let ((tokens (emmet2-stylesheet--tokenize text value-mode)) nodes)
+(defun emmet2-stylesheet--parse (text &optional property)
+  "Parse TEXT into fresh declaration nodes.
+When PROPERTY is supplied, TEXT contains only its authored value."
+  (let ((tokens (emmet2-stylesheet--tokenize text property)) nodes)
     (cl-labels
         ((kind () (and tokens (aref (car tokens) 0)))
          (eat (type &optional value)
@@ -183,148 +216,25 @@ no source span, matching the upstream parser's field-adjacency contract."
                 ((or (eat 'operator ?:) (eat 'operator ?-) (and in-argument (eat 'space))))
                 (t (setq done t))))
              (nreverse values))))
+      (when property (while (eat 'space)))
       (while tokens
         (emmet2-engine--check-deadline)
-        (let (name values important done)
-          (when (and (not value-mode) (eq (kind) 'literal)
+        (let ((name property) (before tokens) values important done)
+          (when (and (not property) (eq (kind) 'literal)
                      (not (and (cadr tokens) (eq (aref (cadr tokens) 0) 'bracket))))
             (setq name (aref (pop tokens) 1))
             (or (eat 'operator ?:) (eat 'operator ?-)))
-          (when value-mode (eat 'space))
           (while (and tokens (not done))
             (let (value)
               (cond ((eat 'operator ?!) (setq important t))
-                    ((setq value (fragment value-mode)) (push value values))
+                    ((setq value (fragment nil)) (push value values))
                     ((eat 'operator ?,))
                     (t (setq done t)))))
           (if (or name values important)
               (push (emmet2-stylesheet--node :name name :values (nreverse values) :important important) nodes)
-            (unless (eat 'operator ?+) (fail))))))
+            (unless (eat 'operator ?+) (fail)))
+          (when (eq before tokens) (fail)))))
     (nreverse nodes)))
-
-(defun emmet2-stylesheet--load-snippets ()
-  "Parse packaged snippets and build the immutable dependency/index table."
-  (let ((case-fold-search nil) snippets stack (index (make-hash-table :test #'eql)))
-    (with-temp-buffer
-      (insert-file-contents
-       (expand-file-name "data/emmet/css.json" (file-name-directory (or load-file-name buffer-file-name))))
-      (maphash
-       (lambda (names raw)
-         (dolist (key (split-string names "|"))
-           (let ((snippet (emmet2-stylesheet--snippet :key key)))
-             (if (string-match "\\`\\([a-z-]+\\)\\(?:[ \t]*:[ \t]*\\([^\n\r;]+?\\);*\\)?\\'" raw)
-                 (let ((property (match-string 1 raw)) (value (match-string 2 raw)) keywords)
-                   (setf (emmet2-stylesheet--snippet-property snippet) property
-                         (emmet2-stylesheet--snippet-choices snippet)
-                         (when value
-                           (mapcar (lambda (choice)
-                                     (emmet2-stylesheet--node-values
-                                      (car (emmet2-stylesheet--parse (string-trim choice) t))))
-                                   (split-string value "|"))))
-                   (dolist (choice (emmet2-stylesheet--snippet-choices snippet))
-                     (dolist (fragment choice)
-                       (dolist (token fragment)
-                         (let ((name (pcase (aref token 0)
-                                       ('literal (aref token 1)) ('function (car (aref token 1)))
-                                       ('field (string-trim (cdr (aref token 1)))))))
-                           (when (and name (not (equal name "")))
-                             (let* ((entry (assoc name keywords))
-                                    (value (if (eq (aref token 0) 'field) (vector 'literal name nil nil) token)))
-                               (if entry (setcdr entry value) (push (cons name value) keywords))))))))
-                   (setf (emmet2-stylesheet--snippet-keywords snippet) (nreverse keywords)))
-               (setf (emmet2-stylesheet--snippet-raw snippet) raw))
-             (push snippet snippets))))
-       (json-parse-buffer)))
-    (setq snippets (sort snippets (lambda (a b) (string< (emmet2-stylesheet--snippet-key a)
-                                                        (emmet2-stylesheet--snippet-key b)))))
-    (dolist (snippet snippets)
-      (when-let* ((property (emmet2-stylesheet--snippet-property snippet)))
-        (while (and stack
-                    (not (string-prefix-p (concat (emmet2-stylesheet--snippet-property (car stack)) "-") property)))
-          (pop stack))
-        (when stack (push snippet (emmet2-stylesheet--snippet-dependencies (car stack))))
-        (push snippet stack))
-      (push snippet (gethash (aref (downcase (emmet2-stylesheet--snippet-key snippet)) 0) index)))
-    (dolist (snippet snippets)
-      (setf (emmet2-stylesheet--snippet-dependencies snippet)
-            (nreverse (emmet2-stylesheet--snippet-dependencies snippet))))
-    (maphash (lambda (key bucket) (puthash key (nreverse bucket) index)) index)
-    index))
-
-(defconst emmet2-stylesheet--snippets (emmet2-stylesheet--load-snippets))
-
-(defun emmet2-stylesheet--find-snippet (name)
-  "Return the snippet selected by the core's fuzzy lookup for NAME."
-  (when (and (stringp name) (not (string-empty-p name)))
-    (emmet2-fuzzy-find name (gethash (aref (downcase name) 0) emmet2-stylesheet--snippets)
-                      nil t #'emmet2-stylesheet--snippet-key)))
-
-(defun emmet2-engine-stylesheet-snippet-p (name)
-  "Whether NAME is exactly the abbreviation of a pinned upstream snippet."
-  (and (stringp name) (not (string-empty-p name))
-       (cl-some (lambda (snippet) (equal (emmet2-stylesheet--snippet-key snippet) name))
-                (gethash (aref (downcase name) 0) emmet2-stylesheet--snippets))
-       t))
-
-(defun emmet2-engine-stylesheet-completions (prefix)
-  "Return snippet and literal keyword abbreviations matching PREFIX.
-Read the existing snippet index without expanding or modifying it.  Explicit
-bracket values avoid ambiguous property/keyword joins such as tal."
-  (when (string-match-p "\\`[a-z]+\\(?:\\[[^][]*\\]?\\)?\\'" prefix)
-    (let (matches)
-      (dolist (snippet (gethash (aref prefix 0) emmet2-stylesheet--snippets))
-        (let* ((snippet-key (emmet2-stylesheet--snippet-key snippet))
-               ;; Colon keys such as bg:n are selectors in the extension layer.
-               ;; Offer their literal keywords through the base property instead.
-               (key (car (split-string snippet-key ":")))
-               (tail (cond ((string-prefix-p prefix key) "")
-                           ((string-prefix-p (concat key "[") prefix)
-                            (string-remove-suffix "]" (substring prefix (1+ (length key)))))
-                           ((string-prefix-p key prefix) (substring prefix (length key))))))
-          (when (and (equal key snippet-key) (string-prefix-p prefix key)) (push key matches))
-          (when tail
-            (dolist (keyword (emmet2-stylesheet--snippet-keywords snippet))
-              (when (and (eq (aref (cdr keyword) 0) 'literal)
-                         (string-match-p "\\`[-a-zA-Z]+\\'" (car keyword))
-                         (string-prefix-p tail (car keyword)))
-                (push (concat key "[" (car keyword) "]") matches))))))
-      (nreverse matches))))
-
-(defun emmet2-stylesheet--keyword (name snippet)
-  "Resolve NAME in SNIPPET, direct dependencies, then global keywords."
-  (or (catch 'found
-        (dolist (item (and snippet (cons snippet (emmet2-stylesheet--snippet-dependencies snippet))))
-          (when-let* ((entry (emmet2-fuzzy-find name (emmet2-stylesheet--snippet-keywords item) nil nil #'car)))
-            (throw 'found (copy-tree (cdr entry) t)))))
-      (when-let* ((name (emmet2-fuzzy-find name '("auto" "inherit" "unset" "none"))))
-        (vector 'literal name nil nil))))
-
-(defun emmet2-stylesheet--unmatched (abbreviation key)
-  "Return the suffix of ABBREVIATION not consumed in order from KEY."
-  (let ((offset 0) tail)
-    (catch 'done
-      (dotimes (i (length abbreviation))
-        (let ((next (cl-position (aref abbreviation i) key :start offset)))
-          (unless next (setq tail (substring abbreviation i)) (throw 'done nil))
-          (setq offset (1+ next)))))
-    tail))
-
-(defun emmet2-engine-stylesheet-keyword-abbreviation-p (name)
-  "Whether NAME combines a known property abbreviation and keyword value.
-Use the core's lookup rules without formatting an expansion.  Bare property
-names and unrecognized suffixes do not provide a completion signal."
-  (when-let* ((snippet (emmet2-stylesheet--find-snippet name))
-              (_ (emmet2-stylesheet--snippet-property snippet))
-              (tail (emmet2-stylesheet--unmatched name (emmet2-stylesheet--snippet-key snippet))))
-    (not (null (emmet2-stylesheet--keyword tail snippet)))))
-
-(defun emmet2-stylesheet--has-field-p (values)
-  "Whether VALUES contain a field, including nested functions."
-  (cl-some (lambda (fragment)
-             (cl-some (lambda (token)
-                        (or (eq (aref token 0) 'field)
-                            (and (eq (aref token 0) 'function)
-                                 (emmet2-stylesheet--has-field-p (cdr (aref token 1)))))) fragment)) values))
 
 (defun emmet2-stylesheet--frac (number &optional digits)
   "Format NUMBER with the pinned JS toFixed/trim rule and DIGITS places.
@@ -357,102 +267,55 @@ The upstream trimming also applies to scientific notation at 1e21 and above."
           ((and (= (% r 17) 0) (= (% g 17) 0) (= (% b 17) 0)) (format "#%x%x%x" (/ r 17) (/ g 17) (/ b 17)))
           (t (format "#%02x%02x%02x" r g b)))))
 
-(defun emmet2-stylesheet--wrap (fragment &optional state)
-  "Wrap a default choice FRAGMENT in fields, sharing numbering STATE."
-  (let ((state (or state (list 0))) values)
-    (cl-labels ((field (text) (push (vector 'field (cons (cl-incf (car state)) text) nil nil) values)))
+(defun emmet2-stylesheet--resolve (node &optional at-rule)
+  "Resolve call-owned NODE's keyword values and number units in place.
+A literal becomes the best keyword of NODE's property that it abbreviates,
+as a in top-a is auto.  AT-RULE selects descriptor values.
+Unknown properties and unmatched literals stay."
+  (when-let* ((name (emmet2-stylesheet--node-name node)))
+    (setf (emmet2-stylesheet--node-values node)
+          (mapcar (lambda (fragment)
+                    (mapcar (lambda (token)
+                              (or (and (eq (aref token 0) 'literal)
+                                       (when-let* ((keyword (car (emmet2-css-search-values name (aref token 1) 1 at-rule))))
+                                         (vector 'literal keyword nil nil)))
+                                  token))
+                            fragment))
+                  (emmet2-stylesheet--node-values node)))
+    (dolist (fragment (emmet2-stylesheet--node-values node))
       (dolist (token fragment)
-        (let ((value (aref token 1)))
-          (pcase (aref token 0)
-            ('color (field (emmet2-stylesheet--color value)))
-            ('literal (field value))
-            ('number (field (concat (emmet2-stylesheet--frac (aref value 0)) (aref value 1))))
-            ('string (field (concat (char-to-string (car value)) (cdr value) (char-to-string (car value)))))
-            ('function
-             (field (car value)) (push [literal "(" nil nil] values)
-             (let ((first t))
-               (dolist (argument (cdr value))
-                 (unless first (push [literal ", " nil nil] values))
-                 (setq first nil)
-                 (dolist (item (emmet2-stylesheet--wrap argument state)) (push item values))))
-             (push [literal ")" nil nil] values))
-            (_ (push token values))))))
-    (nreverse values)))
-
-(defun emmet2-stylesheet--resolve-raw (node raw)
-  "Replace NODE with RAW snippet tokens, filling fields from explicit values."
-  (let ((offset 0) (input (car (emmet2-stylesheet--node-values node))) values)
-    (while (string-match "\\${\\([0-9]+\\)\\(:[^}]+\\)?}" raw offset)
-      (let ((beg (match-beginning 0)) (end (match-end 0))
-            (index (string-to-number (match-string 1 raw))) (default (match-string 2 raw)))
-        (unless (= offset beg) (push (vector 'literal (substring raw offset beg) nil nil) values))
-        (push (or (pop input) (vector 'field (cons index (if default (substring default 1) "")) nil nil)) values)
-        (setq offset end)))
-    (when (< offset (length raw)) (push (vector 'literal (substring raw offset) nil nil) values))
-    (setf (emmet2-stylesheet--node-name node) nil
-          (emmet2-stylesheet--node-values node) (list (nreverse values)))))
-
-(defun emmet2-stylesheet--resolve (node)
-  "Resolve call-owned NODE against immutable snippets and value rules."
-  (let* ((name (emmet2-stylesheet--node-name node))
-         (values (emmet2-stylesheet--node-values node))
-         (single (and (= (length values) 1) (= (length (car values)) 1) (caar values)))
-         (gradient (and single (eq (aref single 0) 'function) (equal (car (aref single 1)) "lg"))))
-    (cond
-     ((or gradient (equal name "lg"))
-      (setf (emmet2-stylesheet--node-name node) "background-image"
-            (emmet2-stylesheet--node-values node)
-            (list (list (vector 'function
-                                (cons "linear-gradient" (if gradient (cdr (aref single 1))
-                                                          (list (list [field (0 . "") nil nil])))) nil nil)))))
-     (name
-      (when-let* ((snippet (emmet2-stylesheet--find-snippet name)))
-        (if-let* ((raw (emmet2-stylesheet--snippet-raw snippet)))
-            (emmet2-stylesheet--resolve-raw node raw)
-          (let* ((tail (emmet2-stylesheet--unmatched name (emmet2-stylesheet--snippet-key snippet)))
-                 (keyword (and tail (not values) (emmet2-stylesheet--keyword tail snippet))))
-            ;; An unmatched suffix with explicit values leaves the original node.
-            (when (or (null tail) keyword)
-              (when keyword (setq values (list (list keyword))))
-              (setf (emmet2-stylesheet--node-name node) (emmet2-stylesheet--snippet-property snippet))
-              (if values
-                  (setq values
-                        (mapcar
-                         (lambda (fragment)
-                           (mapcar
-                            (lambda (token)
-                              (pcase (aref token 0)
-                                ('literal (or (emmet2-stylesheet--keyword (aref token 1) snippet) token))
-                                ('function
-                                 (let* ((value (aref token 1)) (match (emmet2-stylesheet--keyword (car value) snippet)))
-                                   (if (and match (eq (aref match 0) 'function))
-                                       (vector 'function (cons (car (aref match 1))
-                                                               (append (cdr value) (nthcdr (length (cdr value)) (cdr (aref match 1))))) nil nil)
-                                     token)))
-                                (_ token))) fragment)) values))
-                (let* ((choices (emmet2-stylesheet--snippet-choices snippet)) (default (car choices)))
-                  (setq values (if (or (= (length choices) 1) (emmet2-stylesheet--has-field-p default))
-                                   (copy-tree default t) (mapcar #'emmet2-stylesheet--wrap default)))))
-              (setf (emmet2-stylesheet--node-values node) values)))))))
-    (when (emmet2-stylesheet--node-name node)
-      (dolist (fragment (emmet2-stylesheet--node-values node))
-        (dolist (token fragment)
-          (when (eq (aref token 0) 'number)
-            (let* ((value (aref token 1)) (unit (aref value 1)))
-              (aset value 1
-                    (cond ((not (equal unit "")) (or (cdr (assoc unit '(("e" . "em") ("p" . "%") ("x" . "ex") ("r" . "rem")))) unit))
-                          ((or (= (aref value 0) 0)
-                               (member (emmet2-stylesheet--node-name node)
-                                       '("z-index" "line-height" "opacity" "font-weight" "zoom" "flex" "flex-grow" "flex-shrink"))) "")
-                          ((string-search "." (aref value 2)) "rem") (t "px"))))))))
-    node))
+        (when (eq (aref token 0) 'number)
+          (let* ((value (aref token 1)) (unit (aref value 1)))
+            (aset value 1
+                  (cond ((not (equal unit "")) (or (cdr (assoc unit '(("e" . "em") ("p" . "%") ("x" . "ex") ("r" . "rem")))) unit))
+                        ((or (= (aref value 0) 0)
+                             (member name emmet2-stylesheet--unitless-properties)) "")
+                        ((string-search "." (aref value 2)) "rem") (t "px"))))))))
+  node)
 
 (defun emmet2-stylesheet--push (out text &optional lines)
   "Append TEXT to OUT, processing newlines when LINES is non-nil."
   (when lines
     (setq text (replace-regexp-in-string "\r\n\\|[\r\n]" (concat "\n" (emmet2-stylesheet--output-base-indent out)) text t t)))
+  (when (emmet2-stylesheet--output-trim-leading out)
+    (setq text (string-trim-left text "[ \t\r\n]+"))
+    (unless (string-empty-p text) (setf (emmet2-stylesheet--output-trim-leading out) nil)))
+  (when (emmet2-stylesheet--output-escape out)
+    (setq text (mapconcat #'emmet2-engine-js-character text)))
   (push text (emmet2-stylesheet--output-parts out))
   (cl-incf (emmet2-stylesheet--output-offset out) (length text)))
+
+(defun emmet2-engine-stylesheet-property-prefix (name)
+  "Return a declaration prefix for a parsed property NAME.
+Use the same grammar as ordinary expansion, including errors for invalid
+names, without constructing an empty value, snippet fields or a result."
+  (emmet2-engine-with-expansion
+    (let* ((nodes (emmet2-stylesheet--parse name)) (node (car nodes)))
+      (unless (and (= (length nodes) 1) (equal (emmet2-stylesheet--node-name node) name)
+                   (not (emmet2-stylesheet--node-values node))
+                   (not (emmet2-stylesheet--node-important node)))
+        (signal 'emmet2-parse-error '("Expected a CSS property" 0)))
+      (concat name ": "))))
 
 (defun emmet2-stylesheet--emit-token (out token)
   "Format TOKEN into OUT, recording field spans before normalization."
@@ -464,12 +327,23 @@ The upstream trimming also applies to scientific notation at 1e21 and above."
       ('color (emmet2-stylesheet--push out (emmet2-stylesheet--color value)))
       ('string (emmet2-stylesheet--push out (concat (char-to-string (car value)) (cdr value) (char-to-string (car value))) t))
       ('field
-       ;; copy-tree duplicates AST containers, not strings.  A returned field
-       ;; must not expose a mutable string from the immutable snippet table.
+       ;; A returned field must not share a string with this module's
+       ;; constant empty field.
        (let ((start (emmet2-stylesheet--output-offset out)) (default (copy-sequence (cdr value))))
-         (emmet2-stylesheet--push out default)
+         (unless (emmet2-stylesheet--output-clear-defaults out)
+           (emmet2-stylesheet--push out default))
          (push (list start (emmet2-stylesheet--output-offset out) (car value) default)
                (emmet2-stylesheet--output-fields out))))
+      ('raw
+       ;; A raw value keeps its spelling. Empty pairs are real editable fields,
+       ;; emitted between chunks so escaping cannot invalidate their offsets.
+       (let ((start 0) (search 0))
+         (while (string-match "()\\|\"\"\\|''" value search)
+           (let ((inside (1+ (match-beginning 0))) (end (match-end 0)))
+             (emmet2-stylesheet--push out (substring value start inside))
+             (emmet2-stylesheet--emit-token out [field (0 . "") nil nil])
+             (setq start inside search end)))
+         (emmet2-stylesheet--push out (substring value start))))
       ('function
        (emmet2-stylesheet--push out (concat (car value) "("))
        (let ((first t))
@@ -488,26 +362,10 @@ The upstream trimming also applies to scientific notation at 1e21 and above."
       (emmet2-stylesheet--emit-token out token)
       (setq first nil previous-end (aref token 3)))))
 
-(defun emmet2-stylesheet--format (node base-indent)
-  "Format NODE using BASE-INDENT, giving its fields independent group scope."
-  (let ((out (emmet2-stylesheet--output base-indent))
-        (name (emmet2-stylesheet--node-name node)) (values (emmet2-stylesheet--node-values node)))
-    (if name
-        (progn
-          (emmet2-stylesheet--push out (concat name ": ") t)
-          (if values
-              (let ((first t))
-                (dolist (fragment values)
-                  (unless first (emmet2-stylesheet--push out ", "))
-                  (setq first nil)
-                  (emmet2-stylesheet--emit-value out fragment)))
-            (emmet2-stylesheet--emit-token out [field (0 . "") nil nil])))
-      (dolist (fragment values)
-        (dolist (token fragment) (emmet2-stylesheet--emit-token out token))))
-    (when (emmet2-stylesheet--node-important node)
-      (emmet2-stylesheet--push out (if (or name values) " !important" "!important")))
-    (when name (emmet2-stylesheet--push out ";"))
-    (let* ((fields (nreverse (emmet2-stylesheet--output-fields out)))
+(defun emmet2-stylesheet--finish (out)
+  "Normalize OUT's field identities and return its canonical result."
+  (let* ((text (apply #'concat (nreverse (emmet2-stylesheet--output-parts out))))
+         (fields (nreverse (emmet2-stylesheet--output-fields out)))
            (sorted (cl-stable-sort (copy-sequence fields)
                                    (lambda (a b) (< (if (or (null (nth 2 a)) (eq (nth 2 a) 0)) 1.0e+INF (nth 2 a))
                                                      (if (or (null (nth 2 b)) (eq (nth 2 b) 0)) 1.0e+INF (nth 2 b))))))
@@ -516,22 +374,132 @@ The upstream trimming also applies to scientific notation at 1e21 and above."
         (let* ((index (nth 2 field)) (key (cons index (nth 3 field)))
                (group (and (not (eq index 0)) (gethash key groups))))
           (unless group (setq group (cl-incf next)) (puthash key group groups))
-          (setcar (nthcdr 2 field) group)))
-      (emmet2-result-create (apply #'concat (nreverse (emmet2-stylesheet--output-parts out))) fields))))
+          (setcar (nthcdr 2 field) group)
+          (setcar (nthcdr 3 field) (substring text (car field) (cadr field)))))
+    (when (emmet2-stylesheet--output-clear-defaults out)
+      (let ((merged (make-hash-table :test #'eql)) unique)
+        (cl-labels ((group (index)
+                      (while (gethash index merged) (setq index (gethash index merged)))
+                      index))
+          (dolist (field fields)
+            (if (and unique (= (caar unique) (car field)))
+                (let ((a (group (nth 2 (car unique)))) (b (group (nth 2 field))))
+                  (unless (= a b) (puthash (max a b) (min a b) merged)))
+              (push field unique)))
+          (dolist (field unique) (setcar (nthcdr 2 field) (group (nth 2 field)))))
+        (setq fields (nreverse unique))))
+    (emmet2-result-create text fields)))
 
-(cl-defun emmet2-engine-stylesheet-expand (abbreviation &key (preset 'stylesheet) (indent "\t") (base-indent ""))
-  "Expand stylesheet ABBREVIATION to a canonical result.
-PRESET must be stylesheet.  INDENT and BASE-INDENT follow the common engine
-contract; the pinned CSS formatter preserves literal snippet tabs."
+(defun emmet2-stylesheet--js-number (node)
+  "Return NODE's single numeric JavaScript value, or nil for a string value."
+  (let* ((values (emmet2-stylesheet--node-values node))
+         (token (and (= (length values) 1) (= (length (car values)) 1) (caar values)))
+         (raw (pcase (and token (aref token 0))
+                ('number (let ((value (aref token 1)))
+                           (concat (emmet2-stylesheet--frac (aref value 0)) (aref value 1))))
+                ('raw (aref token 1)))))
+    ;; Raw leading-zero spellings must remain strings, avoiding JS octal.
+    (when (and raw (not (emmet2-stylesheet--node-important node))
+               (string-match-p "\\`-?\\(?:0\\|[1-9][0-9]*\\)\\(?:\\.[0-9]*\\)?\\(?:px\\)?\\'" raw))
+      (string-remove-suffix "px" raw))))
+
+(defun emmet2-stylesheet--value-text-p (node)
+  "Whether NODE emits nonempty value text, ignoring its property name."
+  (let ((values (emmet2-stylesheet--node-values node)))
+    (or (emmet2-stylesheet--node-important node) (> (length values) 1)
+        (cl-some (lambda (token)
+                   (pcase (aref token 0)
+                     ('field (and (not (emmet2-stylesheet--node-clear-defaults node))
+                                  (not (string-empty-p (cdr (aref token 1))))))
+                     ((or 'raw 'literal 'custom) (not (string-empty-p (aref token 1))))
+                     (_ t)))
+                 (car values)))))
+
+(defun emmet2-stylesheet--format (node base-indent &optional css-in-js)
+  "Render resolved NODE with BASE-INDENT, optionally as CSS-IN-JS.
+Generate text and field offsets together, with independent group scope."
+  (let* ((case-fold-search nil)
+         (out (emmet2-stylesheet--output base-indent))
+         (name (emmet2-stylesheet--node-name node))
+         (values (emmet2-stylesheet--node-values node))
+         (number (and css-in-js (emmet2-stylesheet--js-number node)))
+         (quoted (and css-in-js (not number) (emmet2-stylesheet--value-text-p node))))
+    (when css-in-js
+      (unless name (signal 'emmet2-parse-error '("Expected a declaration for CSS-in-JS" 0)))
+      (unless (string-prefix-p "--" name)
+        (setq name (replace-regexp-in-string "-[a-z]" (lambda (part) (upcase (substring part 1))) name t t))
+        (when (string-prefix-p "Ms" name) (setq name (concat "ms" (substring name 2)))))
+      (unless (string-match-p "\\`[a-zA-Z_$][a-zA-Z0-9_$]*\\'" name)
+        (setq name (concat "\"" (mapconcat #'emmet2-engine-js-character name) "\""))))
+    (when name (emmet2-stylesheet--push out (concat name ": ") t))
+    (when quoted (emmet2-stylesheet--push out "\""))
+    (setf (emmet2-stylesheet--output-clear-defaults out) (emmet2-stylesheet--node-clear-defaults node)
+          (emmet2-stylesheet--output-trim-leading out) (and name (emmet2-stylesheet--node-clear-defaults node))
+          (emmet2-stylesheet--output-escape out) quoted)
+    (cond
+     (number (emmet2-stylesheet--push out number))
+     (name
+      (if values
+          (let ((first t))
+            (dolist (fragment values)
+              (unless first (emmet2-stylesheet--push out ", "))
+              (setq first nil)
+              (emmet2-stylesheet--emit-value out fragment)))
+        (emmet2-stylesheet--emit-token out [field (0 . "") nil nil])))
+     (t (dolist (fragment values)
+          (dolist (token fragment) (emmet2-stylesheet--emit-token out token)))))
+    (when (emmet2-stylesheet--node-important node)
+      (emmet2-stylesheet--push out (if (or name values) " !important" "!important")))
+    (setf (emmet2-stylesheet--output-escape out) nil)
+    (when quoted (emmet2-stylesheet--push out "\""))
+    (when (and name (not css-in-js)) (emmet2-stylesheet--push out ";"))
+    (emmet2-stylesheet--finish out)))
+
+(cl-defun emmet2-engine-stylesheet-declaration (name source &key literal important at-rule)
+  "Create a resolved declaration of NAME from authored value SOURCE.
+LITERAL preserves SOURCE, including empty-pair fields; otherwise parse value
+syntax and omit field defaults.  IMPORTANT and AT-RULE carry source context.
+The returned declaration is call-owned and is opaque to the caller."
+  (unless (and (stringp name) (string-match-p "\\`[-a-zA-Z_$][-a-zA-Z0-9_$]*\\'" name)
+               (stringp source))
+    (signal 'emmet2-parse-error '("Expected a CSS property and value" 0)))
+  (let* ((nodes (unless literal (emmet2-stylesheet--parse source name)))
+         (node (or (car nodes) (emmet2-stylesheet--node :name name))))
+    (when (cdr nodes) (signal 'emmet2-parse-error '("Expected one CSS value" 0)))
+    (if literal
+        (setf (emmet2-stylesheet--node-values node) (list (list (vector 'raw source nil nil))))
+      (setf (emmet2-stylesheet--node-clear-defaults node) t)
+      (emmet2-stylesheet--resolve node at-rule))
+    (when important (setf (emmet2-stylesheet--node-important node) t))
+    node))
+
+(defun emmet2-engine-stylesheet-render (declaration &optional css-in-js base-indent)
+  "Render resolved DECLARATION as CSS or CSS-IN-JS, using BASE-INDENT."
+  (emmet2-stylesheet--format declaration (or base-indent "") css-in-js))
+
+(defun emmet2-engine-stylesheet-parse (abbreviation &optional at-rule clear-defaults)
+  "Resolve canonical ABBREVIATION into call-owned declarations.
+AT-RULE selects descriptor values.  CLEAR-DEFAULTS omits field defaults during
+rendering, while retaining field groups and source adjacency."
+  (mapcar (lambda (node)
+            (setf (emmet2-stylesheet--node-clear-defaults node) clear-defaults)
+            (emmet2-stylesheet--resolve node at-rule))
+          (emmet2-stylesheet--parse abbreviation)))
+
+(cl-defun emmet2-engine-stylesheet-expand (abbreviation &key (preset 'stylesheet) (indent "\t") (base-indent "") at-rule)
+  "Expand stylesheet ABBREVIATION, whose property names are canonical.
+Other names stay literal.  PRESET must be stylesheet.  INDENT and BASE-INDENT
+follow the common engine contract; declarations need no nested indentation.
+AT-RULE selects the enclosing rule's descriptor values."
   (unless (and (stringp abbreviation) (eq preset 'stylesheet) (stringp indent) (stringp base-indent))
     (signal 'emmet2-error '("Invalid stylesheet abbreviation, preset or indentation")))
   (emmet2-engine-with-expansion
-    (let ((nodes (emmet2-stylesheet--parse abbreviation)) results (first t))
+    (let ((nodes (emmet2-engine-stylesheet-parse abbreviation at-rule)) results (first t))
       (dolist (node nodes)
         (emmet2-engine--check-deadline)
         (unless first (push (emmet2-result-create (concat "\n" base-indent)) results))
         (setq first nil)
-        (push (emmet2-stylesheet--format (emmet2-stylesheet--resolve node) base-indent) results))
+        (push (emmet2-engine-stylesheet-render node nil base-indent) results))
       (apply #'emmet2-result-concat (nreverse results)))))
 
 (provide 'emmet2-engine-stylesheet)

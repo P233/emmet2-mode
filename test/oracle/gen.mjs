@@ -15,12 +15,12 @@ export function generate() {
     if (actual !== sha256) throw new Error(`Vendor checksum mismatch: ${file}`);
   }
   const inputs = JSON.parse(readFileSync(join(fixtures, "core-inputs.json")));
-  const results = { markup: [], stylesheet: [] };
+  const results = { markup: [] };
   const ids = new Set();
   for (const input of inputs) {
     const { id, abbreviation, preset, source, ...options } = input;
     if (typeof id !== "string" || ids.has(id) || typeof source !== "string" ||
-        !["html", "jsx", "stylesheet"].includes(preset) ||
+        !["html", "jsx"].includes(preset) ||
         Object.keys(options).some((key) => !["indent", "baseIndent", "jsx"].includes(key))) {
       throw new Error(`Invalid or duplicate oracle input: ${id}`);
     }
@@ -32,7 +32,7 @@ export function generate() {
       if (!(error instanceof EmmetParseError)) throw error;
       outcome = { error: { message: error.message, position: error.position } };
     }
-    results[preset === "stylesheet" ? "stylesheet" : "markup"].push({ id, ...outcome });
+    results.markup.push({ id, ...outcome });
   }
   return new Map(Object.entries(results).map(([name, cases]) => [
     `${name}.json`, `${JSON.stringify(cases, null, 2)}\n`,

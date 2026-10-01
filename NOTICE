@@ -8,8 +8,10 @@ emmet 2.4.11 npm archive. It includes @emmetio/abbreviation,
 @emmetio/css-abbreviation and @emmetio/scanner. These packages and the Emmet
 snippet data use the MIT license reproduced in data/emmet/LICENSE.
 
-data/emmet/{html,css,variables}.json are unmodified upstream files from the
+data/emmet/{html,variables}.json are unmodified upstream files from the
 published package's source commit a96c77a84dc4519de695f3a1625011d908dbe9c0.
+Emmet's CSS snippet file is not used; CSS abbreviations search the CSS data
+below instead.
 Package integrity, individual SHA-256 checksums and source locations are
 recorded in data/emmet/source.json. Do not substitute files from upstream
 HEAD: its snippets differ from the published 2.4.11 package.
@@ -17,15 +19,21 @@ HEAD: its snippets differ from the published 2.4.11 package.
 Upstream: https://github.com/emmetio/emmet
 Package: https://www.npmjs.com/package/emmet/v/2.4.11
 
-emmet2-fuzzy.el and the native markup/stylesheet engines port algorithms from
-the same Emmet source. The Latin, Russian and Spanish lorem JSON dictionaries
+The native markup/stylesheet engines port parsing and rendering algorithms from
+the same Emmet source. emmet2-fuzzy.el is a project-owned matcher replacing the
+previous port of Emmet's fuzzy algorithm. The Latin, Russian and Spanish lorem JSON dictionaries
 in data/emmet/lorem/ are also copied unmodified from that source commit.
 The bundle and its oracle adapters under test/ are development-only and are
 not included in the installed package.
 
-data/css-names.json contains names derived from Microsoft VS Code Custom Data
-commit 01df47ad7cc0b140624fc941ff57618c36ed46a1. Its MIT license is reproduced
-in data/vscode-custom-data-LICENSE; data/css-source.json records source paths,
-checksums and input counts. data/css-overrides.json is authored project behavior
+data/css-data.json contains metadata from Microsoft VS Code Custom Data;
+data/css-index.json is its compact, generated search index, which also holds
+HTML element names from the same project and value keywords expanded with CSS
+type syntaxes from MDN's mdn-data. VS Code Custom Data uses commit
+01df47ad7cc0b140624fc941ff57618c36ed46a1; its MIT license is reproduced in
+data/vscode-custom-data-LICENSE. mdn-data uses tag v2.37.0, commit
+3a465f974817d680aaeee81acb446464c8c4baa7; its CC0 1.0 dedication is reproduced
+in data/mdn-data-LICENSE. data/css-source.json records source paths, checksums
+and input counts. data/css-overrides.json is authored project behavior
 and is never generated from upstream names. test/update-web-data.mjs performs
 explicit, pinned updates; it is not included in the installed package.

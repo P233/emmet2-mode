@@ -36,14 +36,25 @@ Nested core invocations inherit the same deadline."
 
 (autoload 'emmet2-engine-markup-expand "emmet2-engine-markup")
 (autoload 'emmet2-engine-stylesheet-expand "emmet2-engine-stylesheet")
-(autoload 'emmet2-engine-stylesheet-snippet-p "emmet2-engine-stylesheet")
-(autoload 'emmet2-engine-stylesheet-completions "emmet2-engine-stylesheet")
-(autoload 'emmet2-engine-stylesheet-keyword-abbreviation-p "emmet2-engine-stylesheet")
+(autoload 'emmet2-engine-stylesheet-property-end "emmet2-engine-stylesheet")
+(autoload 'emmet2-engine-stylesheet-property-prefix "emmet2-engine-stylesheet")
 
-(cl-defun emmet2-engine-expand (abbreviation &key (preset 'html) (indent "\t") (base-indent "") jsx (seed 0))
+(defun emmet2-engine-js-character (character)
+  "Encode Unicode CHARACTER inside a JavaScript double-quoted string.
+Reject Emacs raw bytes and surrogate code points at the rendering boundary."
+  (unless (and (<= 0 character #x10ffff) (not (<= #xd800 character #xdfff)))
+    (signal 'emmet2-error '("JavaScript output requires Unicode scalar characters")))
+  (pcase character
+    (?\" "\\\"") (?\\ "\\\\") (?\n "\\n") (?\r "\\r") (?\t "\\t")
+    (?\b "\\b") (?\f "\\f")
+    ((or #x2028 #x2029) (format "\\u%04x" character))
+    (_ (if (< character 32) (format "\\u%04x" character) (char-to-string character)))))
+
+(cl-defun emmet2-engine-expand (abbreviation &key (preset 'html) (indent "\t") (base-indent "") jsx (seed 0) at-rule)
   "Expand ABBREVIATION with PRESET and the internal rendering parameters.
 PRESET is html, jsx or stylesheet.  INDENT and BASE-INDENT are literal strings.
 JSX is nil or the internal structured JSX extension options.
+AT-RULE selects descriptor values for the stylesheet preset.
 SEED is an integer for call-local lorem generation, normalized to 32 bits;
 it has no effect on stylesheet expansion.  Return a canonical result."
   (unless (and (stringp abbreviation) (memq preset '(html jsx stylesheet))
@@ -54,9 +65,10 @@ it has no effect on stylesheet expansion.  Return a canonical result."
     (if (eq preset 'stylesheet)
         (progn
           (when jsx (signal 'emmet2-error '("JSX options require markup")))
-          (emmet2-engine-stylesheet-expand abbreviation :preset preset :indent indent :base-indent base-indent))
+          (emmet2-engine-stylesheet-expand abbreviation :preset preset :indent indent :base-indent base-indent
+                                           :at-rule at-rule))
       (emmet2-engine-markup-expand abbreviation :preset preset :indent indent :base-indent base-indent
-                                  :jsx jsx :seed seed))))
+                                   :jsx jsx :seed seed))))
 
 (defun emmet2-result-create (text &optional fields)
   "Create a canonical result from TEXT and FIELDS.
@@ -66,9 +78,12 @@ fields stably by position and derive the initial cursor.  Reject overlapping
 fields, conflicting mirror defaults or offsets inconsistent with TEXT."
   (unless (and (stringp text) (or (null fields) (proper-list-p fields)))
     (signal 'emmet2-result-error '("Expected text and a proper field list")))
-  (let ((defaults (make-hash-table :test #'eql))
-        (indices (make-hash-table :test #'eql))
-        groups (previous-beg 0) (previous-end 0) (next 0) ordered cursor)
+  ;; Most CSS choices contain one field; the default table capacity would
+  ;; allocate for dozens of groups at every formatting/concatenation step.
+  (let* ((capacity (max 1 (length fields)))
+         (defaults (make-hash-table :test #'eql :size capacity))
+         (indices (make-hash-table :test #'eql :size capacity))
+         groups (previous-beg 0) (previous-end 0) (next 0) ordered cursor)
     (dolist (field fields)
       (unless (eql (proper-list-p field) 4)
         (signal 'emmet2-result-error '("Expected a four-element field")))

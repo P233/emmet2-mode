@@ -32,14 +32,17 @@ function classExpression(value, object, constructor) {
   }
   words.push(...empty);
   words.sort((a, b) => a[0] - b[0]);
+  if ((words.length && !object.trim()) || (words.length > 1 && !constructor.trim())) {
+    throw new TypeError("JSX class expressions require nonempty project references");
+  }
   const offsets = new Array(text.length + 1);
-  let output = words.length > 1 ? `${constructor}(` : "";
+  let output = words.length > 1 ? `${constructor}(` : words.length ? "" : '""';
   for (let i = 0; i < words.length; i++) {
     const [beg, end] = words[i];
     const word = text.slice(beg, end).trim();
     if (i) output += ", ";
     const dot = identifier.test(word);
-    if (word) output += dot ? `${object}.` : `${object}["`;
+    output += dot ? `${object}.` : `${object}["`;
     offsets[beg] = output.length;
     let position = beg;
     for (const character of word) {
@@ -48,7 +51,7 @@ function classExpression(value, object, constructor) {
       offsets[position] = output.length;
     }
     offsets[end] = output.length;
-    if (word && !dot) output += '"]';
+    if (!dot) output += '"]';
   }
   // Whitespace outside class tokens collapses; a field spanning multiple class
   // names covers the intervening expression syntax too, without dropping it.

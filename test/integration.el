@@ -36,9 +36,10 @@
                    (lambda (&rest _) (error "Native expansion must not call a process"))))
           (dolist (feature '(emmet2-engine-native-test emmet2-engine-test
                               emmet2-engine-markup-test emmet2-engine-stylesheet-test
-                              emmet2-fuzzy-test emmet2-extract-test emmet2-host-contract-test
+                              emmet2-fuzzy-test emmet2-css-search-test emmet2-css-data-test emmet2-extract-test
+                              emmet2-host-contract-test emmet2-host-api-test
                               emmet2-context-test emmet2-context-lexical-test
-                              emmet2-capf-contract-test emmet2-extensions-markup-test
+                              emmet2-capf-contract-test emmet2-corfu-test emmet2-value-test emmet2-extensions-markup-test
                               emmet2-extensions-css-test emmet2-markup-integration-test
                               emmet2-stylesheet-integration-test))
             (require feature))
@@ -65,7 +66,7 @@
         (when (featurep 'emmet2-engine-node) (error "Native integration loaded a retired backend"))
         (when package
           (dolist (symbol '(emmet2-engine-expand emmet2-context-analyze emmet2-extensions-markup
-                             emmet2--expand-analysis emmet2-capf emmet2-insert emmet2-preview
+                             emmet2-expand-analysis emmet2-capf emmet2-corfu--rows emmet2-insert emmet2-preview
                              emmet2-engine-markup-expand emmet2-engine-stylesheet-expand))
             (unless (and (file-in-directory-p (symbol-file symbol) package)
                          (byte-code-function-p (symbol-function symbol)))

@@ -11,7 +11,7 @@
   (let ((indent (make-string (emmet2-insert--indent-width analysis) ?\s)))
     (cl-letf (((symbol-function 'emmet2-insert-render-options)
                (lambda (_) (list :indent indent :base-indent ""))))
-      (plist-get (emmet2--expand-analysis analysis) :text))))
+      (plist-get (emmet2-expand-analysis analysis) :text))))
 
 (ert-deftest emmet2-preview-three-buffers-exact-text-and-fontification ()
   (emmet2-preview-clear)
@@ -112,28 +112,30 @@
           (let ((position (point)))
             (funcall (car case)) (goto-char position)
             (setq-local emmet2-markup-variant (nth 2 case))
-            (emmet2-context--prepare)
+            (emmet2-context-js-prepare)
             (let* ((analysis (emmet2-context-analyze))
-                   (text (plist-get (emmet2--expand-analysis analysis) :text))
+                   (text (plist-get (emmet2-expand-analysis analysis) :text))
                    (preview (emmet2-test--root-render analysis))
                    (abbr (plist-get analysis :abbr))
-                   (expand (symbol-function 'emmet2--expand-analysis)) (calls 0)
+                   (expand (symbol-function 'emmet2-capf--choices)) (calls 0)
                    (data (emmet2-capf)) (table (nth 2 data))
                    (props (nthcdr 3 data)) (doc (plist-get props :company-doc-buffer)))
-              (cl-letf (((symbol-function 'emmet2--expand-analysis)
-                         (lambda (value) (cl-incf calls) (funcall expand value))))
-                (should (equal (all-completions abbr table) (list abbr)))
-                (let ((buffer (funcall doc abbr)))
+              (cl-letf (((symbol-function 'emmet2-capf--choices)
+                         (lambda (&rest args) (cl-incf calls) (apply expand args))))
+                ;; CSS offers ranked alternatives; the first is the expansion.
+                (should (cl-every (lambda (candidate) (equal candidate abbr)) (all-completions abbr table)))
+                (let ((expanded calls) (buffer (funcall doc abbr)))
                   (should (eq buffer (funcall doc abbr)))
                   (if (string-match-p "\n" text)
                       (with-current-buffer buffer
                         (should (eq major-mode (nth 3 case)))
                         (should (equal (buffer-substring-no-properties (point-min) (point-max)) preview)))
-                    (should-not buffer)))
-                (should (= calls 1))
-                (should-not (funcall doc "unrelated"))
-                (funcall (plist-get props :exit-function) abbr 'finished)
-                (should (= calls 1))
+                    (should-not buffer))
+                  ;; Display, preview and acceptance share one prepared batch.
+                  (should (= expanded 1))
+                  (should-not (funcall doc "unrelated"))
+                  (funcall (plist-get props :exit-function) abbr 'finished)
+                  (should (= calls expanded)))
                 (should (equal (buffer-substring-no-properties
                                 (plist-get analysis :beg) (+ (plist-get analysis :beg) (length text))) text))
                 (should-not (funcall doc abbr)))))))
@@ -161,10 +163,10 @@
                                 "<ul>\n    <li></li>\n    <li></li>\n</ul>")
                       (css-mode ".a{m10+p20│}" 2 nil 8
                                 "margin: 10px;\npadding: 20px;")
-                      (css-mode ".a{_:hv│}" 2 nil 8
-                                ":hover {\n  \n}")
-                      (scss-mode "\t_:hv│" 4 t 4
-                                 ":hover {\n    \n}")))
+                      (scss-mode ".a{@el│}" 2 nil 8
+                                 "@else {\n  \n}")
+                      (scss-mode "\t@el│" 4 t 4
+                                 "@else {\n    \n}")))
         (ert-info ((cadr case))
           (with-temp-buffer
             (insert (cadr case)) (funcall (car case))

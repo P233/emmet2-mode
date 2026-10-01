@@ -535,13 +535,6 @@ JSX enables JSX syntax while parsing snippets."
            thereis (if (member (emmet2-markup--node-name node) '("input" "textarea")) node
                      (emmet2-markup--find-input (emmet2-markup--node-children node)))))
 
-(defun emmet2-markup--class-escape (character)
-  "Escape CHARACTER for a JavaScript double-quoted property key."
-  (pcase character
-    (#x2028 "\\u2028") (#x2029 "\\u2029")
-    ;; json-serialize returns UTF-8 bytes; offsets below must count characters.
-    (_ (substring (decode-coding-string (json-serialize (char-to-string character)) 'utf-8) 1 -1))))
-
 (defun emmet2-markup--class-expression (value object constructor)
   "Convert class VALUE tokens to OBJECT members joined by CONSTRUCTOR.
 All intermediate offsets count characters.  Fields spanning several class
@@ -572,9 +565,13 @@ names include the intervening expression syntax in their new defaults."
                                      (and (< (caar remaining) end) (< beg (cdar remaining)))))
               (unless (eql (caar empty) beg) (push (cons beg end) empty))))))
       (setq words (cl-stable-sort (append words (nreverse empty)) #'< :key #'car))
+      (when (or (and words (string-blank-p object))
+                (and (cdr words) (string-blank-p constructor)))
+        (signal 'emmet2-error '("JSX class expressions require nonempty project references")))
       (let ((offsets (make-vector (1+ (length text)) nil))
             (size 0) (index 0) parts)
         (cl-labels ((emit (part) (push part parts) (cl-incf size (length part))))
+          (unless words (emit "\"\""))
           (when (cdr words) (emit (concat constructor "(")))
           (dolist (span words)
             (let* ((beg (car span)) (end (cdr span))
@@ -584,13 +581,13 @@ names include the intervening expression syntax in their new defaults."
                    (dot (string-match-p "\\`[a-zA-Z_$][a-zA-Z0-9_$]*\\'" word))
                    (position beg))
               (when (> index 0) (emit ", "))
-              (unless (string-empty-p word) (emit (concat object (if dot "." "[\""))))
+              (emit (concat object (if dot "." "[\"")))
               (aset offsets beg size)
               (seq-doseq (character word)
-                (emit (if dot (char-to-string character) (emmet2-markup--class-escape character)))
+                (emit (if dot (char-to-string character) (emmet2-engine-js-character character)))
                 (aset offsets (cl-incf position) size))
               (aset offsets end size)
-              (when (and (not (string-empty-p word)) (not dot)) (emit "\"]"))
+              (unless dot (emit "\"]"))
               (cl-incf index)))
           (let ((last 0))
             (dotimes (i (length offsets))
@@ -673,9 +670,9 @@ COMMON starts with the dictionary's standard opening.  Entries may be phrases."
               (list (emmet2-markup--lorem-paragraph dictionary (emmet2-markup--random state min max)
                                                      (or (null repeat) (= (emmet2-markup--repeat-index repeat) 0)) state)))))))
 
-(cl-defun emmet2-markup--transform (nodes &optional parent-name class-attribute jsx (random-state (list 0)) repeat)
+(cl-defun emmet2-markup--transform (nodes profile &optional parent-name (random-state (list 0)) repeat)
   "Transform owned NODES under PARENT-NAME before serialization.
-CLASS-ATTRIBUTE renames class for JSX; JSX supplies project expression options.
+PROFILE owns attribute names and optional project class expressions.
 RANDOM-STATE belongs to this call; REPEAT is the nearest ancestor's repeater."
   (dolist (node nodes)
     (emmet2-engine--check-deadline)
@@ -692,23 +689,24 @@ RANDOM-STATE belongs to this call; REPEAT is the nearest ancestor's repeater."
                 (cl-remove-if (lambda (attr) (and (equal (emmet2-markup--attribute-name attr) (cdr pair))
                                                   (emmet2-markup--empty-attribute-p attr)))
                               (emmet2-markup--node-attributes (car pair)))))))
-    (when class-attribute
       (dolist (attr (emmet2-markup--node-attributes node))
-        (when (equal (emmet2-markup--attribute-name attr) "class")
-          (setf (emmet2-markup--attribute-name attr) class-attribute)
-          (when jsx
+      (let ((name (emmet2-markup--attribute-name attr))
+            (classes (plist-get profile :classes)))
+        (when (and classes (equal name "class"))
             (unless (eq (emmet2-markup--attribute-kind attr) 'expression)
               (setf (emmet2-markup--attribute-value attr)
                     (emmet2-markup--class-expression (emmet2-markup--attribute-value attr)
-                                                    (plist-get jsx :cssModulesObject)
-                                                    (plist-get jsx :classConstructor))))
-            (setf (emmet2-markup--attribute-kind attr) 'expression)))))
-    (emmet2-markup--transform (emmet2-markup--node-children node)
-                             (downcase (or (emmet2-markup--node-name node) "")) class-attribute jsx random-state
+                                                   (plist-get classes :cssModulesObject)
+                                                   (plist-get classes :classConstructor))))
+          (setf (emmet2-markup--attribute-kind attr) 'expression))
+        (when-let* ((mapped (cdr (assoc name (plist-get profile :attributes)))))
+          (setf (emmet2-markup--attribute-name attr) mapped))))
+    (emmet2-markup--transform (emmet2-markup--node-children node) profile
+                              (downcase (or (emmet2-markup--node-name node) "")) random-state
                              (or (emmet2-markup--node-repeat node) repeat))))
 
-(cl-defstruct (emmet2-markup--output (:constructor emmet2-markup--output (indent base-indent jsx)))
-  indent base-indent jsx parts fields (offset 0) (field 1) (level 0) (line 0))
+(cl-defstruct (emmet2-markup--output (:constructor emmet2-markup--output (indent base-indent profile)))
+  indent base-indent profile parts fields (offset 0) (field 1) (level 0) (line 0))
 
 (defun emmet2-markup--push (out text)
   "Append literal TEXT to OUT, counting characters."
@@ -783,7 +781,7 @@ NODE is at INDEX in vector SIBLINGS under PARENT."
   (let ((name (emmet2-markup--attribute-name attr))
         (value (emmet2-markup--attribute-value attr))
         (expression (or (eq (emmet2-markup--attribute-kind attr) 'expression)
-                        (and (emmet2-markup--output-jsx out) (emmet2-markup--attribute-multiple attr)))))
+                        (and (plist-get (emmet2-markup--output-profile out) :jsx) (emmet2-markup--attribute-multiple attr)))))
     (when (and name (not (string-empty-p name)) (or (not (emmet2-markup--attribute-implied attr))
                        (emmet2-markup--attribute-kind attr) (and value (not (equal value '(""))))))
       (unless value
@@ -820,7 +818,7 @@ NODE is at INDEX in vector SIBLINGS under PARENT."
        (emmet2-markup--push out (concat "<" name))
        (dolist (attr (emmet2-markup--node-attributes node)) (emmet2-markup--emit-attribute out attr)))
      (if (and name (emmet2-markup--node-self-closing node) (not value) (not children))
-         (emmet2-markup--push out (if (emmet2-markup--output-jsx out) " />" ">"))
+         (emmet2-markup--push out (if (plist-get (emmet2-markup--output-profile out) :jsx) " />" ">"))
        (when name (emmet2-markup--push out ">"))
        (if (and value children (cl-some #'consp value))
            (let ((split (cl-position-if #'consp value)))
@@ -862,6 +860,27 @@ NODE is at INDEX in vector SIBLINGS under PARENT."
     (emmet2-result-create (apply #'concat (nreverse (emmet2-markup--output-parts out)))
                           fields)))
 
+(defconst emmet2-markup--profiles
+  '((html :jsx nil :attributes nil)
+    (react :jsx t :attributes (("class" . "className") ("for" . "htmlFor")))
+    (solid :jsx t :attributes nil))
+  "Dialect-owned attribute and serialization policies; never mutate these.")
+
+(defun emmet2-markup--profile (preset classes)
+  "Validate PRESET and CLASSES and build this request's rendering profile."
+  (unless (or (null classes)
+              (and (eq preset 'jsx) (proper-list-p classes)
+                   (member (plist-get classes :classAttribute) '("className" "class"))
+                   (cl-every (lambda (key)
+                               (let ((value (plist-get classes key)))
+                                 (stringp value)))
+                             '(:cssModulesObject :classConstructor))))
+    (signal 'emmet2-error '("Invalid JSX extension options")))
+  (let ((dialect (cond ((eq preset 'html) 'html)
+                       ((equal (plist-get classes :classAttribute) "class") 'solid)
+                       (t 'react))))
+    (append (cdr (assq dialect emmet2-markup--profiles)) (list :classes classes))))
+
 (cl-defun emmet2-engine-markup-expand (abbreviation &key (preset 'html) (indent "\t") (base-indent "") jsx (seed 0))
   "Expand ABBREVIATION through the native markup pipeline.
 PRESET is html or jsx.  INDENT and BASE-INDENT affect layout before fields.
@@ -870,18 +889,13 @@ SEED is an integer for call-local lorem generation, normalized to 32 bits."
   (unless (and (stringp abbreviation) (memq preset '(html jsx)) (stringp indent) (stringp base-indent))
     (signal 'emmet2-error '("Invalid markup abbreviation, preset or indentation")))
   (unless (integerp seed) (signal 'emmet2-error '("Lorem seed must be an integer")))
-  (unless (or (null jsx)
-              (and (eq preset 'jsx) (proper-list-p jsx)
-                   (member (plist-get jsx :classAttribute) '("className" "class"))
-                   (stringp (plist-get jsx :cssModulesObject)) (stringp (plist-get jsx :classConstructor))))
-    (signal 'emmet2-error '("Invalid JSX extension options")))
   (emmet2-engine-with-expansion
-    (let* ((jsx-p (eq preset 'jsx))
+   (let* ((profile (emmet2-markup--profile preset jsx))
+          (jsx-p (plist-get profile :jsx))
            (nodes (emmet2-markup--resolve (emmet2-markup--convert (emmet2-markup--parse abbreviation jsx-p))
                                            (make-hash-table :test #'equal) nil jsx-p))
-           (out (emmet2-markup--output indent base-indent jsx-p)))
-      (emmet2-markup--transform nodes nil (and jsx-p (or (plist-get jsx :classAttribute) "classList")) jsx
-                               (list (logand seed #xffffffff)))
+          (out (emmet2-markup--output indent base-indent profile)))
+     (emmet2-markup--transform nodes profile nil (list (logand seed #xffffffff)))
       (emmet2-markup--emit out nodes)
       (emmet2-markup--result out))))
 

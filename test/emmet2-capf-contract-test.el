@@ -7,8 +7,17 @@
 (require 'corfu)
 (require 'corfu-auto)
 
+(require 'emmet2-mode)
 (require 'emmet2-capf)
 (require 'web-mode)
+
+(defmacro emmet2-test--with-yasnippet (installed &rest body)
+  "Run BODY with yasnippet enabled when INSTALLED, otherwise as if absent."
+  (declare (indent 1) (debug t))
+  `(cl-letf (((symbol-function 'yas-minor-mode)
+              (and ,installed (symbol-function 'yas-minor-mode))))
+     (when ,installed (yas-minor-mode 1))
+     ,@body))
 
 ;; Private Corfu calls inspect the pinned frontend; production uses public APIs.
 (defmacro emmet2-test--with-capf (text &rest body)
@@ -18,6 +27,17 @@
      (insert ,text) (web-mode) (emmet2-mode 1)
      (setq-local indent-tabs-mode nil)
      (let ((table (nth 2 (emmet2-capf)))) (ignore table) ,@body)))
+
+(defun emmet2-test--complete-first ()
+  "Run `emmet2-complete' and accept its first choice as a frontend would.
+The choice passes through the production table, exit function and insertion."
+  (let ((completion-in-region-function
+         (lambda (start end collection &optional predicate)
+           (when-let* ((candidate (car (all-completions (buffer-substring-no-properties start end)
+                                                        collection predicate))))
+             (funcall (plist-get completion-extra-properties :exit-function) candidate 'finished)
+             t))))
+    (emmet2-complete)))
 
 (ert-deftest emmet2-contract-table-is-original-text ()
   (emmet2-test--with-capf "ul>li*3"
@@ -78,7 +98,7 @@ ACTION runs after presentation instead of ordinary acceptance."
         (goto-char (if css (1- (point-max)) (point-max)))
         (when middle (backward-char 3))
         (let* ((analysis (emmet2-context-analyze))
-               (expected (emmet2--expand-analysis analysis))
+               (expected (emmet2-expand-analysis analysis))
                (expand (symbol-function 'emmet2-insert)))
           (cl-letf (((symbol-function 'corfu--candidates-popup)
                      (lambda (&rest _) (setq shown t)))

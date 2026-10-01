@@ -213,7 +213,7 @@
   "integration": [
     {
       "id": "command-expand",
-      "contract": "C-j expands the whole abbreviation from start/middle/end",
+      "contract": "Explicit completion replaces the retired C-j command and expands the whole abbreviation from start/middle/end",
       "stage": "S3/S4",
       "tests": ["emmet2-markup-command-completion-preview-and-yas"]
     },
@@ -257,7 +257,7 @@
       "id": "project-options",
       "contract": "markup-variant, css-modules-object, class-names-constructor names preserved",
       "stage": "S4",
-      "tests": ["emmet2-expand-options-and-nonfile-buffers"]
+      "tests": ["emmet2-complete-options-and-nonfile-buffers"]
     },
     {
       "id": "mode-lifecycle",
@@ -291,9 +291,9 @@
     },
     {
       "id": "completion-command",
-      "contract": "emmet2-complete uses only Emmet capf without changing Corfu options",
+      "contract": "emmet2-complete requests only Emmet capf without changing frontend options or choosing a candidate. Built-in CSS uses the automatic admission rules; other hosts retain explicit analysis and confidence bypass without relaxing syntax rules",
       "stage": "S5",
-      "tests": ["emmet2-capf-mode-registration-and-command-isolation", "emmet2-capf-explicit-command-warms-but-keeps-host-gate"]
+      "tests": ["emmet2-capf-mode-registration-and-command-isolation", "emmet2-capf-builtin-css-command-shares-automatic-admission", "emmet2-capf-explicit-command-warms-and-skips-automatic-gates", "emmet2-stylesheet-requests-need-an-insertable-position"]
     },
     {
       "id": "installation",
@@ -306,10 +306,64 @@
       "id": "grammar-missing",
       "contract": "capf nil, explicit missing-grammar error; HTML/CSS still works",
       "stage": "S3",
-      "tests": ["emmet2-context-missing-grammar-preserves-source", "emmet2-context-html-css-need-no-tree-sitter", "emmet2-expand-missing-grammar-and-cancellation-leave-source"]
+      "tests": ["emmet2-context-missing-grammar-preserves-source", "emmet2-context-html-css-need-no-tree-sitter", "emmet2-complete-missing-grammar-and-cancellation-leave-source"]
     }
   ],
   "intentionalChanges": [
+    {
+      "id": "structured-css-candidate-identity",
+      "behavior": "Resolved property identities survive completion rendering. Ambiguous t-a and text-a alternatives now produce margin-top: auto instead of reparsing margin-top-a as margin: top auto. String choice projections remain independently expandable.",
+      "stage": "architecture-refactor",
+      "tests": ["emmet2-css-choices-retain-resolved-property-identity"]
+    },
+    {
+      "id": "markup-dialect-and-empty-class-expressions",
+      "behavior": "React uses className/htmlFor and Solid uses class/for. The internal classList fallback becomes React className; authored classList is unchanged. Empty class fields become editable object keys and empty literal classes become an empty string expression. Frozen legacy cases markup-007, markup-015 and markup-016 retain their inputs with explicit corrected expectations. Required nonempty references and Unicode scalar characters fail with domain errors.",
+      "stage": "architecture-refactor",
+      "tests": ["emmet2-markup-dialects-own-attribute-mappings", "emmet2-markup-extension-fields-and-unicode", "emmet2-markup-class-inputs-have-domain-errors", "emmet2-markup-current-core-oracle"]
+    },
+    {
+      "id": "editor-request-and-host-boundaries",
+      "behavior": "All hosts validate confirmed analyses against the restored visible view. Web languages share exclusive part endpoints and standalone SCSS dialect discovery. Initial and delayed automatic failures invalidate completion tables; explicit failures remain diagnostic and cancellation propagates.",
+      "stage": "architecture-refactor",
+      "tests": ["emmet2-host-all-contexts-share-the-visible-view-boundary", "emmet2-host-callback-views-are-restored", "emmet2-host-errors-have-editor-boundaries", "emmet2-host-lazy-failure-invalidates-the-entire-table", "emmet2-host-cancellation-propagates-and-invalidates", "emmet2-host-debugging-keeps-the-original-error", "emmet2-host-change-during-batch-render-rejects-all-candidates", "emmet2-context-web-parts-use-exclusive-endpoints", "emmet2-context-web-file-dialect-and-revision"]
+    },
+    {
+      "id": "external-host-completion-provider",
+      "behavior": "External hosts can provide confirmed ranges and an immutable context revision to the existing completion session, with no built-in fallback or duplicate parser. Automatic and explicit completion share preview, prefix reuse, fields and insertion. Provider changes and source or context changes reject stale choices. The public context expansion API honors an explicit host indentation width.",
+      "stage": "post-S8",
+      "tests": ["emmet2-host-provider-is-the-only-context-authority", "emmet2-host-provider-validates-ranges-and-render-context", "emmet2-host-public-expansion-preserves-layout-fields-and-source", "emmet2-host-dispatcher-works-without-the-minor-mode", "emmet2-host-provider-completes-selectors-without-rule-bodies", "emmet2-host-completion-shares-auto-explicit-preview-and-acceptance", "emmet2-host-provider-classifies-once-per-revision-and-reuses-prefix", "emmet2-host-provider-changes-reject-stale-candidates"]
+    },
+    {
+      "id": "shared-css-selector-boundaries",
+      "behavior": "Automatic and explicit completion share structural pseudo-chain boundaries. Selector lists, attributes, escaped colons and combinators are preserved before the active chain. Spaced nested selectors remain selectors, while declarations retain ownership of their values. Selector commas do not enter property-list expansion or its confirmed-prefix cache.",
+      "stage": "post-S8",
+      "tests": ["emmet2-extract-css-selector-boundaries-are-structural", "emmet2-css-selector-prefix-preserves-authored-structure", "emmet2-stylesheet-selector-boundaries-share-completion-rules", "emmet2-stylesheet-selector-prefix-cannot-reclassify-a-value", "emmet2-capf-complex-selector-preview-typing-and-acceptance"]
+    },
+    {
+      "id": "css-base-mode-hosts",
+      "behavior": "Every css-base-mode descendant is a CSS host, including css-ts-mode, which is a sibling of css-mode rather than a child.",
+      "stage": "post-S8",
+      "tests": ["emmet2-stylesheet-css-ts-mode-is-a-css-host"]
+    },
+    {
+      "id": "pseudo-selector-completion-shapes",
+      "behavior": "Pseudo completion expands only selector names and arguments, without adding spaces, rule blocks or content declarations. Required pseudo-functions insert editable parentheses; optional functional forms retain bare names. CSS and SCSS never add an implicit ampersand; authored selector prefixes are preserved and the legacy underscore omission marker remains supported. Candidate rows show only the pseudo chain, while insertion retains the full selector. This intentionally updates legacy css-082 through css-093 without modifying their frozen fixtures.",
+      "stage": "post-S8",
+      "tests": ["emmet2-css-pseudo-kinds-and-editable-arguments", "emmet2-css-pseudo-prefix-is-explicit-in-every-syntax", "emmet2-css-pseudo-catalog-has-valid-shapes", "emmet2-css-pseudo-functions-aliases-and-fallback", "emmet2-capf-pseudo-menu-is-independent-of-insertion", "emmet2-capf-pseudo-preview-and-field-navigation", "emmet2-capf-pseudo-tail-edit-retains-only-current-choices", "emmet2-stylesheet-pseudo-completion-preserves-authored-tail", "emmet2-stylesheet-pseudos-complete-without-rule-bodies", "emmet2-css-legacy-css-083", "emmet2-css-legacy-css-086", "emmet2-css-legacy-css-090", "emmet2-css-legacy-css-092"]
+    },
+    {
+      "id": "completion-first-css",
+      "behavior": "Emmet CSS snippets and the C-j expansion command are removed. A project-owned search over pinned CSS data ranks properties, keyword values and inherited value sets; completion builds at most ten choices and accepting one is the only expansion. Snippet defaults and value presets such as gtc repeat() and cr rgb() are gone; b and ct remain authored aliases. Plain CSS at-rules no longer use Emmet templates. Known elements with a pseudo, such as button:hv, and HTML elements alone on a line offer completion; emmet2-complete uses the automatic gate in built-in CSS and the explicit contract elsewhere; a property before a single colon, such as display:fl, leaves its value to the host even on request.",
+      "stage": "post-S8",
+      "tests": ["emmet2-css-search-accuracy-gates", "emmet2-css-search-words-aliases-and-values", "emmet2-css-search-values-include-inherited-sets", "emmet2-css-search-chooses-properties-and-keywords", "emmet2-css-choices-begin-with-the-expansion", "emmet2-css-legacy-css-015", "emmet2-capf-confidence-and-host-gates", "emmet2-capf-explicit-command-warms-and-skips-automatic-gates", "emmet2-stylesheet-unspaced-values-stay-with-host-completion", "emmet2-context-lexical-real-point", "emmet2-mode-lifecycle-and-lazy-backend", "emmet2-stylesheet-canonical-names-and-keywords"]
+    },
+    {
+      "id": "project-owned-css-fuzzy-search",
+      "behavior": "Project-owned ordered matching replaces upstream scoring, requires distinct character positions, and searches pinned full CSS property names as well as aliases. Exact aliases retain priority; full property names preserve hyphens. M10, M and DIB consume case-insensitive matches. The matcher remains for highlighting, pseudo and at-rule choices and host queries; completion-first-css ranks properties.",
+      "stage": "post-S8",
+      "tests": ["emmet2-fuzzy-ordered-characters-and-positions", "emmet2-fuzzy-ranking-and-stable-ties", "emmet2-fuzzy-partial-is-explicit-and-never-reuses-characters", "emmet2-capf-fuzzy-search-includes-canonical-properties", "emmet2-capf-fuzzy-properties-continue-through-hyphens", "emmet2-css-search-accuracy-gates"]
+    },
     {
       "id": "live-expansion-completion",
       "behavior": "Typing updates one completion session; known CSS prefixes offer distinct expansion choices. Rows show expansion text and only multiline results provide a formatted documentation panel.",
@@ -320,13 +374,13 @@
       "id": "pending-css-completion-and-full-labels",
       "behavior": "A pending CSS property comma retains completion choices; compound prefixes complete the final property. Menu labels retain all expansion text on one row and highlight literal word-character matches without changing insertion or multiline preview layout.",
       "stage": "post-S8",
-      "tests": ["emmet2-extract-css-trailing-comma-is-part-of-the-abbreviation", "emmet2-capf-corfu-comma-retains-choices-and-continues-properties", "emmet2-capf-corfu-pending-comma-acceptance-and-undo", "emmet2-capf-pending-comma-keeps-strict-syntax-boundaries", "emmet2-capf-display-highlights-literal-matches-without-changing-results", "emmet2-capf-lazy-results-and-expansion-display"]
+      "tests": ["emmet2-extract-css-trailing-comma-is-part-of-the-abbreviation", "emmet2-capf-corfu-separator-retains-choices-and-continues-properties", "emmet2-capf-corfu-pending-separator-acceptance-and-undo", "emmet2-capf-pending-separator-keeps-strict-syntax-boundaries", "emmet2-capf-display-highlights-literal-matches-without-changing-results", "emmet2-capf-lazy-results-and-expansion-display"]
     },
     {
       "id": "current-fragment-and-root-aligned-preview",
-      "behavior": "After a top-level CSS comma, menu rows show the current fragment with an ellipsis for the omitted prefix. Insertion and multiline previews retain the complete result. Previews remove source-column alignment and retain structural indentation; labels and previews are prepared once per candidate in the current revision.",
+      "behavior": "After a top-level CSS comma or plus, menu rows show only the last property, without a marker for the omitted prefix. Insertion and multiline previews retain the complete result. Previews remove source-column alignment and retain structural indentation; labels and previews are prepared once per candidate in the current revision.",
       "stage": "post-S8",
-      "tests": ["emmet2-capf-corfu-comma-shows-only-the-current-fragment", "emmet2-capf-current-fragment-keeps-complete-insertion-and-undo", "emmet2-capf-current-fragment-preview-includes-confirmed-properties", "emmet2-capf-current-fragment-honors-nested-and-quoted-commas", "emmet2-capf-current-fragment-is-prepared-once-per-revision", "emmet2-capf-current-fragment-preserves-css-in-js-insertion", "emmet2-preview-capf-removes-source-column-and-keeps-structural-indent"]
+      "tests": ["emmet2-capf-corfu-rows-show-only-the-last-property", "emmet2-capf-current-fragment-keeps-complete-insertion-and-undo", "emmet2-capf-current-fragment-preview-includes-confirmed-properties", "emmet2-capf-current-fragment-honors-nested-and-quoted-commas", "emmet2-capf-current-fragment-is-prepared-once-per-revision", "emmet2-capf-current-fragment-preserves-css-in-js-insertion", "emmet2-preview-capf-removes-source-column-and-keeps-structural-indent"]
     },
     {
       "id": "first-field",
@@ -354,7 +408,7 @@
     },
     {
       "id": "css-at-rules",
-      "behavior": "Plain CSS hosts keep upstream @m/@f/@i/@kf snippets and never offer Sass-only at-rules; SCSS hosts keep the legacy templates.",
+      "behavior": "Plain CSS hosts resolve among standard at-rules only and never offer Sass-only at-rules; SCSS hosts keep the legacy templates.",
       "stage": "post-S8",
       "tests": ["emmet2-css-at-rules-follow-host-syntax", "emmet2-stylesheet-at-rules-follow-host-syntax"]
     },

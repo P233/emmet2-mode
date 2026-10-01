@@ -3,6 +3,24 @@
 This is the measurement protocol, not a performance result. S0 feasibility
 probes allocate temporary parsers and are not the production analysis path.
 The old research averages and parser-only timings do not satisfy these gates.
+
+[The 2026-10-01 follow-up](performance-followup-2026-10-01.md) records the current
+context/editor snapshot: 624/624 checks across twelve fixed full reports, with
+raw-sample verification. Historical tails and current GUI interaction retain
+their separate evidence limits; no production optimization is claimed.
+
+[The 2026-09-30 architecture report](performance-architecture-2026-09-30.md)
+compares the full refactor against its frozen input: 862/864 numerical checks
+pass, with two large-Web edit gates and editor tail questions still open.
+
+[The 2026-09-29 native-host report](performance-native-hosts-2026-09-29.md)
+records current installed correctness, allocation measurements, a three-process
+retest per build and the remaining performance/GUI gaps. Retained budget failures
+and subsequent runtime edits keep performance acceptance open.
+
+[The 2026-09-28 search review](performance-search-2026-09-28.md) measured the
+earlier fuzzy completion that searched beside Emmet's CSS snippets. CSS now uses
+`emmet2-css-search`; the CSS rows below replace that review's S7 gate.
 Implement each benchmark alongside the real path at S3, S5, S6 or S7.
 
 Record the repository revision, dirty files, fixture hashes, machine/CPU/OS,
@@ -12,7 +30,19 @@ isolated `-Q` environment prepared by `setup.mjs`; do not change daily settings.
 
 Use byte-compiled project code with compilation warnings treated as errors.
 Native compilation is a separate optional result, never a substitute for the
-bytecode gate. Keep normal GC thresholds; record `gc-cons-threshold`,
+bytecode gate. On a build with native compilation, pass the following before
+loading test or package libraries in **both** baseline and candidate processes:
+
+```sh
+--eval '(setq load-no-native t native-comp-jit-compilation nil native-comp-enable-subr-trampolines nil)'
+```
+
+An `.elc` source filename alone does not prove bytecode execution: a native cache
+can replace it. Keep the runners' `byte-code-function-p` checks enabled. The
+trampoline setting also avoids this machine's native compiler/toolchain issue;
+it is a measurement setting, not a package default.
+
+Keep normal GC thresholds; record `gc-cons-threshold`,
 `gc-cons-percentage`, `gcs-done` and `gc-elapsed` deltas. Do not exclude samples
 which performed GC or raise thresholds to pass. Keep raw per-operation samples.
 
@@ -27,8 +57,10 @@ do not average away a failed p99. Verify output/context before timing it.
 | S3 CSS/web ordinary positions | A fixed CSS part/markup position in 500 and 20k lines; include pending scan and syntax updates after edit | Warm p99 scale ratio < 2 |
 | S3 web large style | A 135 KB CSS part with the active declaration near its end; include pending scan and classification | Warm p99 <= 5 ms |
 | S5 editor flow | Real context, engine, annotation/popupinfo and acceptance; markup plus the six-property CSS case below | Report cold and warm stages and total; no invented aggregate budget |
+| CSS completion | `.a { ovh,t }` through real Corfu: a confirmed prefix and ten ranked choices, including the first open | Completion p99 <= 20 ms |
 | S6 markup | Four inputs below, plus JSX, emoji and mirrored fields; parse, resolve, formatting, offsets and cursor | Bytecode warm p99 <= 1 ms |
-| S7 CSS | `m10+p5+bd1#2s+posa+dib+fz16`; include parsing, matching, values, formatting and fields | Bytecode warm p99 <= 0.5 ms |
+| CSS search | Twelve representative queries, from `m` to `bdrs` | Bytecode warm p50 <= 2.5 ms, p99 <= 5 ms |
+| S7 CSS core | `margin10+padding5+border1#2s+position-absolute+display-flex+font-size16`; canonical names with parsing, keyword values, formatting and fields | Bytecode warm p99 <= 0.5 ms |
 
 Markup inputs:
 
@@ -85,6 +117,11 @@ not discarded failures. Cold analysis is the first call per fixture after its
 mode setup; only the first fixture in a fresh process includes process-wide
 initialization that later fixtures share.
 
+The ordinary CSS pairs run in css-mode, css-ts-mode, scss-mode and less-css-mode.
+The isolated dependency lock includes CSS's grammar, so css-ts-mode uses its
+real parser. CSS search and its catalog are compiled/hashed with the context
+modules; no source-loaded membership helper remains on the measured path.
+
 ## Running the implemented S5 benchmark
 
 First build the reviewed revision with `test/install.el` (see CONTRIBUTING).
@@ -106,12 +143,16 @@ A before/after experiment may use a separate copy of that installation with
 the changed module recompiled by the same Emacs; record that distinction and
 its hashes. Such a copy is not a new package-manager installation acceptance.
 
-Each of the eight fixtures runs command, completion, and completion with yas
-paths interleaved, rotating the first path each round: 100 warmups and 1,000
-retained samples per path. Inputs cover the first two markup cases above,
-TSX numbered text, one/six CSS properties, editable CSS fields, CSS-in-JS and
-a 138,052-byte web-mode style buffer. Reset and output/cursor assertions are
-outside the clock. The next operation includes any pending scan left by the
+Each of the eighteen fixtures runs completion and completion with yas paths
+interleaved, rotating the first path each round: 100 warmups and 1,000
+retained samples per path. The first accepted choice defines the expected
+output. Inputs cover the first two markup cases above, TSX numbered text,
+one/six CSS properties, editable CSS fields, ranked CSS choices with and
+without a confirmed prefix, CSS-in-JS and a 138,052-byte web-mode style
+buffer. Additional fixtures cover css-ts-mode, builtin SCSS variables, LESS,
+HTML style attributes, js-mode/js-ts-mode/TypeScript style objects, and native
+html-mode's explicit `emmet2-complete` request. Reset and output/cursor assertions
+are outside the clock. The next operation includes any pending scan left by the
 multi-character reset; this differs from the S3 single-character typing path.
 Yas mode setup is outside the clock, but field creation during acceptance is
 timed and checked. Undo recording remains enabled, with history cleared
@@ -126,11 +167,20 @@ stage times/GC deltas must not be added to the already inclusive total. These
 batch results do not measure screen painting, input-to-display latency, idle
 scheduling or Eglot interaction.
 
+Four additional live sessions (CSS, css-ts-mode, HTML style attributes and TSX
+style objects) alternate typing `a` and deleting it at `ovh,t`. Each retains 100
+warmups and 1,000 samples per edit, including modification hooks and Corfu's
+post-command update and annotation work. Every edit must keep the same table,
+offer ten choices, and label them with the current abbreviation. First open is
+recorded separately. These rows measure an existing session, not repeated opens;
+they have no separate aggregate budget. Normal GC and all slow samples remain.
+
 Mode initialization and context preparation are reported separately. The first
-command includes lazy native engine/data loading; later fixtures can share those
-features. Cold completion creates its first preview buffer; cold yas follows
-with that preview warm. Front-end/dependency loading precedes timing, so cold
-values do not measure Emacs startup or total package loading. The installed
+completion follows an untimed context check and expansion used to establish the
+fixture's formatting; it does not measure first engine/data loading. Cold
+completion creates its first preview buffer; cold yas follows with that preview
+warm. Front-end/dependency loading also precedes timing, so cold values do not
+measure Emacs startup or total package loading. The installed
 runtime has no external executable path and the measured flows reject process
 creation. The report identifies `native Elisp`; the historical S5 report and
 its archived raw data describe the former Node implementation at their recorded
@@ -178,27 +228,26 @@ EMMET2_BENCH_OUTPUT=/tmp/stylesheet-31-1.json \
 ```
 
 Use three fresh serial processes per pinned Emacs build on the fixed machine,
-without concurrent tests or builds. The runner compiles the core, stylesheet
-engine and shared fuzzy matcher into an owned temporary directory, verifies
-their loaded bytecode paths and copies their data beside them. It refuses an
-existing output, a preloaded backend or source changes during measurement.
-Native calls have no executable search path and process creation is rejected.
+without concurrent tests or builds. The runner compiles the core, the fuzzy
+matcher, the CSS search, the stylesheet engine and the extension layer into an
+owned temporary directory, verifies their loaded bytecode paths and copies their
+data beside them. It refuses an existing output, a preloaded module or source
+changes during measurement. Native calls have no executable search path and
+process creation is rejected.
 
-Twelve unchanged oracle fixtures cover the fixed six-property budget input,
-independent property defaults, colors, variables, gradient/function arguments,
-Unicode mirrors/conflicting defaults and multiline raw templates. The original
-0.5 ms gate applies to `stylesheet-contract-10`; the other rows provide additional
-coverage and reported measurements, without inventing a new aggregate budget.
-Each operation includes tokenization, parsing, fuzzy/value resolution, formatting,
-canonical field normalization and cursor construction. Full result equality is
-checked outside every clock. All 447 CSS success/error contracts are also checked
-after cold samples and before warmups.
+Cases cover the search itself, ranked completion choices, the expansion of
+compact abbreviations including the six-property input, and the core alone with
+canonical names. The search gate applies to the search rows and the S7 core
+gate to `core:six-canonical`; the other rows are reported measurements. Compact
+expansion searches once per property, so the former S7 budget no longer applies
+to `m10+p5+bd1#2s+posa+dib+fz16`. The first result of each case is kept, and
+every sample must equal it outside the clock.
 
-The runner rotates the first fixture each round and interleaves 100 warmups and
-1,000 samples per fixture. Normal GC remains 800000/1.0 and all pauses are kept.
+The runner rotates the first case each round and interleaves 100 warmups and
+1,000 samples per case. Normal GC remains 800000/1.0 and all pauses are kept.
 End GC counters are captured before duration/sample allocation. Raw triples and
-per-process statistics use the same units and quantile rule as S6. First expansion
-per fixture and explicit bytecode loading (including snippet preprocessing) are
-separate cold values. Compilation and dependencies precede that load; these values
-do not measure whole Emacs startup. Actual package installation, editor flow and
-GUI acceptance remain separate checks.
+per-process statistics use the same units and quantile rule as S6. The first
+call per case and explicit bytecode loading (including the search index) are
+separate cold values. Compilation and dependencies precede that load; these
+values do not measure whole Emacs startup. Actual package installation, editor
+flow and GUI acceptance remain separate checks.

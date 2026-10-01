@@ -51,7 +51,7 @@
                     :type 'emmet2-result-error))))
 
 (ert-deftest emmet2-result-canonical-oracle-shapes ()
-  (dolist (file '("markup.json" "stylesheet.json"))
+  (dolist (file '("markup.json"))
     (let ((checked 0)
           (cases (with-temp-buffer
                    (insert-file-contents (expand-file-name (concat "test/fixtures/oracle/" file)

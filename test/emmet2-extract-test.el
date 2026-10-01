@@ -108,6 +108,28 @@
     (backward-char)
     (should (equal (plist-get (emmet2-extract (point-min) (point-max)) :abbr) "m10"))))
 
+(ert-deftest emmet2-extract-css-selector-boundaries-are-structural ()
+  (dolist (case '((".a,:hv" ":hv") (".a, :hv" ":hv")
+                  ("button[data-label='a:b']:hv" ":hv")
+                  (".a:hover[data-label='a:b']:hv" ":hv")
+                  (".a:hover.active:fo" ":fo")
+                  (".a\\:active:hv" ":hv")
+                  ("&:not(.a,:focus) > .b:hv:be" ":hv:be")
+                  (".a[data-label='a:b']" nil) ("p[https://example.org]" nil)
+                  (".a[data-label='unfinished]:hv" nil) (".a:has(.b" nil)
+                  (".a:has(.b]:hv" nil) (".a:hover .b" nil)))
+    (let ((colon (emmet2-extract-css-pseudo (car case))))
+      (should (equal (and colon (substring (car case) colon)) (cadr case)))))
+  (with-temp-buffer
+    (insert ".outer {\n  .a, .b[data-x='a:b'] > .c:hv   { color: red; }\n}")
+    (search-backward ":hv") (forward-char 3)
+    (let ((position (point)) (source (buffer-string))
+          (result (emmet2-extract (point-min) (point-max) 'css-selector)))
+      (should (equal (plist-get result :abbr) ".a, .b[data-x='a:b'] > .c:hv"))
+      (should (= (plist-get result :end) position))
+      (should (= (point) position))
+      (should (equal (buffer-string) source)))))
+
 (ert-deftest emmet2-extract-honors-region-and-point ()
   (with-temp-buffer
     (insert "prefixul>li</main>")

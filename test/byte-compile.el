@@ -1,28 +1,38 @@
-;;; byte-compile.el --- Compile implemented rewrite files without artifacts -*- lexical-binding: t; -*-
+;;; byte-compile.el --- Check independent compilation without artifacts -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 (load (expand-file-name "bootstrap.el" (file-name-directory load-file-name)) nil t)
 (require 'bytecomp)
 
-(let* ((directory (make-temp-file "emmet2-byte-compile-" t))
-       (byte-compile-error-on-warn t)
-       (byte-compile-dest-file-function
-        (lambda (file) (expand-file-name (concat (file-name-nondirectory file) "c") directory))))
-  (unwind-protect
-      (dolist (file '("emmet2-preview.el" "test/emmet2-preview-test.el" "emmet2-capf.el" "test/emmet2-capf-test.el" "emmet2-insert.el" "emmet2-mode.el" "test/emmet2-insert-test.el" "test/editor-bytecode.el" "test/emmet2-extensions-markup-test.el" "emmet2-extensions.el" "test/emmet2-extensions-css-test.el"
-                      "emmet2-fuzzy.el" "test/emmet2-fuzzy-test.el" "emmet2-context.el" "test/emmet2-context-test.el" "emmet2-extract.el" "emmet2-engine.el"
-                      "test/package-quality.el" "test/bootstrap.el" "test/byte-compile.el" "test/install.el" "test/bench-context.el" "test/bench-completion.el" "test/emmet2-context-lexical-test.el"
-                      "test/emmet2-capf-contract-test.el" "test/emmet2-extract-test.el"
-                      "test/emmet2-host-contract-test.el" "test/emmet2-engine-test.el" "test/emmet2-engine-native-test.el"
-                      "emmet2-engine-markup.el"
-                      "emmet2-engine-stylesheet.el" "test/emmet2-engine-stylesheet-test.el"
-                      "test/emmet2-engine-markup-test.el" "test/emmet2-lorem-contract.el" "test/bench-markup.el"
-                      "test/emmet2-test.el" "test/emmet2-markup-integration-test.el" "test/integration.el"
-                      "test/emmet2-core-contract.el" "test/emmet2-stylesheet-integration-test.el"
-                      "test/bench-stylesheet.el"))
-        (unless (byte-compile-file (expand-file-name file emmet2-test-root))
-          (error "Byte compilation failed: %s" file)))
-    (delete-directory directory t)))
+(if-let* ((file (getenv "EMMET2_COMPILE_FILE")))
+    (let* ((directory (make-temp-file "emmet2-byte-compile-" t))
+           (byte-compile-error-on-warn t)
+           (byte-compile-dest-file-function
+            (lambda (source) (expand-file-name (concat (file-name-nondirectory source) "c") directory))))
+      (unwind-protect
+          (unless (byte-compile-file file)
+            (error "Byte compilation failed: %s" file))
+        (delete-directory directory t)))
+  ;; A previous file's requires and declarations must not conceal a missing
+  ;; dependency. Discover files instead of maintaining a parallel module list.
+  (let ((runner load-file-name)
+        (emacs (expand-file-name invocation-name invocation-directory))
+        (files (append (directory-files emmet2-test-root t "\\`emmet2-.*\\.el\\'")
+                       (directory-files (expand-file-name "test" emmet2-test-root) t "\\.el\\'")))
+        failed)
+    (dolist (file files)
+      (let ((process-environment (cons (concat "EMMET2_COMPILE_FILE=" file) process-environment)))
+        (with-temp-buffer
+          (unless (zerop (call-process
+                          emacs nil (current-buffer) t "--batch" "-Q"
+                          "--eval" (prin1-to-string
+                                    `(setq native-comp-enable-subr-trampolines
+                                           ,(bound-and-true-p native-comp-enable-subr-trampolines)))
+                          "-l" runner))
+            (princ (buffer-string))
+            (push file failed)))))
+    (when failed (error "Independent byte compilation failed: %S" (nreverse failed)))
+    (princ (format "Independently compiled %d libraries and test runners\n" (length files)))))
 
 ;;; byte-compile.el ends here

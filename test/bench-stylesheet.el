@@ -6,8 +6,23 @@
 (require 'json)
 (require 'bytecomp)
 (defvar emmet2-test-root)
-(declare-function emmet2-engine-stylesheet-expand "emmet2-engine-stylesheet")
-(declare-function emmet2-stylesheet-test--cases "emmet2-engine-stylesheet-test" ())
+(declare-function emmet2-css-search "emmet2-css-search" (query &optional limit bare))
+(declare-function emmet2-extensions-css "emmet2-css" (abbreviation &rest options))
+(declare-function emmet2-extensions-css-choices "emmet2-css" (abbreviation &rest options))
+(declare-function emmet2-engine-stylesheet-expand "emmet2-engine-stylesheet" (abbreviation &rest options))
+
+(defconst emmet2-stylesheet-bench--cases
+  (append
+   (mapcar (lambda (query) (list (concat "search:" query) #'emmet2-css-search query))
+           '("m" "c" "bg" "ins" "bgc" "dib" "jcsb" "trfo" "whsnw" "posa" "gtc" "bdrs"))
+   (mapcar (lambda (input) (list (concat "choices:" input) #'emmet2-extensions-css-choices input))
+           '("ta" "ins32" "t-a" "w--sidebar-width" "posa" "button:hv"))
+   (mapcar (lambda (input) (list (concat "expand:" input) #'emmet2-extensions-css input))
+           '("m10+p5+bd1#2s+posa+dib+fz16" "ins32" "tac" "c+bg"))
+   ;; The same six properties with canonical names measure the core alone.
+   (list (list "core:six-canonical" #'emmet2-engine-stylesheet-expand
+               "margin10+padding5+border1#2s+position-absolute+display-flex+font-size16")))
+  "Search, completion-choice, expansion and core stages with representative input.")
 
 (defun emmet2-stylesheet-bench--command (program &rest args)
   "Return successful metadata PROGRAM output for ARGS."
@@ -16,26 +31,25 @@
     (string-trim (buffer-string))))
 
 (defun emmet2-stylesheet-bench--hashes ()
-  "Hash measured sources, fixture contracts, data, lock and harness."
+  "Hash measured sources, data, lock and harness."
   (vconcat
    (mapcar (lambda (file)
              (with-temp-buffer
                (insert-file-contents-literally (expand-file-name file emmet2-test-root))
                (list :file file :sha256 (secure-hash 'sha256 (current-buffer)))))
-           '("emmet2-engine.el" "emmet2-engine-stylesheet.el" "emmet2-fuzzy.el" "data/emmet/css.json"
-             "test/emmet2-engine-stylesheet-test.el" "test/fixtures/core-inputs.json"
-             "test/fixtures/oracle/stylesheet.json" "data/emmet/source.json"
+           '("emmet2-engine.el" "emmet2-fuzzy.el" "emmet2-css-search.el" "emmet2-extract.el" "emmet2-engine-stylesheet.el"
+             "emmet2-css.el" "emmet2-extensions.el" "data/css-index.json" "data/css-overrides.json" "data/css-source.json"
              "test/bootstrap.el" "test/bench-stylesheet.el" "test/dependencies.json"))))
 
-(defun emmet2-stylesheet-bench--sample (case)
-  "Time the complete expansion in CASE; verify the full result afterward."
+(defun emmet2-stylesheet-bench--sample (case expected)
+  "Time CASE's complete operation; verify its result equals EXPECTED afterward."
   (let* ((start (current-time)) (gcs gcs-done) (gc-time gc-elapsed)
-         (result (apply #'emmet2-engine-stylesheet-expand (nth 1 case)))
+         (result (funcall (nth 1 case) (nth 2 case)))
          ;; Capture counters before duration/sample allocation can trigger GC.
          (end-gcs gcs-done) (end-gc-time gc-elapsed) (end (current-time))
          (sample (vector (* 1000 (float-time (time-subtract end start)))
                          (- end-gcs gcs) (- end-gc-time gc-time))))
-    (unless (equal result (nth 2 case)) (error "Benchmark output differs: %s" (car case)))
+    (unless (equal result expected) (error "Benchmark output differs: %s" (car case)))
     sample))
 
 (defun emmet2-stylesheet-bench--summary (samples)
@@ -47,10 +61,11 @@
           :gc-seconds (cl-loop for sample across samples sum (aref sample 2)))))
 
 (defun emmet2-stylesheet-bench--run ()
-  "Measure S7 CSS through isolated bytecode with fixed oracle inputs."
+  "Measure the CSS search, choices and expansion through isolated bytecode."
   (let* ((output (getenv "EMMET2_BENCH_OUTPUT"))
          (hashes (emmet2-stylesheet-bench--hashes))
          (directory (make-temp-file "emmet2-stylesheet-bytecode-" t))
+         (files '("emmet2-engine" "emmet2-fuzzy" "emmet2-css-search" "emmet2-extract" "emmet2-engine-stylesheet" "emmet2-css" "emmet2-extensions"))
          (byte-compile-error-on-warn t)
          (byte-compile-dest-file-function
           (lambda (file) (expand-file-name (concat (file-name-nondirectory file) "c") directory)))
@@ -61,54 +76,45 @@
         (progn
           (unless (and output (file-name-absolute-p output) (not (file-exists-p output)))
             (error "EMMET2_BENCH_OUTPUT must be a new absolute file"))
-          (when (or (featurep 'emmet2-engine-node) (featurep 'emmet2-engine-stylesheet))
+          (when (or (featurep 'emmet2-css-search) (featurep 'emmet2-engine-stylesheet))
             (error "Run the native CSS benchmark in a fresh process"))
           (copy-directory (expand-file-name "data" emmet2-test-root) (expand-file-name "data" directory))
-          (dolist (file '("emmet2-engine.el" "emmet2-fuzzy.el" "emmet2-engine-stylesheet.el"))
-            (unless (byte-compile-file (expand-file-name file emmet2-test-root)) (error "Compilation failed: %s" file)))
+          (dolist (file files)
+            (unless (byte-compile-file (expand-file-name (concat file ".el") emmet2-test-root))
+              (error "Compilation failed: %s" file)))
           (let ((start (current-time)))
-            (dolist (file '("emmet2-engine.elc" "emmet2-fuzzy.elc" "emmet2-engine-stylesheet.elc"))
-              (load (expand-file-name file directory) nil t t))
+            (dolist (file files) (load (expand-file-name (concat file ".elc") directory) nil t t))
             (setq load-ms (* 1000 (float-time (time-subtract (current-time) start)))))
-          (dolist (function '(emmet2-engine-stylesheet-expand emmet2-result-create emmet2-fuzzy-find))
+          (dolist (function '(emmet2-css-search emmet2-extract-css-pseudo emmet2-extensions-css-choices emmet2-extensions-css
+                              emmet2-engine-stylesheet-expand))
             (unless (and (byte-code-function-p (symbol-function function))
                          (file-in-directory-p (symbol-file function) directory))
               (error "Measured function is not isolated bytecode: %s" function)))
-          (load (expand-file-name "test/emmet2-engine-stylesheet-test.el" emmet2-test-root) nil t)
-          (let* ((all (emmet2-stylesheet-test--cases))
-                 (ids '("stylesheet-contract-10" "stylesheet-contract-01" "stylesheet-contract-06"
-                        "stylesheet-contract-09" "stylesheet-contract-11" "stylesheet-native-067"
-                        "stylesheet-native-070" "stylesheet-native-072" "stylesheet-native-097"
-                        "stylesheet-native-109" "stylesheet-native-176" "stylesheet-native-178"))
-                 (cases (mapcar (lambda (id) (or (assoc id all) (error "Missing fixture: %s" id))) ids))
-                 (exec-path nil))
+          (let ((exec-path nil))
             (cl-letf (((symbol-function 'make-process) (lambda (&rest _) (error "Unexpected native process"))))
               (setq rows (vconcat
                           (mapcar (lambda (case)
-                                    (list :id (car case) :arguments
-                                          (vconcat (mapcar (lambda (arg) (if (symbolp arg) (symbol-name arg) arg)) (nth 1 case)))
-                                          :cold (emmet2-stylesheet-bench--sample case)
-                                          :expected (let ((result (nth 2 case)))
-                                                      (list :text (plist-get result :text) :cursor (plist-get result :cursor)
-                                                            :fields (vconcat (mapcar #'vconcat (plist-get result :fields)))))
-                                          :warmup (make-vector 100 nil) :samples (make-vector 1000 nil))) cases)))
-              ;; Recheck every success/error contract outside the clocks, after
-              ;; cold samples and before warming the selected measurement rows.
-              (unless (= (length all) 447) (error "Incomplete CSS corpus"))
-              (dolist (case all)
-                (unless (equal (condition-case err (apply #'emmet2-engine-stylesheet-expand (nth 1 case))
-                                 (emmet2-parse-error err)) (nth 2 case))
-                  (error "CSS oracle differs: %s" (car case))))
+                                    ;; The cold call includes first use of the loaded index.
+                                    (let* ((start (current-time))
+                                           (expected (funcall (nth 1 case) (nth 2 case)))
+                                           (cold (* 1000 (float-time (time-subtract (current-time) start)))))
+                                      (list :id (car case) :input (nth 2 case) :cold-ms cold :expected expected
+                                            :warmup (make-vector 100 nil) :samples (make-vector 1000 nil))))
+                                  emmet2-stylesheet-bench--cases)))
               (dotimes (round 1100)
-                (dotimes (offset (length cases))
-                  (let* ((index (mod (+ round offset) (length cases))) (row (aref rows index)))
+                (dotimes (offset (length rows))
+                  (let* ((index (mod (+ round offset) (length rows))) (row (aref rows index)))
                     (aset (plist-get row (if (< round 100) :warmup :samples))
                           (if (< round 100) round (- round 100))
-                          (emmet2-stylesheet-bench--sample (nth index cases)))))))
-            (dotimes (i (length rows))
-              (let ((row (aref rows i)))
-                (setf (aref rows i) (append row (list :summary (emmet2-stylesheet-bench--summary (plist-get row :samples))))))))
-          (when (featurep 'emmet2-engine-node) (error "Node loaded into native CSS benchmark"))
+                          (emmet2-stylesheet-bench--sample (nth index emmet2-stylesheet-bench--cases)
+                                                           (plist-get row :expected))))))))
+          (dotimes (i (length rows))
+            (let* ((row (aref rows i)) (summary (emmet2-stylesheet-bench--summary (plist-get row :samples))))
+              (message "%-36s p50 %.3f  p99 %.3f  max %.3f ms" (plist-get row :id)
+                       (plist-get summary :p50-ms) (plist-get summary :p99-ms) (plist-get summary :max-ms))
+              (setf (aref rows i) (append (cl-loop for (key value) on row by #'cddr
+                                                   unless (eq key :expected) append (list key value))
+                                          (list :summary summary)))))
           (unless (equal hashes (emmet2-stylesheet-bench--hashes)) (error "Source changed during measurement"))
           (with-temp-buffer
             (insert (json-serialize
@@ -118,7 +124,7 @@
                            :system system-configuration :os (emmet2-stylesheet-bench--command "uname" "-a")
                            :cpu (emmet2-stylesheet-bench--command "sysctl" "-n" "machdep.cpu.brand_string")
                            :backend "elisp-bytecode" :gc-threshold gc-cons-threshold :gc-percentage gc-cons-percentage
-                           :module-load-ms load-ms :oracle-count 447 :hashes hashes :fixtures rows)))
+                           :module-load-ms load-ms :hashes hashes :cases rows)))
             (write-region (point-min) (point-max) output nil 'silent nil 'excl))
           (message "Native CSS samples written: %s" output))
       (delete-directory directory t))))

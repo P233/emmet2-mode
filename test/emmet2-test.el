@@ -16,6 +16,9 @@
     ("completion"
      (load (expand-file-name "test/emmet2-capf-contract-test.el" emmet2-test-root) nil t)
      (load (expand-file-name "test/emmet2-capf-test.el" emmet2-test-root) nil t)
+     (require 'emmet2-corfu-test)
+     (require 'emmet2-value-test)
+     (require 'emmet2-host-api-test)
      (load (expand-file-name "test/emmet2-preview-test.el" emmet2-test-root) nil t))
     ("editor"
      (load (expand-file-name "test/emmet2-insert-test.el" emmet2-test-root) nil t))

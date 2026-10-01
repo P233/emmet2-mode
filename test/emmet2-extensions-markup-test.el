@@ -10,16 +10,23 @@
                  (insert-file-contents (expand-file-name "test/fixtures/markup-legacy.json" emmet2-test-root))
                  (json-parse-buffer :object-type 'alist :array-type 'list :false-object nil)))
   (let* ((solid (alist-get 'solid entry))
+         ;; Frozen fixtures retain the historical invalid empty JSX expressions.
+         ;; These three cases now use editable empty keys; no legacy case is lost.
+         (expected (pcase (alist-get 'id entry)
+                     ("markup-007" "<div className={css[\"\"]}></div>")
+                     ("markup-015" "<ABC className={css[\"\"]} />")
+                     ("markup-016" "<div class={style[\"\"]}></div>")
+                     (_ (alist-get 'text entry))))
          (args (list (alist-get 'abbreviation entry) :jsx (alist-get 'jsx entry)
                      :variant (and solid "solid") :css-modules-object (if solid "style" "css")
                      :class-names-constructor (if solid "classnames" "clsx"))))
     (eval `(ert-deftest ,(intern (concat "emmet2-markup-legacy-" (alist-get 'id entry))) ()
              (should (equal (plist-get (apply #'emmet2-extensions-markup ',args) :text)
-                            ,(alist-get 'text entry)))) t)))
+                            ,expected))) t)))
 
 (ert-deftest emmet2-markup-extension-fields-and-unicode ()
   (should (equal (emmet2-extensions-markup "." :jsx t)
-                 '(:text "<div className={}></div>" :fields ((16 16 1 "") (18 18 2 "")) :cursor 16)))
+                 '(:text "<div className={styles[\"\"]}></div>" :fields ((24 24 1 "") (28 28 2 "")) :cursor 24)))
   (should (equal (emmet2-extensions-markup "div{😀}+div[class='😸']" :jsx t)
                  '(:text "<div>😀</div>\n<div className={styles[\"😸\"]}></div>"
                          :fields ((42 42 1 "")) :cursor 42)))
@@ -62,6 +69,23 @@
   (should (equal (emmet2-extensions-markup ".btn-primary" :jsx t :variant "solid")
                  '(:text "<div class={styles[\"btn-primary\"]}></div>"
                          :fields ((35 35 1 "")) :cursor 35))))
+
+(ert-deftest emmet2-markup-dialects-own-attribute-mappings ()
+  (should (equal (plist-get (emmet2-extensions-markup "label.a[for=field]" :jsx t) :text)
+                 "<label htmlFor=\"field\" className={styles.a}></label>"))
+  (should (equal (plist-get (emmet2-extensions-markup "label.a[for=field]" :jsx t :variant "solid") :text)
+                 "<label for=\"field\" class={styles.a}></label>"))
+  (should (equal (plist-get (emmet2-engine-expand "label[for=field]" :preset 'jsx) :text)
+                 "<label htmlFor=\"field\"></label>")))
+
+(ert-deftest emmet2-markup-class-inputs-have-domain-errors ()
+  (dolist (option '(:css-modules-object :class-names-constructor))
+    (dolist (value '("" " \t\n" nil))
+      (should-error (apply #'emmet2-extensions-markup ".a.b" :jsx t (list option value))
+                    :type 'emmet2-error)))
+  (dolist (character '(#x3fff80 #xd800 #x110000))
+    (should-error (emmet2-extensions-markup (concat "[class=\"" (string character) "\"]") :jsx t)
+                  :type 'emmet2-error)))
 
 (provide 'emmet2-extensions-markup-test)
 ;;; emmet2-extensions-markup-test.el ends here

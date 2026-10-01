@@ -4,6 +4,7 @@
 
 (require 'ert)
 (require 'emmet2-context)
+(require 'emmet2-mode)
 (require 'web-mode)
 
 ;; All 38 planning probes are assertions; full real-point extraction is tested
@@ -51,6 +52,14 @@
              ("svelte text"                   "<script>let a = 1;</script>\n<main>\n  ⟨ul>li\n</main>\n" web-mode (markup) "svelte")
              ("astro {expr} (known limitation: not marked by web-mode)" "---\n---\n<main>{items.⟨ma}</main>\n" web-mode (markup) "astro")))
 
+(ert-deftest emmet2-context-lexical-hosts-need-no-js-resources ()
+  (dolist (mode '(css-mode css-ts-mode scss-mode html-mode fundamental-mode))
+    (with-temp-buffer
+      (cl-letf (((symbol-function 'display-warning) #'ignore)) (funcall mode)) (emmet2-mode 1)
+      (should-not (emmet2-context-js--owner))
+      (should-not (memq #'emmet2-context-js--before-change before-change-functions))
+      (emmet2-mode -1))))
+
 (ert-deftest emmet2-context-css-position-prototypes ()
   (dolist (fixture emmet2-test-css-position-cases)
     (pcase-let ((`(,name ,source ,mode ,expected) fixture))
@@ -58,8 +67,9 @@
         (with-temp-buffer
           (insert source) (funcall mode)
           (goto-char (point-min)) (search-forward "⟨") (delete-char -1)
-          (should (equal (cons 'css (emmet2-context--css-position
-                                    (point-min) (point) nil (save-excursion (syntax-ppss))))
+          (should (equal (cons 'css (emmet2-context-css--position
+                                    (list 'css (point-min) (point-max) nil (if (eq mode 'scss-mode) 'scss 'css) t)
+                                    (point) (save-excursion (syntax-ppss))))
                          expected)))))))
 
 (ert-deftest emmet2-context-web-position-prototypes ()
@@ -70,15 +80,15 @@
           (insert source) (funcall mode)
           (when engine (web-mode-set-engine (car engine)))
           (goto-char (point-min)) (search-forward "⟨") (delete-char -1)
-          (emmet2-context--js-region)
-          (let* ((region (emmet2-context--web-region))
+          (let* ((region (emmet2-context-web-region))
                  (position (when (eq (car region) 'css)
-                             (emmet2-context--css-position
-                              (nth 1 region) (point) (nth 3 region)
+                             (emmet2-context-css--position
+                              (append region (unless (nth 4 region) (list 'css t))) (point)
                               (save-excursion
                                 (with-syntax-table css-mode-syntax-table
                                   (parse-partial-sexp (nth 1 region) (point)))))))
-                 (result (cond ((or (not region) (memq position '(string comment))) '(none))
+                 (result (cond ((or (not (memq (car region) '(css markup)))
+                                    (memq position '(string comment))) '(none))
                                ((eq (car region) 'markup) '(markup))
                                (t (cons 'css position)))))
             (should (equal result expected))))))))
@@ -89,27 +99,32 @@
     (css-mode ".a{p[1px│}" css "p[1px" declaration-start t)
     (css-mode ".a{--v[{a:1}│]}" css "--v[{a:1}]" declaration-start t)
     (css-mode ".a { color: red; p[1px│ 2px] }" css "p[1px 2px]" declaration-start t)
-    (css-mode ".a { content: ct['a│ b'] }" css "ct['a b']" value nil)
-    (css-mode ".a { color: re│ }" css "re" value nil)
-    (css-mode ".a{display:fl│}" css "display:fl" value nil)
-    (css-mode ".a{dis│play:flex}" css "display:flex" value nil)
-    (css-mode ".a{display:│}" css "display:" value nil)
-    (css-mode ".a{--accent:re│}" css "--accent:re" value nil)
-    (css-mode ".a{future-prop:foo│}" css "future-prop:foo" value nil)
-    (scss-mode ".a{$accent:re│}" css "$accent:re" value nil)
-    (css-mode ".a{d:n│}" css "d:n" value nil)
+    ;; A request needs an insertable start: values, at-rule preludes and
+    ;; selectors without a pseudo part have none.
+    (css-mode ".a { content: ct['a│ b'] }" nil nil nil nil)
+    (css-mode ".a { color: re│ }" nil nil nil nil)
+    ;; A known, custom or vendor property's value belongs to the host even on
+    ;; request; other names may still be custom element selectors.
+    (css-mode ".a{display:fl│}" nil nil nil nil)
+    (css-mode ".a{dis│play:flex}" nil nil nil nil)
+    (css-mode ".a{display:│}" nil nil nil nil)
+    (css-mode ".a{--accent:re│}" nil nil nil nil)
+    (css-mode ".a{-webkit-box-flex:1│}" nil nil nil nil)
+    (css-mode ".a{future-prop:foo│}" nil nil nil nil)
+    (scss-mode ".a{$accent:re│}" nil nil nil nil)
+    (css-mode ".a{d:n│}" nil nil nil nil)
     (css-mode ".a{_:hv│}" css "_:hv" declaration-start t)
     (css-mode ".a{button::be│}" css "button::be" declaration-start t)
-    (css-mode ".a {\n margin: 0\n au│\n}" css "au" value nil)
-    (css-mode "@media scr│" css "scr" at-rule-prelude nil)
-    (css-mode ".card│" css ".card" selector nil)
+    (css-mode ".a {\n margin: 0\n au│\n}" nil nil nil nil)
+    (css-mode "@media scr│" nil nil nil nil)
+    (css-mode ".card│" nil nil nil nil)
     (css-mode "@md│" css "@md" selector t)
     (css-mode ":not(.a,.b│)" css ":not(.a,.b)" selector t)
     (css-mode "_hv│" css "_hv" selector t)
     (css-mode ".a{/*m10│*/}" nil nil nil nil)
     (css-mode ".a{content:'m10│'}" nil nil nil nil)
     (scss-mode ".a { &:hover { color: red; } m10│ }" css "m10" declaration-start t)
-    (scss-mode ".a { @include mi│ }" css "mi" at-rule-prelude nil)
+    (scss-mode ".a { @include mi│ }" nil nil nil nil)
     (scss-mode ".a { @include mixin; m10│ }" css "m10" declaration-start t)
     (css-mode "@media screen { .a { m10│ } }" css "m10" declaration-start t)
     (css-mode ".a {\n  /* Layout */\n  m10│\n}" css "m10" declaration-start t)
@@ -123,7 +138,7 @@
     (scss-mode ".a {\n  // note\n  m10│\n}" css "m10" declaration-start t)
     (scss-mode ".a {\n//\nm10│\n}" css "m10" declaration-start t)
     (scss-mode ".a {\n//  \n//\nm10│\n}" css "m10" declaration-start t)
-    (scss-mode ".a { color:\n//\nm10│\n}" css "m10" value nil)
+    (scss-mode ".a { color:\n//\nm10│\n}" nil nil nil nil)
     (web-mode "<style lang='scss'>.a {\n//\nm10│\n}</style>" css "m10" declaration-start t)
     (web-mode "<style lang='less'>.a {\n//  \nm10│\n}</style>" css "m10" declaration-start t)
     (web-mode "<style lang=\"scss\">\n// Don't touch\n.a {\n  m10│\n}\n</style>" css "m10" declaration-start t)
@@ -137,9 +152,9 @@
     (web-mode "<div class='m10│'>x</div>" nil nil nil nil)
     (web-mode "<div style='m1│0'>x</div><div style='p10'></div>" css "m10" declaration-start t)
     (web-mode "<div style='color: red; p[1px│ 2px]'>x</div>" css "p[1px 2px]" declaration-start t)
-    (web-mode "<div style='color: re│'>x</div>" css "re" value nil)
-    (web-mode "<div style='display:fl│'></div>" css "display:fl" value nil)
-    (web-mode "<style>.a{display:fl│}</style>" css "display:fl" value nil)
+    (web-mode "<div style='color: re│'>x</div>" nil nil nil nil)
+    (web-mode "<div style='display:fl│'></div>" nil nil nil nil)
+    (web-mode "<style>.a{display:fl│}</style>" nil nil nil nil)
     (web-mode "<div style=\"ct['hi│']\">x</div>" css "ct['hi']" declaration-start t)
     ;; web-mode drops the value's attribute markers for this unfinished tag.
     (web-mode "<div style=\"m10│" nil nil nil nil)
@@ -148,9 +163,9 @@
     (web-mode "<div style='/* note */m10│'></div>" css "m10" declaration-start t)
     (web-mode "<style>│@md</style>" css "@md" selector t)
     (web-mode "<style>@md│</style>" css "@md" selector t)
-    (web-mode "<style>│.card</style>" css ".card" selector nil)
+    (web-mode "<style>│.card</style>" nil nil nil nil)
     (web-mode "<style>/* { */ .a{content:'{';m10│}</style>" css "m10" declaration-start t)
-    (web-mode "<style>.a {color: re│}</style>" css "re" value nil)
+    (web-mode "<style>.a {color: re│}</style>" nil nil nil nil)
     (web-mode "<style>/*m10│*/</style>" nil nil nil nil)
     (web-mode "<!--ul>li│-->" nil nil nil nil)
     (fundamental-mode "ul>li│" markup "ul>li" markup nil)
@@ -173,7 +188,7 @@
             (should (equal (emmet2-context-analyze t) (when auto result)))
             (should (equal (buffer-substring-no-properties (point-min) (point-max)) original))
             (should (= (point) point-before))
-            (should-not (emmet2-context--parsers))))))))
+            (should-not (emmet2-context-js--parsers))))))))
 
 (ert-deftest emmet2-context-web-engine-blocks-bound-markup ()
   (dolist (case '(("django" "<div>{% if x %}ul>li│{% endif %}</div>" "ul>li")
@@ -218,6 +233,27 @@
         (goto-char (point-min)) (search-forward "m10")
         (should (eq (plist-get (emmet2-context-analyze t) :lang) 'css))))))
 
+(ert-deftest emmet2-context-web-region-owns-scan-and-language-routing ()
+  (dolist (fixture '(("<p>ul>li│</p>" markup)
+                     ("<style>.a{m10│}</style>" css)
+                     ("<div style='m10│'></div>" css)
+                     ("<script>const A=(<main>ul>li│</main>);</script>" javascript)))
+    (with-temp-buffer
+      (insert (car fixture)) (web-mode)
+      (search-backward "│") (delete-char 1)
+      (should web-mode-change-beg)
+      (let ((source (buffer-string)) (position (point)))
+        ;; A Web boundary request needs neither a prior JSX probe nor a parser.
+        (cl-letf (((symbol-function 'emmet2-context-js-region)
+                   (lambda () (error "Web must route its own language parts"))))
+          (let ((region (emmet2-context-web-region)))
+            (should (eq (car region) (cadr fixture)))
+            (should (<= (nth 1 region) (point) (nth 2 region)))))
+        (should-not web-mode-change-beg)
+        (should-not (emmet2-context-js--parsers))
+        (should (equal source (buffer-string)))
+        (should (= position (point)))))))
+
 (ert-deftest emmet2-context-web-pending-scan-and-part-switch ()
   (with-temp-buffer
     (insert "<style>.a{m10}</style><p>ul>li</p><style>.b{p10}</style>")
@@ -234,7 +270,7 @@
     (goto-char (point-min)) (search-forward "m10")
     (delete-char -3) (insert "c")
     (should (equal (plist-get (emmet2-context-analyze t) :abbr) "c"))
-    (should-not (emmet2-context--parsers))))
+    (should-not (emmet2-context-js--parsers))))
 
 (ert-deftest emmet2-context-web-narrowing-keeps-host-and-visible-boundaries ()
   (dolist (source '("<style>.a{m10}</style>" "<div style=\"m10\"></div>"
@@ -245,7 +281,7 @@
       (goto-char (point-min)) (search-forward "m10")
       (let ((start (- (point) 3)) (end (point)))
         (narrow-to-region start end)
-        (emmet2-context--prepare)
+        (emmet2-context-js-prepare)
         (dolist (automatic '(nil t))
           (should (equal (plist-get (emmet2-context-analyze automatic) :abbr) "m10"))
           (should (= (point-min) start))
@@ -277,14 +313,14 @@
     (ert-info (source)
       (emmet2-test-with-web-insertion source
         (insert "1")
-        (let* ((owner (emmet2-context--owner))
-               (entry (emmet2-context--state-web-insertion owner)))
+        (let* ((owner (emmet2-context-web--owner))
+               (entry (emmet2-context-web--state-insertion owner)))
           (should entry)
           (let ((result (emmet2-context-analyze t)) (position (point))
                 (optimized (buffer-string)))
             (should-not web-mode-change-beg)
             (should-not web-mode-change-end)
-            (should-not (emmet2-context--state-web-insertion owner))
+            (should-not (emmet2-context-web--state-insertion owner))
             (should-not (marker-buffer (nth 2 entry)))
             (web-mode-buffer-scan)
             (should (equal-including-properties optimized (buffer-string)))
@@ -300,7 +336,7 @@
         ('replace (delete-char -1) (insert "1"))
         ('delete (delete-char -1))
         ('repeated (insert "1") (insert "2")))
-      (should-not (emmet2-context--state-web-insertion (emmet2-context--owner)))
+      (should-not (emmet2-context-web--state-insertion (emmet2-context-web--owner)))
       (let ((result (emmet2-context-analyze)) (optimized (buffer-string)))
         (web-mode-buffer-scan)
         (should (equal-including-properties optimized (buffer-string)))
@@ -308,7 +344,7 @@
   ;; An ordinary character can complete an HTML terminator already in CSS.
   (emmet2-test-with-web-insertion "<style>.a { </styl│> }</style><p>after</p>"
     (insert "e")
-    (should-not (emmet2-context--state-web-insertion (emmet2-context--owner)))
+    (should-not (emmet2-context-web--state-insertion (emmet2-context-web--owner)))
     (let ((result (emmet2-context-analyze)) (scanned (buffer-string)))
       (web-mode-buffer-scan)
       (should (equal-including-properties scanned (buffer-string)))
@@ -319,7 +355,7 @@
     (let ((start (- (point) 3)))
       (narrow-to-region start (point))
       (insert "1")
-      (let* ((owner (emmet2-context--owner)) (entry (emmet2-context--state-web-insertion owner))
+      (let* ((owner (emmet2-context-web--owner)) (entry (emmet2-context-web--state-insertion owner))
              (beg web-mode-change-beg) (end web-mode-change-end) (position (point)))
         (should entry)
         (cl-letf (((symbol-function 'web-mode-scan-region) (lambda (&rest _) (error "scan failed"))))
@@ -335,7 +371,7 @@
   (dolist (action '(inhibited indirect stop major-mode))
     (emmet2-test-with-web-insertion "<style>.a { m10│ }</style><p>other</p>"
       (insert "1")
-      (let* ((owner (emmet2-context--owner)) (entry (emmet2-context--state-web-insertion owner)))
+      (let* ((owner (emmet2-context-web--owner)) (entry (emmet2-context-web--state-insertion owner)))
         (should entry)
         (pcase action
           ('inhibited (let ((inhibit-modification-hooks t)) (insert "2")))
@@ -346,7 +382,7 @@
           ('major-mode (fundamental-mode)))
         (when (memq action '(inhibited indirect))
           (emmet2-context-analyze)
-          (should-not (emmet2-context--state-web-insertion owner)))
+          (should-not (emmet2-context-web--state-insertion owner)))
         (should-not (marker-buffer (nth 2 entry)))
         (should-not (marker-buffer (nth 3 entry)))))))
 
@@ -358,12 +394,12 @@
         (replace-match "script")
         (search-forward "</style>") (replace-match "</script>")))
     (insert "1")
-    (should-not (emmet2-context--state-web-insertion (emmet2-context--owner)))
+    (should-not (emmet2-context-web--state-insertion (emmet2-context-web--owner)))
     (should-not (emmet2-context-analyze)))
   (emmet2-test-with-web-insertion "<style>.a { m10│ }</style><p>other</p><style>.b { p5 }</style>"
     (insert "1")
     (search-forward "p5") (insert "1")
-    (should-not (emmet2-context--state-web-insertion (emmet2-context--owner)))
+    (should-not (emmet2-context-web--state-insertion (emmet2-context-web--owner)))
     (should (equal (plist-get (emmet2-context-analyze) :abbr) "p51"))
     (let ((optimized (buffer-string)))
       (web-mode-buffer-scan)
@@ -373,14 +409,14 @@
   (dolist (setting '(engine content-type))
     (emmet2-test-with-web-insertion "<style>.a { m10│ }</style>"
       (insert "1")
-      (should (emmet2-context--state-web-insertion (emmet2-context--owner)))
+      (should (emmet2-context-web--state-insertion (emmet2-context-web--owner)))
       (if (eq setting 'engine) (setq web-mode-engine "php") (setq web-mode-content-type "css"))
       (let ((scan (symbol-function 'web-mode-scan)) (calls 0))
         (cl-letf (((symbol-function 'web-mode-scan)
                    (lambda (&rest args) (cl-incf calls) (apply scan args))))
           (emmet2-context-analyze))
         (should (= calls 1))
-        (should-not (emmet2-context--state-web-insertion (emmet2-context--owner)))))))
+        (should-not (emmet2-context-web--state-insertion (emmet2-context-web--owner)))))))
 
 (ert-deftest emmet2-context-web-insertion-nested-hook-edit-invalidates ()
   (emmet2-test-with-web-insertion "<style>.a { m10│ }</style>"
@@ -389,7 +425,7 @@
                     (save-excursion (goto-char end) (insert "</style><p>"))))))
       (add-hook 'after-change-functions hook nil t)
       (unwind-protect (insert "1") (remove-hook 'after-change-functions hook t)))
-    (should-not (emmet2-context--state-web-insertion (emmet2-context--owner)))
+    (should-not (emmet2-context-web--state-insertion (emmet2-context-web--owner)))
     (emmet2-context-analyze)
     (let ((scanned (buffer-string)))
       (web-mode-buffer-scan)
@@ -408,6 +444,35 @@
     (let ((recovered (buffer-string)))
       (web-mode-buffer-scan)
       (should (equal-including-properties recovered (buffer-string))))))
+
+(ert-deftest emmet2-context-web-parts-use-exclusive-endpoints ()
+  (dolist (source '("<script>const f = () => ul>li│</script>"
+                     "<script>const f = () => ul>li│\n</script>"
+                     "<script type=\"text/typescript\">const f = () => ul>li│</script>"))
+    (with-temp-buffer
+      (insert source) (web-mode)
+      (search-backward "│") (delete-char 1)
+      (let ((region (emmet2-context-web-region)))
+        (should (memq (car region) '(javascript typescript)))
+        (should (<= (nth 1 region) (point) (nth 2 region))))
+      (should (equal (plist-get (emmet2-context-analyze) :abbr) "ul>li")))))
+
+(ert-deftest emmet2-context-web-file-dialect-and-revision ()
+  (dolist (case '(("scss" ".a {// note\nm10│}" scss "m10")
+                  ("scss" ".a {// m10│\n}" nil nil)
+                  ("css" ".a {m10│}" css "m10")
+                  ("scss" ".a {p$gutter│}" scss "p$gutter")))
+    (with-temp-buffer
+      (setq buffer-file-name (concat "/tmp/emmet2-host-fixture." (car case)))
+      (insert (cadr case)) (web-mode)
+      (search-backward "│") (delete-char 1)
+      (let ((analysis (emmet2-context-analyze t)) (revision (emmet2-context-revision)))
+        (should (equal (plist-get analysis :syntax) (nth 2 case)))
+        (should (equal (plist-get analysis :abbr) (nth 3 case)))
+        (setq buffer-file-name "/tmp/emmet2-host-fixture.css")
+        (unless (equal (car case) "css")
+          (should-not (equal revision (emmet2-context-revision)))))
+      (set-buffer-modified-p nil))))
 
 (provide 'emmet2-context-lexical-test)
 ;;; emmet2-context-lexical-test.el ends here

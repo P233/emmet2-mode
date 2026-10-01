@@ -24,9 +24,10 @@ test("oracle checks detect changed, missing and unexpected files without fixing 
 test("fixed inputs regenerate identical output including parse failures", () => {
   const first = generate();
   assert.deepEqual(generate(), first);
-  const css = JSON.parse(first.get("stylesheet.json"));
-  const expectedCss = JSON.parse(readFileSync(new URL("../fixtures/oracle/stylesheet.json", import.meta.url), "utf8"));
-  assert.deepEqual(css.filter((entry) => entry.error), expectedCss.filter((entry) => entry.error));
+  assert.deepEqual([...first.keys()], ["markup.json"]);
+  const markup = JSON.parse(first.get("markup.json"));
+  const expectedMarkup = JSON.parse(readFileSync(new URL("../fixtures/oracle/markup.json", import.meta.url), "utf8"));
+  assert.deepEqual(markup.filter((entry) => entry.error), expectedMarkup.filter((entry) => entry.error));
   for (const contents of first.values()) {
     for (const { id, result, error } of JSON.parse(contents)) {
       if (error) continue;
@@ -47,10 +48,6 @@ test("fixed inputs regenerate identical output including parse failures", () => 
         result.fields.find((field) => field[2] === 1)?.[0] ?? characters.length, id);
     }
   }
-  assert.deepEqual(css.find((entry) => entry.id === "css-invalid-raw").error,
-    { message: "Unexpected character", position: 2 });
-  assert.deepEqual(css.find((entry) => entry.id === "css-error-after-emoji").error,
-    { message: "Unexpected character", position: 7 });
 });
 
 test("the CLI runs through a symlink and rejects unknown arguments", (t) => {

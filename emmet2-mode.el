@@ -28,92 +28,44 @@
 
 ;;; Commentary:
 
-;; Please check the README.
+;; Expand HTML, JSX, CSS and SCSS abbreviations through completion-at-point.
+;; Previews and editable fields share the same expansion.  See README.md for
+;; installation and examples, and CHANGELOG.md for upgrade notes.
 
 ;;; Code:
 (require 'emmet2-context)
-(require 'emmet2-extensions)
-(require 'emmet2-insert)
+(require 'emmet2-expand)
 (declare-function emmet2-preview-clear "emmet2-preview" ())
+(declare-function emmet2-corfu-unload-function "emmet2-corfu" ())
 (autoload 'emmet2-capf "emmet2-capf" nil nil)
+(autoload 'emmet2-css-value-capf "emmet2-css-value" nil nil)
 (autoload 'emmet2-complete "emmet2-capf" nil t)
-
-(defgroup emmet2 nil "Emmet abbreviation expansion." :group 'convenience)
-
-(defcustom emmet2-markup-variant nil
-  "Optional markup dialect.  The string \"solid\" selects Solid JSX."
-  :type '(choice (const :tag "From context" nil) (const "solid"))
-  :safe (lambda (value) (member value '(nil "solid"))) :group 'emmet2)
-
-(defcustom emmet2-css-modules-object "styles"
-  "JavaScript reference for the project's CSS Modules class name map.
-Use the name imported in the source file, such as styles or cardStyles.
-Emmet inserts the reference; add the matching import in the source file."
-  :type 'string :safe #'stringp :group 'emmet2)
-
-(defcustom emmet2-class-names-constructor "clsx"
-  "JavaScript function reference for joining multiple JSX class names.
-Use the function imported in the source file, such as clsx or cx.
-A single class uses the CSS Modules reference directly."
-  :type 'string :safe #'stringp :group 'emmet2)
-
-(defun emmet2--output-syntax (analysis)
-  "Return the syntax of ANALYSIS's final output under current project options."
-  (pcase (plist-get analysis :lang)
-    ('markup (if (or (eq (plist-get analysis :syntax) 'jsx)
-                     (equal emmet2-markup-variant "solid")) 'jsx 'html))
-    ('css-in-js 'jsx)
-    ('css 'css)))
-
-(defun emmet2--expand-analysis (analysis)
-  "Expand ANALYSIS using current project options and formatter layout.
-This read-only path produces the canonical result for insertion and completion."
-  (let ((options (emmet2-insert-render-options analysis))
-        (abbreviation (plist-get analysis :abbr)))
-    (pcase (plist-get analysis :lang)
-      ('markup
-       (apply #'emmet2-extensions-markup abbreviation
-              :jsx (eq (emmet2--output-syntax analysis) 'jsx)
-              :variant emmet2-markup-variant :css-modules-object emmet2-css-modules-object
-              :class-names-constructor emmet2-class-names-constructor options))
-      ('css
-       (apply #'emmet2-extensions-css abbreviation :syntax (plist-get analysis :syntax) options))
-      ('css-in-js
-       (apply #'emmet2-extensions-css abbreviation :css-in-js t options)))))
-
-;;;###autoload
-(defun emmet2-expand ()
-  "Expand the abbreviation at point, preserving confirmed host exclusions."
-  (interactive)
-  (condition-case error-data
-      (if-let* ((analysis (emmet2-context-analyze)))
-          (let* ((snapshot (emmet2-insert-snapshot analysis))
-                 (result (emmet2--expand-analysis analysis)))
-            (emmet2-insert snapshot result))
-        (user-error "There is no Emmet abbreviation at point"))
-    (emmet2-error (user-error "%s" (error-message-string error-data)))))
 
 ;;;###autoload
 (define-minor-mode emmet2-mode
-  "Expand with \\[emmet2-expand] and offer confident Emmet completion."
+  "Offer Emmet choices through completion while typing.
+Expansion happens only when a completion choice is accepted.  The keymap is
+empty; bind `emmet2-complete' in it to request choices explicitly."
   :lighter " emmet2"
-  :keymap (let ((map (make-sparse-keymap)))
-            (define-key map (kbd "C-j") #'emmet2-expand)
-            map)
+  :keymap (make-sparse-keymap)
   (if emmet2-mode
       (progn
         (add-hook 'completion-at-point-functions #'emmet2-capf -50 t)
+        (when (and (derived-mode-p 'css-base-mode) (not emmet2-context-provider))
+          (add-hook 'completion-at-point-functions #'emmet2-css-value-capf -60 t))
         (emmet2-context-start))
     (remove-hook 'completion-at-point-functions #'emmet2-capf t)
+    (remove-hook 'completion-at-point-functions #'emmet2-css-value-capf t)
     (emmet2-context-stop)))
 
 (defun emmet2-mode-unload-function ()
-  "Release mode-owned context resources and preview buffers."
+  "Release context resources, preview buffers and optional Corfu advice."
   (dolist (buffer (buffer-list))
     (with-current-buffer buffer
       (if (bound-and-true-p emmet2-mode) (emmet2-mode -1)
-        (when (emmet2-context--owner) (emmet2-context-stop)))))
+        (emmet2-context-stop))))
   (when (fboundp 'emmet2-preview-clear) (emmet2-preview-clear))
+  (when (fboundp 'emmet2-corfu-unload-function) (emmet2-corfu-unload-function))
   nil)
 
 (provide 'emmet2-mode)

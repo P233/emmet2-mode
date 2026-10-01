@@ -9,20 +9,44 @@
 ;; Affixation supplies display text without changing the completion payload.
 
 ;;; Code:
-(require 'emmet2-mode)
+(require 'cl-lib)
+(require 'seq)
+(require 'subr-x)
+(require 'emmet2-context)
+(require 'emmet2-expand)
+(defvar emmet2-mode nil)
 (autoload 'emmet2-preview "emmet2-preview")
+(declare-function emmet2-corfu--enable "emmet2-corfu" ())
+
+(defconst emmet2-capf--limit 10
+  "Most CSS choices built for one input revision; each costs an expansion.")
+
+(defvar emmet2-capf--explicit nil
+  "Non-nil when the user explicitly requests completion.")
+
+(defun emmet2-capf--element-line-p (analysis)
+  "Whether ANALYSIS is a known HTML element name alone on its line."
+  (and (emmet2-css-search-element-p (plist-get analysis :abbr))
+       (save-excursion (goto-char (plist-get analysis :beg)) (skip-chars-backward " \t") (bolp))
+       (save-excursion (goto-char (plist-get analysis :end)) (skip-chars-forward " \t") (eolp))))
 
 (defun emmet2-capf--confident-p (analysis)
-  "Whether ANALYSIS has an Emmet signal or a known CSS snippet prefix."
+  "Whether ANALYSIS has an expansion signal or a CSS search choice."
   (let ((abbreviation (plist-get analysis :abbr)) (case-fold-search nil))
     (pcase (plist-get analysis :lang)
-      ;; Words ending a sentence, such as end. or e.g., are prose.
-      ('markup (not (string-match-p "\\`\\(?:[[:alnum:]_:-]+\\|[[:alnum:]_:.-]*\\.\\)\\'" abbreviation)))
+      ;; Words ending a sentence, such as end. or e.g., are prose.  A known
+      ;; element such as div alone on its line is being written as markup.
+      ('markup (or (not (string-match-p "\\`\\(?:[[:alnum:]_:-]+\\|[[:alnum:]_:.-]*\\.\\)\\'" abbreviation))
+                   (emmet2-capf--element-line-p analysis)))
       ((or 'css 'css-in-js)
        (or (string-match-p (rx (or digit upper (in "#!%,(+["))) abbreviation)
-           (and (string-match-p "\\`[a-z]+\\'" abbreviation)
-                (or (emmet2-engine-stylesheet-completions abbreviation)
-                    (emmet2-extensions-css-value-abbreviation-p abbreviation)))
+           ;; Keep p$ and p$- live while a Sass variable name is being typed.
+           ;; A bare $name stays with the host's variable completion.
+           (and (eq (plist-get analysis :syntax) 'scss)
+                (string-match-p "\\`[a-z][-a-z]*\\$-?\\(?:[_[:alpha:]]\\|\\'\\)" abbreviation))
+           (and (string-match-p "\\`[a-z][-a-z]*\\'" abbreviation)
+                (emmet2-extensions-css-choices abbreviation :css-in-js (eq (plist-get analysis :lang) 'css-in-js)
+                                               :limit 1 :at-rule (plist-get analysis :at-rule)))
            (and (eq (plist-get analysis :lang) 'css)
                 (string-match-p "\\`\\(?:@[[:alpha:]]\\|[^:]*::?[[:alpha:]]\\)" abbreviation)))))))
 
@@ -31,10 +55,12 @@
   (list emmet2-mode emmet2-markup-variant emmet2-css-modules-object
         emmet2-class-names-constructor (emmet2-insert-render-options analysis)))
 
-(defun emmet2-capf--current-p (analysis snapshot settings)
+(defun emmet2-capf--current-p (analysis snapshot settings automatic &optional analyzed)
   "Whether ANALYSIS, SNAPSHOT and SETTINGS still describe this input revision.
 Completion may move point from its original position to the candidate end.
-Source checks remain strict; only table queries may advance the revision."
+Source checks remain strict; only table queries may advance the revision.
+AUTOMATIC repeats the session's kind of context analysis, unless ANALYZED
+says ANALYSIS already matched at the current `emmet2-context-revision'."
   (and (not buffer-read-only)
        (eq (current-buffer) (plist-get snapshot :buffer))
        (<= (point-min) (plist-get snapshot :point) (point-max))
@@ -43,42 +69,13 @@ Source checks remain strict; only table queries may advance the revision."
          (goto-char (plist-get snapshot :point))
          (emmet2-insert-snapshot-valid-p snapshot))
        (equal settings (emmet2-capf--settings analysis))
-       (equal analysis (emmet2-context-analyze t))))
+       (or analyzed (equal analysis (emmet2-context-analyze automatic)))))
 
 (defun emmet2-capf--same-context-p (before after)
   "Whether BEFORE and AFTER have the same source anchor and host context."
   (and after
        (cl-every (lambda (key) (equal (plist-get before key) (plist-get after key)))
-                 '(:beg :lang :syntax :position))))
-
-(defun emmet2-capf--completion-parts (analysis)
-  "Return (NAMES CONFIRMED INPUT) for ANALYSIS.
-NAMES contains exact and CSS prefix choices for the last property.  CONFIRMED
-is the source before the last top-level comma; INPUT is the remaining fragment.
-A pending CSS comma keeps the preceding fragment.  Explicit expansion remains
-strict about empty properties."
-  (let ((abbreviation (plist-get analysis :abbr)))
-    (if (not (memq (plist-get analysis :lang) '(css css-in-js)))
-        (list (list abbreviation) nil abbreviation)
-      (let ((parts (condition-case nil
-                       (emmet2-extensions--split abbreviation '(?,))
-                     (emmet2-parse-error nil))))
-        (when (and (eq (plist-get analysis :lang) 'css)
-                   (eq (plist-get analysis :position) 'declaration-start)
-                   (string-suffix-p "," abbreviation)
-                   (equal (car (last parts)) ""))
-          (setq abbreviation (substring abbreviation 0 -1) parts (butlast parts)))
-        (let* ((input (if parts (car (last parts)) abbreviation))
-               (tail (condition-case nil
-                         (car (last (emmet2-extensions--split input '(?+))))
-                       (emmet2-parse-error input)))
-               (prefix (substring abbreviation 0 (- (length abbreviation) (length tail))))
-               (confirmed-length (- (length abbreviation) (length input))))
-          (list (cons abbreviation
-                      (mapcar (lambda (name) (concat prefix name))
-                              (emmet2-engine-stylesheet-completions tail)))
-                (when (> confirmed-length 0) (substring abbreviation 0 (1- confirmed-length)))
-                input))))))
+                 '(:beg :lang :syntax :position :property :at-rule))))
 
 (defun emmet2-capf--preview-text (text base-indent)
   "Make TEXT start at column zero while retaining its relative indentation.
@@ -95,58 +92,48 @@ the source buffer's `tab-width', so preview buffers need no source settings."
        (make-string column ?\s)))
    text t t))
 
-(defun emmet2-capf--choices (analysis)
-  "Build ANALYSIS's full results, previews and current-fragment menu labels.
-The exact abbreviation ranks first.  Share one expansion budget and expand the
-confirmed prefix only once to locate the display boundary in canonical text.
-Invalid individual abbreviations do not hide other valid choices."
-  (pcase-let* ((`(,names ,confirmed ,input) (emmet2-capf--completion-parts analysis))
-               (base-indent (plist-get (emmet2-insert-render-options analysis) :base-indent))
-               (seen (make-hash-table :test #'equal)) (choices nil))
-    (emmet2-engine-with-expansion
-      (let ((prefix (when confirmed
-                      (concat (plist-get (emmet2--expand-analysis
-                                          (plist-put (copy-sequence analysis) :abbr confirmed)) :text)
-                              (if (eq (plist-get analysis :lang) 'css-in-js) ", "
-                                (concat "\n" base-indent))))))
-        (dolist (name (delete-dups names))
-          (let ((result (condition-case nil
-                            (emmet2--expand-analysis
-                             (plist-put (copy-sequence analysis) :abbr name))
-                          (emmet2-parse-error nil))))
-            (when (and result (not (gethash result seen)))
-              (puthash result t seen)
-              (let* ((text (plist-get result :text))
-                     ;; Selectors and at-rules use different rendering paths;
-                     ;; only hide a prefix that the property formatter emitted.
-                     (split (and prefix (string-prefix-p prefix text))))
-                (push (list :result result
-                            :text (emmet2-capf--preview-text text base-indent)
-                            :label (concat
-                                    (when split "… ")
-                                    (emmet2-capf--display
-                                     (if split (substring text (length prefix)) text)
-                                     (if (and prefix (not split)) (plist-get analysis :abbr) input))))
-                      choices)))))))
-    (nreverse choices)))
+(defun emmet2-capf--choices (analysis &optional previous)
+  "Prepare ANALYSIS's language-owned results for the completion frontend.
+PREVIOUS is a batch from the same verified context and render settings.
+The language owns choice construction, fragment labels and any result reuse;
+the frontend only prepares preview layout and menu highlighting."
+  (let* ((options (emmet2-insert-render-options analysis))
+         (batch (emmet2-expand-choices analysis emmet2-capf--limit previous)))
+    (dolist (entry (plist-get batch :choices))
+      (plist-put entry :text (emmet2-capf--preview-text
+                              (plist-get (plist-get entry :result) :text)
+                              (plist-get options :base-indent)))
+      (plist-put entry :display (emmet2-capf--display (plist-get entry :label) (plist-get entry :query))))
+    batch))
 
 (defun emmet2-capf--display (text abbreviation)
   "Return TEXT as one menu row, highlighting ABBREVIATION.
-Normalize line breaks and surrounding indentation.  Highlight
-word characters when they all occur in order; aliases without a literal
-correspondence remain unhighlighted.  Never modify the supplied text."
+Normalize line breaks and surrounding indentation.  Use the same ordered
+matcher as candidate search; aliases without a literal correspondence remain
+unhighlighted.  Never modify the supplied text; the full result still owns
+preview, insertion and field positions."
   (let* ((text (copy-sequence
                 (replace-regexp-in-string "[ \t]*\n[ \t\n]*" " " text)))
-         (needle (downcase (replace-regexp-in-string "[^[:alnum:]_-]" "" abbreviation)))
-         (haystack (downcase text)) (offset 0) positions)
-    (when (cl-every
-           (lambda (character)
-             (when-let* ((position (cl-position character haystack :start offset)))
-               (push position positions) (setq offset (1+ position))))
-           needle)
-      (dolist (position positions)
-        (add-face-text-property position (1+ position) 'completions-common-part nil text)))
+         (needle (replace-regexp-in-string "[^[:alnum:]_-]" "" abbreviation)))
+    (dolist (position (plist-get (emmet2-fuzzy-match needle text) :positions))
+      (add-face-text-property position (1+ position) 'completions-common-part nil text))
     text))
+
+(defmacro emmet2-capf--guard (quiet cleanup &rest body)
+  "Run BODY at an editor boundary, invalidating through CLEANUP on failure.
+QUIET automatic requests return no match.  Explicit requests report the cause.
+Cancellation propagates, and `debug-on-error' retains the original debugger."
+  (declare (indent 2) (debug (form form body)))
+  (let ((completed (make-symbol "completed")) (error-data (make-symbol "error-data")))
+    `(let (,completed)
+       (unwind-protect
+           (condition-case-unless-debug ,error-data
+               (prog1 (progn ,@body) (setq ,completed t))
+             (error (unless ,quiet
+                      (if (eq (car ,error-data) 'user-error)
+                          (signal 'user-error (cdr ,error-data))
+                        (user-error "Emmet: %s" (error-message-string ,error-data))))))
+         (unless ,completed ,cleanup)))))
 
 ;;;###autoload
 (defun emmet2-capf ()
@@ -155,103 +142,128 @@ Expansion is lazy so a frontend can apply its prefix threshold first.
 Candidate properties distinguish choices with identical source text, as with
 overloaded language-server completions.  Frontends which discard properties
 can still accept the first expansion."
-  (when-let* ((analysis (and (not buffer-read-only) (emmet2-context-analyze t)))
-              (_ (emmet2-capf--confident-p analysis)))
-    (let* ((snapshot (emmet2-insert-snapshot analysis))
-           (settings (emmet2-capf--settings analysis))
-           (abbreviation (plist-get analysis :abbr))
-           (choices 'unexpanded)
-           (live t))
-      (cl-labels
-          ((current-p () (and live (emmet2-capf--current-p analysis snapshot settings)))
-           (refresh ()
-             (or (current-p)
-                 (when live
-                   (let ((next (and (eq (current-buffer) (plist-get snapshot :buffer))
-                                    (eq major-mode (plist-get snapshot :mode))
-                                    (not buffer-read-only)
-                                    (emmet2-context-analyze t))))
-                     (if (and (emmet2-capf--same-context-p analysis next)
-                              (equal settings (emmet2-capf--settings next))
-                              (<= (plist-get next :beg) (point) (plist-get next :end))
-                              (not (= (buffer-chars-modified-tick) (plist-get snapshot :tick)))
-                              (not (equal abbreviation (plist-get next :abbr)))
-                              (emmet2-capf--confident-p next))
-                         (progn
-                           (setq analysis next snapshot (emmet2-insert-snapshot next)
-                                 abbreviation (plist-get next :abbr) choices 'unexpanded)
-                           t)
-                       (setq live nil))))))
-           (expanded ()
-             (when (current-p)
-               (when (eq choices 'unexpanded)
-                 ;; Failure belongs to this input revision.  Never retry it on
-                 ;; another metadata/display query; explicit expansion reports it.
-                 (setq choices nil)
-                 (let ((next (condition-case nil (emmet2-capf--choices analysis)
-                               (emmet2-error nil))))
-                   (if (current-p) (setq choices next) (setq live nil))))
-               (and live choices)))
-           (choice (candidate entries)
-             (if-let* ((entry (get-text-property 0 'emmet2--choice candidate)))
-                 (and (memq entry entries) entry)
-               (car entries))))
-        (list
-         (plist-get analysis :beg) (plist-get analysis :end)
-         (lambda (string predicate action)
-           (cond
-            ((eq action 'metadata)
-             '(metadata (category . emmet2) (display-sort-function . identity)
-                        (cycle-sort-function . identity)))
-            ((eq (car-safe action) 'boundaries) nil)
-            ((and (refresh) (expanded))
-             (let ((candidates (mapcar (lambda (entry)
-                                         (propertize abbreviation 'emmet2--choice entry)) choices)))
-               (if (and (null action) (equal string abbreviation)
-                        (test-completion string candidates predicate))
-                   string
-                 (complete-with-action action candidates string predicate))))))
-         :exclusive 'no
-         :company-kind (lambda (_) 'snippet)
-         :company-doc-buffer
-         (lambda (candidate)
-           (when-let* ((_ (equal candidate abbreviation))
-                       (entry (choice candidate (expanded)))
-                       (text (plist-get entry :text))
-                       (_ (string-match-p "\n" text)))
-             (emmet2-preview text (emmet2--output-syntax analysis))))
-         :affixation-function
-         (lambda (candidates)
-           ;; Validate once for this synchronous display batch, not for each row.
-           (let ((entries (and (member abbreviation candidates) (expanded))))
-             (mapcar (lambda (candidate)
-                       ;; Preserve the candidate and its choice identity for native
-                       ;; *Completions* too.  Only this display copy is concealed.
-                       (list (propertize candidate 'display "")
-                             (if-let* ((entry (and (equal candidate abbreviation)
-                                                   (choice candidate entries))))
-                                 (copy-sequence (plist-get entry :label)) "") ""))
-                     candidates)))
-         :exit-function
-         (lambda (candidate status)
-           (when-let* ((_ (and (eq status 'finished) (equal candidate abbreviation)))
-                       (entry (choice candidate (expanded))))
-             (emmet2-insert (emmet2-insert-snapshot analysis) (plist-get entry :result)))))))))
+  (emmet2-capf--guard (not emmet2-capf--explicit) nil
+    (let ((automatic (or (not emmet2-capf--explicit)
+                         (and (derived-mode-p 'css-base-mode) (not emmet2-context-provider))))
+          (quiet (not emmet2-capf--explicit)))
+      (when-let* ((analysis (and (not buffer-read-only) (emmet2-context-analyze automatic)))
+                  (_ (or (not automatic) (emmet2-capf--confident-p analysis))))
+        (require 'emmet2-corfu)
+        (emmet2-corfu--enable)
+        (let* ((provider emmet2-context-provider)
+               (snapshot (emmet2-insert-snapshot analysis))
+               (settings (emmet2-capf--settings analysis))
+               ;; Frontends query a table many times per keystroke.  Classify the
+               ;; host again only when an input of that analysis has changed.
+               (validated (emmet2-context-revision))
+               (abbreviation (plist-get analysis :abbr))
+               (choices 'unexpanded)
+               (cache nil)
+               (live t))
+          (cl-labels
+              ((invalidate () (setq live nil choices nil cache nil))
+               (current-p ()
+                 (when (and live (not (eq provider emmet2-context-provider)))
+                   (setq live nil choices nil cache nil))
+                 (and live
+                      (let ((revision (emmet2-context-revision)))
+                        (when (emmet2-capf--current-p analysis snapshot settings automatic
+                                                      (equal revision validated))
+                          (setq validated revision)
+                          t))))
+               (refresh ()
+                 (or (current-p)
+                     (when live
+                       (let ((next (and (eq (current-buffer) (plist-get snapshot :buffer))
+                                        (eq major-mode (plist-get snapshot :mode))
+                                        (not buffer-read-only)
+                                        (emmet2-context-analyze automatic))))
+                         (if (and (emmet2-capf--same-context-p analysis next)
+                                  (equal settings (emmet2-capf--settings next))
+                                  (<= (plist-get next :beg) (point) (plist-get next :end))
+                                  (not (= (buffer-chars-modified-tick) (plist-get snapshot :tick)))
+                                  (not (equal abbreviation (plist-get next :abbr)))
+                                  (or (not automatic) (emmet2-capf--confident-p next)))
+                             (progn
+                               (setq analysis next snapshot (emmet2-insert-snapshot next)
+                                     abbreviation (plist-get next :abbr) choices 'unexpanded
+                                     validated (emmet2-context-revision))
+                               t)
+                           (setq live nil cache nil choices nil))))))
+               (expanded ()
+                 (when (current-p)
+                   (when (eq choices 'unexpanded)
+                     ;; Failure belongs to this input revision.  Never retry it on
+                     ;; another metadata or display query.
+                     (setq choices nil)
+                     (let ((next (emmet2-capf--choices analysis cache)))
+                       (if (current-p)
+                           (setq cache next choices (plist-get next :choices))
+                         (setq live nil cache nil))))
+                   (and live choices)))
+               (choice (candidate entries)
+                 (if-let* ((entry (get-text-property 0 'emmet2--choice candidate)))
+                     (and (memq entry entries) entry)
+                   (car entries))))
+            (list
+             (plist-get analysis :beg) (plist-get analysis :end)
+             (lambda (string predicate action)
+               (emmet2-capf--guard quiet (invalidate)
+                 (cond
+                  ((eq action 'metadata)
+                   '(metadata (category . emmet2) (display-sort-function . identity)
+                              (cycle-sort-function . identity)))
+                  ((eq (car-safe action) 'boundaries) nil)
+                  ((and (refresh) (expanded))
+                   (let ((candidates (mapcar (lambda (entry)
+                                               (propertize abbreviation 'emmet2--choice entry)) choices)))
+                     (if (and (null action) (equal string abbreviation)
+                              (test-completion string candidates predicate))
+                         string
+                       (complete-with-action action candidates string predicate)))))))
+             :exclusive 'no
+             :company-kind (lambda (_) 'snippet)
+             :company-doc-buffer
+             (lambda (candidate)
+               (emmet2-capf--guard quiet (invalidate)
+                 (when-let* ((_ (equal candidate abbreviation))
+                             (entry (choice candidate (expanded)))
+                             (text (plist-get entry :text))
+                             (_ (string-match-p "\n" text)))
+                   (emmet2-preview text (emmet2--output-syntax analysis)))))
+             :affixation-function
+             (lambda (candidates)
+               (emmet2-capf--guard quiet (invalidate)
+                 ;; Validate once for this synchronous display batch, not for each row.
+                 (let ((entries (and (member abbreviation candidates) (expanded))))
+                   (mapcar (lambda (candidate)
+                             ;; Preserve the candidate and its choice identity for native
+                             ;; *Completions* too.  Only this display copy is concealed.
+                             (list (propertize candidate 'display "")
+                                   (if-let* ((entry (and (equal candidate abbreviation)
+                                                         (choice candidate entries))))
+                                       (copy-sequence (plist-get entry :display)) "") ""))
+                           candidates))))
+             :exit-function
+             (lambda (candidate status)
+               (emmet2-capf--guard nil (invalidate)
+                 (when-let* ((_ (and (eq status 'finished) (equal candidate abbreviation)))
+                             (entry (choice candidate (expanded))))
+                   (emmet2-insert (emmet2-insert-snapshot analysis) (plist-get entry :result))))))))))))
 
 ;;;###autoload
 (defun emmet2-complete ()
-  "Request Emmet completion alone, using the normal confidence gate.
-The public completion frontend and its settings determine presentation."
+  "Request Emmet choices through the configured completion frontend.
+Built-in CSS uses exactly the automatic CAPF's admission rules.  Other hosts
+retain their explicit-request contract, including manual markup and grammar
+initialization.  The frontend decides presentation and sole-match acceptance;
+this command does not choose or insert the first candidate itself."
   (interactive)
-  (condition-case error-data
-      (progn
-        ;; Explicit analysis initializes grammars and reports missing ones;
-        ;; the capf still enforces automatic host and confidence restrictions.
-        (emmet2-context-analyze)
-        (let ((completion-at-point-functions '(emmet2-capf)))
-          (unless (completion-at-point)
-            (user-error "There is no Emmet completion at point"))))
-    (emmet2-error (user-error "%s" (error-message-string error-data)))))
+  (emmet2-capf--guard nil nil
+    (let ((completion-at-point-functions '(emmet2-capf))
+          (emmet2-capf--explicit t))
+      (unless (completion-at-point)
+        (user-error "There is no Emmet completion at point")))))
 
 (provide 'emmet2-capf)
 ;;; emmet2-capf.el ends here

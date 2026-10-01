@@ -10,7 +10,9 @@
 
 (require 'cl-lib)
 (require 'emmet2-engine)
+(defvar emmet2-context-provider)
 (declare-function yas-expand-snippet "yasnippet" (snippet &optional start end expand-env))
+(declare-function yas-minor-mode "yasnippet" (&optional arg))
 (defvar yas--escaped-characters)
 (defvar yas-before-expand-snippet-hook)
 (defvar yas-after-exit-snippet-hook)
@@ -27,25 +29,26 @@ fix to Emmet snippets; retain all of yas's overlay and field bookkeeping."
     (apply original args)))
 
 (defun emmet2-insert--indent-width (analysis)
-  "Read the active mode's indentation width for ANALYSIS."
-  (let* ((variables
-          (cond
-           ((derived-mode-p 'web-mode)
-            (list (cond ((eq (plist-get analysis :lang) 'css) 'web-mode-css-indent-offset)
-                        ((or (eq (plist-get analysis :lang) 'css-in-js)
-                             (eq (plist-get analysis :syntax) 'jsx)) 'web-mode-code-indent-offset)
-                        (t 'web-mode-markup-indent-offset))))
-           ((derived-mode-p 'typescript-ts-mode 'tsx-ts-mode)
-            '(typescript-ts-indent-offset typescript-ts-mode-indent-offset))
-           ((derived-mode-p 'js-mode 'js-ts-mode)
-            (if (eq (plist-get analysis :lang) 'markup)
-                '(js-jsx-indent-level js-indent-level) '(js-indent-level)))
-           ((derived-mode-p 'css-mode) '(css-indent-offset))
-           ((derived-mode-p 'sgml-mode) '(sgml-basic-offset))))
-         (width (cl-loop for variable in variables
-                         when (and (boundp variable) (integerp (symbol-value variable)))
-                         return (symbol-value variable))))
-    (or width standard-indent)))
+  "Read ANALYSIS's host width, or the active mode's indentation width."
+  (if (plist-member analysis :indent-width) (plist-get analysis :indent-width)
+    (let* ((variables
+            (cond
+             ((derived-mode-p 'web-mode)
+              (list (cond ((eq (plist-get analysis :lang) 'css) 'web-mode-css-indent-offset)
+                          ((or (eq (plist-get analysis :lang) 'css-in-js)
+                               (eq (plist-get analysis :syntax) 'jsx)) 'web-mode-code-indent-offset)
+                          (t 'web-mode-markup-indent-offset))))
+             ((derived-mode-p 'typescript-ts-mode 'tsx-ts-mode)
+              '(typescript-ts-indent-offset typescript-ts-mode-indent-offset))
+             ((derived-mode-p 'js-mode 'js-ts-mode)
+              (if (eq (plist-get analysis :lang) 'markup)
+                  '(js-jsx-indent-level js-indent-level) '(js-indent-level)))
+             ((derived-mode-p 'css-base-mode) '(css-indent-offset))
+             ((derived-mode-p 'sgml-mode) '(sgml-basic-offset))))
+           (width (cl-loop for variable in variables
+                           when (and (boundp variable) (integerp (symbol-value variable)))
+                           return (symbol-value variable))))
+      (or width standard-indent))))
 
 (defun emmet2-insert--whitespace (columns)
   "Return whitespace spanning COLUMNS from column zero."
@@ -56,7 +59,8 @@ fix to Emmet snippets; retain all of yas's overlay and field bookkeeping."
 (defun emmet2-insert-render-options (analysis)
   "Derive formatter indentation from ANALYSIS without changing the buffer.
 Use the abbreviation's display column, including tabs and wide characters.
-Unaligned nesting uses spaces so every level advances by the mode's width."
+Unaligned nesting uses spaces so every level advances by the mode's width.
+ANALYSIS may supply :indent-width to use an external host's width instead."
   (save-excursion
     (goto-char (plist-get analysis :beg))
     (let ((column (current-column)) (width (emmet2-insert--indent-width analysis)))
@@ -72,7 +76,9 @@ Unaligned nesting uses spaces so every level advances by the mode's width."
 This short-lived value owns no markers, parser, timer or mutable cache."
   (list :buffer (current-buffer) :mode major-mode :tick (buffer-chars-modified-tick)
         :point (point) :beg (plist-get analysis :beg) :end (plist-get analysis :end)
-        :abbr (plist-get analysis :abbr)))
+        :abbr (plist-get analysis :abbr)
+        :field-navigation (plist-get (bound-and-true-p emmet2-context-provider)
+                                    :field-navigation)))
 
 (defun emmet2-insert-snapshot-valid-p (snapshot)
   "Whether SNAPSHOT still describes the current source and point."
@@ -110,14 +116,16 @@ yas's internal escape transport.  The expansion environment owns that order."
 
 (defun emmet2-insert (snapshot result)
   "Atomically replace SNAPSHOT with canonical RESULT in the current buffer.
-Reject stale source before any change.  Optional enabled yasnippet owns fields;
-otherwise place point at the same initial cursor.  Do not reformat the text."
+Reject stale source before any change.  An installed yasnippet owns fields;
+as in Eglot, its mode is enabled on demand.  Otherwise place point at the same
+initial cursor.  Hosts that request their own field navigation use the same
+initial cursor without YAS fields.  Do not reformat the text."
   (unless (emmet2-insert-snapshot-valid-p snapshot)
     (signal 'emmet2-error '("Source changed before expansion could be inserted")))
   (let* ((beg (plist-get snapshot :beg)) (end (plist-get snapshot :end))
          (original-point (point)) (success nil)
-         (template (when (and (plist-get result :fields) (bound-and-true-p yas-minor-mode)
-                              (fboundp 'yas-expand-snippet))
+         (template (when (and (not (eq (plist-get snapshot :field-navigation) 'host))
+                              (plist-get result :fields) (fboundp 'yas-minor-mode))
                      (emmet2-insert--template result))))
     (undo-boundary)
     (unwind-protect
@@ -126,6 +134,9 @@ otherwise place point at the same initial cursor.  Do not reformat the text."
             (atomic-change-group
               (if template
                   (progn
+                    ;; Activation runs user hooks too.  Include their text
+                    ;; changes in the same rollback as snippet expansion.
+                    (unless (bound-and-true-p yas-minor-mode) (yas-minor-mode 1))
                     (advice-add 'yas--make-move-field-protection-overlays :around #'emmet2-insert--yas-protect-text)
                     (let ((yas-before-expand-snippet-hook
                            (append yas-before-expand-snippet-hook
