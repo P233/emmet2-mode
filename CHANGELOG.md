@@ -102,6 +102,8 @@ below belong to this release and are relative to the earlier 0.2 implementation.
 - Reject stale completion candidates and insertion snapshots before editing.
   Roll back source edits if on-demand yasnippet activation hooks fail or
   invalidate the abbreviation.
+- Expand CSS-wide keywords of the real `all` property: `allu` or `all[unset]`
+  gives `all: unset;`. Other values, as in `all8`, keep the four-side alias.
 
 ### Internal organization
 

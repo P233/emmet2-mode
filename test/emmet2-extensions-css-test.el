@@ -66,6 +66,18 @@ declaration or implicit ampersand.")
     (ert-info ((car pair))
       (should (equal (plist-get (emmet2-extensions-css (car pair) :syntax 'css) :text) (cdr pair))))))
 
+(ert-deftest emmet2-css-all-keywords-use-the-all-property ()
+  ;; CSS-wide keywords belong to the real all property; other values use the alias.
+  (dolist (pair '(("allu" . "all: unset;") ("all[unset]" . "all: unset;") ("all-unset" . "all: unset;")
+                  ("allu!" . "all: unset !important;") ("allRl" . "all: revert-layer;")
+                  ("all8" . "top: 8px;\nright: 8px;\nbottom: 8px;\nleft: 8px;")
+                  ("allA" . "top: auto;\nright: auto;\nbottom: auto;\nleft: auto;")))
+    (ert-info ((car pair))
+      (should (equal (plist-get (emmet2-extensions-css (car pair) :syntax 'css) :text) (cdr pair)))))
+  (let ((choices (emmet2-extensions-css-choices "all" :syntax 'css)))
+    (should (equal (car choices) "top+right+bottom+left"))
+    (should (equal (plist-get (emmet2-extensions-css (nth 1 choices) :syntax 'css) :text) "all: initial;"))))
+
 (ert-deftest emmet2-css-scale-functions-are-opt-in-sass ()
   (should-error (emmet2-extensions-css "p(1)") :type 'emmet2-parse-error)
   (dolist (case '(("p(0)(2)" "padding: 0 rhythm(2);") ("fz(0)" "font-size: ms(0);")

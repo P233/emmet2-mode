@@ -309,6 +309,7 @@ become strings. Leading zeros stay literal: `p[010px]` gives `padding: "010px"`.
 | `all` | `top: │; right: ; bottom: ; left: ;` |
 | `all8` | `top: 8px; right: 8px; bottom: 8px; left: 8px;` |
 | `allA` | `top: auto; right: auto; bottom: auto; left: auto;` |
+| `allu` or `all[unset]` | `all: unset;` |
 | `fw7` | `font-weight: 700;` |
 | `wf` | `width: 100%;` |
 | `hf` | `height: 100%;` |

@@ -58,6 +58,15 @@
               copy))
           '("top" "right" "bottom" "left")))
 
+(defun emmet2-css--all-keyword-p (suffix)
+  "Whether SUFFIX gives the real all property one of its CSS-wide keywords.
+Such values, as in allu or all[unset], are not the four-side alias."
+  (let ((value (if (string-match "\\`\\[\\(.*\\)\\]\\'" suffix) (match-string 1 suffix)
+                 (string-remove-prefix "-" suffix))))
+    (and (string-match-p "\\`[a-zA-Z][-a-zA-Z]*\\'" value)
+         (emmet2-css-search-values "all" value 1)
+         t)))
+
 (defun emmet2-css--aliases (token)
   "Return TOKEN's alias declarations, or nil when it has no alias."
   (let ((case-fold-search nil))
@@ -67,7 +76,8 @@
             (suffix (match-string 2 token)))
         (list (emmet2-css--choice (cons "position" value) "")
               (emmet2-css--choice '("z-index") suffix))))
-     ((string-prefix-p "all" token)
+     ((and (string-prefix-p "all" token)
+           (not (emmet2-css--all-keyword-p (string-remove-suffix "!" (substring token 3)))))
       (emmet2-css--all-properties (emmet2-css--choice '("all") (substring token 3))))
      ((string-match "\\`fw\\([0-9]\\)\\(!?\\)\\'" token)
       (list (emmet2-css--choice '("font-weight") (concat (match-string 1 token) "00" (match-string 2 token)))))
@@ -365,6 +375,10 @@ AT-RULE selects descriptor names and values.  Alias programs retain all of
 their declarations; ordinary search choices contain one property reading."
   (let ((alias (emmet2-css--aliases abbreviation))
         (choices (mapcar #'list (emmet2-css--resolve-property abbreviation limit at-rule))))
+    (when alias
+      ;; A reading spelled like its alias, such as bare all, could not expand as itself.
+      (setq choices (cl-remove-if (lambda (program) (equal (emmet2-css--program-token program) abbreviation))
+                                  choices)))
     (seq-take (delete-dups (if alias (cons alias choices) choices)) limit)))
 
 (defun emmet2-css--program-token (properties)
@@ -388,12 +402,14 @@ CSS-IN-JS chooses the renderer; BASE-INDENT and AT-RULE select layout/context.
 SCALE maps parenthesized values to functions, as in `emmet2-css--declarations'."
   (let (results)
     (dolist (reading properties)
-      (dolist (property (if (equal (emmet2-css--property-name reading) "all")
-                           (emmet2-css--all-properties reading) (list reading)))
+      ;; A search reading named all, as from al8, follows the four-side alias.
+      (dolist (property (if (and (equal (emmet2-css--property-name reading) "all")
+                                 (not (emmet2-css--all-keyword-p (emmet2-css--property-source reading))))
+                            (emmet2-css--all-properties reading) (list reading)))
         (dolist (declaration (emmet2-css--declarations property at-rule scale))
-        (emmet2-engine--check-deadline)
-        (when results
-          (push (emmet2-result-create (emmet2-css-property-separator css-in-js base-indent)) results))
+          (emmet2-engine--check-deadline)
+          (when results
+            (push (emmet2-result-create (emmet2-css-property-separator css-in-js base-indent)) results))
           (push (emmet2-engine-stylesheet-render declaration css-in-js) results))))
     (apply #'emmet2-result-concat (nreverse results))))
 
