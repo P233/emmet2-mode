@@ -3,11 +3,12 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;;; Commentary:
-;; The bundled metadata is the shared authority for CSS names, documentation
-;; and property values.  Hosts supply the syntactic role, property and enclosing
-;; at-rule; this library neither inspects a buffer nor enables an editor mode.
-;; Expansion uses the compact css-index.json through emmet2-css-search instead
-;; of this full documentation snapshot.  Both files have the same pinned source.
+;; Answer CSS name and value queries from data/css-data.json, which carries
+;; documentation.  Callers pass the kind of name, the property and the
+;; enclosing at-rule; nothing here reads a buffer or enables a mode.  Value
+;; lists merge this file's documented values with the keyword sets that
+;; expansion reads from data/css-index.json through emmet2-css-search.  Both
+;; files are generated together by test/update-web-data.mjs from pinned sources.
 
 ;;; Code:
 
@@ -22,8 +23,26 @@
     (insert-file-contents
      (expand-file-name "data/css-data.json"
                        (file-name-directory (or load-file-name buffer-file-name))))
-    (json-parse-buffer :object-type 'alist :array-type 'list))
-  "Immutable CSS metadata loaded once with this library.")
+    (let ((data (json-parse-buffer :object-type 'alist :array-type 'list)))
+      ;; Keep the source file's browser support, references and syntax metadata
+      ;; on disk.  Completion needs only names, documentation and value scope.
+      (cl-labels
+          ((entry (item)
+             (let ((description (alist-get 'description item)))
+               (list (assq 'name item)
+                     (cons 'description
+                           (if (stringp description) description
+                             (alist-get 'value description))))))
+           (property (item)
+             (append (entry item)
+                     (list (assq 'atRule item) (assq 'restrictions item)
+                           (cons 'values (mapcar #'entry (alist-get 'values item)))))))
+        (list (cons 'properties (mapcar #'property (alist-get 'properties data)))
+              (cons 'atDirectives (mapcar #'entry (alist-get 'atDirectives data)))
+              (cons 'pseudoClasses (mapcar #'entry (alist-get 'pseudoClasses data)))
+              (cons 'pseudoElements (mapcar #'entry (alist-get 'pseudoElements data)))))))
+  "Immutable CSS completion metadata loaded once with this library.
+Fields unused by completion are discarded after reading the source file.")
 
 (defun emmet2-css-data--property-available-p (entry at-rule)
   "Whether property ENTRY is ordinary or a descriptor admitted by AT-RULE."
@@ -50,8 +69,7 @@
          (extra (emmet2-css-search-value-names (and entry property) at-rule)))
     (when (cl-intersection restrictions '("length" "percentage" "number" "integer" "angle" "time") :test #'equal)
       (setq extra (append '("0" "calc()" "min()" "max()" "clamp()") extra)))
-    ;; Ordinary vendor/obsolete metadata may lack indexed syntax.  Descriptors
-    ;; already have their own sets; borrowing a property would add its defaults.
+    ;; Vendor or obsolete properties may lack indexed values; descriptors must not borrow property defaults.
     (unless (alist-get 'atRule entry)
       (when (member "color" restrictions)
         (setq extra (append (emmet2-css-search-value-names "color") extra)))
@@ -63,11 +81,14 @@
 
 (cl-defun emmet2-css-data-query (kind &key (query "") property at-rule vendor)
   "Return (NAME . DOCUMENTATION) candidates for CSS KIND matching QUERY.
-KIND is `property', `value', `at-rule' or `pseudo'.  PROPERTY selects values;
-AT-RULE admits descriptors belonging to that rule.  VENDOR also admits vendor
-names, which are otherwise omitted.  QUERY uses `emmet2-fuzzy-match'; an empty
-query returns all candidates in name order.  Exact and stronger matches rank
-first with stable name-order ties.  Unknown properties retain global values.
+KIND is `property', `value', `at-rule' or `pseudo'; any other value signals
+an error.  PROPERTY selects the values; an unknown PROPERTY gets the
+CSS-wide keywords, var() and env().  AT-RULE, a name such as \"@font-face\"
+in any case, admits that rule's descriptors and their values.  VENDOR also
+admits vendor names, which are otherwise omitted.  QUERY uses
+`emmet2-fuzzy-match'; an empty QUERY, the default, returns all candidates in
+name order.  Exact and stronger matches rank first with stable name-order
+ties.  DOCUMENTATION may be nil.
 
 All context is explicit: no buffer, parser, mode or completion frontend is
 required.  Returned lists and pairs are fresh; name and documentation strings
