@@ -136,8 +136,8 @@ html-mode's explicit `emmet2-complete` request. Reset and output/cursor assertio
 are outside the clock. The next operation includes any pending scan left by the
 multi-character reset; this differs from the S3 single-character typing path.
 Yas mode setup is outside the clock, but field creation during acceptance is
-timed and checked. Undo recording remains enabled, with history cleared
-between operations.
+timed and checked; only markup fixtures create fields, CSS inserts plain text.
+Undo recording remains enabled, with history cleared between operations.
 
 Completion uses the real Corfu control, candidate formatting, popupinfo
 getter and insertion. Popup drawing/hiding is replaced, and Corfu's error

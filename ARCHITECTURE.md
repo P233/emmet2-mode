@@ -110,7 +110,7 @@ without a frontend.
 - A completion table owns immutable input revisions and bounded result reuse.
   Display never advances a revision; acceptance rejects stale choice identities.
 - `emmet2-insert` is the only source writer. Preview and parsing are read-only.
-  Accepted text and editable fields enter one atomic undo group.
+  Accepted text and markup snippet fields enter one atomic undo group.
 
 ## Request and failure boundaries
 

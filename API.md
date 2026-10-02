@@ -155,7 +155,8 @@ descriptors. Pass the same context when expanding a returned choice;
 | `:cursor` | Zero-based initial cursor offset in `:text`; normally the first editable field, or the end when no fields exist. |
 
 Offsets count characters, not bytes; `emmet2-insert` maps them to buffer
-positions and optional yasnippet fields. Do not reformat `:text` independently.
+positions. Markup fields become yasnippet fields when it is installed; CSS
+results only place point at `:cursor`. Do not reformat `:text` independently.
 
 ## Host completion interface
 
@@ -165,10 +166,6 @@ Set buffer-local `emmet2-context-provider` before enabling `emmet2-mode`, or cal
 Emmet supplies choices, preview and validated insertion. No `css-mode`
 inheritance, extra parser or frontend configuration is required. See the
 [runnable example](#runnable-provider-example) below.
-
-A host that owns value navigation can set `:field-navigation host` in the
-provider plist. The insertion snapshot captures this policy: Emmet keeps the
-canonical text and initial cursor but does not activate yasnippet fields.
 
 `:analyze` receives `automatic`: non-nil for automatic, nil for explicit requests.
 Return nil to decline, with **no fallback** to built-in detection; otherwise

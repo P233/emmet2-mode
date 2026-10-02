@@ -90,15 +90,18 @@ whole operation so multiple CSS properties do not each receive a new budget.
 Parse errors preserve their message/character position; other failures use
 `emmet2-error` subtypes. Failures and cancellation must leave source unchanged.
 
-The optional yas adapter safely escapes literal body/default text and synthesizes
-its own final `$0`. As in Eglot, an installed yasnippet is used for any result
-with fields: insertion enables `yas-minor-mode` on demand, because snippet
-fields depend on its post-command handler. Tests simulate an absent yasnippet
-with `emmet2-test--with-yasnippet`. Only public yasnippet interfaces are used;
-a field ending at the buffer end therefore gets yasnippet's usual trailing
-newline. Only web-mode's built-in reindent exit hook is excluded for these
-snippets. Other user hooks and settings remain intact. Plain insertion uses the
-same text and initial cursor; one undo restores the abbreviation.
+The optional yas adapter applies to markup results only. It safely escapes
+literal body/default text and synthesizes its own final `$0`. As in Eglot, an
+installed yasnippet is used for any markup result with fields: insertion enables
+`yas-minor-mode` on demand, because snippet fields depend on its post-command
+handler. Tests simulate an absent yasnippet with `emmet2-test--with-yasnippet`.
+Only public yasnippet interfaces are used; a field ending at the buffer end
+therefore gets yasnippet's usual trailing newline. Only web-mode's built-in
+reindent exit hook is excluded for these snippets. Other user hooks and settings
+remain intact. CSS results never start a snippet: an active field would
+highlight typed or completed values like a selection and send TAB to the final
+exit. Plain insertion uses the same text and initial cursor; one undo restores
+the abbreviation.
 
 ## Extension and host boundaries
 

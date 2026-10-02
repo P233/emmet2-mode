@@ -8,13 +8,13 @@
 (require 'typescript-ts-mode)
 
 (defmacro emmet2-test-with-insertion (yas &rest body)
-  "Run BODY with source abbreviation and optional YAS fields."
+  "Run BODY with a markup source abbreviation and optional YAS fields."
   (declare (indent 1) (debug t))
   `(with-temp-buffer
      (insert "abbr")
      (emmet2-test--with-yasnippet ,yas
        (let ((this-command 'emmet2-test-command) (last-command nil)
-             (snapshot (emmet2-insert-snapshot '(:beg 1 :end 5 :abbr "abbr"))))
+             (snapshot (emmet2-insert-snapshot '(:beg 1 :end 5 :abbr "abbr" :lang markup))))
          ,@body))))
 
 (ert-deftest emmet2-insert-plain-and-yas-share-text-and-cursor ()
@@ -32,21 +32,21 @@
           (run-hooks 'post-command-hook)
           (should-not (yas-active-snippets)))))))
 
-(ert-deftest emmet2-insert-installed-yasnippet-is-enabled-for-fields ()
+(ert-deftest emmet2-insert-installed-yasnippet-is-enabled-for-markup-fields ()
   (emmet2-test-with-insertion nil
-    (emmet2-insert snapshot (emmet2-extensions-css "bgilg"))
-    (should (looking-at ");\\'"))
+    (emmet2-insert snapshot (emmet2-extensions-markup "a"))
+    (should (looking-at "\"></a>\\'"))
     (should-not yas-minor-mode))
   (with-temp-buffer
     (insert "abbr")
-    (emmet2-insert (emmet2-insert-snapshot '(:beg 1 :end 5 :abbr "abbr")) (emmet2-result-create "x"))
+    (emmet2-insert (emmet2-insert-snapshot '(:beg 1 :end 5 :abbr "abbr" :lang markup)) (emmet2-result-create "x"))
     (should-not yas-minor-mode)
     (erase-buffer) (insert "abbr")
-    (emmet2-insert (emmet2-insert-snapshot '(:beg 1 :end 5 :abbr "abbr")) (emmet2-extensions-css "bgilg"))
+    (emmet2-insert (emmet2-insert-snapshot '(:beg 1 :end 5 :abbr "abbr" :lang markup))
+                   (emmet2-extensions-markup "a"))
     (should yas-minor-mode)
-    (should (looking-at ");\\'"))
-    (insert "red, blue") (yas-next-field)
-    (should (equal (buffer-string) "background-image: linear-gradient(red, blue);"))
+    (insert "u") (yas-next-field) (insert "t") (yas-next-field)
+    (should (equal (buffer-string) "<a href=\"u\">t</a>"))
     (should (= (point) (point-max)))))
 
 (ert-deftest emmet2-insert-yas-activation-failure-rolls-back-source ()
@@ -55,7 +55,7 @@
       (with-temp-buffer
         (insert "abbr")
         (when undo (buffer-enable-undo))
-        (let ((snapshot (emmet2-insert-snapshot '(:beg 1 :end 5 :abbr "abbr")))
+        (let ((snapshot (emmet2-insert-snapshot '(:beg 1 :end 5 :abbr "abbr" :lang markup)))
               (yas-minor-mode-hook
                (list (lambda ()
                        (if (eq action 'point) (goto-char 1) (insert "changed"))
@@ -66,36 +66,18 @@
           (should-not (yas-active-snippets))
           (unless undo (should (eq buffer-undo-list t))))))))
 
-(ert-deftest emmet2-insert-css-fields-tab-and-final-exit ()
-  (dolist (abbreviation '("c+bg" "m+p" "bd"))
-    (emmet2-test-with-insertion t
-      (let* ((result (emmet2-extensions-css abbreviation))
-             (count (if (equal abbreviation "bd") 1 2)))
-        (emmet2-insert snapshot result)
-        (dotimes (i count)
-          (insert (number-to-string (1+ i)))
-          (yas-next-field))
-        (should (equal (buffer-string)
-                       (pcase abbreviation ("bd" "border: 1;")
-                              ("c+bg" "color: 1;\nbackground: 2;")
-                              (_ "margin: 1;\npadding: 2;"))))
-        (should (= (point) (point-max)))))))
-
-(ert-deftest emmet2-insert-host-navigation-preserves-canonical-fields-and-cursor ()
-  (emmet2-test-with-insertion t
-    (let* ((emmet2-context-provider '(:field-navigation host))
-           (result (emmet2-result-create "one two" '((0 3 1 "one") (4 7 2 "two"))))
-           (expected (copy-tree result)))
-      (setq snapshot (emmet2-insert-snapshot '(:beg 1 :end 5 :abbr "abbr")))
-      (buffer-enable-undo)
-      (emmet2-insert snapshot result)
-      (should (equal result expected))
-      (should (equal (buffer-string) "one two"))
-      (should (= (point) (+ 1 (plist-get result :cursor))))
-      (should-not (yas-active-snippets))
-      (should-not mark-active)
-      (undo-only 1)
-      (should (equal (buffer-string) "abbr")))))
+(ert-deftest emmet2-insert-css-starts-no-snippet-with-yasnippet ()
+  ;; An active field would highlight typed values and send TAB past the semicolon.
+  (dolist (abbreviation '("d" "c+bg" "bgilg" "posa"))
+    (ert-info (abbreviation)
+      (with-temp-buffer
+        (insert "abbr") (yas-minor-mode 1)
+        (let ((result (emmet2-extensions-css abbreviation)))
+          (emmet2-insert (emmet2-insert-snapshot '(:beg 1 :end 5 :abbr "abbr" :lang css)) result)
+          (should (equal (buffer-string) (plist-get result :text)))
+          (should (= (point) (1+ (plist-get result :cursor))))
+          (should-not (yas-active-snippets))
+          (should-not mark-active))))))
 
 (defvar emmet2-test-evaluated nil)
 (ert-deftest emmet2-insert-literals-never-evaluate ()
@@ -331,10 +313,12 @@
           (should (equal (buffer-string) (concat (substring before 0 (1- beg))
                                                 (plist-get result :text) (substring before (1- end)))))
           (should (= (point) (+ beg (plist-get result :cursor))))
-          (when (plist-get result :fields)
-            (should (yas-active-snippets))
-            (yas-exit-all-snippets)
-            (should (= (point) (+ beg (length (plist-get result :text)))))))))))
+          (if (and (eq (plist-get analysis :lang) 'markup) (plist-get result :fields))
+              (progn
+                (should (yas-active-snippets))
+                (yas-exit-all-snippets)
+                (should (= (point) (+ beg (length (plist-get result :text))))))
+            (should-not (yas-active-snippets))))))))
 
 (ert-deftest emmet2-mode-unload-cleans-command-created-context ()
   (with-temp-buffer
@@ -348,8 +332,8 @@
 
 (ert-deftest emmet2-insert-keeps-user-hooks-and-settings ()
   (with-temp-buffer
-    (insert "<style>.a { m+p }</style>") (web-mode) (yas-minor-mode 1)
-    (goto-char 1) (search-forward "m+p")
+    (insert "<main>ul>li*2</main>") (web-mode) (yas-minor-mode 1)
+    (goto-char 1) (search-forward "li*2")
     (let ((called 0) (yas-indent-line 'auto) (yas-wrap-around-region t)
           (this-command 'emmet2-complete))
       (add-hook 'yas-after-exit-snippet-hook (lambda () (cl-incf called)) nil t)
@@ -385,7 +369,7 @@
       (yas-expand-snippet "${1:abbr} ($1)$0" nil nil '((yas-indent-line nil)))
       (undo-boundary)
       (let ((before (buffer-string)) (parent (car (yas-active-snippets)))
-            (snapshot (emmet2-insert-snapshot '(:beg 1 :end 5 :abbr "abbr"))))
+            (snapshot (emmet2-insert-snapshot '(:beg 1 :end 5 :abbr "abbr" :lang markup))))
         (emmet2-insert snapshot (emmet2-result-create "<p>x</p>" '((3 4 1 "x"))))
         (should (= (length (yas-active-snippets)) 2))
         (undo-only 1)

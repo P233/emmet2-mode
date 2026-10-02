@@ -64,11 +64,10 @@ below belong to this release and are relative to the earlier 0.2 implementation.
   combine properties and keywords (`tac`), numeric suffixes (`ins32`), custom
   properties (`w--gap`) and Sass variables (`m$gutter`). Value search includes
   keywords inherited from a property's value types.
-- Full previews with `corfu-popupinfo-mode`, editable fields and mirrors with
-  yasnippet, and one undo that restores the abbreviation. An installed
+- Full previews with `corfu-popupinfo-mode`, HTML and JSX editable fields and
+  mirrors with yasnippet, and one undo that restores the abbreviation. An installed
   yasnippet is enabled when fields are first needed; no separate hook is required.
-- Empty parentheses and quoted CSS values become editable fields, with point
-  inside and TAB navigation when yasnippet is available.
+- Empty parentheses and quoted CSS values take the cursor, as in `w[calc()]`.
 - Automatic markup completion recognizes distinctive abbreviations, known
   elements with a pseudo-class such as `button:hv`, and standalone tags such as `div`.
 - CSS support covers every `css-base-mode` descendant, including `css-ts-mode`
@@ -93,6 +92,9 @@ below belong to this release and are relative to the earlier 0.2 implementation.
 
 ### Fixes included during development
 
+- Insert CSS without yasnippet fields, so typed or completed values are not
+  highlighted and TAB keeps your own binding. Point starts in the first value,
+  as in `d` (before `;`). HTML and JSX keep yasnippet fields and mirrors.
 - Keep Emmet choice labels visible with Corfu icon margin formatters such as
   kind-icon or nerd-icons-corfu. Emmet and value choices declare no completion
   kind and stay plain text.

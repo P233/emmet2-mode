@@ -135,9 +135,10 @@ EXPLICIT selects the manual request, including unsupported automatic hosts."
                                  (emmet2-flow--completion abbreviation multiline explicit)
                                (emmet2-flow--without-yasnippet
                                 (emmet2-flow--completion abbreviation multiline explicit)))))
+                 ;; Only markup starts snippet fields; CSS inserts plain text.
                  (when (and (eq path 'completion-yas) (< cursor output-end)
-                            (not (yas-active-snippets)))
-                   (error "Benchmark skipped editable fields: %s" name))
+                            (eq (eq (plist-get analysis :lang) 'markup) (null (yas-active-snippets))))
+                   (error "Benchmark editable fields differ from the language: %s" name))
                  sample)))
           (reset)
           (yas-minor-mode 1)

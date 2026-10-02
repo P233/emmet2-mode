@@ -101,28 +101,27 @@
 
 (ert-deftest emmet2-host-public-expansion-preserves-layout-fields-and-source ()
   (emmet2-host-test--with-completion "@el"
-    (emmet2-test--with-yasnippet nil
-      (let* ((analysis (emmet2-context-analyze))
-             (snapshot (emmet2-insert-snapshot analysis))
-             (result (emmet2-expand-analysis analysis)))
-        (should (equal (buffer-string) ".a{@el}"))
-        (should (equal (plist-get result :text) "@else {\n     \n   }"))
-        (should (= (length (plist-get result :fields)) 1))
-        (emmet2-insert snapshot result)
-        (should (equal (buffer-substring (line-beginning-position) (point)) "     "))
-        (should (looking-at "\n"))
-        (undo-boundary) (undo)
-        (should (equal (buffer-string) ".a{@el}"))
-        (setq analysis (plist-put analysis :indent-width 0))
-        (should (equal (plist-get (emmet2-insert-render-options analysis) :indent) ""))
-        (should (equal (plist-get (emmet2-expand-analysis analysis) :text) "@else {\n   \n   }"))
-        (setq analysis (plist-put analysis :indent-width -1))
-        (should-error (emmet2-insert-render-options analysis) :type 'emmet2-error)
-        ;; An explicit nil width is optional, like an omitted key.
-        (let ((omitted (copy-sequence analysis)))
-          (cl-remf omitted :indent-width)
-          (should (equal (emmet2-insert-render-options (plist-put analysis :indent-width nil))
-                         (emmet2-insert-render-options omitted))))))))
+    (let* ((analysis (emmet2-context-analyze))
+           (snapshot (emmet2-insert-snapshot analysis))
+           (result (emmet2-expand-analysis analysis)))
+      (should (equal (buffer-string) ".a{@el}"))
+      (should (equal (plist-get result :text) "@else {\n     \n   }"))
+      (should (= (length (plist-get result :fields)) 1))
+      (emmet2-insert snapshot result)
+      (should (equal (buffer-substring (line-beginning-position) (point)) "     "))
+      (should (looking-at "\n"))
+      (undo-boundary) (undo)
+      (should (equal (buffer-string) ".a{@el}"))
+      (setq analysis (plist-put analysis :indent-width 0))
+      (should (equal (plist-get (emmet2-insert-render-options analysis) :indent) ""))
+      (should (equal (plist-get (emmet2-expand-analysis analysis) :text) "@else {\n   \n   }"))
+      (setq analysis (plist-put analysis :indent-width -1))
+      (should-error (emmet2-insert-render-options analysis) :type 'emmet2-error)
+      ;; An explicit nil width is optional, like an omitted key.
+      (let ((omitted (copy-sequence analysis)))
+        (cl-remf omitted :indent-width)
+        (should (equal (emmet2-insert-render-options (plist-put analysis :indent-width nil))
+                       (emmet2-insert-render-options omitted)))))))
 
 (ert-deftest emmet2-host-dispatcher-works-without-the-minor-mode ()
   (emmet2-host-test--with-completion "m10"
@@ -130,8 +129,7 @@
     (let* ((hooks completion-at-point-functions)
            (data (emmet2-capf)) (props (nthcdr 3 data))
            (candidate (car (all-completions "m10" (nth 2 data)))))
-      (emmet2-test--with-yasnippet nil
-        (funcall (plist-get props :exit-function) candidate 'finished))
+      (funcall (plist-get props :exit-function) candidate 'finished)
       (should (equal (buffer-string) ".a{margin: 10px;}"))
       (should-not emmet2-mode)
       (should-not (emmet2-context-js--owner))
@@ -152,24 +150,32 @@
 
 (ert-deftest emmet2-host-completion-shares-auto-explicit-preview-and-acceptance ()
   (dolist (explicit '(nil t))
-    (dolist (yas '(nil t))
-      (emmet2-host-test--with-completion "::b"
-        (emmet2-test--with-yasnippet yas
-          (if explicit
-              (let ((completion-in-region-function #'corfu--in-region-1))
-                (emmet2-complete) (corfu--exhibit))
-            (corfu-auto--complete-deferred))
-          (let ((table (nth 2 completion-in-region--data)))
-            (insert "e")
-            (let ((this-command 'self-insert-command)) (corfu--post-command))
-            (should (eq table (nth 2 completion-in-region--data)))
-            (should (equal (cadar (cdr (corfu--affixate corfu--candidates))) "::before"))
-            (should-not (corfu-popupinfo--get-documentation (car corfu--candidates)))
-            (corfu-insert)
-            (should (equal (buffer-string) ".a{::before}"))
-            (should (looking-at "}"))
-            (when yas
-              (should-not (yas-active-snippets)))))))))
+    (emmet2-host-test--with-completion "::b"
+      (if explicit
+          (let ((completion-in-region-function #'corfu--in-region-1))
+            (emmet2-complete) (corfu--exhibit))
+        (corfu-auto--complete-deferred))
+      (let ((table (nth 2 completion-in-region--data)))
+        (insert "e")
+        (let ((this-command 'self-insert-command)) (corfu--post-command))
+        (should (eq table (nth 2 completion-in-region--data)))
+        (should (equal (cadar (cdr (corfu--affixate corfu--candidates))) "::before"))
+        (should-not (corfu-popupinfo--get-documentation (car corfu--candidates)))
+        (corfu-insert)
+        (should (equal (buffer-string) ".a{::before}"))
+        (should (looking-at "}"))))))
+
+(ert-deftest emmet2-host-css-fields-start-no-snippet ()
+  ;; An active field would highlight typed values and send TAB past the semicolon.
+  (emmet2-host-test--with-completion "c"
+    (emmet2-test--with-yasnippet t
+      (let ((completion-in-region-function #'corfu--in-region-1))
+        (emmet2-complete) (corfu--exhibit))
+      (corfu-insert)
+      (should (equal (buffer-string) ".a{color: ;}"))
+      (should (looking-at ";"))
+      (should-not (yas-active-snippets))
+      (should-not mark-active))))
 
 (ert-deftest emmet2-host-provider-classifies-once-per-revision-and-reuses-prefix ()
   (emmet2-host-test--with-completion "ovh,ta"
@@ -201,8 +207,7 @@
                            "overflow: hidden;\ntext-align: center;"))
             (funcall (plist-get props :exit-function) (car candidates) 'finished)
             (should (equal (buffer-string) ".a{ovh,tac}"))
-            (emmet2-test--with-yasnippet nil
-              (funcall (plist-get props :exit-function) candidate 'finished))
+            (funcall (plist-get props :exit-function) candidate 'finished)
             (should (equal (buffer-string) ".a{overflow: hidden;\n   text-align: center;}"))))))))
 
 (ert-deftest emmet2-host-provider-changes-reject-stale-candidates ()

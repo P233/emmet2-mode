@@ -56,8 +56,8 @@ The default HTML mode, `mhtml-mode`, supports manual Emmet completion only.
 
 Use **[Corfu](https://github.com/minad/corfu)** for automatic completion popups
 and full previews, and **[yasnippet](https://github.com/joaotavora/yasnippet)**
-for **TAB** navigation and linked fields. Both are optional packages that you
-install and configure in your Emacs setup.
+for **TAB** navigation and linked fields in HTML and JSX. Both are optional
+packages that you install and configure in your Emacs setup.
 
 Emmet2 automatically adapts its Corfu rows to show expansion labels in the main
 column, honoring your width limit. Rows stay plain text, without icons from
@@ -175,14 +175,15 @@ comma stays as an object separator.
 
 ### Editable fields
 
-After accepting `a.link` from completion, point starts in `href`; after `c,bg`,
-it starts in the first value. With yasnippet installed, **TAB** visits subsequent
-fields and exits at the end, and repeated fields update together. emmet2-mode
-enables yasnippet when fields are first needed, so no extra hook is required.
+After accepting `a.link` from completion, point starts in `href`. With yasnippet
+installed, **TAB** visits subsequent HTML and JSX fields and exits at the end,
+and repeated fields update together. emmet2-mode enables yasnippet when fields
+are first needed, so no extra hook is required. Without yasnippet, you get the
+same text and initial cursor position, and TAB keeps its usual behavior.
 
-Without yasnippet, you get the same text and initial cursor position, and TAB
-keeps its usual behavior. Outside an active field, your normal snippet and TAB
-commands remain available.
+CSS expansions start no snippet: after `c,bg` point starts in the first value,
+and after `d` before the semicolon. Typed or completed values are never
+highlighted, and **TAB** keeps your own binding.
 
 ### Manual completion
 
@@ -295,8 +296,8 @@ available while typing `p$` or `p$-`; bare `$name` uses your language mode's com
 
 A hyphen after an explicit unit means a negative value: `m10px-20px` gives
 `margin: 10px -20px;`. Use `m[10px 20px]` for two positive values.
-Empty parentheses and quotes become editable fields: `w[calc()]` and `ct[""]`
-place point inside.
+Empty parentheses and quotes take the cursor: `w[calc()]` and `ct[""]` place
+point inside.
 
 In JSX style objects, unitless and pixel values become numbers; other units
 become strings. Leading zeros stay literal: `p[010px]` gives `padding: "010px"`.
@@ -466,7 +467,7 @@ Host integrations and pure expansion interfaces are documented in [API.md](API.m
 - Scale and rhythm values such as `p(1)` are opt-in; set
   `emmet2-css-scale-functions` to keep them.
 - Replace `:files (:defaults "*.ts" "src" "data")` with `:files (:defaults "data")`.
-- CSS properties now leave an empty value field; replace value presets such as
+- CSS properties now leave an empty value; replace value presets such as
   `lg` with property-and-value queries such as `bgilg`.
 - Unknown CSS names, values and units no longer expand literally; write a
   project value in brackets, as in `ff[Inter]`.

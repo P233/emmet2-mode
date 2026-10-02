@@ -4,13 +4,12 @@
 
 ;;; Commentary:
 ;; The formatter owns layout.  This module captures a source snapshot, encodes
-;; canonical fields for optional yasnippet, and owns the single text mutation.
+;; markup fields for optional yasnippet, and owns the single text mutation.
 
 ;;; Code:
 
 (require 'cl-lib)
 (require 'emmet2-engine)
-(defvar emmet2-context-provider)
 (declare-function yas-expand-snippet "yasnippet" (snippet &optional start end expand-env))
 (declare-function yas-minor-mode "yasnippet" (&optional arg))
 (defvar yas-before-expand-snippet-hook)
@@ -64,9 +63,7 @@ ANALYSIS may supply :indent-width to use an external host's width instead."
 This short-lived value owns no markers, parser, timer or mutable cache."
   (list :buffer (current-buffer) :mode major-mode :tick (buffer-chars-modified-tick)
         :point (point) :beg (plist-get analysis :beg) :end (plist-get analysis :end)
-        :abbr (plist-get analysis :abbr)
-        :field-navigation (plist-get (bound-and-true-p emmet2-context-provider)
-                                    :field-navigation)))
+        :abbr (plist-get analysis :abbr) :lang (plist-get analysis :lang)))
 
 (defun emmet2-insert-snapshot-valid-p (snapshot)
   "Whether SNAPSHOT still describes the current source and point."
@@ -101,15 +98,16 @@ This short-lived value owns no markers, parser, timer or mutable cache."
 
 (defun emmet2-insert (snapshot result)
   "Atomically replace SNAPSHOT with canonical RESULT in the current buffer.
-Reject stale source before any change.  An installed yasnippet owns fields;
-as in Eglot, its mode is enabled on demand.  Otherwise place point at the same
-initial cursor.  Hosts that request their own field navigation use the same
-initial cursor without YAS fields.  Do not reformat the text."
+Reject stale source before any change.  An installed yasnippet owns markup
+fields; as in Eglot, its mode is enabled on demand.  CSS results, and markup
+without yasnippet, place point at the same initial cursor without fields, so
+typed values are never highlighted and TAB keeps its binding.  Do not reformat
+the text."
   (unless (emmet2-insert-snapshot-valid-p snapshot)
     (signal 'emmet2-error '("Source changed before expansion could be inserted")))
   (let* ((beg (plist-get snapshot :beg)) (end (plist-get snapshot :end))
          (original-point (point)) (success nil)
-         (template (when (and (not (eq (plist-get snapshot :field-navigation) 'host))
+         (template (when (and (eq (plist-get snapshot :lang) 'markup)
                               (plist-get result :fields) (fboundp 'yas-minor-mode))
                      (emmet2-insert--template result))))
     (undo-boundary)

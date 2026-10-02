@@ -194,20 +194,17 @@
                                (buffer-substring (point) (point-max)))
                        (nth 2 case)))))))
 
-(ert-deftest emmet2-stylesheet-core-fields-edit-independently-through-yas ()
+(ert-deftest emmet2-stylesheet-core-fields-keep-mirrors-and-independent-groups ()
   ;; Bypass opinionated default removal to verify the actual core's mirrored
   ;; and conflicting defaults through the existing insertion owner.
-  (emmet2-test-with-insertion t
+  (with-temp-buffer
+    (insert "abbr")
     (let ((result (emmet2-engine-expand "padding${2:😀}-${1:x}-${2:😀}-${1:y}+margin${1:z}" :preset 'stylesheet)))
-      (emmet2-insert snapshot result)
-      (insert "first") (yas-next-field)
-      (insert "second") (yas-next-field)
-      (insert "pair") (yas-next-field)
-      (insert "last") (yas-next-field)
-      (should (equal (buffer-string) "padding: pair first pair second;\nmargin: last;"))
-      (should (= (point) (point-max)))
-      (run-hooks 'post-command-hook)
-      (should-not (yas-active-snippets)))))
+      (emmet2-insert (emmet2-insert-snapshot '(:beg 1 :end 5 :abbr "abbr" :lang css)) result)
+      (should (equal (buffer-string) "padding: 😀 x 😀 y;\nmargin: z;"))
+      (should (looking-at "x "))
+      ;; Mirrors share a group; conflicting defaults and other properties do not.
+      (should (equal (mapcar (lambda (field) (nth 2 field)) (plist-get result :fields)) '(3 1 3 2 4))))))
 
 (provide 'emmet2-stylesheet-integration-test)
 ;;; emmet2-stylesheet-integration-test.el ends here

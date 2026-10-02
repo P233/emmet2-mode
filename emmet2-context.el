@@ -23,8 +23,6 @@
 Set an immutable plist with two functions, :analyze and :revision.  The host
 owns its lifetime; install it buffer-locally before enabling `emmet2-mode',
 or call `emmet2-capf' from the host's dispatcher without enabling the mode.
-Set :field-navigation to host when the host owns value navigation; insertion
-keeps canonical text and cursor without creating yasnippet fields.
 
 :analyze receives AUTOMATIC, non-nil for automatic completion.  Return nil
 to forbid expansion, with no built-in fallback, or a confirmed analysis:
