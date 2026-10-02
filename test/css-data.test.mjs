@@ -56,6 +56,14 @@ test("CSS values and descriptions are preserved and validated before output", ()
   }
 });
 
+test("comma-separated value presets are not offered as values", () => {
+  const stacked = structuredClone(data);
+  stacked.properties[0].values = [{ name: "Arial, Helvetica, sans-serif" }, { name: "serif" }];
+  const before = structuredClone(stacked);
+  assert.deepEqual(cssMetadata(stacked, source).properties[0].values, [{ name: "serif" }]);
+  assert.deepEqual(stacked, before);
+});
+
 test("value syntax scanning keeps top-level keywords and references only", () => {
   assert.deepEqual(scanSyntax("<line-width> || <line-style> || <color>"),
     { keywords: [], references: ["type:line-width", "type:line-style", "type:color"] });

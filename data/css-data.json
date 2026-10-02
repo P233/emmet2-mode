@@ -9328,18 +9328,6 @@
       ],
       "values": [
         {
-          "name": "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif"
-        },
-        {
-          "name": "Arial, Helvetica, sans-serif"
-        },
-        {
-          "name": "Cambria, Cochin, Georgia, Times, 'Times New Roman', serif"
-        },
-        {
-          "name": "'Courier New', Courier, monospace"
-        },
-        {
           "name": "cursive",
           "browsers": [
             "E12",
@@ -9374,21 +9362,6 @@
             "baseline_low_date": "2015-07-29",
             "baseline_high_date": "2018-01-29"
           }
-        },
-        {
-          "name": "'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif"
-        },
-        {
-          "name": "Georgia, 'Times New Roman', Times, serif"
-        },
-        {
-          "name": "'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif"
-        },
-        {
-          "name": "Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif"
-        },
-        {
-          "name": "'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif"
         },
         {
           "name": "monospace",
@@ -9427,9 +9400,6 @@
           }
         },
         {
-          "name": "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-        },
-        {
           "name": "serif",
           "browsers": [
             "E12",
@@ -9446,15 +9416,6 @@
             "baseline_low_date": "2015-07-29",
             "baseline_high_date": "2018-01-29"
           }
-        },
-        {
-          "name": "'Times New Roman', Times, serif"
-        },
-        {
-          "name": "'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif"
-        },
-        {
-          "name": "Verdana, Geneva, Tahoma, sans-serif"
         }
       ],
       "atRule": "@font-palette-values",
@@ -18239,10 +18200,6 @@
           "description": "Indicates that the motion of the content after the contact is picked up may be adjusted if the content would normally stop \"close enough\" to a snap-point."
         },
         {
-          "name": "snapInterval(100%, 100%)",
-          "description": "Specifies where the snap-points will be placed."
-        },
-        {
           "name": "snapList()",
           "description": "Specifies the position of individual snap-points as a comma-separated list of zoom factors."
         }
@@ -18259,10 +18216,6 @@
         "IE10"
       ],
       "values": [
-        {
-          "name": "snapInterval(100%, 100%)",
-          "description": "Specifies where the snap-points will be placed."
-        },
         {
           "name": "snapList()",
           "description": "Specifies the position of individual snap-points as a comma-separated list of zoom factors."
@@ -19457,9 +19410,6 @@
       ],
       "values": [
         {
-          "name": "snapInterval(100%, 100%)"
-        },
-        {
           "name": "snapList()"
         }
       ],
@@ -19478,9 +19428,6 @@
         "IE10"
       ],
       "values": [
-        {
-          "name": "snapInterval(100%, 100%)"
-        },
         {
           "name": "snapList()"
         }
@@ -19538,9 +19485,6 @@
           "name": "proximity"
         },
         {
-          "name": "snapInterval(100%, 100%)"
-        },
-        {
           "name": "snapList()"
         }
       ],
@@ -19567,9 +19511,6 @@
         },
         {
           "name": "proximity"
-        },
-        {
-          "name": "snapInterval(100%, 100%)"
         },
         {
           "name": "snapList()"
@@ -27168,22 +27109,6 @@
           "description": "Ampersand."
         },
         {
-          "name": "U+20-24F, U+2B0-2FF, U+370-4FF, U+1E00-1EFF, U+2000-20CF, U+2100-23FF, U+2500-26FF, U+E000-F8FF, U+FB00-FB4F",
-          "description": "WGL4 character set (Pan-European)."
-        },
-        {
-          "name": "U+20-17F, U+2B0-2FF, U+2000-206F, U+20A0-20CF, U+2100-21FF, U+2600-26FF",
-          "description": "The Multilingual European Subset No. 1. Latin. Covers ~44 languages."
-        },
-        {
-          "name": "U+20-2FF, U+370-4FF, U+1E00-20CF, U+2100-23FF, U+2500-26FF, U+FB00-FB4F, U+FFF0-FFFD",
-          "description": "The Multilingual European Subset No. 2. Latin, Greek, and Cyrillic. Covers ~128 language."
-        },
-        {
-          "name": "U+20-4FF, U+530-58F, U+10D0-10FF, U+1E00-23FF, U+2440-245F, U+2500-26FF, U+FB00-FB4F, U+FE20-FE2F, U+FFF0-FFFD",
-          "description": "The Multilingual European Subset No. 3. Covers all characters belonging to European scripts."
-        },
-        {
           "name": "U+00-7F",
           "description": "Basic Latin (ASCII)."
         },
@@ -27222,10 +27147,6 @@
         {
           "name": "U+500-52F",
           "description": "Cyrillic Supplement. Extra letters for Komi, Khanty, Chukchi, Mordvin, Kurdish, Aleut, Chuvash, Abkhaz, Azerbaijani, and Orok."
-        },
-        {
-          "name": "U+00-52F, U+1E00-1FFF, U+2200-22FF",
-          "description": "Latin, Greek, Cyrillic, some punctuation and symbols."
         },
         {
           "name": "U+530-58F",
@@ -27386,10 +27307,6 @@
         {
           "name": "U+30A0-30FF",
           "description": "Katakana."
-        },
-        {
-          "name": "U+A5, U+4E00-9FFF, U+30??, U+FF00-FF9F",
-          "description": "Japanese Kanji, Hiragana and Katakana characters plus Yen/Yuan symbol."
         },
         {
           "name": "U+A4D0-A4FF",

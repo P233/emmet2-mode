@@ -367,21 +367,21 @@ verifies all inputs before writing the full `css-data.json` metadata, the
 compact `css-index.json` search index and both upstream licenses. The files are
 generated together; tests verify the index against the metadata. The full
 snapshot has 888 property/descriptor records including vendor entries, named
-values, restrictions and documentation. The index contains 579 ordinary
-properties with relevance, obsolete status, own keywords and the shared value
-sets reachable through property and type references, plus the CSS-wide
+values, restrictions and documentation. Comma-separated value presets such as
+font stacks are dropped, so values are single keywords. The index contains 579
+ordinary properties with relevance, obsolete status, own keywords and the shared
+value sets reachable through property and type references, plus the CSS-wide
 keywords, 19 at-rules, 117 pseudos and 116 HTML elements. A shared set stores
 only its own keywords once. Vendor names, descriptor-only entries, function
 arguments and deprecated types are excluded. An `atRule` association does not
 exclude ordinary use: the generator also admits entries whose source reference
 identifies an ordinary CSS property. The shared query library uses this same
-membership; descriptor-only entries are admitted for the supplied at-rule.
-This snapshot remains pinned and offline at runtime; updating data does not
-automatically add grammar support.
-`css-overrides.json` alone owns authored aliases, functions and SCSS templates;
-its word and property aliases belong to the search and the others to the
-extension layer. The generator never writes it. Review upstream names and local
-targets together.
+membership; descriptor-only entries are admitted for the supplied at-rule. This
+snapshot remains pinned and offline at runtime; updating data does not
+automatically add grammar support. `css-overrides.json` alone owns authored
+aliases, functions and SCSS templates; its word and property aliases belong to
+the search and the others to the extension layer. The generator never writes it.
+Review upstream names and local targets together.
 
 `CHANGELOG.md` states every user-visible change for users; list breaking changes
 first, with the configuration they must edit.

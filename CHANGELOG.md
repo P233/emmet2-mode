@@ -40,6 +40,8 @@ below belong to this release and are relative to the earlier 0.2 implementation.
   - Value presets such as `lg`, `cr`, `qen` and `qru` are replaced by combined
     property/value queries: `bgilg` gives `background-image: linear-gradient();`
     and `crgb` gives `color: rgb();`. Use brackets for literal values, such as `q[none]`.
+  - Comma-separated value presets such as font stacks are not offered;
+    `font-family` offers generic families such as `sans-serif` and `monospace`.
   - Some short forms rank differently: `fs` prefers `font-size` and `bdr`
     prefers `border-radius`. Other readings remain completion choices.
 - Pseudo completion inserts names and editable function arguments, without a

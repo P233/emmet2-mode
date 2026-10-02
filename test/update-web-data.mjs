@@ -48,7 +48,10 @@ export function cssMetadata(data, source) {
       }
     }
   }
-  return data;
+  // Comma-separated presets such as font stacks are value lists, not single keywords.
+  const single = (entry) => entry.values?.some((value) => value.name.includes(","))
+    ? { ...entry, values: entry.values.filter((value) => !value.name.includes(",")) } : entry;
+  return { ...data, ...Object.fromEntries(Object.keys(source.counts).map((key) => [key, data[key].map(single)])) };
 }
 
 export function htmlElements(data, source) {
