@@ -130,6 +130,20 @@
       (should (= (point) position))
       (should-not (emmet2-context-js--parsers)))))
 
+(ert-deftest emmet2-context-bare-class-or-id-is-jsx-text-only ()
+  ;; A lone . or # has no identifier to project, so it is accepted only as JSX text.
+  (dolist (case '(("const A = (<main>.│</main>);" . ".") ("const A = (<main>#│</main>);" . "#")
+                  ("const A = (<main>./│</main>);" . "./") ("const A = (<main>a .│</main>);" . ".")
+                  ("function A() { return .│; }") ("function A() { return #│; }")
+                  ("const A = (<main style={{.│}} />);") ("const a = .│;") ("const y = .│5;")))
+    (ert-info ((car case))
+      (with-temp-buffer
+        (insert (car case)) (goto-char (point-min)) (search-forward "│") (delete-char -1)
+        (let ((position (point)))
+          (tsx-ts-mode) (goto-char position)
+          (emmet2-context-js-prepare)
+          (should (equal (plist-get (emmet2-context-analyze) :abbr) (cdr case))))))))
+
 (ert-deftest emmet2-context-original-comments-strings-and-regex-stay-forbidden ()
   (dolist (source '("function A() { return //ul>li│\n}"
                      "const x = createTheme({/*m10│*/});"

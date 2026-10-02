@@ -1,11 +1,15 @@
-;;; emmet2-context-js.el --- JSX and CSS-in-JS host analysis -*- lexical-binding: t; -*-
+;;; emmet2-context-js.el --- JSX and CSS-in-JS context with tree-sitter -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;;; Commentary:
-;; Own the original and projected JS trees, their unit markers and warmup.
-;; Web hosts supply language bounds; Emmet extraction and projection then
-;; confirm JSX markup or a supported style object without changing source.
+;; Find JSX markup and CSS-in-JS objects with tree-sitter.  Each buffer keeps
+;; two parsers per language: one reads the source, the other the projection,
+;; which is the source with the abbreviation reduced to one identifier
+;; character, so the surrounding syntax can be checked without it.  Markers
+;; remember the unit, the smallest closed statement or JSX element around
+;; point, which limits later parsing.  An idle timer warms the parsers for
+;; automatic completion.  web-mode supplies the bounds of script parts.
 
 ;;; Code:
 
@@ -46,9 +50,12 @@ Write each callee as it appears in source, such as \"css\" or \"stylex.create\".
                (treesit-query-compile language '([(jsx_expression) (object)] @expression)))
              (treesit-query-compile language '((ERROR (regex_pattern) @pattern)))))
      '(tsx javascript typescript)))
-  "Ten fixed queries, lazily compiled for their grammars.
-They have module lifetime and no source-dependent invalidation.  Parser trees
-remain buffer owned; these queries retain no analysis results or source nodes.")
+  "Compiled tree-sitter queries per language: (LANGUAGE HOST JSX OBJECT REGEX).
+HOST captures enclosing objects, pairs, returns and arrow functions; JSX
+captures JSX opening tags and expressions; OBJECT captures JSX expressions
+and objects; REGEX captures regex patterns inside errors.  The typescript
+entry has no JSX or OBJECT query.  Compilation is lazy, and the queries hold
+no buffer state.")
 
 (defun emmet2-context-js--owner (&optional create)
   "Return this buffer's context owner, allocating it when CREATE is non-nil.
@@ -84,7 +91,7 @@ verify owner identity and give each view its own tag, without shared cleanup."
 
 (defun emmet2-context-js--check-tick (owner)
   "Invalidate OWNER after an edit that bypassed this view's hooks.
-Return non-nil when evidence was stale."
+Return non-nil when the remembered units were stale."
   (unless (eql (emmet2-context-js--state-tick owner) (buffer-chars-modified-tick))
     (emmet2-context-js--forget-units owner)
     (setf (emmet2-context-js--state-tick owner) (buffer-chars-modified-tick))))
@@ -155,8 +162,10 @@ the second tree; keeping each input view stable avoids full reparses."
       (list language (point-min) (point-max)))))
 
 (defun emmet2-context-js-prepare ()
-  "Prepare the current JS region during idle time.
-Return its parser when the grammar is available."
+  "Create and parse this buffer's JS parsers for the region at point.
+Also compile the queries, so automatic analysis finds everything ready.
+Return the source parser, or nil without a JS region or grammar.
+`emmet2-context-js-start' runs this from an idle timer."
   (save-restriction
     (widen)
     (when-let* ((region (emmet2-context-js-region)))
@@ -197,9 +206,9 @@ be the abbreviation itself; projection checks the remaining syntax."
                   (save-excursion (goto-char end) (skip-chars-forward " \t") (eolp)))))))
 
 (defun emmet2-context-js--tree-unit (parser position)
-  "Find a closed unit containing POSITION in PARSER.
-Require complete valid projected syntax; select the nearest JSX element or
-top-level declaration.  Full-host analysis established the original identity."
+  "Return (START . END) of the closed unit around POSITION in PARSER, or nil.
+The unit is the nearest JSX element or top-level statement, and it must have
+no syntax errors."
   (let* ((root (treesit-parser-root-node parser))
          (node (treesit-node-on position (min (point-max) (1+ position)) parser t)))
     (while (and (treesit-node-parent node)
@@ -212,9 +221,9 @@ top-level declaration.  Full-host analysis established the original identity."
       (cons (treesit-node-start node) (treesit-node-end node)))))
 
 (defun emmet2-context-js--unit (language start end parser initialize)
-  "Return confirmed LANGUAGE unit bounds within START..END for PARSER.
-INITIALIZE permits full-host discovery.  Only a later confirmed projection
-can replace the full host with a smaller unit."
+  "Return the remembered LANGUAGE unit around point within START..END.
+Restrict PARSER to that unit.  Without one, non-nil INITIALIZE uses all of
+START..END; only a valid projection later narrows it."
   (let* ((owner (emmet2-context-js--owner t)) entry bounds)
     (emmet2-context-js--check-tick owner)
     (setq entry (assq language (emmet2-context-js--state-units owner)))
@@ -253,8 +262,9 @@ need no JS owner, edit hooks or idle work."
               (run-with-idle-timer 0.1 nil #'emmet2-context-js--warm (current-buffer) owner))))))
 
 (defun emmet2-context-js--host-region (parser start end language)
-  "Constrain a candidate using PARSER's original host syntax in START..END.
-LANGUAGE selects the query vocabulary.  Bounds still belong to the extractor."
+  "Return (LEFT . RIGHT), the part of this line where an abbreviation may lie.
+PARSER's tree of START..END and LANGUAGE's queries move LEFT past enclosing
+syntax; the extractor still decides the exact bounds."
   (let ((left (max start (line-beginning-position)))
         (right (min end (line-end-position)))
         (position (point)))
@@ -263,28 +273,21 @@ LANGUAGE selects the query vocabulary.  Bounds still belong to the extractor."
                    left right t))
       (when (and (<= (treesit-node-start node) position)
                  (or (<= position (treesit-node-end node))
-                     ;; `m10+p.5' may close its containing object early with
-                     ;; a MISSING }.  Retain that real opening boundary; the
-                     ;; extractor and projection still verify the candidate
-                     ;; and complete surrounding host before accepting it.
+                     ;; m10+p.5 may close its object early with a MISSING }; keep that real opening boundary.
                      (and (equal (treesit-node-type node) "object")
                           (let ((last (treesit-node-child node -1)))
                             (and (equal (treesit-node-type last) "}")
                                  (treesit-node-check last 'missing))))))
         (pcase (treesit-node-type node)
           ("pair"
-           ;; Keep authored CSS-in-JS keys and colons in the projection.  The
-           ;; original abbreviation may damage this tree, but this only sets
-           ;; a lower bound; projected ownership still requires valid syntax.
+           ;; Keep authored keys and colons; this lower bound is checked again in the projection.
            (when (emmet2-context-js--css-owner-p node t)
              (let ((value (treesit-node-child-by-field-name node "value")))
                (when (and value (<= (treesit-node-start value) position))
                  (setq left (max left (treesit-node-start value)))))))
           ("object"
            (let ((begin (treesit-node-start node)))
-             ;; Broken JSX such as a{Link $} can recover as an object under
-             ;; ERROR.  Do not cut off attached Emmet text before projection
-             ;; can prove its host.  Real objects retain their boundary.
+             ;; Broken JSX such as a{Link $} can recover as an object under ERROR; keep the attached text.
              (unless (and (not (eq language 'typescript))
                           (equal (treesit-node-type (treesit-node-parent node)) "ERROR")
                           (not (memq (char-before begin)
@@ -310,8 +313,7 @@ LANGUAGE selects the query vocabulary.  Bounds still belong to the extractor."
              (setq left (max left (treesit-node-end node)))))
           ("jsx_expression"
            (let ((begin (treesit-node-start node)))
-             ;; A brace attached to an abbreviation is Emmet text; a leading
-             ;; host brace remains outside the extracted candidate.
+             ;; A brace attached to the abbreviation is Emmet text; a leading JSX brace stays outside.
              (when (and (<= begin position (treesit-node-end node))
                         (or (= begin start)
                             (memq (char-before begin) '(?> ?\s ?\t ?\n ?{ ?=))))
@@ -319,9 +321,10 @@ LANGUAGE selects the query vocabulary.  Bounds still belong to the extractor."
     (cons left right)))
 
 (defun emmet2-context-js--css-owner-p (node &optional allow-errors)
-  "Whether property NODE belongs to a supported CSS host.
-ALLOW-ERRORS is only for original-tree bounds.
-Projected acceptance still requires valid syntax."
+  "Whether NODE lies in an object of a configured CSS-in-JS host.
+Hosts are the JSX attributes in `emmet2-css-in-js-attributes' and the calls
+in `emmet2-css-in-js-functions'.  Non-nil ALLOW-ERRORS accepts objects with
+syntax errors, for bounds in the source tree only."
   (let ((parent (treesit-node-parent node)) result done)
     (while (and parent (not done))
       (pcase (treesit-node-type parent)
@@ -346,8 +349,9 @@ Projected acceptance still requires valid syntax."
     (and result t)))
 
 (defun emmet2-context-js--projected (parser anchor automatic)
-  "Classify PARSER at retained ANCHOR.
-AUTOMATIC disallows root JS expressions."
+  "Return markup, css-in-js or nil for the projected node at ANCHOR in PARSER.
+Non-nil AUTOMATIC rejects a bare identifier returned from a function, which
+explicit requests treat as markup."
   (let* ((node (treesit-node-on anchor (1+ anchor) parser t))
          (parent (treesit-node-parent node)))
     (pcase (treesit-node-type node)
@@ -391,8 +395,7 @@ Emmet; automatic completion must leave it alone."
         (setq found t))
       (setq node (treesit-node-parent node)))
     (or found
-        ;; An unterminated /* may recover as an invalid regular expression,
-        ;; ending at a later JSX tag's slash.  Never project away that evidence.
+        ;; An unterminated /* can parse as a regex ending at a later JSX slash; treat it as a comment.
         (and (treesit-node-check (treesit-parser-root-node parser) 'has-error)
              (cl-some
               (lambda (pattern)
@@ -406,7 +409,12 @@ Emmet; automatic completion must leave it alone."
                nil beg t))))))
 
 (defun emmet2-context-js-analyze (region automatic)
-  "Analyze JS REGION; AUTOMATIC requires a warmed parser and trusted position."
+  "Return the JSX or CSS-in-JS abbreviation context at point in REGION.
+REGION is (LANGUAGE START END).  Return nil when the position does not
+allow expansion.  Non-nil AUTOMATIC uses only parsers that are already
+warm, scheduling warmup otherwise, and skips text that could be a JSX
+expression.  With nil AUTOMATIC, missing parsers are created, and a missing
+grammar signals `emmet2-error'."
   (pcase-let* ((`(,language ,start ,end) region)
                (parser (emmet2-context-js--parser language (not automatic)))
                (projection (emmet2-context-js--parser language (not automatic) t))
@@ -425,7 +433,12 @@ Emmet; automatic completion must leave it alone."
                      (not (and automatic (emmet2-context-js--ambiguous-text-p parser beg finish language))))
             (let ((anchor (save-excursion
                             (goto-char beg)
-                            (when (re-search-forward "[A-Za-z_]" finish t) (1- (point))))))
+                            (if (re-search-forward "[A-Za-z_]" finish t) (1- (point))
+                              ;; A bare . or # names a class or id of an implicit div, but only in
+                              ;; JSX text; checking the source tree first avoids reparsing for JS.
+                              (and (memq (char-after beg) '(?. ?#))
+                                   (equal (treesit-node-type (treesit-node-at beg parser)) "jsx_text")
+                                   beg)))))
               (when anchor
                 (treesit-parser-set-included-ranges
                  projection (delq nil (list (and (< start beg) (cons start beg))
@@ -438,8 +451,7 @@ Emmet; automatic completion must leave it alone."
                                      (emmet2-context-js--closed-unit-p
                                       (treesit-node-child root 0 t) start end)))))
                     (progn
-                      ;; Retry once with the complete host.  Unrelated syntax
-                      ;; errors must not suppress an otherwise valid position.
+                      ;; Retry once with the whole region, so unrelated syntax errors cannot hide a valid position.
                       (emmet2-context-js--remember-unit
                        (emmet2-context-js--owner) language (cons (nth 1 region) (nth 2 region)))
                       (emmet2-context-js-analyze region automatic))
