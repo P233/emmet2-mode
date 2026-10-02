@@ -1,19 +1,20 @@
-;;; emmet2-completion.el --- Shared semantic name completion -*- lexical-binding: t; -*-
+;;; emmet2-completion.el --- Fuzzy name completion for hosts -*- lexical-binding: t; -*-
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;;; Commentary:
-;; Hosts supply candidates, spelling identity and replacement bounds.  This
-;; module owns table protocol, fuzzy matching and function acceptance; it does
-;; not classify source or discover host symbols.  Expansion keeps its own CAPF.
+;; Value and name completion for hosts.  Hosts supply candidates, replacement
+;; bounds and an identity function mapping each spelling to its name; this
+;; module provides the completion table, the emmet2-name style with fuzzy
+;; matching, and placing point inside an accepted empty call such as calc().
+;; It does not inspect the buffer.  Abbreviation expansion uses `emmet2-capf'.
 
 ;;; Code:
 (require 'cl-lib)
 (require 'subr-x)
 (require 'emmet2-fuzzy)
-;; Matching.  A completion table must return candidates that begin with its
-;; input, so fuzzy, escape-aware and Sass-equivalent matching cannot live in
-;; one.  The table names its identity rules in its metadata, and this style,
-;; the default for the host category, applies them.
+;; A completion table must return candidates that start with its input, so
+;; fuzzy, escape-aware and Sass-equivalent matching happen in the emmet2-name
+;; style, which reads the table's identity rules from its metadata.
 
 (defun emmet2-completion--style-match (string table predicate point)
   "Match STRING at POINT against TABLE under PREDICATE.
@@ -73,7 +74,8 @@ With FOLD the match is fuzzy; otherwise INPUT is a prefix."
         (nconc names 0)))))
 
 (defun emmet2-completion--merge-suffix (completion suffix fold)
-  "Return SUFFIX without the longest beginning that COMPLETION already ends with."
+  "Return SUFFIX without the longest beginning that COMPLETION already ends with.
+Non-nil FOLD ignores case."
   (let ((overlap (min (length completion) (length suffix))))
     (while (and (> overlap 0)
                 (not (eq t (compare-strings completion (- (length completion) overlap) nil
@@ -100,8 +102,7 @@ input unless every candidate extends it the same way."
              (plain-common (funcall identity common))
              (semantic-common (try-completion "" names))
              (semantic-common (if (eq semantic-common t) (car names) semantic-common))
-             ;; Different escape spellings can share an incomplete escape or
-             ;; a shorter raw prefix.  Keep the input while showing candidates.
+             ;; Escape spellings can share an incomplete escape or raw prefix; then keep the input as typed.
              (result (if (and (not (string-suffix-p "\\" common))
                               (string-prefix-p query plain-common fold)
                               (string-prefix-p plain-common semantic-common fold))
@@ -122,44 +123,71 @@ input unless every candidate extends it the same way."
 
 (cl-defun emmet2-completion-capf (begin end entries &key (category 'emmet2-value)
                                         (identity #'identity) (fuzzy t) annotation prefix)
-  "Return a semantic CAPF for ENTRIES replacing BEGIN through END.
-ENTRIES are (NAME . DOCUMENTATION) pairs.  IDENTITY maps spellings to names;
-FUZZY selects case-insensitive fuzzy matching instead of literal prefixes.
-CATEGORY owns the user's completion-style choice.  ANNOTATION labels rows;
-PREFIX permits immediate completion after a host's syntactic trigger.
-Accepted empty function calls place point inside their parentheses.
-Hosts own subsequent navigation; this callback creates no snippet fields."
-  (let* (;; Completing a function name before an existing call keeps its
-         ;; authored arguments and parentheses outside the replacement range.
-         (entries (if (eq (char-after end) ?\()
-                      (mapcar (lambda (entry)
-                                (if (string-suffix-p "()" (car entry))
-                                    (cons (substring (car entry) 0 -2) (cdr entry))
-                                  entry)) entries)
-                    entries))
-         (names (delete-dups (mapcar #'car entries)))
-         (buffer (current-buffer))
+  "Return completion data that offers ENTRIES between BEGIN and END.
+ENTRIES are (NAME . DOCUMENTATION) pairs, or a zero-argument function which
+collects them on the first candidate query.  Its completed result, including
+nil, belongs to this table; metadata queries do not call it.  Collection
+requires the original buffer, mode, text, point and restriction.  An input
+interruption leaves collection retryable.  DOCUMENTATION, which may be nil,
+is returned through :company-docsig.  Return the value from a function in
+`completion-at-point-functions'.  It is exclusive, so return nil yourself
+when no entry fits; function ENTRIES cannot tell in advance, and an empty
+collection still keeps later completion functions from running.  CATEGORY,
+`emmet2-value' by default, is the completion category; IDENTITY and FUZZY
+take effect only where the emmet2-name style
+applies, which is the default for `emmet2-value' alone.  IDENTITY maps a
+spelling to the name it denotes, `identity' by default.  Non-nil FUZZY, the
+default, matches case-insensitively and fuzzily; nil matches literal
+prefixes.  ANNOTATION is a string shown after every candidate.  PREFIX is
+passed as :company-prefix-length; t lets Corfu and Company complete before
+their prefix threshold.  When ( already follows END, names ending in () are
+offered without them.  Accepting an empty call such as calc() moves point
+inside its parentheses; no snippet fields are created."
+  (let* ((buffer (current-buffer))
          (mode major-mode)
+         (revision (list major-mode (buffer-chars-modified-tick) (point) (point-min) (point-max)))
+         (call-follows (eq (char-after end) ?\())
+         ;; One publication keeps even an interrupted collection retryable.
+         ;; A cons of entries and names distinguishes an empty result from nil.
+         prepared
          (metadata `(metadata (category . ,category)
                               (display-sort-function . identity)
                               (cycle-sort-function . identity)
                               (emmet2-identity . ,identity)
                               (emmet2-fuzzy . ,fuzzy))))
-    (list begin end
-          (lambda (string predicate action)
-            (if (eq action 'metadata) metadata
-              (complete-with-action action names string predicate)))
-          :exclusive t :company-prefix-length prefix
-          :annotation-function (lambda (_) annotation)
-          :company-docsig (lambda (candidate) (or (cdr (assoc candidate entries)) candidate))
-          :exit-function
-          (lambda (candidate status)
-            (when (and (eq status 'finished) (eq buffer (current-buffer))
-                       (eq mode major-mode) (member candidate names)
-                       (<= (point-min) begin (point))
-                       (equal candidate (buffer-substring-no-properties begin (point))))
-              (when (string-suffix-p "()" candidate)
-                (backward-char)))))))
+    (cl-labels
+        ((prepare ()
+           (or prepared
+               (when (or (not (functionp entries))
+                         (and (eq buffer (current-buffer))
+                              (equal revision (list major-mode (buffer-chars-modified-tick)
+                                                    (point) (point-min) (point-max)))))
+                 (let* ((values (if (functionp entries) (funcall entries) entries))
+                        ;; Leave existing call arguments intact.
+                        (values (if call-follows
+                                    (mapcar (lambda (entry)
+                                              (if (string-suffix-p "()" (car entry))
+                                                  (cons (substring (car entry) 0 -2) (cdr entry))
+                                                entry)) values)
+                                  values)))
+                   (setq prepared (cons values (delete-dups (mapcar #'car values)))))))))
+      (unless (functionp entries) (prepare))
+      (list begin end
+            (lambda (string predicate action)
+              (cond ((eq action 'metadata) metadata)
+                    ((eq (car-safe action) 'boundaries) nil)
+                    (t (complete-with-action action (cdr (prepare)) string predicate))))
+            :exclusive t :company-prefix-length prefix
+            :annotation-function (lambda (_) annotation)
+            :company-docsig (lambda (candidate) (or (cdr (assoc candidate (car (prepare)))) candidate))
+            :exit-function
+            (lambda (candidate status)
+              (when (and (eq status 'finished) (eq buffer (current-buffer))
+                         (eq mode major-mode) (member candidate (cdr (prepare)))
+                         (<= (point-min) begin (point))
+                         (equal candidate (buffer-substring-no-properties begin (point))))
+                (when (string-suffix-p "()" candidate)
+                  (backward-char))))))))
 
 (provide 'emmet2-completion)
 ;;; emmet2-completion.el ends here

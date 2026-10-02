@@ -3,6 +3,71 @@
 
 (require 'emmet2-capf-test)
 (require 'emmet2-css-value)
+(require 'emmet2-completion)
+
+(ert-deftest emmet2-value-lazy-entries-are-collected-once ()
+  (with-temp-buffer
+    (insert "cal")
+    (let* ((calls 0)
+           (data (emmet2-completion-capf
+                  1 (point) (lambda () (cl-incf calls) '(("calc()" . "Calculate")))))
+           (table (nth 2 data)) (props (nthcdr 3 data)))
+      (should (zerop calls))
+      (should (eq (completion-metadata-get (completion-metadata "cal" table nil) 'category)
+                  'emmet2-value))
+      (should (zerop calls))
+      (should (equal (all-completions "cal" table) '("calc()")))
+      (should (equal (funcall (plist-get props :company-docsig) "calc()") "Calculate"))
+      (should (test-completion "calc()" table))
+      (should (= calls 1))
+      (delete-region (point-min) (point-max)) (insert "calc()")
+      (funcall (plist-get props :exit-function) "calc()" 'finished)
+      (should (eq (char-after) ?\))))))
+
+(ert-deftest emmet2-value-lazy-entries-retry-interruption-and-retain-empty-results ()
+  (with-temp-buffer
+    (insert "x")
+    (let* ((calls 0)
+           (data (emmet2-completion-capf
+                  1 (point) (lambda ()
+                              (cl-incf calls)
+                              (when (= calls 1) (throw throw-on-input t))
+                              nil)))
+           (table (nth 2 data)))
+      (should (eq (while-no-input (all-completions "x" table)) t))
+      (should (= calls 1))
+      (should-not (all-completions "x" table))
+      (should-not (all-completions "x" table))
+      (should (= calls 2)))))
+
+(ert-deftest emmet2-value-lazy-entries-do-not-read-another-source ()
+  (dolist (change '(buffer mode text point restriction))
+    (with-temp-buffer
+      (insert " cal")
+      (let* ((calls 0)
+             (data (emmet2-completion-capf
+                    2 (point) (lambda () (cl-incf calls) '(("calc()")))))
+             (table (nth 2 data)))
+        (pcase change
+          ('mode (text-mode))
+          ('text (delete-char -1) (insert "l"))
+          ('point (backward-char))
+          ('restriction (narrow-to-region 2 (point-max))))
+        (if (eq change 'buffer)
+            (with-temp-buffer (insert " cal") (should-not (all-completions "cal" table)))
+          (should-not (all-completions "cal" table)))
+        (should (zerop calls))))))
+
+(ert-deftest emmet2-value-lazy-entries-preserve-existing-call ()
+  (with-temp-buffer
+    (insert "cal(1rem)") (goto-char 4)
+    (let* ((data (emmet2-completion-capf 1 4 (lambda () '(("calc()")))))
+           (table (nth 2 data)))
+      (should (equal (all-completions "cal" table) '("calc")))
+      (insert "c")
+      (funcall (plist-get (nthcdr 3 data) :exit-function) "calc" 'finished)
+      (should (equal (buffer-string) "calc(1rem)"))
+      (should (eq (char-after) ?\()))))
 
 (defmacro emmet2-value-test--with (mode source &rest body)
   "Run BODY in MODE with SOURCE's | marking point and a real Corfu frontend."
