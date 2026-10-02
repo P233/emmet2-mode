@@ -87,7 +87,7 @@ passes through here, so a provider's :abbr never replaces the source text."
         (plist-put (copy-sequence analysis) :abbr (buffer-substring-no-properties beg end))))))
 
 (defun emmet2-context-revision ()
-  "Return a value that changes whenever `emmet2-context-analyze' may.
+  "Return the inputs of `emmet2-context-analyze' as one comparable value.
 Compare values with `equal'.  The value covers the text's modification tick,
 point, the visible region, the major mode and `emmet2-mode', plus either the
 provider's :revision or, for built-in hosts, web-mode's engine, content type

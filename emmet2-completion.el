@@ -123,7 +123,7 @@ input unless every candidate extends it the same way."
 
 (cl-defun emmet2-completion-capf (begin end entries &key (category 'emmet2-value)
                                         (identity #'identity) (fuzzy t) annotation prefix)
-  "Return completion data that offers ENTRIES between BEGIN and END.
+  "Return completion data offering ENTRIES between BEGIN and END.
 ENTRIES are (NAME . DOCUMENTATION) pairs, or a zero-argument function which
 collects them on the first candidate query.  Its completed result, including
 nil, belongs to this table; metadata queries do not call it.  Collection

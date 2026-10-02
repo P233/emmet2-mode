@@ -41,7 +41,7 @@ changing the major mode discards it.")
        (save-excursion (goto-char (plist-get analysis :end)) (skip-chars-forward " \t") (eolp))))
 
 (defun emmet2-capf--confident-p (analysis)
-  "Return non-nil when ANALYSIS's abbreviation looks like Emmet input.
+  "Return non-nil when ANALYSIS's abbreviation is likely Emmet input.
 Return `search' for a bare lowercase CSS word, such as ta, which counts only
 if it has a CSS choice.  A bare markup word counts only when it is a known
 element alone on its line; a word ending in a period never counts."
