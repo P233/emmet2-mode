@@ -2,8 +2,9 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;;; Commentary:
-;; CSS Base supplies syntax state.  Tree-sitter hosts keep their own context
-;; authority and call the same semantic completion library with confirmed data.
+;; Complete property values in CSS Base modes, using `syntax-ppss' to find the
+;; value.  Hosts with their own parser, such as scss2-mode, find the value
+;; themselves and call `emmet2-completion-capf' with `emmet2-css-data-query'.
 
 ;;; Code:
 (require 'emmet2-context)
@@ -11,9 +12,11 @@
 (declare-function emmet2-completion-capf "emmet2-completion" (begin end entries &rest arguments))
 
 (defun emmet2-css-value-capf ()
-  "Offer shared CSS values at a CSS Base declaration's value position.
-Decline when no value matches the typed text, so `css-mode', Eglot and
-other sources can still complete a project value."
+  "Return completion data for a CSS property value at point, or nil.
+Offer the bundled values of the declaration's property, vendor values
+included, in CSS Base modes without `emmet2-context-provider'.  Return nil
+when no value matches the typed text under the user's completion styles,
+so `css-completion-at-point', Eglot and other functions can complete it."
   (when-let* ((_ (not emmet2-context-provider))
               (context (emmet2-context-css-value)))
     (require 'emmet2-css-data)

@@ -1,19 +1,21 @@
-;;; emmet2-preview.el --- Bounded, fontified expansion documentation -*- lexical-binding: t; -*-
+;;; emmet2-preview.el --- Fontified preview buffers for expansions -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;;; Commentary:
-;; These three buffers own only presentation.  The caller supplies final text;
-;; no source analysis, expansion, snippet or user mode hook runs here.
+;; Keep one hidden, read-only buffer per output syntax (html, jsx and css)
+;; for completion previews.  Callers supply the final text; no source
+;; analysis, expansion, snippet or user mode hook runs here.
 
 ;;; Code:
 (require 'font-lock)
 
 (defvar emmet2-preview--buffers nil
-  "Owned preview buffers, at most one each for html, jsx and css.")
+  "Preview buffers, at most one each for html, jsx and css.")
 
 (defun emmet2-preview--kill (buffer)
-  "Delete owned BUFFER without a confirmation veto losing its ownership."
+  "Kill BUFFER, ignoring `kill-buffer-query-functions'.
+A veto would leave a preview buffer that nothing tracks any more."
   (when (buffer-live-p buffer)
     (with-current-buffer buffer
       (let ((kill-buffer-query-functions nil)) (kill-buffer buffer)))))
@@ -36,9 +38,11 @@
 
 ;;;###autoload
 (defun emmet2-preview (text syntax)
-  "Return an owned, fontified buffer containing exactly TEXT.
-SYNTAX is html, jsx or css.  Reuse one buffer per syntax, recreating it if
-deleted.  This function preserves the caller's buffer, point and text."
+  "Return a read-only, fontified buffer containing exactly TEXT.
+SYNTAX is html, jsx or css and selects the major mode; any other value
+signals an error.  The buffer is reused for the next preview of the same
+SYNTAX, so display it but do not modify or keep it; `emmet2-preview-clear'
+kills it.  The current buffer, point and text are unchanged."
   (let* ((mode (pcase syntax ('html #'html-mode) ('jsx #'js-jsx-mode) ('css #'css-mode)
                      (_ (error "Unsupported Emmet preview syntax: %s" syntax))))
          (existing (alist-get syntax emmet2-preview--buffers))

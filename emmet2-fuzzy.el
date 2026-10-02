@@ -3,9 +3,10 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;;; Commentary:
-;; Project-owned, case-insensitive subsequence search.  Each query character
-;; consumes a distinct candidate character.  Exact names, prefixes, word
-;; initials and contiguous runs rank ahead of scattered matches.  The same
+;; Case-insensitive subsequence search implemented here, so ranking does not
+;; depend on the user's completion styles.  Each query character consumes a
+;; distinct candidate character.  Exact names, prefixes, word initials and
+;; contiguous runs rank ahead of scattered matches.  The same
 ;; match supplies scoring and highlighting; equal scores retain source order.
 ;; Optional partial matching is a public utility; CSS abbreviation search
 ;; has its own word-aware index in emmet2-css-search.
@@ -42,7 +43,8 @@ The result has :score and zero-based :positions in CANDIDATE.  Scores are
 positive and at most one.  Positions strictly increase, including repeated
 query characters.  With PARTIAL, a nonempty matched query prefix suffices;
 the score is discounted by the proportion of query characters consumed.
-Empty queries do not match.  Work is bounded by the two string lengths."
+Empty queries do not match.  Work grows with the product of the two string
+lengths."
   (let* ((needle (downcase query)) (text (downcase candidate))
          (size (length text)) (count (length needle)) initials substring)
     (when (and (> count 0) (> size 0))
@@ -64,9 +66,7 @@ Empty queries do not match.  Work is bounded by the two string lengths."
        (t
         (let ((previous nil) (row 0) best matched done)
           (while (and (< row count) (not done))
-            ;; Row R has already consumed R characters.  Full matches must
-            ;; also leave room for the remaining query.  Store only this band;
-            ;; nearly literal menu labels then need no square alignment table.
+            ;; Row R has matched R query characters; keep only the columns that leave room for the rest.
             (let ((current (make-vector (if partial (- size row) (1+ (- size count))) nil))
                   gap-best gap-position row-best)
               (dotimes (column (length current))

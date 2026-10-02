@@ -1,12 +1,13 @@
-;;; emmet2-corfu.el --- Optional Corfu presentation adapter -*- lexical-binding: t; -*-
+;;; emmet2-corfu.el --- Optional Corfu adapter for Emmet candidates -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;;; Commentary:
-;; Keep Emmet labels in Corfu's main column, anchor each completion popup at
-;; its initial cursor position and keep it open for an unchanged abbreviation.
-;; Candidate payloads and user frontend settings remain unchanged.  Corfu is
-;; not required or enabled here.
+;; While Corfu shows Emmet candidates, keep their labels in the main column,
+;; keep the popup at its first cursor position, and never let Corfu treat the
+;; typed abbreviation as complete, so a sole choice stays open.  Other
+;; candidates and user settings are unchanged.  Corfu is not required or
+;; enabled here.
 
 ;;; Code:
 (declare-function corfu--metadata-get "ext:corfu" (property))
@@ -35,7 +36,7 @@
              (anchor (plist-get properties :emmet2-corfu-anchor)))
         (unless anchor
           (setq anchor (or (posn-at-point) position))
-          ;; The completion session owns this position and releases it on exit.
+          ;; Corfu discards this session data on exit, so the anchor needs no cleanup.
           (setf (nth 4 completion-in-region--data)
                 (plist-put properties :emmet2-corfu-anchor anchor)))
         (funcall show anchor))
@@ -55,10 +56,12 @@ REST may hold Corfu's metadata; other arguments pass through unchanged."
       result)))
 
 (defun emmet2-corfu--enable ()
-  "Install the category-scoped display adapter without loading Corfu.
-Repeated installation is idempotent, including after package unload.  An
-installed advice is left in place; re-adding it would move it outside advice
-added later by the user."
+  "Advise Corfu for Emmet candidates, without loading Corfu.
+The advice formats Emmet rows, keeps the popup at its first position and
+keeps a sole Emmet choice open; other candidates are unaffected.  Installing
+again changes nothing, also after `emmet2-corfu-unload-function'.  Existing
+advice stays in place, so it keeps its order relative to advice added later
+by the user."
   (unless (advice-member-p #'emmet2-corfu--rows 'corfu--format-candidates)
     (advice-add 'corfu--format-candidates :filter-args #'emmet2-corfu--rows))
   (unless (advice-member-p #'emmet2-corfu--anchor 'corfu--candidates-popup)

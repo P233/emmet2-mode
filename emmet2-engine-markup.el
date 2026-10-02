@@ -1,11 +1,12 @@
-;;; emmet2-engine-markup.el --- Native markup expansion -*- lexical-binding: t; -*-
+;;; emmet2-engine-markup.el --- Markup abbreviation expansion -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;;; Commentary:
-;; Native markup pipeline shared by commands, completion and previews.
-;; Grammar, snippet resolution and HTML formatting follow vendored Emmet 2.4.11
-;; (data/emmet/LICENSE).  All mutable trees and output belong to one call.
+;; Markup expansion shared by commands, completion and previews.  Grammar,
+;; snippet resolution and HTML formatting follow Emmet 2.4.11, whose snippet
+;; and lorem data are vendored under data/emmet (see its LICENSE).  Trees,
+;; random state and output are call-owned.
 
 ;;; Code:
 
@@ -50,7 +51,7 @@
     "novalidate" "readonly" "required" "reversed" "selected" "typemustmatch"))
 (defconst emmet2-markup--format-space
   "[\t-\r \u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]"
-  "ECMAScript whitespace used by the pinned HTML formatter.")
+  "ECMAScript whitespace, as Emmet 2.4.11's HTML formatter matches it.")
 
 (cl-defstruct (emmet2-markup--scanner (:constructor emmet2-markup--scanner (tokens jsx)))
   tokens jsx)
@@ -64,7 +65,7 @@
   repeaters inserted)
 
 (defun emmet2-markup--tokenize (text)
-  "Tokenize all of TEXT before parsing, preserving lexical error precedence.
+  "Tokenize all of TEXT before parsing, so lexical errors win, as in Emmet 2.4.11.
 Tokens are [TYPE VALUE CHARACTER-POSITION].  Context affects literal scanning;
 fields, repeaters and whitespace have precedence at every token boundary."
   (let ((pos 0) (size (length text)) (quote 0) (attribute 0) (expression 0) tokens)
@@ -194,13 +195,13 @@ fields, repeaters and whitespace have precedence at every token boundary."
                   ('placeholder 'placeholder)
                   ('repeat 'repeater)
                   ((or 'operator 'quote 'bracket)
-                   ;; The pinned upstream stringifier emits } for a group close.
+                   ;; Emmet 2.4.11's stringifier emits } for a group close.
                    (char-to-string (if (eq (aref token 1) ?\)) ?\} (aref token 1))))
                   (_ (aref token 1)))) tokens)
       '("")))
 
 (defun emmet2-markup--literal (scanner &optional brackets)
-  "Consume literal tokens from SCANNER, allowing balanced BRACKETS."
+  "Consume literal tokens from SCANNER; non-nil BRACKETS admits balanced brackets."
   (let ((depth (make-hash-table :test #'eq)) result done)
     (while (and (emmet2-markup--peek scanner) (not done))
       (let* ((token (emmet2-markup--peek scanner)) (type (aref token 0)) (ch (aref token 1))
@@ -398,7 +399,8 @@ Return fresh list cells so conversion never modifies shared syntax."
     copy))
 
 (defun emmet2-markup--convert-name (tokens state)
-  "Resolve name TOKENS in STATE; fields in names are literal TextMate syntax."
+  "Resolve name TOKENS in STATE, writing fields as literal TextMate text.
+An empty field yields an unclosed ${N, as Emmet 2.4.11 does."
   (let ((name (mapconcat (lambda (token)
                            (if (consp token)
                                (if (string-empty-p (cdr token)) (format "${%d" (car token))
@@ -410,8 +412,7 @@ Return fresh list cells so conversion never modifies shared syntax."
 (defun emmet2-markup--convert-element (node state repeat)
   "Create fresh nodes for syntax NODE using STATE and this iteration's REPEAT."
   (let ((copy (copy-emmet2-markup--node node)) children)
-    ;; Preserve upstream visitation order: name/value, children, attributes.
-    ;; A placeholder anywhere in that order affects subsequent implicit wraps.
+    ;; Emmet's order (name/value, children, attributes) decides which implicit repeats see a placeholder.
     (setf (emmet2-markup--node-name copy)
           (emmet2-markup--convert-name (emmet2-markup--node-name node) state)
           (emmet2-markup--node-value copy)
@@ -467,10 +468,11 @@ Return fresh list cells so conversion never modifies shared syntax."
     (nreverse result)))
 
 (defun emmet2-markup--resolve (nodes parsed &optional stack jsx)
-  "Resolve call-owned NODES with the request-local PARSED table and cycle STACK.
-Only snippet syntax trees are shared within this call; conversion creates
-fresh nodes before resolution or transformation can change them.
-JSX enables JSX syntax while parsing snippets."
+  "Expand snippet names in call-owned NODES, caching parsed snippets in PARSED.
+STACK holds the snippets being expanded, to stop cycles.  Only snippet syntax
+trees are shared within this call; conversion creates fresh nodes before
+resolution or transformation can change them.  JSX enables JSX syntax while
+parsing snippets."
   (mapcan
    (lambda (node)
      (emmet2-engine--check-deadline)
@@ -502,7 +504,8 @@ JSX enables JSX syntax while parsing snippets."
          (list node)))) nodes))
 
 (defun emmet2-markup--merge-attributes (attributes)
-  "Return merged copies of ATTRIBUTES, keeping first position and last value."
+  "Return merged copies of ATTRIBUTES, keeping each name's first position.
+Repeated class values join with a space; other names take the last value."
   (let (result)
     (dolist (attr attributes)
       (let* ((name (emmet2-markup--attribute-name attr))
@@ -611,8 +614,9 @@ Equal bounds return FROM.  This generator never touches Emacs random state."
   (+ from (/ (* (- to from) (car state)) #x100000000)))
 
 (defun emmet2-markup--lorem-paragraph (dictionary count common state)
-  "Generate COUNT vocabulary entries from DICTIONARY with owned random STATE.
-COMMON starts with the dictionary's standard opening.  Entries may be phrases."
+  "Return a paragraph of COUNT DICTIONARY entries drawn with random STATE.
+Non-nil COMMON starts with the dictionary's common opening words.  Entries
+may be phrases."
   (let ((total 0) result)
     (cl-labels
         ((sentence (words &optional ending)
@@ -671,9 +675,9 @@ COMMON starts with the dictionary's standard opening.  Entries may be phrases."
                                                      (or (null repeat) (= (emmet2-markup--repeat-index repeat) 0)) state)))))))
 
 (cl-defun emmet2-markup--transform (nodes profile &optional parent-name (random-state (list 0)) repeat)
-  "Transform owned NODES under PARENT-NAME before serialization.
-PROFILE owns attribute names and optional project class expressions.
-RANDOM-STATE belongs to this call; REPEAT is the nearest ancestor's repeater."
+  "Transform call-owned NODES under PARENT-NAME before serialization.
+PROFILE supplies attribute renames and optional CSS Modules class options.
+RANDOM-STATE is call-owned; REPEAT is the nearest ancestor's repeater."
   (dolist (node nodes)
     (emmet2-engine--check-deadline)
     (when (and (null (emmet2-markup--node-name node)) (emmet2-markup--node-attributes-present node))
@@ -847,7 +851,8 @@ NODE is at INDEX in vector SIBLINGS under PARENT."
      (cl-decf (emmet2-markup--output-level out) indent))))
 
 (defun emmet2-markup--result (out)
-  "Return canonical OUT, splitting conflicting defaults within each field index."
+  "Return OUT as a canonical result.
+Conflicting defaults of one field index become separate groups."
   (let ((groups (make-hash-table :test #'equal)) (next 0)
         (fields (nreverse (emmet2-markup--output-fields out))))
     (dolist (field (cl-stable-sort (copy-sequence fields)
@@ -864,7 +869,8 @@ NODE is at INDEX in vector SIBLINGS under PARENT."
   '((html :jsx nil :attributes nil)
     (react :jsx t :attributes (("class" . "className") ("for" . "htmlFor")))
     (solid :jsx t :attributes nil))
-  "Dialect-owned attribute and serialization policies; never mutate these.")
+  "Attribute renames and JSX serialization for each markup dialect.
+Never mutate these.")
 
 (defun emmet2-markup--profile (preset classes)
   "Validate PRESET and CLASSES and build this request's rendering profile."
@@ -884,10 +890,14 @@ NODE is at INDEX in vector SIBLINGS under PARENT."
             (list :classes (and (plist-get classes :cssModulesObject) classes)))))
 
 (cl-defun emmet2-engine-markup-expand (abbreviation &key (preset 'html) (indent "\t") (base-indent "") jsx (seed 0))
-  "Expand ABBREVIATION through the native markup pipeline.
-PRESET is html or jsx.  INDENT and BASE-INDENT affect layout before fields.
-JSX is nil or the existing project rendering options plist.
-SEED is an integer for call-local lorem generation, normalized to 32 bits."
+  "Expand markup ABBREVIATION and return a canonical result.
+PRESET is html, the default, or jsx.  INDENT, a tab by default, is one
+nesting level and BASE-INDENT, empty by default, starts every new line;
+field offsets include both.  JSX is nil or, with PRESET jsx, a plist with
+:classAttribute \"className\" or \"class\" and optional :cssModulesObject
+and :classConstructor strings.  SEED, zero by default, is an integer for
+call-local lorem generation, normalized to 32 bits.  Signal `emmet2-error'
+for invalid arguments and `emmet2-parse-error' for an invalid abbreviation."
   (unless (and (stringp abbreviation) (memq preset '(html jsx)) (stringp indent) (stringp base-indent))
     (signal 'emmet2-error '("Invalid markup abbreviation, preset or indentation")))
   (unless (integerp seed) (signal 'emmet2-error '("Lorem seed must be an integer")))

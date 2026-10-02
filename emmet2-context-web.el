@@ -3,9 +3,11 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;;; Commentary:
-;; web-mode owns tokenization and part/attribute boundaries.  This adapter
-;; owns only a pending bounded CSS scan and delegates fallback scans to the
-;; host.  It creates no parser and makes no abbreviation expansion decisions.
+;; web-mode tokenizes the buffer and marks parts, tags and attributes; this
+;; adapter reads those properties to find the language region at point.  It
+;; flushes web-mode's pending scan first and, after one typed character in a
+;; CSS rule, rescans only that rule.  It creates no parser and does not
+;; extract the abbreviation.
 
 ;;; Code:
 
@@ -43,7 +45,8 @@
       emmet2-context-web--state)))
 
 (defun emmet2-context-web--check-tick (owner)
-  "Discard OWNER's pending scan if another view bypassed its edit hooks."
+  "Discard OWNER's pending scan if another view bypassed its edit hooks.
+Return non-nil when it did."
   (unless (eql (emmet2-context-web--state-tick owner) (buffer-chars-modified-tick))
     (emmet2-context-web--forget-insertion owner)
     (setf (emmet2-context-web--state-tick owner) (buffer-chars-modified-tick))))
@@ -78,7 +81,7 @@ Markers already follow valid interior changes."
   (remove-hook 'after-change-functions #'emmet2-context-web--after-change t))
 
 (defun emmet2-context-web-revision ()
-  "Return the non-text host settings used by Web region discovery."
+  "Return the non-text settings used by web-mode region discovery."
   (list web-mode-engine web-mode-content-type buffer-file-name))
 
 (defun emmet2-context-web--forget-insertion (owner)
@@ -112,7 +115,7 @@ EDIT-END is filled only after a single ordinary character was inserted."
                             (1+ (buffer-modified-tick))))))))))))
 
 (defun emmet2-context-web-scan ()
-  "Flush web-mode's pending scan, using proven CSS insertion bounds if valid.
+  "Flush web-mode's pending scan, rescanning only a remembered CSS rule if valid.
 Tokenization belongs to `web-mode'.  Acknowledge its pending range only after a
 successful scan of that exact edit; preserve it on errors."
   (let ((owner (emmet2-context-web--owner)))
@@ -147,13 +150,13 @@ successful scan of that exact edit; preserve it on errors."
 
 (defun emmet2-context-web-region ()
   "Return (KIND BEG END ATTRIBUTE DIALECT EMBEDDED) at point, or nil.
-Flush pending host scanning before reading any boundaries.  KIND is markup,
-css, javascript, typescript or tsx.  CSS includes a DIALECT and non-nil
-EMBEDDED; markup and JS need only their bounds."
+Flush web-mode's pending scan before reading any boundary.  KIND is markup,
+css, javascript, typescript or tsx.  CSS adds ATTRIBUTE, non-nil inside a
+style attribute value, DIALECT, which is css, scss or less, and non-nil
+EMBEDDED.  Markup and JS need only their bounds."
   (emmet2-context-web-scan)
   (let* ((pos (max (point-min) (1- (point))))
-         ;; Point immediately before a closing tag is the exclusive end of
-         ;; the preceding part. Every embedded language uses this same rule.
+         ;; Point just before a closing tag ends the preceding part, in every embedded language.
          (part-pos (if (get-text-property (point) 'part-side) (point) pos))
          (whole (member web-mode-content-type '("jsx" "javascript" "typescript" "css")))
          (language (if whole web-mode-content-type (web-mode-language-at-pos part-pos)))

@@ -1,12 +1,12 @@
 ;;; emmet2-mode.el --- Expand Emmet abbreviations  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023 Peiwen Lu
+;; Copyright (C) 2022-2026 Peiwen Lu
 
 ;; Author: Peiwen Lu <hi@peiwen.lu>
 ;; Created: 10 Oct 2022
 ;; Version: 2.0.0
 ;; URL: https://github.com/P233/emmet2-mode
-;; Compatibility: emacs-version >= 30
+;; Keywords: abbrev, convenience, languages
 ;; Package-Requires: ((emacs "30"))
 
 ;;; This file is NOT part of GNU Emacs
@@ -28,9 +28,10 @@
 
 ;;; Commentary:
 
-;; Expand HTML, JSX, CSS and SCSS abbreviations through completion-at-point.
-;; Previews and editable fields share the same expansion.  See README.md for
-;; installation and examples, and CHANGELOG.md for upgrade notes.
+;; Expand HTML, JSX, CSS, SCSS and CSS-in-JS abbreviations through
+;; completion-at-point.  Previews and insertion share the same expansion text.
+;; See README.md for installation and examples, and CHANGELOG.md for upgrade
+;; notes.
 
 ;;; Code:
 (require 'emmet2-context)
@@ -44,9 +45,11 @@
 
 ;;;###autoload
 (define-minor-mode emmet2-mode
-  "Offer Emmet choices through completion while typing.
-Expansion happens only when a completion choice is accepted.  The keymap is
-empty; bind `emmet2-complete' in it to request choices explicitly."
+  "Offer Emmet expansions as completion choices while typing.
+Accepting a choice replaces the abbreviation; typing alone never expands.
+In CSS Base modes without `emmet2-context-provider', also complete property
+values with `emmet2-css-value-capf'.  The keymap `emmet2-mode-map' is empty;
+bind `emmet2-complete' or `emmet2-expand-at-point' in it."
   :lighter " emmet2"
   :keymap (make-sparse-keymap)
   (if emmet2-mode
@@ -60,7 +63,7 @@ empty; bind `emmet2-complete' in it to request choices explicitly."
     (emmet2-context-stop)))
 
 (defun emmet2-mode-unload-function ()
-  "Release context resources, preview buffers and optional Corfu advice."
+  "Disable `emmet2-mode' everywhere and release its buffers and advice."
   (dolist (buffer (buffer-list))
     (with-current-buffer buffer
       (if (bound-and-true-p emmet2-mode) (emmet2-mode -1)

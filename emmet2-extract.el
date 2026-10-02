@@ -3,8 +3,9 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;;; Commentary:
-;; Scan a host-owned region without consulting mode or parser state.  This
-;; module alone computes abbreviation bounds; it never changes the buffer.
+;; Find the abbreviation around point within a region the caller confirmed,
+;; without consulting mode or parser state.  Built-in contexts take their
+;; abbreviation bounds from here; nothing here changes the buffer.
 
 ;;; Code:
 
@@ -51,14 +52,15 @@ stays literal.  This identifies syntax, not whether the host permits it."
 
 (defun emmet2-extract (region-beg region-end &optional syntax)
   "Return (:beg BEG :end END :abbr TEXT) at point within the given region.
-REGION-BEG and REGION-END constrain host syntax.  Only the current line is
-scanned.  Balanced groups include spaces and quotes; unmatched host closing
-delimiters and authored tags are excluded.  Point can be anywhere in the
-token, including its start and end.  Return nil outside a token.  SYNTAX
-`css' treats comments and top-level or unmatched closing braces as host
-boundaries and retains property-separating commas, including a pending one;
-balanced raw groups retain their contents.  `css-selector' also retains
-spaces between selector compounds, excluding trailing whitespace."
+REGION-BEG and REGION-END bound the scan to the host's confirmed region.
+Only the current line is scanned.  Balanced groups include spaces and
+quotes; unmatched host closing delimiters and authored tags are excluded.
+Point can be anywhere in the token, including its start and end.  Return
+nil outside a token.  SYNTAX nil scans markup; `css' treats comments and
+top-level or unmatched closing braces as host boundaries and retains
+property-separating commas, including a pending one; balanced raw groups
+retain their contents.  `css-selector' also retains spaces between selector
+compounds, excluding trailing whitespace."
   (let ((position (point))
         (begin (max region-beg (line-beginning-position)))
         (limit (min region-end (line-end-position)))
@@ -91,12 +93,10 @@ spaces between selector compounds, excluding trailing whitespace."
                   (setq quote character))
                  ((and stack (eq character (car stack))) (pop stack))
                  ((eq (car stack) ?})
-                  ;; Quotes, brackets and parentheses in Emmet text are
-                  ;; literal.  Only braces nest (escapes were handled above).
+                  ;; Inside Emmet {text}, only braces nest; quotes and brackets are literal.
                   (when (eq character ?{) (push ?} stack)))
                  ((memq character '(?\[ ?\( ?{))
-                  ;; An initial { belongs to the host.  Emmet text attaches to
-                  ;; a tag/token, while [] and () can begin an abbreviation.
+                  ;; A leading { is host syntax; Emmet {text} follows a token, while [ and ( may start one.
                   (if (and (eq character ?{) (not token))
                       nil
                     (unless token (setq token (point)))

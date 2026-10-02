@@ -6,13 +6,14 @@
 ;; Rank CSS declarations for an abbreviation.  Query segments abbreviate the
 ;; words of a property, and optionally of one keyword value, in order.  Scores
 ;; are log-likelihoods: how a word is abbreviated, which words stay implicit,
-;; the property's pinned relevance and the size of the keyword's value set.
+;; the property's relevance in data/css-index.json, generated from a pinned
+;; VS Code custom data commit, and the size of the keyword's value set.
 ;; Popularity therefore decides short queries, while longer queries follow
 ;; their word structure.  Scores are fixnums in thousandths of a natural log
 ;; unit, so ranking allocates no boxed floats.  Authored word aliases claim
 ;; their letters; property aliases rank first without hiding other choices.
-;; The index and aliases are immutable after loading; each query owns its
-;; scratch tables.
+;; The index and aliases are immutable after loading; each query allocates
+;; its own scratch tables.
 
 ;;; Code:
 
@@ -28,8 +29,9 @@
   "Likelihoods of word matches, skipped words and keyword priors.
 A skeleton keeps a word's letters in order from its initial.  Uncovered,
 middle and leading apply to each unmatched trailing word, skipped inner word
-and skipped first word.  Own, wide, function and rare are keyword priors;
-alias begins a property named by an authored abbreviation.")
+and skipped first word.  Word is a whole-word match and fixed a segment
+spelled by an authored word alias.  Own, wide, function and rare are keyword
+priors; alias begins a property named by an authored abbreviation.")
 
 (defun emmet2-css-search--score (likelihood)
   "Return LIKELIHOOD's natural log in thousandths, as a fixnum."
@@ -41,7 +43,7 @@ alias begins a property named by an authored abbreviation.")
   "Scores of `emmet2-css-search--likelihoods'.")
 
 (defconst emmet2-css-search--prefix (vconcat (mapcar #'emmet2-css-search--score '(0.5 0.1 0.15 0.1)))
-  "Scores of a word prefix of one, two, three and more letters.
+  "Scores of a word prefix of one, two, three, and four or more letters.
 Two letters are often two initials or a property initial and a value.")
 
 (defconst emmet2-css-search--prior-scale 60 "Score per relevance point; the full range is six log units.")
@@ -78,7 +80,9 @@ Their size alone would give each keyword a high prior.")
   (vconcat (split-string (downcase name) "-" t)))
 
 (defun emmet2-css-search--bucket (names prior)
-  "Index keyword NAMES by lowercase initial, each with score PRIOR."
+  "Index keyword NAMES by lowercase initial with score PRIOR.
+Functions score no higher than the function prior; common keywords no lower
+than the own prior."
   (let ((bucket (make-hash-table :test #'eql)) (own (emmet2-css-search--weight 'own)))
     (dolist (name names bucket)
       (push (emmet2-css-search--value
@@ -89,10 +93,12 @@ Their size alone would give each keyword a high prior.")
             (gethash (downcase (aref name 0)) bucket)))))
 
 (defconst emmet2-css-search--index (emmet2-css-search--read "data/css-index.json")
-  "Pinned names, relevance and keyword sets generated with css-data.json.")
+  "Names, relevance and keyword sets generated alongside data/css-data.json.")
 
 (defconst emmet2-css-search--overrides (emmet2-css-search--read "data/css-overrides.json")
-  "Authored search aliases; other override keys belong to the expansion layer.")
+  "Authored CSS overrides, shared by search and expansion.
+Search reads the word and property aliases; emmet2-css reads the pseudo and
+at-rule keys.")
 
 (defun emmet2-css-search-override (key)
   "Return authored CSS override KEY from the shared immutable catalog.
@@ -130,7 +136,7 @@ Callers must not modify the returned data."
 
 (defconst emmet2-css-search--wide
   (emmet2-css-search--bucket (gethash "wide" emmet2-css-search--index) (emmet2-css-search--weight 'wide))
-  "CSS-wide keywords accepted by every property.")
+  "CSS-wide keywords accepted by every ordinary property, not by descriptors.")
 
 (defun emmet2-css-search--index-property (entry)
   "Build one immutable search property from generated ENTRY."
@@ -374,12 +380,14 @@ are scored once per query through CACHE."
 (defun emmet2-css-search (query &optional limit bare at-rule)
   "Return up to LIMIT ranked (PROPERTY . KEYWORD) choices for QUERY.
 QUERY abbreviates a property's words, optionally followed by one keyword
-value: tac is text-align with center.  After a lowercase start, an uppercase
-letter begins the value explicitly, as in mA; otherwise case is ignored.
-Hyphens separate words; only compact queries without them combine a property
-and a value implicitly.  KEYWORD is nil for a bare property.  BARE offers
-properties only, as when an explicit value follows.  Unaligned queries have
-no choices.  LIMIT defaults to ten.  AT-RULE admits its descriptors."
+value: tac is text-align with center.  After a lowercase start, an
+uppercase letter begins the value explicitly, as in mA; otherwise case
+is ignored.  Hyphens separate words; only compact queries, at most eight
+characters without hyphens, combine a property and a value implicitly.
+KEYWORD is nil for a bare property.  BARE offers properties only, as
+when an explicit value follows.  Unaligned queries have no choices.
+LIMIT defaults to ten.  AT-RULE admits its descriptors.  Signal
+`emmet2-backend-error' when the expansion deadline expires."
   (emmet2-engine-with-expansion
     (let ((case-fold-search nil) (limit (or limit 10)))
       ;; Digits occur only inside a few names, such as scrollbar-3dlight-color.
@@ -439,8 +447,9 @@ no choices.  LIMIT defaults to ten.  AT-RULE admits its descriptors."
 (defun emmet2-css-search-values (property query &optional limit at-rule)
   "Return up to LIMIT keywords of PROPERTY ranked for QUERY.
 Keywords include PROPERTY's own values, values reachable through its syntax,
-and CSS-wide keywords for ordinary properties.  QUERY must begin a keyword.
-LIMIT defaults to ten.
+and CSS-wide keywords for ordinary properties.  QUERY abbreviates a keyword
+from its first letter, as ib for inline-block.  LIMIT defaults to ten.
+Return nil for an unknown PROPERTY.
 AT-RULE selects a descriptor's values when PROPERTY is declared there."
   (emmet2-engine-with-expansion
     (when-let* ((entry (emmet2-css-search--entry property at-rule))
@@ -457,7 +466,8 @@ AT-RULE selects a descriptor's values when PROPERTY is declared there."
   "Return fresh PROPERTY value names, including shared and substitution values.
 Keywords share ranked search's membership, without its scores.  Substitution
 templates additionally include env(), and var() for ordinary properties.
-Strings remain shared and read-only; the caller may remove duplicate names.
+Strings remain shared and read-only; the list may repeat a name, which the
+caller may remove.
 AT-RULE selects descriptor values, as in ranked search."
   (let* ((entry (emmet2-css-search--entry property at-rule))
          (cascading (not (and entry (emmet2-css-search--property-descriptor entry))))
@@ -482,8 +492,8 @@ Without AT-RULE, accept only ordinary properties, including obsolete ones."
 
 (defun emmet2-css-search-property-names (&optional descriptors)
   "Return fresh ordinary CSS property names; DESCRIPTORS includes descriptors.
-The canonical parser needs every spelling; ranked search admits descriptors
-only in their enclosing at-rule."
+The stylesheet tokenizer recognizes every spelling; ranked search admits
+descriptors only in their enclosing at-rule."
   (let ((names (mapcar (lambda (entry) (gethash "name" entry))
                        (gethash "properties" emmet2-css-search--index))))
     (if descriptors

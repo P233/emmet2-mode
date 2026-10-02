@@ -1,10 +1,12 @@
-;;; emmet2-insert.el --- Rendering and atomic source replacement -*- lexical-binding: t; -*-
+;;; emmet2-insert.el --- Source snapshots and atomic insertion -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;;; Commentary:
-;; The formatter owns layout.  This module captures a source snapshot, encodes
-;; markup fields for optional yasnippet, and owns the single text mutation.
+;; Expansion text arrives formatted and is inserted as is.  This module
+;; captures the source snapshot before expansion, turns markup fields into a
+;; yasnippet template when yasnippet is installed, and makes the one buffer
+;; edit of each expansion.
 
 ;;; Code:
 
@@ -44,10 +46,14 @@
     (make-string columns ?\s)))
 
 (defun emmet2-insert-render-options (analysis)
-  "Derive formatter indentation from ANALYSIS without changing the buffer.
-Use the abbreviation's display column, including tabs and wide characters.
-Unaligned nesting uses spaces so every level advances by the mode's width.
-ANALYSIS may supply :indent-width to use an external host's width instead."
+  "Return the indentation options for expanding ANALYSIS.
+The value is a plist (:indent STRING :base-indent STRING) for the expansion
+functions.  :base-indent spans the abbreviation's display column, including
+tabs and wide characters.  :indent is one level of the mode's indentation
+width, or of ANALYSIS's :indent-width; it uses spaces unless both the column
+and the width are multiples of `tab-width' under `indent-tabs-mode'.  Signal
+`emmet2-error' when the width is not a nonnegative integer.  The buffer is
+not changed."
   (save-excursion
     (goto-char (plist-get analysis :beg))
     (let ((column (current-column)) (width (emmet2-insert--indent-width analysis)))
@@ -59,8 +65,11 @@ ANALYSIS may supply :indent-width to use an external host's width instead."
             :base-indent (emmet2-insert--whitespace column)))))
 
 (defun emmet2-insert-snapshot (analysis)
-  "Capture the source identity for one expansion of ANALYSIS.
-This short-lived value owns no markers, parser, timer or mutable cache."
+  "Return a snapshot of the source that ANALYSIS would replace.
+The snapshot records the buffer, major mode, modification tick, point,
+bounds, abbreviation and language.  `emmet2-insert' rejects it once any of
+these change, so capture it before expanding and never reuse it.  It holds
+no markers or other resources and needs no cleanup."
   (list :buffer (current-buffer) :mode major-mode :tick (buffer-chars-modified-tick)
         :point (point) :beg (plist-get analysis :beg) :end (plist-get analysis :end)
         :abbr (plist-get analysis :abbr) :lang (plist-get analysis :lang)))
@@ -97,12 +106,14 @@ This short-lived value owns no markers, parser, timer or mutable cache."
     (concat (apply #'concat (nreverse parts)) "$0")))
 
 (defun emmet2-insert (snapshot result)
-  "Atomically replace SNAPSHOT with canonical RESULT in the current buffer.
-Reject stale source before any change.  An installed yasnippet owns markup
-fields; as in Eglot, its mode is enabled on demand.  CSS results, and markup
-without yasnippet, place point at the same initial cursor without fields, so
-typed values are never highlighted and TAB keeps its binding.  Do not reformat
-the text."
+  "Replace SNAPSHOT's abbreviation with RESULT's text as one undoable change.
+Signal `emmet2-error' without changing the buffer when SNAPSHOT no longer
+matches it; see `emmet2-insert-snapshot-valid-p'.  For markup, when
+yasnippet is installed, RESULT's fields become snippet fields and
+`yas-minor-mode' is enabled if needed, as Eglot does.  Otherwise, including
+every CSS and CSS-in-JS result, point moves to RESULT's :cursor and no
+fields are created, so TAB keeps its binding.  The text is inserted as is,
+without reindenting.  On any error the buffer and point are restored."
   (unless (emmet2-insert-snapshot-valid-p snapshot)
     (signal 'emmet2-error '("Source changed before expansion could be inserted")))
   (let* ((beg (plist-get snapshot :beg)) (end (plist-get snapshot :end))
@@ -117,8 +128,7 @@ the text."
             (atomic-change-group
               (if template
                   (progn
-                    ;; Activation runs user hooks too.  Include their text
-                    ;; changes in the same rollback as snippet expansion.
+                    ;; Enabling yas-minor-mode runs user hooks; roll back their edits with the snippet's.
                     (unless (bound-and-true-p yas-minor-mode) (yas-minor-mode 1))
                     (let ((yas-before-expand-snippet-hook
                            (append yas-before-expand-snippet-hook
