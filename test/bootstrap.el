@@ -37,11 +37,11 @@
       ;; Do not accidentally pass by falling back to the user's/system grammar.
       (unless (file-exists-p
                (expand-file-name
-		(format "grammars/libtree-sitter-%s.%s" language
-			(if (eq system-type 'darwin) "dylib" "so")) directory))
-	(error "Missing isolated test grammar: %s; rerun test/setup.mjs" language))
+                (format "grammars/libtree-sitter-%s.%s" language
+                        (if (eq system-type 'darwin) "dylib" "so")) directory))
+        (error "Missing isolated test grammar: %s; rerun test/setup.mjs" language))
       (unless (treesit-language-available-p language)
-	(error "Missing test grammar: %s; rerun test/setup.mjs" language)))))
+        (error "Missing test grammar: %s; rerun test/setup.mjs" language)))))
 
 (add-to-list 'load-path emmet2-test-root)
 (add-to-list 'load-path (expand-file-name "test" emmet2-test-root))

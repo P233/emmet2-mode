@@ -121,7 +121,7 @@ input unless every candidate extends it the same way."
 (add-to-list 'completion-category-defaults '(emmet2-value (styles emmet2-name)))
 
 (cl-defun emmet2-completion-capf (begin end entries &key (category 'emmet2-value)
-					(identity #'identity) (fuzzy t) annotation prefix)
+                                        (identity #'identity) (fuzzy t) annotation prefix)
   "Return a semantic CAPF for ENTRIES replacing BEGIN through END.
 ENTRIES are (NAME . DOCUMENTATION) pairs.  IDENTITY maps spellings to names;
 FUZZY selects case-insensitive fuzzy matching instead of literal prefixes.
