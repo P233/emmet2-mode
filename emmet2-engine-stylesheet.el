@@ -1,15 +1,16 @@
-;;; emmet2-engine-stylesheet.el --- Native stylesheet expansion -*- lexical-binding: t; -*-
+;;; emmet2-engine-stylesheet.el --- Stylesheet abbreviation expansion -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; Grammar and formatting derived from Emmet 2.4.11 (MIT); see data/emmet/LICENSE.
 
 ;;; Commentary:
-;; Pure stylesheet pipeline shared by completion and previews.  Property names
-;; arrive canonical from the extension layer; this module never guesses one.
-;; Keyword values resolve among the property's own and inherited keywords.
-;; Parsed declarations are the shared input of CSS and JavaScript rendering.
-;; Fields are emitted with their text; no rendered declaration is parsed back.
-;; Parsed input, resolved values and output belong to one expansion.
+;; Stylesheet parsing, value resolution and rendering shared by commands,
+;; completion and previews.  Callers such as emmet2-css pass complete property
+;; names; this module never guesses one.  Keyword values resolve among the
+;; property's own keywords, its shared value sets and CSS-wide keywords.
+;; Parsed declarations feed both CSS and CSS-in-JS rendering.  Fields are
+;; emitted with their text; no rendered declaration is parsed back.  Parsed
+;; input, resolved values and output are call-owned.
 
 ;;; Code:
 
@@ -26,7 +27,7 @@
 (defconst emmet2-stylesheet--property-regexp
   (concat (regexp-opt (emmet2-css-search-property-names t) t)
           "\\(?:\\'\\|[^a-zA-Z-]\\|-[0-9]\\|-\\.[0-9]\\|--\\)")
-  "Recognize canonical property names before parsing abbreviation operators.")
+  "Match a complete property or descriptor name and the boundary after it.")
 
 (defconst emmet2-stylesheet--unitless-properties
   '("additive-symbols" "animation-iteration-count" "aspect-ratio" "base-palette"
@@ -39,9 +40,9 @@
     "max-lines" "nav-index" "opacity" "order" "orphans" "override-colors" "pad" "range"
     "reading-order" "scale" "shape-image-threshold" "stop-opacity" "stroke-miterlimit"
     "stroke-opacity" "system" "text-combine-upright" "widows" "z-index" "zoom")
-  "Properties whose bare numbers must not acquire a length unit.
-Keep this formatting policy in the shared core.  Other number/length properties
-retain their existing defaults; explicit units always take precedence.")
+  "Properties whose bare numbers take no unit.
+Other bare nonzero numbers take px, or rem when written with a decimal
+point; an explicit unit always wins.")
 
 (defconst emmet2-stylesheet--units
   '("%" "px" "cm" "mm" "q" "in" "pc" "pt" "em" "rem" "ex" "rex" "cap" "rcap" "ch" "rch"
@@ -52,7 +53,7 @@ retain their existing defaults; explicit units always take precedence.")
   "CSS units a number may carry after the e, p, x and r aliases are applied.")
 
 (defun emmet2-engine-stylesheet-property-end (text &optional start)
-  "Return the end of a canonical property at START in TEXT, or nil.
+  "Return the end of a complete property name at START in TEXT, or nil.
 START defaults to zero.  Hyphens within names stay intact; negative numbers
 and double-dash variable values can follow a complete name."
   (let ((case-fold-search nil) (start (or start 0)))
@@ -62,9 +63,10 @@ and double-dash variable values can follow a complete name."
 
 (defun emmet2-stylesheet--tokenize (text &optional value-only)
   "Tokenize stylesheet abbreviation TEXT.
-Tokens are [TYPE VALUE START END], with character offsets.  Functions have
-no source span, matching the upstream parser's field-adjacency contract.
-VALUE-ONLY means an initial variable is a value, not a property name."
+Tokens are [TYPE VALUE START END], with character offsets.  The parser's
+function tokens have nil START and END, so a field after a function is
+never adjacent to it, as in Emmet 2.4.11.  VALUE-ONLY means an initial
+variable is a value, not a property name."
   (let ((pos 0) (size (length text)) (depth 0) tokens)
     (cl-labels
         ((peek (&optional delta) (and (< (+ pos (or delta 0)) size) (aref text (+ pos (or delta 0)))))
@@ -112,8 +114,7 @@ VALUE-ONLY means an initial variable is a value, not a property name."
             (let ((begin pos) index (default ""))
               (cond ((digit (peek))
                      (while (digit (peek)) (cl-incf pos))
-                     ;; JS field identifiers use IEEE doubles too: integers
-                     ;; above 2^53 can denote the same mirror group.
+                     ;; Emmet reads field indices as doubles, so indices above 2^53 can share a group.
                      (setq index (float (string-to-number (substring text begin pos))))
                      (unless (= index 1.0e+INF) (setq index (truncate index)))
                      (when (eat ?:) (setq default (placeholder))))
@@ -202,8 +203,7 @@ When PROPERTY is supplied, TEXT contains only its authored value."
            (when (and (eq (kind) type) (or (null value) (eql (aref (car tokens) 1) value)))
              (pop tokens) t))
          (fail ()
-           ;; A delimiter-only input can exhaust the token stream.  Upstream
-           ;; then has no source position, so its adapter reports backend-error.
+           ;; Parse errors carry a position; an exhausted token stream has none.
            (if tokens (signal 'emmet2-parse-error (list "Unexpected token" (aref (car tokens) 2)))
              (signal 'emmet2-backend-error '("Unexpected token"))))
          (arguments ()
@@ -249,9 +249,10 @@ When PROPERTY is supplied, TEXT contains only its authored value."
     (nreverse nodes)))
 
 (defun emmet2-stylesheet--frac (number &optional digits)
-  "Format NUMBER with the pinned JS toFixed/trim rule and DIGITS places.
-Use the exact binary significand to round ties up, not printf's ties to even.
-The upstream trimming also applies to scientific notation at 1e21 and above."
+  "Format NUMBER with DIGITS places, four by default, as Emmet 2.4.11 does.
+Round ties up from the exact binary significand, as JavaScript toFixed
+does, not to even as printf does.  Emmet's trailing-zero trimming also
+applies to scientific notation at 1e21 and above."
   (let* ((number (float number)) (digits (or digits 4)) (absolute (abs number)))
     (cond ((= number 0) "0")
           ((= absolute 1.0e+INF) (if (< number 0) "-Infinity" "Infinity"))
@@ -281,10 +282,11 @@ The upstream trimming also applies to scientific notation at 1e21 and above."
 
 (defun emmet2-stylesheet--resolve (node &optional at-rule strict)
   "Resolve call-owned NODE's keyword values and number units in place.
-A literal becomes the best keyword of NODE's property that it abbreviates,
-as a in top-a is auto.  AT-RULE selects descriptor values.  Unmatched
-literals and units stay, unless STRICT rejects a word that is not a keyword
-of the property or a unit outside `emmet2-stylesheet--units'."
+A top-level literal becomes the best keyword of NODE's property that it
+abbreviates, as a in top-a is auto.  AT-RULE selects descriptor values.
+Function arguments stay as written.  Without STRICT, unmatched literals and
+units also stay; with STRICT, signal `emmet2-parse-error' for a word that
+is no keyword of the property or a unit outside `emmet2-stylesheet--units'."
   (when-let* ((name (emmet2-stylesheet--node-name node)))
     (setf (emmet2-stylesheet--node-values node)
           (mapcar (lambda (fragment)
@@ -316,7 +318,8 @@ of the property or a unit outside `emmet2-stylesheet--units'."
   node)
 
 (defun emmet2-stylesheet--push (out text &optional lines)
-  "Append TEXT to OUT, processing newlines when LINES is non-nil."
+  "Append TEXT to OUT, applying OUT's leading trim and JavaScript escaping.
+When LINES is non-nil, follow each newline with OUT's base indentation."
   (when lines
     (setq text (replace-regexp-in-string "\r\n\\|[\r\n]" (concat "\n" (emmet2-stylesheet--output-base-indent out)) text t t)))
   (when (emmet2-stylesheet--output-trim-leading out)
@@ -337,16 +340,14 @@ of the property or a unit outside `emmet2-stylesheet--units'."
       ('color (emmet2-stylesheet--push out (emmet2-stylesheet--color value)))
       ('string (emmet2-stylesheet--push out (concat (char-to-string (car value)) (cdr value) (char-to-string (car value))) t))
       ('field
-       ;; A returned field must not share a string with this module's
-       ;; constant empty field.
+       ;; Copy the default so no result shares the constant empty field's string.
        (let ((start (emmet2-stylesheet--output-offset out)) (default (copy-sequence (cdr value))))
          (unless (emmet2-stylesheet--output-clear-defaults out)
            (emmet2-stylesheet--push out default))
          (push (list start (emmet2-stylesheet--output-offset out) (car value) default)
                (emmet2-stylesheet--output-fields out))))
       ('raw
-       ;; A raw value keeps its spelling. Empty pairs are real editable fields,
-       ;; emitted between chunks so escaping cannot invalidate their offsets.
+       ;; Raw text keeps its spelling; each empty pair gets a field between escaped chunks.
        (let ((start 0) (search 0))
          (while (string-match "()\\|\"\"\\|''" value search)
            (let ((inside (1+ (match-beginning 0))) (end (match-end 0)))
@@ -467,9 +468,13 @@ Generate text and field offsets together, with independent group scope."
 
 (cl-defun emmet2-engine-stylesheet-declaration (name source &key literal important at-rule)
   "Create a resolved declaration of NAME from authored value SOURCE.
-LITERAL preserves SOURCE, including empty-pair fields; otherwise parse value
-syntax and omit field defaults.  IMPORTANT and AT-RULE carry source context.
-The returned declaration is call-owned and is opaque to the caller."
+With LITERAL, keep SOURCE verbatim except that each empty (), \"\" or ''
+pair becomes an empty field.  Otherwise parse SOURCE as value syntax, render
+fields without defaults, and signal `emmet2-parse-error' for a top-level
+value word or unit outside the CSS data.  IMPORTANT adds !important;
+AT-RULE selects descriptor values.  Also signal `emmet2-parse-error' for an
+invalid NAME or SOURCE, or more than one value.  The returned declaration is
+call-owned and opaque to the caller."
   (unless (and (stringp name) (string-match-p "\\`[-a-zA-Z_$][-a-zA-Z0-9_$]*\\'" name)
                (stringp source))
     (signal 'emmet2-parse-error '("Expected a CSS property and value" 0)))
@@ -484,23 +489,26 @@ The returned declaration is call-owned and is opaque to the caller."
     node))
 
 (defun emmet2-engine-stylesheet-render (declaration &optional css-in-js base-indent)
-  "Render resolved DECLARATION as CSS or CSS-IN-JS, using BASE-INDENT."
+  "Render resolved DECLARATION as CSS or CSS-IN-JS, using BASE-INDENT.
+Return a canonical result.  Signal `emmet2-parse-error' for CSS-IN-JS
+output of a declaration without a property name."
   (emmet2-stylesheet--format declaration (or base-indent "") css-in-js))
 
-(defun emmet2-engine-stylesheet-parse (abbreviation &optional at-rule clear-defaults)
-  "Resolve canonical ABBREVIATION into call-owned declarations.
-AT-RULE selects descriptor values.  CLEAR-DEFAULTS omits field defaults during
-rendering, while retaining field groups and source adjacency."
-  (mapcar (lambda (node)
-            (setf (emmet2-stylesheet--node-clear-defaults node) clear-defaults)
-            (emmet2-stylesheet--resolve node at-rule))
+(defun emmet2-engine-stylesheet-parse (abbreviation &optional at-rule)
+  "Parse ABBREVIATION, which spells complete property names, into declarations.
+Keyword values and units resolve without strict checks, so unknown names,
+words and units stay.  AT-RULE selects descriptor values.  The declarations
+are call-owned and opaque."
+  (mapcar (lambda (node) (emmet2-stylesheet--resolve node at-rule))
           (emmet2-stylesheet--parse abbreviation)))
 
 (cl-defun emmet2-engine-stylesheet-expand (abbreviation &key (preset 'stylesheet) (indent "\t") (base-indent "") at-rule)
-  "Expand stylesheet ABBREVIATION, whose property names are canonical.
-Other names stay literal.  PRESET must be stylesheet.  INDENT and BASE-INDENT
-follow the common engine contract; declarations need no nested indentation.
-AT-RULE selects the enclosing rule's descriptor values."
+  "Expand stylesheet ABBREVIATION, which spells complete property names.
+Unlike `emmet2-extensions-css', resolve no abbreviated names and keep
+unknown names, value words and units as written.  PRESET must be
+stylesheet.  INDENT is accepted for `emmet2-engine-expand' but unused, since
+declarations never nest; BASE-INDENT starts each new line.  AT-RULE selects
+the enclosing rule's descriptor values.  Return a canonical result."
   (unless (and (stringp abbreviation) (eq preset 'stylesheet) (stringp indent) (stringp base-indent))
     (signal 'emmet2-error '("Invalid stylesheet abbreviation, preset or indentation")))
   (emmet2-engine-with-expansion

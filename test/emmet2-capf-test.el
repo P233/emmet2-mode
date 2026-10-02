@@ -497,14 +497,14 @@
 
 (ert-deftest emmet2-capf-current-fragment-is-prepared-once-per-revision ()
   (emmet2-test--with-css-completion "ovh,ta"
-    (let ((expand (symbol-function 'emmet2-css--program))
+    (let ((expand (symbol-function 'emmet2-css--expand-abbreviation))
           (prefix (symbol-function 'emmet2-engine-stylesheet-render))
           (prepare (symbol-function 'emmet2-capf--preview-text))
           (display (symbol-function 'emmet2-capf--display))
           expanded (prefix-calls 0) (prepared 0) (displayed 0))
-      (cl-letf (((symbol-function 'emmet2-css--program)
-                 (lambda (abbreviation at-rule)
-                   (push abbreviation expanded) (funcall expand abbreviation at-rule)))
+      (cl-letf (((symbol-function 'emmet2-css--expand-abbreviation)
+                 (lambda (abbreviation &rest args)
+                   (push abbreviation expanded) (apply expand abbreviation args)))
                 ((symbol-function 'emmet2-engine-stylesheet-render)
                  (lambda (declaration &rest options)
                    ;; The confirmed prefix is resolved and rendered once.
@@ -589,10 +589,10 @@
 
 (ert-deftest emmet2-capf-confirmed-prefix-is-replaced-after-edits-and-cleared-without-a-comma ()
   (emmet2-test--with-css-completion "ovh,ta"
-    (let ((expand (symbol-function 'emmet2-css--program)) expanded)
-      (cl-letf (((symbol-function 'emmet2-css--program)
-                 (lambda (abbreviation at-rule)
-                   (push abbreviation expanded) (funcall expand abbreviation at-rule))))
+    (let ((expand (symbol-function 'emmet2-css--expand-abbreviation)) expanded)
+      (cl-letf (((symbol-function 'emmet2-css--expand-abbreviation)
+                 (lambda (abbreviation &rest args)
+                   (push abbreviation expanded) (apply expand abbreviation args))))
         (let* ((data (emmet2-capf)) (table (nth 2 data))
                (props (nthcdr 3 data)))
           (all-completions "ovh,ta" table)
@@ -637,6 +637,24 @@
       ;; A changed option ends the table's session.
       (setq emmet2-css-scale-functions '((t . "space")))
       (should-not (all-completions "p(1)(2)" table)))))
+
+(ert-deftest emmet2-capf-direct-expansion-is-the-first-choice ()
+  ;; Includes aliases and partial scale functions whose top reading does not expand.
+  (let ((emmet2-css-scale-functions '(("font-size" . "ms"))))
+    (dolist (case '((css-mode . "posab") (css-mode . "posfix") (css-mode . "all8") (css-mode . "allA")
+                    (css-mode . "b-n") (css-mode . "p-ab") (css-mode . "m10") (css-mode . "ta")
+                    (css-mode . "tac") (css-mode . "ovh,ta") (css-mode . "m10,") (css-mode . "m10+")
+                    (css-mode . "ins32") (css-mode . "w--gap") (css-mode . "c#f") (css-mode . "bgilg")
+                    (css-mode . "fw7") (css-mode . "@md") (css-mode . ":fc") (css-mode . "button:hv")
+                    (scss-mode . "f(1)") (scss-mode . "fn(1)") (scss-mode . "posab,") (scss-mode . "m$a")))
+      (ert-info ((format "%S" case))
+        (with-temp-buffer
+          (funcall (car case)) (insert ".a{" (cdr case) "}") (backward-char)
+          (let* ((data (emmet2-capf))
+                 (first (car (all-completions (cdr case) (nth 2 data)))))
+            (should first)
+            (should (equal (emmet2-expand-analysis (emmet2-context-analyze t))
+                           (plist-get (get-text-property 0 'emmet2--choice first) :result)))))))))
 
 (ert-deftest emmet2-capf-bare-words-search-once-and-decline-without-choices ()
   (let ((calls 0))

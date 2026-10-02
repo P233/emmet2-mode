@@ -3,9 +3,10 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;;; Commentary:
-;; Translate a confirmed host analysis and buffer layout into pure language
-;; requests.  This editor facade reads buffer settings; the language engines
-;; neither read the buffer nor choose project options.  Results never write.
+;; Turn an analysis from `emmet2-context-analyze' into calls to the pure
+;; expansion functions, adding the user options and the buffer's indentation.
+;; Only this layer reads buffer settings; the engines read neither the buffer
+;; nor user options.  Nothing here modifies the buffer.
 
 ;;; Code:
 (require 'emmet2-extensions)
@@ -15,7 +16,10 @@
 (defgroup emmet2 nil "Emmet abbreviation expansion." :group 'convenience)
 
 (defcustom emmet2-markup-variant nil
-  "Optional markup dialect.  The string \"solid\" selects Solid JSX."
+  "Markup dialect, or nil to follow the context.
+With nil, HTML contexts get HTML and JSX contexts get React JSX.  The string
+\"solid\" writes Solid JSX, with class instead of className, in every markup
+context, including HTML files."
   :type '(choice (const :tag "From context" nil) (const "solid"))
   :safe (lambda (value) (member value '(nil "solid"))) :group 'emmet2)
 
@@ -49,7 +53,8 @@ Each entry is (PROPERTY . FUNCTION); PROPERTY t applies to every other
 property.  Each (N) group becomes FUNCTION(N).  A zero group stays 0, except
 for font-size, whose scale step 0 is the base size.  For example,
 \\='((\"font-size\" . \"ms\") (t . \"rhythm\")) expands p(0)(2) to
-padding: 0 rhythm(2).  nil offers no such values."
+padding: 0 rhythm(2).  Plain CSS and CSS-in-JS ignore this option.  With
+nil, the default, such values are invalid and offer no choice."
   :type '(alist :key-type (choice (const :tag "Other properties" t) string)
                 :value-type string)
   :safe (lambda (value)
@@ -69,12 +74,15 @@ padding: 0 rhythm(2).  nil offers no such values."
     ('css 'css)))
 
 (defun emmet2-expand-analysis (analysis)
-  "Expand ANALYSIS using current project options and formatter layout.
-ANALYSIS is a confirmed context from `emmet2-context-analyze'.  This read-only
-path produces the same canonical :text, :fields and :cursor used by completion.
-Use `emmet2-insert-snapshot' before expansion and `emmet2-insert' to accept
-the result synchronously.  Live choices should use `emmet2-capf', which also
-revalidates host context and rejects stale candidates before insertion."
+  "Return the expansion of ANALYSIS as a canonical result.
+ANALYSIS is a non-nil value of `emmet2-context-analyze'.  The result uses the
+current project options and the buffer's indentation, and it is the result
+of the first completion choice, so a pending separator, as in \"m10,\", is
+consumed.  Signal `emmet2-parse-error' when the abbreviation does not expand,
+such as an unknown CSS name, value or unit, and `emmet2-error' for other
+failures.  Call `emmet2-insert-snapshot' before this function and pass both
+values to `emmet2-insert'.  For live choices use `emmet2-capf', which also
+checks the context again before inserting."
   (let ((options (emmet2-insert-render-options analysis))
         (abbreviation (plist-get analysis :abbr)))
     (pcase (plist-get analysis :lang)
@@ -84,18 +92,22 @@ revalidates host context and rejects stale candidates before insertion."
               :variant emmet2-markup-variant :class-style emmet2-jsx-class-style
               :css-modules-object emmet2-css-modules-object
               :class-names-constructor emmet2-class-names-constructor options))
-      ('css
-       (apply #'emmet2-extensions-css abbreviation :syntax (plist-get analysis :syntax)
-              :at-rule (plist-get analysis :at-rule) :scale-functions emmet2-css-scale-functions
-              options))
-      ('css-in-js
-       (apply #'emmet2-extensions-css abbreviation :css-in-js t
-              :at-rule (plist-get analysis :at-rule) options)))))
+      (lang
+       ;; One deadline covers the choices and, without a first choice, the expansion reporting why.
+       (emmet2-engine-with-expansion
+         (or (plist-get (car (plist-get (emmet2-expand-choices analysis emmet2-css-choice-limit) :choices))
+                        :result)
+             (apply #'emmet2-extensions-css abbreviation :css-in-js (eq lang 'css-in-js)
+                    :syntax (plist-get analysis :syntax) :at-rule (plist-get analysis :at-rule)
+                    :scale-functions emmet2-css-scale-functions options)))))))
 
 (defun emmet2-expand-choices (analysis limit &optional previous)
-  "Return language-owned choices for ANALYSIS, bounded by LIMIT.
-PREVIOUS is an opaque batch from the same verified context and render options.
-Each choice carries its result, menu label and matching query together."
+  "Return a batch of expansion choices for ANALYSIS.
+The batch is a plist whose :choices holds at most LIMIT CSS choices, or one
+markup choice; each choice is a plist with :abbreviation, :result, :label
+and :query.  CSS readings that do not expand are left out, while a markup
+error is signaled.  PREVIOUS is a batch for the same context and render
+options, whose results may be reused.  The batch format is internal."
   (emmet2-engine-with-expansion
     (let ((abbreviation (plist-get analysis :abbr)))
       (if (memq (plist-get analysis :lang) '(css css-in-js))

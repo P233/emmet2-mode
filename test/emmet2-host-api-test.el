@@ -180,14 +180,14 @@
 (ert-deftest emmet2-host-provider-classifies-once-per-revision-and-reuses-prefix ()
   (emmet2-host-test--with-completion "ovh,ta"
     (let ((calls 0) (version 0) expanded
-          (expand (symbol-function 'emmet2-css--program)))
+          (expand (symbol-function 'emmet2-css--expand-abbreviation)))
       (setq-local emmet2-context-provider
                   (list :analyze (lambda (automatic)
                                    (cl-incf calls) (emmet2-host-test--analysis automatic))
                         :revision (lambda () version)))
-      (cl-letf (((symbol-function 'emmet2-css--program)
-                 (lambda (abbreviation at-rule)
-                   (push abbreviation expanded) (funcall expand abbreviation at-rule))))
+      (cl-letf (((symbol-function 'emmet2-css--expand-abbreviation)
+                 (lambda (abbreviation &rest args)
+                   (push abbreviation expanded) (apply expand abbreviation args))))
         (let* ((data (emmet2-capf)) (table (nth 2 data)) (props (nthcdr 3 data))
                (candidates (all-completions "ovh,ta" table)))
           (dotimes (_ 3)

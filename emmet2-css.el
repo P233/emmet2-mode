@@ -1,11 +1,15 @@
-;;; emmet2-css.el --- CSS rules and output projections -*- lexical-binding: t; -*-
+;;; emmet2-css.el --- CSS abbreviation expansion and choices -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;;; Commentary:
-;; Own CSS abbreviation choices, aliases, explicit values, selectors and
-;; at-rules.  CSS-in-JS is an output projection of the same declaration result.
-;; It neither reads nor writes editor state.  One deadline covers all core calls.
+;; Expand CSS abbreviations: property readings and their ranked choices,
+;; aliases such as posa, bracketed values, pseudo selectors and at-rules.
+;; CSS-in-JS renders the same declarations as object members.  Property
+;; names, final pseudo and at-rule names, top-level value words and units
+;; outside the CSS data signal `emmet2-parse-error'.  Each public entry point
+;; runs under one expansion deadline.  Nothing here reads or writes editor
+;; state.
 
 ;;; Code:
 
@@ -41,17 +45,21 @@
     (nreverse (cons (substring text start) parts))))
 
 (cl-defstruct (emmet2-css--property (:constructor emmet2-css--property))
+  "A property reading: NAME, value SOURCE, LITERAL when SOURCE is a search
+keyword kept verbatim, and IMPORTANT."
   name source literal important)
 
 (defun emmet2-css--choice (choice suffix)
-  "Keep search CHOICE's property identity and value SUFFIX separate."
+  "Return a property reading of search CHOICE with value SUFFIX.
+CHOICE is (PROPERTY . KEYWORD).  A KEYWORD becomes the verbatim value in
+place of SUFFIX; a trailing ! in SUFFIX marks the reading important."
   (emmet2-css--property :name (car choice)
                        :source (or (cdr choice) (string-remove-suffix "!" suffix))
                        :literal (and (cdr choice) t)
                        :important (string-suffix-p "!" suffix)))
 
 (defun emmet2-css--all-properties (property)
-  "Apply the established four-side `all' alias to PROPERTY's value."
+  "Copy PROPERTY's reading to top, right, bottom and left, the all alias."
   (mapcar (lambda (name)
             (let ((copy (copy-emmet2-css--property property)))
               (setf (emmet2-css--property-name copy) name)
@@ -68,7 +76,9 @@ Such values, as in allu or all[unset], are not the four-side alias."
          t)))
 
 (defun emmet2-css--aliases (token)
-  "Return TOKEN's alias declarations, or nil when it has no alias."
+  "Return TOKEN's alias property readings, or nil when it has no alias.
+Aliases are posa and posf, the four-side all, fwN for font-weight and wf or
+hf, optionally after ma or mi, for 100%."
   (let ((case-fold-search nil))
     (cond
      ((string-match "\\`pos\\([af]\\)\\(.*\\)\\'" token)
@@ -100,14 +110,12 @@ common properties even when a property shares their spelling."
     (when end (list (substring body 0 end) (substring body end) (and canonical t)))))
 
 (defun emmet2-css--choice-token (property)
-  "Project PROPERTY for the public string-choice API.
-The expansion and completion pipelines never parse this projection."
+  "Return PROPERTY as a choice string that `emmet2-extensions-css' expands."
   (let ((name (emmet2-css--property-name property))
         (source (emmet2-css--property-source property))
         (case-fold-search nil))
     (concat name
-            ;; A generated alternative must not turn margin-top + -a back
-            ;; into an ambiguous property query. The delimiter is syntax only.
+            ;; A space keeps margin-top + -a from reading back as the name margin-top-a.
             (when (and (not (emmet2-css--property-literal property))
                        (string-search "-" name) (string-match-p "\\`\\(?:-[a-zA-Z]\\|[A-Z]\\)" source))
               " ")
@@ -116,11 +124,13 @@ The expansion and completion pipelines never parse this projection."
 
 (defun emmet2-css--resolve-property (token limit &optional at-rule)
   "Return up to LIMIT resolved property readings of TOKEN, best first.
-Keep a complete canonical name first, including obsolete properties omitted
-from fuzzy search.  A compact keyword becomes a bracket value.  Leading
-hyphenated words may continue a name, as in inset-b10, or be keyword values,
-as in t-a; the reading whose values the best property accepts comes first.
-AT-RULE admits its descriptors.  Return nil when no property matches."
+Keep a complete property name first, including obsolete properties omitted
+from ranked search.  A keyword found by compact search, as center in tac,
+becomes a verbatim value.  Leading hyphenated words may continue a name, as
+in inset-b10, or be keyword values, as in t-a; the reading whose values the
+best property accepts comes first.  AT-RULE admits its descriptors.  Return
+nil when no reading matches, including when the searched properties accept
+none of the hyphenated words, as in ff-inter."
   (pcase-let* ((case-fold-search nil)
                (important (if (string-suffix-p "!" token) "!" ""))
                (`(,name ,suffix ,canonical) (emmet2-css--split-property (string-remove-suffix "!" token)))
@@ -134,8 +144,7 @@ AT-RULE admits its descriptors.  Return nil when no property matches."
                  ((and exact (= limit 1)) (list authored))
                  ((string-empty-p suffix)
                   (let* ((choices (emmet2-css-search name limit nil at-rule)) (best (car choices))
-                         ;; A best bare property the query begins also offers up to half
-                         ;; the list as its own keywords, before the other properties.
+                         ;; A bare best property sharing the query's initial adds its keywords, up to half the list.
                          (keywords (and (> limit 1) best (null (cdr best))
                                         (eq (downcase (aref name 0)) (aref (car best) 0))
                                         (seq-take (emmet2-css-search-keywords (car best) at-rule) (/ limit 2)))))
@@ -150,25 +159,28 @@ AT-RULE admits its descriptors.  Return nil when no property matches."
                  (t
                   ;; t-a is top: auto, while inset-b10 is inset-block: 10px.
                   (let* ((parts (split-string words "-" t))
-                         (properties (emmet2-css-search name limit t at-rule))
+                         ;; Rank enough properties that the first reading matches the first choice.
+                         (properties (emmet2-css-search name (max limit 10) t at-rule))
                          (valid (lambda (choice)
                                   (cl-every (lambda (part) (emmet2-css-search-values (car choice) part 1 at-rule)) parts)))
-                         (values (mapcar (lambda (choice) (emmet2-css--choice choice (concat suffix important)))
-                                         (cl-remove-if-not valid properties)))
-                         (names (mapcar (lambda (choice)
-                                          (emmet2-css--choice
-                                           choice (concat (substring suffix (length words)) important)))
-                                        (emmet2-css-search (concat name words) limit t at-rule))))
-                    (seq-take (delete-dups (if (and properties (funcall valid (car properties)))
-                                               (append values names)
-                                             (append names values)))
-                              limit))))))
+                         (reading (lambda (choice) (emmet2-css--choice choice (concat suffix important))))
+                         (top-valid (and properties (funcall valid (car properties)))))
+                    ;; A valid best property comes first, so one reading needs no other checks.
+                    (if (and top-valid (= limit 1)) (list (funcall reading (car properties)))
+                      (let ((values (mapcar reading (cl-remove-if-not valid properties)))
+                            (names (mapcar (lambda (choice)
+                                             (emmet2-css--choice
+                                              choice (concat (substring suffix (length words)) important)))
+                                           (emmet2-css-search (concat name words) limit t at-rule))))
+                        (seq-take (delete-dups (if top-valid (append values names) (append names values)))
+                                  limit))))))))
     (if exact (seq-take (cons authored (delete authored choices)) limit) choices)))
 
 (defun emmet2-css--declarations (property at-rule scale)
-  "Parse PROPERTY's value once and resolve its declarations in AT-RULE.
-SCALE is an alist of (PROPERTY . FUNCTION) for parenthesized values; t
-names the function of every other property."
+  "Return a one-element list with PROPERTY's declaration resolved in AT-RULE.
+SCALE is an alist of (NAME . FUNCTION) for parenthesized values; t names the
+function of every other property.  Signal `emmet2-parse-error' for a value
+word or unit outside the CSS data."
   (let* ((case-fold-search nil)
          (name (emmet2-css--property-name property))
          (suffix (emmet2-css--property-source property))
@@ -183,8 +195,7 @@ names the function of every other property."
      ((and scale (string-match-p "\\`\\(?:(-?\\(?:[0-9]+\\(?:\\.[0-9]*\\)?\\|\\.[0-9]+\\))\\)+\\'" suffix))
       (when-let* ((function (cdr (or (assoc name scale) (assq t scale)))))
         (setq value (mapconcat (lambda (arg)
-                                 ;; A zero length needs no function, but scale step 0
-                                 ;; of font-size is the base size.
+                                 ;; Step 0 is a bare zero length, except for font-size, where it is the base size.
                                  (if (and (equal arg "0") (not (equal name "font-size"))) "0"
                                    (concat function "(" arg ")")))
                                (split-string suffix "[()]" t) " ")))))
@@ -212,15 +223,17 @@ names the function of every other property."
                   (plist-get result :fields)))))
 
 (defun emmet2-css--bare-name (name)
-  "Remove the syntactic prefix of pseudo or at-rule NAME for fuzzy scoring."
+  "Remove the : or @ prefix of pseudo or at-rule NAME for fuzzy scoring."
   (string-trim-left name "[:@]+"))
 
 (defconst emmet2-css--pseudos (emmet2-css-search-pseudos))
 
 (defun emmet2-css--rank (abbreviation names alias-key)
-  "Return NAMES ranked for ABBREVIATION, with its ALIAS-KEY override first.
-Candidates share the query's initial, so an unknown CSS @us cannot become
-@counter-style.  The first name is what expansion chooses."
+  "Return NAMES ranked for ABBREVIATION, with its authored alias first.
+ALIAS-KEY names the alias table in `emmet2-css-search-override'.  Candidates
+share the query's initial, so an unknown CSS @us cannot become
+@counter-style, and a :: query admits only pseudo-elements.  The first name
+is what expansion chooses."
   (let* ((alias (gethash abbreviation (emmet2-css-search-override alias-key)))
          (elements-only (and (equal alias-key "pseudoAliases") (string-prefix-p "::" abbreviation)))
          (query (emmet2-css--bare-name abbreviation))
@@ -235,8 +248,8 @@ Candidates share the query's initial, so an unknown CSS @us cannot become
     (if (member alias names) (cons alias (delete alias ranked)) ranked)))
 
 (defun emmet2-css--resolve (abbreviation names alias-key)
-  "Resolve ABBREVIATION to its best NAMES entry by ALIAS-KEY.
-Signal a parse error when no name matches; nothing unknown is produced."
+  "Return ABBREVIATION's best NAMES entry, ranked with ALIAS-KEY.
+Signal `emmet2-parse-error' when no name matches."
   (or (car (emmet2-css--rank abbreviation names alias-key))
       (signal 'emmet2-parse-error (list (format "Unknown CSS name: %s" abbreviation) 0))))
 
@@ -254,9 +267,9 @@ Signal a parse error when no name matches; nothing unknown is produced."
         #'string<))
 
 (defun emmet2-css--at-rule (abbreviation syntax indent base-indent)
-  "Expand ABBREVIATION for host SYNTAX with INDENT and BASE-INDENT.
-Plain `css' resolves among CSS at-rules only; otherwise names and local Sass
-templates both apply."
+  "Expand at-rule ABBREVIATION for host SYNTAX with INDENT and BASE-INDENT.
+Plain `css' resolves among CSS at-rules only; otherwise the authored Sass
+templates also apply.  Signal `emmet2-parse-error' for an unknown at-rule."
   (let* ((names (emmet2-css--at-rule-names syntax))
          (name (emmet2-css--resolve abbreviation names "atRuleAliases"))
          (template (and (not (eq syntax 'css))
@@ -281,8 +294,10 @@ templates both apply."
     (apply #'emmet2-result-concat (nreverse pieces))))
 
 (defun emmet2-css--pseudo-name (name names query)
-  "Resolve pseudo NAME among NAMES, signaling only for an unknown QUERY.
-Other unknown names, as in :global(.a):hv, keep their authored spelling."
+  "Resolve pseudo NAME among NAMES.
+When QUERY is non-nil, NAME is the final pseudo and must match, or signal
+`emmet2-parse-error'.  Otherwise an unmatched NAME, such as :global in
+:global(.a):hv, keeps its spelling."
   (if query (emmet2-css--resolve name names "pseudoAliases")
     (or (car (emmet2-css--rank name names "pseudoAliases")) name)))
 
@@ -319,8 +334,7 @@ FINAL makes the last pseudo the query, which must be a known name."
                                               (string-trim-left (substring argument 1)))
                                     argument))))
                              (emmet2-css--split (substring text start (1- pos)) '(?,)))))
-                ;; Keep legacy :not chaining; it matches the same elements but
-                ;; adds specificity.  Other lists must retain their OR semantics.
+                ;; Only :not spreads its list into chained calls: same elements, more specificity.
                 (if (equal name ":not")
                     (dolist (argument arguments)
                       (push (emmet2-css--pseudo-function name (list argument)) pieces))
@@ -335,8 +349,8 @@ FINAL makes the last pseudo the query, which must be a known name."
 
 (defun emmet2-css--selector (abbreviation)
   "Expand pseudo names and arguments in ABBREVIATION.
-Keep an authored selector prefix; a leading underscore is an omission marker.
-Leave point after the name, or inside an empty argument."
+Keep an authored selector prefix; a prefix of exactly _ stands for none, as
+in _:hv.  Leave point after the name, or inside an empty argument."
   (let* ((colon (emmet2-extract-css-pseudo abbreviation))
          (prefix (substring abbreviation 0 colon)))
     (emmet2-result-concat
@@ -360,9 +374,10 @@ not the source buffer's host context."
               (seq-take (emmet2-css--rank pseudo emmet2-css--pseudos "pseudoAliases") limit)))))
 
 (defun emmet2-css--property-choices (abbreviation limit at-rule)
-  "Return ranked property programs for ABBREVIATION, bounded by LIMIT.
-AT-RULE selects descriptor names and values.  Alias programs retain all of
-their declarations; ordinary search choices contain one property reading."
+  "Return up to LIMIT ranked programs for ABBREVIATION.
+A program is a list of property readings that expand together.  AT-RULE
+selects descriptor names and values.  An alias program, such as posa, holds
+all of its readings; a search program holds one."
   (let ((alias (emmet2-css--aliases abbreviation))
         (choices (mapcar #'list (emmet2-css--resolve-property abbreviation limit at-rule))))
     (when alias
@@ -372,24 +387,45 @@ their declarations; ordinary search choices contain one property reading."
     (seq-take (delete-dups (if alias (cons alias choices) choices)) limit)))
 
 (defun emmet2-css--program-token (properties)
-  "Project PROPERTIES for the public string-choice API and stable cache keys."
+  "Return PROPERTIES as one choice string, also used as a completion cache key."
   (mapconcat #'emmet2-css--choice-token properties "+"))
 
-(defun emmet2-css--program (abbreviation at-rule)
-  "Read ABBREVIATION's declarations under AT-RULE without re-encoding choices."
-  (let ((offset 0) properties)
+(defconst emmet2-css-choice-limit 10
+  "Ranked choices offered for one CSS property, and readings expansion tries.")
+
+(defun emmet2-css--expand-abbreviation (abbreviation css-in-js base-indent at-rule scale)
+  "Expand each property of ABBREVIATION as its first ranked program that expands.
+This is the reading that completion offers first.  CSS-IN-JS, BASE-INDENT,
+AT-RULE and SCALE are as in `emmet2-css--expand-properties'.  Signal
+`emmet2-parse-error' for an empty or unknown property, and the first
+program's error when none of its programs expands."
+  (let ((offset 0) results
+        (separator (emmet2-result-create (emmet2-css-property-separator css-in-js base-indent))))
     (dolist (token (emmet2-css--split abbreviation '(?+ ?,)))
       (when (string-empty-p token) (signal 'emmet2-parse-error '("Empty CSS property" 0)))
-      (dolist (property (or (emmet2-css--aliases token)
-                            (emmet2-css--resolve-property token 1 at-rule)
-                            (signal 'emmet2-parse-error
-                                    (list (format "Unknown CSS property: %s" token) offset))))
-        (push property properties))
+      ;; The top program, an alias or the best reading, is the same at any limit;
+      ;; rank the rest only when it fails.
+      (let ((programs (if-let* ((alias (emmet2-css--aliases token))) (list alias)
+                        (emmet2-css--property-choices token 1 at-rule)))
+            (ranked nil) result failure)
+        (unless programs
+          (signal 'emmet2-parse-error (list (format "Unknown CSS property or value: %s" token) offset)))
+        (while (and programs (not result))
+          (condition-case error
+              (setq result (emmet2-css--expand-properties (pop programs) css-in-js base-indent at-rule scale))
+            (emmet2-parse-error
+             (setq failure (or failure error))
+             (unless (or programs ranked)
+               (setq ranked t
+                     programs (cdr (emmet2-css--property-choices token emmet2-css-choice-limit at-rule)))))))
+        (unless result (signal (car failure) (cdr failure)))
+        (when results (push separator results))
+        (push result results))
       (cl-incf offset (1+ (length token))))
-    (nreverse properties)))
+    (apply #'emmet2-result-concat (nreverse results))))
 
 (defun emmet2-css--expand-properties (properties css-in-js base-indent at-rule scale)
-  "Resolve PROPERTIES once and render their shared declarations.
+  "Resolve PROPERTIES once and render their declarations.
 CSS-IN-JS chooses the renderer; BASE-INDENT and AT-RULE select layout/context.
 SCALE maps parenthesized values to functions, as in `emmet2-css--declarations'."
   (let (results)
@@ -405,34 +441,38 @@ SCALE maps parenthesized values to functions, as in `emmet2-css--declarations'."
           (push (emmet2-engine-stylesheet-render declaration css-in-js) results))))
     (apply #'emmet2-result-concat (nreverse results))))
 
-(cl-defun emmet2-extensions-css-choices (abbreviation &key css-in-js (syntax 'scss) (limit 10) at-rule
+(cl-defun emmet2-extensions-css-choices (abbreviation &key css-in-js (syntax 'scss) (limit emmet2-css-choice-limit) at-rule
                                                       scale-functions)
   "Return up to LIMIT ranked alternatives of one CSS ABBREVIATION, or nil.
-ABBREVIATION is one property, selector or at-rule.  The first alternative is
-what `emmet2-extensions-css' expands; the others follow in rank order.  Each
-expands on its own with the same AT-RULE and SCALE-FUNCTIONS, so names,
-values and units outside the CSS data offer nothing.
-CSS-IN-JS allows properties only; SYNTAX selects at-rules."
-  (let ((case-fold-search nil) (scale (emmet2-css--scale scale-functions syntax css-in-js)))
-    (cl-flet ((expandable-p (expand)
-                (condition-case nil (progn (funcall expand) t) (emmet2-parse-error nil))))
-      (pcase (emmet2-extensions-css-kind abbreviation css-in-js)
-        ('at-rule (seq-take (emmet2-css--rank abbreviation (emmet2-css--at-rule-names syntax)
-                                              "atRuleAliases")
-                            limit))
-        ('selector (cl-remove-if-not (lambda (choice) (expandable-p (lambda () (emmet2-css--selector choice))))
-                                     (emmet2-css--selector-choices abbreviation limit)))
-        (_ (delete-dups
-            (mapcar #'emmet2-css--program-token
-                    (cl-remove-if-not
-                     (lambda (program)
-                       (expandable-p (lambda () (emmet2-css--expand-properties program css-in-js "" at-rule scale))))
-                     (emmet2-css--property-choices abbreviation limit at-rule)))))))))
+ABBREVIATION is one property, selector or at-rule.  LIMIT defaults to ten
+and SYNTAX to `scss'.  The first alternative is what `emmet2-extensions-css'
+expands; the others follow in rank order.  Each expands on its own with the
+same CSS-IN-JS, SYNTAX, AT-RULE and SCALE-FUNCTIONS, so names, values and
+units outside the CSS data offer nothing.  CSS-IN-JS allows properties only;
+SYNTAX selects at-rules and, as in `emmet2-extensions-css', whether
+SCALE-FUNCTIONS apply."
+  (emmet2-engine-with-expansion
+    (let ((case-fold-search nil) (scale (emmet2-css--scale scale-functions syntax css-in-js)))
+      (cl-flet ((expandable-p (expand)
+                  (condition-case nil (progn (funcall expand) t) (emmet2-parse-error nil))))
+        (pcase (emmet2-extensions-css-kind abbreviation css-in-js)
+          ('at-rule (seq-take (emmet2-css--rank abbreviation (emmet2-css--at-rule-names syntax)
+                                                "atRuleAliases")
+                              limit))
+          ('selector (cl-remove-if-not (lambda (choice) (expandable-p (lambda () (emmet2-css--selector choice))))
+                                       (emmet2-css--selector-choices abbreviation limit)))
+          (_ (delete-dups
+              (mapcar #'emmet2-css--program-token
+                      (cl-remove-if-not
+                       (lambda (program)
+                         (expandable-p (lambda () (emmet2-css--expand-properties program css-in-js "" at-rule scale))))
+                       (emmet2-css--property-choices abbreviation limit at-rule))))))))))
 
 (defun emmet2-css--completion-input (abbreviation css-in-js declaration-start)
   "Return (WHOLE CONFIRMED INPUT) for ABBREVIATION's final active fragment.
-CSS-IN-JS commas belong to the host.  DECLARATION-START admits a pending CSS
-separator.  Selectors retain their prefix and never split as property lists."
+DECLARATION-START admits a pending separator, but in CSS-IN-JS a trailing
+comma ends the host's object member and is never pending.  Selectors retain
+their prefix and never split as property lists."
   (let ((kind (emmet2-extensions-css-kind abbreviation css-in-js)))
     (if (not (eq kind 'properties)) (list abbreviation nil abbreviation)
       (let ((parts (condition-case nil (emmet2-css--split abbreviation '(?, ?+))
@@ -449,35 +489,19 @@ separator.  Selectors retain their prefix and never split as property lists."
                (length (- (length abbreviation) (length input))))
           (list abbreviation (when (> length 0) (substring abbreviation 0 (1- length))) input))))))
 
-(cl-defun emmet2-css-completion-parts (abbreviation &key css-in-js (syntax 'scss) (limit 10)
-                                                    at-rule declaration-start)
-  "Return (NAMES CONFIRMED INPUT) for CSS ABBREVIATION.
-NAMES holds up to LIMIT ranked full abbreviations for the final fragment,
-or the abbreviation itself when no alternatives match.  CONFIRMED excludes
-the last separator; INPUT is the final property, selector or at-rule.
-Selectors retain their literal prefix and never enter property-list splitting.
-CSS-IN-JS allows properties only; SYNTAX and AT-RULE select available names.
-At DECLARATION-START, a pending property separator keeps the preceding
-fragment.  A CSS-IN-JS comma belongs to the host and cannot be pending.
-This pure completion projection does not relax expansion's property grammar."
-  (pcase-let* ((`(,whole ,confirmed ,input)
-                (emmet2-css--completion-input abbreviation css-in-js declaration-start))
-               (choices (emmet2-extensions-css-choices
-                         input :css-in-js css-in-js :at-rule at-rule :syntax syntax :limit limit))
-               (head (substring whole 0 (- (length whole) (length input)))))
-    (list (if choices (mapcar (lambda (choice) (concat head choice)) choices) (list whole))
-          confirmed input)))
-
-(cl-defun emmet2-css-completions (abbreviation &key css-in-js (syntax 'scss) (limit 10)
+(cl-defun emmet2-css-completions (abbreviation &key css-in-js (syntax 'scss) (limit emmet2-css-choice-limit)
                                              (indent "\t") (base-indent "") at-rule
                                              scale-functions declaration-start previous)
   "Build complete results and explicit labels for ABBREVIATION.
-CSS-IN-JS and SYNTAX select the language; INDENT and BASE-INDENT are literal
-layout.  AT-RULE selects descriptors.  SCALE-FUNCTIONS is as in
-`emmet2-extensions-css'.  DECLARATION-START admits a pending
-separator.  LIMIT bounds the ranked choices.  PREVIOUS may be a preceding
-batch only under identical context and render settings.  Return a plist with
-:choices and an opaque :prefix cache; each choice has a result, label and query.
+CSS-IN-JS and SYNTAX, `scss' by default, select the language; INDENT and
+BASE-INDENT are literal layout.  AT-RULE selects descriptors.
+SCALE-FUNCTIONS is as in `emmet2-extensions-css'.  DECLARATION-START admits
+a pending separator.  LIMIT, ten by default, bounds the ranked choices.
+PREVIOUS may be a preceding batch only under identical context and render
+settings.  Return a plist with :choices and an opaque :prefix cache; each
+choice is a plist of :abbreviation, :result, :label and :query.  A property
+with no matching reading yields no choices.  Signal `emmet2-parse-error'
+when the confirmed text before the last separator does not expand.
 Only immutable results are reused; each call gives choices fresh identities."
   (emmet2-engine-with-expansion
     (pcase-let* ((`(,whole ,confirmed ,input)
@@ -557,13 +581,17 @@ Whole expansion and completion's cached prefix use the same layout."
                                               at-rule scale-functions)
   "Expand CSS ABBREVIATION to a canonical result.
 CSS-IN-JS requests object member syntax.  SYNTAX `css' limits at-rules to
-plain CSS; the default `scss' also offers Sass rules.  INDENT and BASE-INDENT
-are literal rendering strings.  Generated layout uses them; literal raw text
-is preserved.  Pseudo completion expands only selector names and arguments.
+plain CSS; the default `scss' also offers Sass rules.  INDENT, a tab by
+default, and BASE-INDENT, empty by default, are literal strings for
+generated layout; bracketed values, as in ff[Inter], keep their text.
+A selector keeps its prefix and expands only pseudo names and arguments.
 AT-RULE names the enclosing rule whose descriptors are available.
 SCALE-FUNCTIONS is an alist of (PROPERTY . FUNCTION), with t for every other
 property, as in `emmet2-css-scale-functions'.  In SCSS outside CSS-in-JS it
-writes each parenthesized group, as in p(1)(2), as a FUNCTION call."
+writes each parenthesized group, as in p(1)(2), as a FUNCTION call.
+Signal `emmet2-parse-error' for property names, final pseudo and at-rule
+names, top-level value words and units outside the CSS data, and
+`emmet2-backend-error' when the expansion deadline expires."
   (emmet2-engine-with-expansion
     (let ((case-fold-search nil))
       (pcase (emmet2-extensions-css-kind abbreviation css-in-js)
@@ -571,9 +599,8 @@ writes each parenthesized group, as in p(1)(2), as a FUNCTION call."
          (emmet2-css--at-rule abbreviation syntax indent base-indent))
         ('selector
          (emmet2-css--selector abbreviation))
-        (_ (emmet2-css--expand-properties (emmet2-css--program abbreviation at-rule)
-                                          css-in-js base-indent at-rule
-                                          (emmet2-css--scale scale-functions syntax css-in-js)))))))
+        (_ (emmet2-css--expand-abbreviation abbreviation css-in-js base-indent at-rule
+                                            (emmet2-css--scale scale-functions syntax css-in-js)))))))
 
 (provide 'emmet2-css)
 ;;; emmet2-css.el ends here

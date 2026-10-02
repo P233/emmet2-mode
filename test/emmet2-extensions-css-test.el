@@ -65,8 +65,9 @@ declaration or implicit ampersand.")
     (ert-info (abbreviation)
       (should-error (emmet2-extensions-css abbreviation :syntax 'css) :type 'emmet2-parse-error)
       (should-not (emmet2-extensions-css-choices abbreviation :syntax 'css))))
-  ;; a is no padding keyword; other readings, such as position, may still expand.
-  (should-error (emmet2-extensions-css "p10-a" :syntax 'css) :type 'emmet2-parse-error)
+  ;; a is no padding keyword, so p10-a expands as its first choice, a position reading.
+  (should (equal (emmet2-extensions-css "p10-a" :syntax 'css)
+                 (emmet2-extensions-css (car (emmet2-extensions-css-choices "p10-a" :syntax 'css)) :syntax 'css)))
   (dolist (pair '(("t-a" . "top: auto;") ("inset-b10" . "inset-block: 10px;") ("dN" . "display: none;")
                   ("ff[Inter]" . "font-family: Inter;") ("anim[fade]" . "animation: fade;")
                   ("w10vh" . "width: 10vh;") ("w10PX" . "width: 10PX;")))
@@ -81,7 +82,7 @@ declaration or implicit ampersand.")
         (should (string-prefix-p "Unknown CSS " (car data)))
         (should (natnump (cadr data))))))
   (should (equal (cdr (should-error (emmet2-extensions-css "m10,xyz") :type 'emmet2-parse-error))
-                 '("Unknown CSS property: xyz" 4))))
+                 '("Unknown CSS property or value: xyz" 4))))
 
 (ert-deftest emmet2-css-authored-pseudos-keep-their-spelling ()
   ;; Only the final pseudo is the query; earlier unknown ones are authored context.
@@ -406,7 +407,9 @@ declaration or implicit ampersand.")
     (should-error (emmet2-extensions-css abbreviation) :type 'emmet2-parse-error)))
 
 (ert-deftest emmet2-css-choices-begin-with-the-expansion ()
-  (dolist (input '("ins32" "ta" "tac" "posa" "allA" "t-a" "inset-b" "w--s" "c#f" "button:hv" "@md" ":fc"))
+  ;; Hyphenated values such as b-n are checked against more than the top-ranked property.
+  (dolist (input '("ins32" "ta" "tac" "posa" "allA" "t-a" "inset-b" "w--s" "c#f" "button:hv" "@md" ":fc"
+                   "b-n" "p-ab" "op-a" "fw-w" "br-n"))
     (ert-info (input)
       (let ((choices (emmet2-extensions-css-choices input)))
         (should (<= 1 (length choices) 10))

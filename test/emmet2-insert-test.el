@@ -277,6 +277,12 @@
     (insert "const a = 'div';") (js-mode) (goto-char 13)
     (should-error (emmet2-expand-at-point) :type 'user-error)
     (should (equal (buffer-string) "const a = 'div';")))
+  ;; Like its first completion choice, direct expansion consumes a pending separator.
+  (dolist (input '("m10," "m10+"))
+    (with-temp-buffer
+      (css-mode) (insert ".a{" input "}") (backward-char)
+      (emmet2-expand-at-point)
+      (should (equal (buffer-string) ".a{margin: 10px;}"))))
   ;; Built-in CSS uses the admission of `emmet2-complete'; unknown names never expand.
   (dolist (input '("xyz" "-webkit-transition"))
     (with-temp-buffer

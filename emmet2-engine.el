@@ -1,12 +1,14 @@
-;;; emmet2-engine.el --- Pure expansion result contracts -*- lexical-binding: t; -*-
+;;; emmet2-engine.el --- Expansion results, errors and deadline -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;;; Commentary:
-;; Offsets count characters, not bytes or buffer positions.  Only positive
-;; groups are editable fields; insertion creates the final exit separately.
-;; Callers pass canonical results to transformations.  No function mutates its
-;; inputs or reads editor state.
+;; A canonical result is the plist from `emmet2-result-create': text, fields
+;; as (BEG END GROUP DEFAULT) with zero-based character offsets, and the
+;; initial cursor.  Groups are positive; markup insertion adds the final exit
+;; itself.  The result helpers accept only canonical results.  Call-owned data
+;; is created for one expansion and never escapes it except through the
+;; returned result.  No function mutates its inputs or reads editor state.
 
 ;;; Code:
 
@@ -26,8 +28,10 @@
     (signal 'emmet2-backend-error '("Expansion deadline exceeded"))))
 
 (defmacro emmet2-engine-with-expansion (&rest body)
-  "Run BODY within one shared expansion deadline.
-Nested core invocations inherit the same deadline."
+  "Run BODY within one shared expansion deadline and return its value.
+Nested uses inherit the outermost deadline, `emmet2-engine--timeout' seconds
+after it starts.  Signal `emmet2-backend-error' when the deadline has passed
+on entry, on exit or at a check inside BODY."
   (declare (indent 0) (debug t))
   `(let ((emmet2-engine--deadline
           (or emmet2-engine--deadline (+ (float-time) emmet2-engine--timeout))))
@@ -36,11 +40,11 @@ Nested core invocations inherit the same deadline."
 
 (autoload 'emmet2-engine-markup-expand "emmet2-engine-markup")
 (autoload 'emmet2-engine-stylesheet-expand "emmet2-engine-stylesheet")
-(autoload 'emmet2-engine-stylesheet-property-end "emmet2-engine-stylesheet")
 
 (defun emmet2-engine-js-character (character)
-  "Encode Unicode CHARACTER inside a JavaScript double-quoted string.
-Reject Emacs raw bytes and surrogate code points at the rendering boundary."
+  "Return CHARACTER escaped for a JavaScript double-quoted string.
+Signal `emmet2-error' for Emacs raw bytes and surrogate code points, which
+are not Unicode scalar values."
   (unless (and (<= 0 character #x10ffff) (not (<= #xd800 character #xdfff)))
     (signal 'emmet2-error '("JavaScript output requires Unicode scalar characters")))
   (pcase character
@@ -50,12 +54,16 @@ Reject Emacs raw bytes and surrogate code points at the rendering boundary."
     (_ (if (< character 32) (format "\\u%04x" character) (char-to-string character)))))
 
 (cl-defun emmet2-engine-expand (abbreviation &key (preset 'html) (indent "\t") (base-indent "") jsx (seed 0) at-rule)
-  "Expand ABBREVIATION with PRESET and the internal rendering parameters.
-PRESET is html, jsx or stylesheet.  INDENT and BASE-INDENT are literal strings.
-JSX is nil or the internal structured JSX extension options.
-AT-RULE selects descriptor values for the stylesheet preset.
-SEED is an integer for call-local lorem generation, normalized to 32 bits;
-it has no effect on stylesheet expansion.  Return a canonical result."
+  "Expand ABBREVIATION with PRESET and return a canonical result.
+PRESET is html, the default, jsx or stylesheet.  INDENT, a tab by default,
+is one nesting level and BASE-INDENT, empty by default, starts every new
+line; stylesheet output ignores INDENT.  JSX is nil or, with PRESET jsx, a
+plist with :classAttribute \"className\" or \"class\" and optional
+:cssModulesObject and :classConstructor strings.  AT-RULE selects descriptor
+values for the stylesheet preset.  SEED is an integer for call-local lorem
+generation, normalized to 32 bits; it has no effect on stylesheet expansion.
+Signal `emmet2-error' for invalid arguments, `emmet2-parse-error' for an
+invalid abbreviation and `emmet2-backend-error' when the deadline expires."
   (unless (and (stringp abbreviation) (memq preset '(html jsx stylesheet))
                (stringp indent) (stringp base-indent))
     (signal 'emmet2-error '("Invalid abbreviation, preset or indentation")))
@@ -71,14 +79,16 @@ it has no effect on stylesheet expansion.  Return a canonical result."
 
 (defun emmet2-result-create (text &optional fields)
   "Create a canonical result from TEXT and FIELDS.
-Each field is (BEG END INDEX PLACEHOLDER), using zero-based character offsets.
-Preserve mirrors and group priority, renumber groups densely from one, sort
-fields stably by position and derive the initial cursor.  Reject overlapping
-fields, conflicting mirror defaults or offsets inconsistent with TEXT."
+Each field is (BEG END GROUP DEFAULT): zero-based character offsets into
+TEXT, a positive GROUP, and DEFAULT equal to TEXT between BEG and END.
+Preserve mirrors and group order, renumber groups densely from one, sort
+fields stably by position and derive the initial cursor.  Return
+\(:text TEXT :fields FIELDS :cursor CURSOR).  Signal `emmet2-result-error'
+for overlapping fields, conflicting mirror defaults or fields inconsistent
+with TEXT."
   (unless (and (stringp text) (or (null fields) (proper-list-p fields)))
     (signal 'emmet2-result-error '("Expected text and a proper field list")))
-  ;; Most CSS choices contain one field; the default table capacity would
-  ;; allocate for dozens of groups at every formatting/concatenation step.
+  ;; Size the tables to the field count, usually one, so filling them never grows them.
   (let* ((capacity (max 1 (length fields)))
          (defaults (make-hash-table :test #'eql :size capacity))
          (indices (make-hash-table :test #'eql :size capacity))
@@ -115,7 +125,8 @@ fields, conflicting mirror defaults or offsets inconsistent with TEXT."
       (setq count (max count (nth 2 field))))))
 
 (defun emmet2-result-concat (&rest results)
-  "Concatenate canonical RESULTS, keeping each result's groups independent."
+  "Concatenate canonical RESULTS into a new canonical result.
+Each result keeps its own groups, numbered after those of earlier RESULTS."
   (let ((offset 0) (groups 0) texts fields)
     (dolist (result results)
       (push (plist-get result :text) texts)
@@ -131,7 +142,9 @@ fields, conflicting mirror defaults or offsets inconsistent with TEXT."
 Remove fields fully covered by the range and reject partial overlaps.  Empty
 fields at END survive and shift; for insertion, fields at BEG follow the new
 text.  New groups precede the first replaced group, or the next field's group
-when no group is replaced; surviving source groups keep their relative order."
+when no group is replaced; surviving source groups keep their relative order.
+Return a new canonical result.  Signal `emmet2-result-error' for a range
+outside RESULT or a partial field overlap."
   (let* ((text (plist-get result :text))
          (inserted (plist-get replacement :text))
          (groups (emmet2-result--group-count replacement))
