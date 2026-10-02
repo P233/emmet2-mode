@@ -19,10 +19,10 @@ HEAD: its snippets differ from the published 2.4.11 package.
 Upstream: https://github.com/emmetio/emmet
 Package: https://www.npmjs.com/package/emmet/v/2.4.11
 
-The native markup/stylesheet engines port parsing and rendering algorithms from
-the same Emmet source. emmet2-fuzzy.el is a project-owned matcher replacing the
-previous port of Emmet's fuzzy algorithm. The Latin, Russian and Spanish lorem JSON dictionaries
-in data/emmet/lorem/ are also copied unmodified from that source commit.
+The markup and stylesheet engines port parsing and rendering algorithms from
+the same Emmet source. emmet2-fuzzy.el is original project code, not a port of
+Emmet. The Latin, Russian and Spanish lorem JSON dictionaries in
+data/emmet/lorem/ are also copied unmodified from that source commit.
 The bundle and its oracle adapters under test/ are development-only and are
 not included in the installed package.
 

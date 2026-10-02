@@ -56,7 +56,7 @@ reference for all later complete-result comparisons."
           :gc-seconds (cl-loop for sample across samples sum (aref sample 2)))))
 
 (defun emmet2-markup-bench--run ()
-  "Compile isolated bytecode and measure the complete S6 markup fixture set."
+  "Compile isolated bytecode and measure the complete markup fixture set."
   (let* ((output (getenv "EMMET2_BENCH_OUTPUT"))
          (hashes (emmet2-markup-bench--hashes))
          (directory (make-temp-file "emmet2-markup-bytecode-" t))

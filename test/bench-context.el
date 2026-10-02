@@ -197,7 +197,7 @@ At most five owned buffers survive until this group finishes, even on failure."
       (dolist (entry cases) (kill-buffer (emmet2-bench--case-buffer entry))))))
 
 (defun emmet2-bench-context ()
-  "Run the S3 matrix and write raw samples to EMMET2_BENCH_OUTPUT."
+  "Run the context benchmark matrix and write raw samples to EMMET2_BENCH_OUTPUT."
   (let ((output (or (getenv "EMMET2_BENCH_OUTPUT") (error "Set EMMET2_BENCH_OUTPUT")))
         (filter (getenv "EMMET2_BENCH_FILTER")) cases)
     (when (file-exists-p output) (error "Refusing to overwrite %s" output))

@@ -1,11 +1,11 @@
-# Native rewrite performance acceptance
+# Performance measurement protocol
 
 This is the measurement protocol, not a performance result. Parser-only timings
 do not satisfy these gates. Keep measurement reports and raw samples outside the
 repository; they belong to the revision and machine that produced them.
 
 Record the repository revision, dirty files, fixture hashes, machine/CPU/OS,
-Emacs build/configuration, dependency lock, backend, render options and GC
+Emacs build/configuration, dependency lock, render options and GC
 settings. Run before/after comparisons on the same machine and build. Use an
 isolated `-Q` environment prepared by `setup.mjs`; do not change daily settings.
 
@@ -19,9 +19,10 @@ loading test or package libraries in **both** baseline and candidate processes:
 ```
 
 An `.elc` source filename alone does not prove bytecode execution: a native cache
-can replace it. Keep the runners' `byte-code-function-p` checks enabled. The
-trampoline setting also avoids this machine's native compiler/toolchain issue;
-it is a measurement setting, not a package default.
+can replace it. Keep the runners' `byte-code-function-p` checks enabled.
+Disabling trampolines also keeps native compilation out of runners that
+redefine process primitives; it is a measurement setting, not a package
+default.
 
 Keep normal GC thresholds; record `gc-cons-threshold`,
 `gc-cons-percentage`, `gcs-done` and `gc-elapsed` deltas. Do not exclude samples
@@ -34,14 +35,14 @@ do not average away a failed p99. Verify output/context before timing it.
 
 | Gate | Fixed inputs and complete measured path | Budget |
 | --- | --- | --- |
-| S3 TSX | `ul>li*3` and style `m10`, including edits, region, extraction and confirmation; 56/306/1006-line containing statements, 500/5k/20k-line files | Warm p99 <= 1 ms; scale ratios < 1.5 |
-| S3 CSS/web ordinary positions | A fixed CSS part/markup position in 500 and 20k lines; include pending scan and syntax updates after edit | Warm p99 scale ratio < 2 |
-| S3 web large style | A 135 KB CSS part with the active declaration near its end; include pending scan and classification | Warm p99 <= 5 ms |
-| S5 editor flow | Real context, engine, annotation/popupinfo and acceptance; markup plus the six-property CSS case below | Report cold and warm stages and total; no invented aggregate budget |
+| Context: TSX | `ul>li*3` and style `m10`, including edits, region, extraction and confirmation; 56/306/1006-line containing statements, 500/5k/20k-line files | Warm p99 <= 1 ms; scale ratios < 1.5 |
+| Context: CSS/web positions | A fixed CSS part/markup position in 500 and 20k lines; include pending scan and syntax updates after edit | Warm p99 scale ratio < 2 |
+| Context: large web style | A 135 KB CSS part with the active declaration near its end; include pending scan and classification | Warm p99 <= 5 ms |
+| Editor flow | Real context, engine, annotation/popupinfo and acceptance; markup plus the six-property CSS case below | Report cold and warm stages and total; no invented aggregate budget |
 | CSS completion | `.a { ovh,t }` through real Corfu: a confirmed prefix and ten ranked choices, including the first open | Completion p99 <= 20 ms |
-| S6 markup | Four inputs below, plus JSX, emoji and mirrored fields; parse, resolve, formatting, offsets and cursor | Bytecode warm p99 <= 1 ms |
+| Markup engine | Four inputs below, plus JSX, emoji and mirrored fields; parse, resolve, formatting, offsets and cursor | Bytecode warm p99 <= 1 ms |
 | CSS search | Twelve representative queries, from `m` to `bdrs` | Bytecode warm p50 <= 2.5 ms, p99 <= 5 ms |
-| S7 CSS core | `margin10+padding5+border1#2s+position-absolute+display-flex+font-size16`; canonical names with parsing, keyword values, formatting and fields | Bytecode warm p99 <= 0.5 ms |
+| CSS core | `margin10+padding5+border1#2s+position-absolute+display-flex+font-size16`; canonical names with parsing, keyword values, formatting and fields | Bytecode warm p99 <= 0.5 ms |
 
 Markup inputs:
 
@@ -60,12 +61,12 @@ full analysis; a precomputed abbreviation start is not an analysis benchmark.
 Report initialization and invalidation cost as well as steady repeated reads.
 
 CI runs deterministic correctness and compilation checks. It must not assert
-wall-clock budgets across different hosted machines. A budget failure keeps
-its milestone open: retain samples, identify the expensive stage, change the
-smallest responsible implementation and remeasure. Do not silently weaken a
+wall-clock budgets across different hosted machines. When a budget fails, keep
+the samples, identify the expensive stage, change the smallest responsible
+implementation and remeasure. Do not silently weaken a
 budget, omit a size, or replace a full-path result with a microbenchmark.
 
-## Running the implemented S3 benchmark
+## Context benchmark
 
 ```sh
 EMMET2_TEST_DEPS=~/.cache/emmet2-test-deps \
@@ -82,35 +83,35 @@ is reported rather than silently altered in the dependency checkout.
 Keep `analyze`, `typing-and-analyze` and `programmatic-edit-and-analyze` separate.
 Both edit paths include modification hooks and pending scanning. A programmatic
 `insert` does not necessarily inherit the same web-mode part properties as
-`self-insert-command`; dropping its slow samples would hide real work. The S3
-gate stays open when either measured edit path fails. Baseline and optimized
-samples belong in the ignored plan measurements directory, with a concise
-result summary and hashes in versioned documentation once measured.
+`self-insert-command`; dropping its slow samples would hide real work. A
+context budget fails when either edit path exceeds it. Keep baseline and
+candidate samples outside the repository, as above; a commit message or pull
+request may quote their summary and hashes.
 
-The S3 runner uses 100 warmups and 10,000 measured operations per path. It
+The context runner uses 100 warmups and 10,000 measured operations per path. It
 interleaves comparable sizes of each fixture kind and rotates the first buffer
 every round to reduce time-order bias. Up to five buffers are alive within a
 group; all are released before the next kind. Buffer selection and correctness
 checks are outside the clock. Per-fixture GC totals sum its timed samples;
 they do not include other fixtures or between-sample work. Every sample,
-including GC, is retained. Earlier sequential measurements remain evidence,
-not discarded failures. Cold analysis is the first call per fixture after its
+including GC, is retained. Cold analysis is the first call per fixture after its
 mode setup; only the first fixture in a fresh process includes process-wide
 initialization that later fixtures share.
 
 The ordinary CSS pairs run in css-mode, css-ts-mode, scss-mode and less-css-mode.
 The isolated dependency lock includes CSS's grammar, so css-ts-mode uses its
-real parser. CSS search and its catalog are compiled/hashed with the context
-modules; no source-loaded membership helper remains on the measured path.
+real parser. CSS search and its catalog are compiled and hashed with the
+context modules, so the measured path runs only bytecode.
 
-## Running the implemented S5 benchmark
+## Editor-flow benchmark
 
-First build the reviewed revision with `test/install.el` (see CONTRIBUTING).
+First build the reviewed revision with `test/install.el` (see
+[CONTRIBUTING](../CONTRIBUTING.md#actual-installation)).
 Then use its actual `straight/build/emmet2-mode` directory:
 
 ```sh
 EMMET2_TEST_DEPS=~/.cache/emmet2-test-deps \
-EMMET2_BENCH_PACKAGE=/tmp/emmet2-installed/straight/build/emmet2-mode \
+EMMET2_BENCH_PACKAGE="$EMMET2_INSTALL_ROOT/straight/build/emmet2-mode" \
 EMMET2_BENCH_OUTPUT=/tmp/editor-flow-31-1.json \
 /path/to/pinned/emacs --batch -Q -l test/bootstrap.el -l test/bench-completion.el
 ```
@@ -128,13 +129,14 @@ Each of the eighteen fixtures runs completion and completion with yas paths
 interleaved, rotating the first path each round: 100 warmups and 1,000
 retained samples per path. The first accepted choice defines the expected
 output. Inputs cover the first two markup cases above, TSX numbered text,
-one/six CSS properties, editable CSS fields, ranked CSS choices with and
+one/six CSS properties, CSS with empty values, ranked CSS choices with and
 without a confirmed prefix, CSS-in-JS and a 138,052-byte web-mode style
 buffer. Additional fixtures cover css-ts-mode, builtin SCSS variables, LESS,
-HTML style attributes, js-mode/js-ts-mode/TypeScript style objects, and native
-html-mode's explicit `emmet2-complete` request. Reset and output/cursor assertions
+HTML style attributes, js-mode/js-ts-mode/TypeScript style objects, and the
+built-in html-mode's explicit `emmet2-complete` request. Reset and output/cursor assertions
 are outside the clock. The next operation includes any pending scan left by the
-multi-character reset; this differs from the S3 single-character typing path.
+multi-character reset, unlike the context benchmark's single-character typing
+path.
 Yas mode setup is outside the clock, but field creation during acceptance is
 timed and checked; only markup fixtures create fields, CSS inserts plain text.
 Undo recording remains enabled, with history cleared between operations.
@@ -161,15 +163,14 @@ completion follows an untimed context check and expansion used to establish the
 fixture's formatting; it does not measure first engine/data loading. Cold
 completion creates its first preview buffer; cold yas follows with that preview
 warm. Front-end/dependency loading also precedes timing, so cold values do not
-measure Emacs startup or total package loading. The installed
-runtime has no external executable path and the measured flows reject process
-creation. The report identifies `native Elisp`.
+measure Emacs startup or total package loading. The installed runtime has no
+external executable path and the measured flows reject process creation.
 
 Raw warmup and measured triples are milliseconds, GC count and GC seconds.
-Keep per-process p50, p99, max and GC totals, with no aggregate S5 pass/fail
-budget or cross-process percentile averaging.
+Keep per-process p50, p99, max and GC totals, with no aggregate editor-flow
+pass/fail budget or cross-process percentile averaging.
 
-## Running the native markup benchmark
+## Markup benchmark
 
 ```sh
 EMMET2_TEST_DEPS=~/.cache/emmet2-test-deps \
@@ -182,21 +183,21 @@ Emacs build. The runner compiles the pure engine into an owned temporary
 directory and copies packaged data next to it; no installed package or daily
 configuration is changed. It checks bytecode entry points, source/fixture
 hashes before and after, and full oracle output after every operation.
-The original nine fixtures cover the four required inputs plus implicit tags,
-JSX, emoji and mirrored fields. S6.4 keeps all nine and adds three project JSX
-cases (multiword fields, escaped keys and Solid layout) and three seeded lorem
-cases (Latin 80, Russian 50 and Spanish 50 vocabulary entries). Lorem uses seed
+Fifteen fixtures cover the four markup inputs above with implicit tags, JSX,
+emoji and mirrored fields (nine), three project JSX cases (multiword fields,
+escaped keys and Solid layout) and three seeded lorem cases (`lorem80`,
+`loremru50` and `loremsp50`). Lorem uses seed
 42: its first timed output passes the independent structural contract, then
 every later output must match that complete result. Each raw row retains its
 reference text, fields and cursor. These are measurement records, not new random
 goldens in the correctness corpus. Data/contract hashes cover the three lexicons
-and lorem fixtures as well as the original inputs. Samples interleave and rotate the first fixture each
-round, with 100 warmups and 1,000 retained measurements. GC uses the normal
-800000/1.0 settings; all pauses are retained. First expansions and explicit
+and lorem fixtures as well as the markup inputs. Samples interleave and rotate
+the first fixture each round, with 100 warmups and 1,000 retained measurements.
+GC uses the normal 800000/1.0 settings; all pauses are retained. First expansions and explicit
 bytecode loads are reported separately and exclude Emacs startup, compilation
-and fixture loading. The budget covers the complete native expansion only.
+and fixture loading. The budget covers the complete markup expansion only.
 
-## Running the native stylesheet benchmark
+## Stylesheet benchmark
 
 ```sh
 EMMET2_TEST_DEPS=~/.cache/emmet2-test-deps \
@@ -212,18 +213,20 @@ data beside them. It refuses an existing output, a preloaded module or source
 changes during measurement. Native calls have no executable search path and
 process creation is rejected.
 
-Cases cover the search itself, ranked completion choices, the expansion of
-compact abbreviations including the six-property input, and the core alone with
-canonical names. The search gate applies to the search rows and the S7 core
-gate to `core:six-canonical`; the other rows are reported measurements. Compact
-expansion searches once per property, so the former S7 budget no longer applies
-to `m10+p5+bd1#2s+posa+dib+fz16`. The first result of each case is kept, and
+Cases cover the search itself, the string choices of
+`emmet2-extensions-css-choices` (completion is measured by the editor-flow
+benchmark), the expansion of compact abbreviations including the six-property
+input, and the core alone with complete names. The CSS search budget applies to
+the `search:` rows and the CSS core budget to `core:six-canonical`. The other
+rows, including `expand:m10+p5+bd1#2s+posa+dib+fz16`, which searches once per
+property, are reported without a budget. The first result of each case is kept, and
 every sample must equal it outside the clock.
 
 The runner rotates the first case each round and interleaves 100 warmups and
 1,000 samples per case. Normal GC remains 800000/1.0 and all pauses are kept.
 End GC counters are captured before duration/sample allocation. Raw triples and
-per-process statistics use the same units and quantile rule as S6. The first
+per-process statistics use the same units and quantile rule as the markup
+benchmark. The first
 call per case and explicit bytecode loading (including the search index) are
 separate cold values. Compilation and dependencies precede that load; these
 values do not measure whole Emacs startup. Actual package installation, editor

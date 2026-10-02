@@ -1,16 +1,18 @@
 # Development
 
-The installed package is pure Emacs Lisp. Hosts share the native markup and CSS
-expansion pipelines; commands, completion and previews receive canonical results.
-[ARCHITECTURE.md](ARCHITECTURE.md) maps the modules and both CSS entry paths. There is no runtime backend selector, external process or fallback.
-Node is used only for development setup, lint and the independent offline oracle.
+The installed package is pure Emacs Lisp. Hosts share the markup and CSS
+expansion pipelines; commands, completion and previews receive canonical
+results. [ARCHITECTURE.md](ARCHITECTURE.md) maps the modules and the CSS entry
+paths. Expansion runs entirely in Emacs Lisp and starts no process. Node is used
+only in development: dependency setup, lint, the Node tests, the offline oracle,
+the CSS data update and the CI Emacs build.
 
 ## Ownership and public contracts
 
 - `emmet2-context` routes hosts and validates their confirmed bounds. The CSS
   adapter uses CSS Base syntax state; the Web adapter scans and routes its own
-  HTML, CSS and JS parts and owns bounded scan evidence;
-  the JSX adapter owns parsers, warmup and unit markers. Their cleanup is separate.
+  HTML, CSS and JS parts and owns one pending bounded rescan; the JSX adapter
+  owns parsers, warmup and unit markers. Their cleanup is separate.
   `emmet2-extract` computes abbreviation bounds within host limits.
   An external `emmet2-context-provider` owns its own syntax and confirmed bounds,
   with no fallback to built-in classification when it declines.
@@ -21,13 +23,15 @@ Node is used only for development setup, lint and the independent offline oracle
   ASTs, output, random state and name resolution belong to the current call.
 - `emmet2-css-search` owns CSS property and keyword ranking over the compact
   pinned index and the single immutable authored override catalog. CSS expansion
-  reads templates from that same catalog through `emmet2-css-search-override`. Completion choices and CSS
-  expansion both use it; the stylesheet core receives canonical property names
-  and never guesses one. Scores are fixnums, and each query owns its tables.
-- Markup preserves mirrors. CSS fields belong to one parsed property; identical
-  upstream numbers in different properties are independent. Upstream zero is an
-  editable field. Conflicting defaults form independent groups so mirrors cannot
-  silently overwrite authored text.
+  reads templates from that same catalog through `emmet2-css-search-override`.
+  Completion choices and CSS expansion both use it; the stylesheet core receives
+  complete property names and never guesses one. Scores are fixnums, and each
+  query owns its tables.
+- Markup keeps Emmet's mirrored fields; Emmet's `${0}` becomes an ordinary
+  editable field because insertion adds its own final exit. Conflicting defaults
+  of one index form independent groups, so a mirror never overwrites authored
+  text. CSS results give each empty value its own group; the groups stay in the
+  result but never become snippet fields.
 - `emmet2-css` owns CSS programs, resolved property readings, completion choices,
   fragment splitting and declaration separators. The stylesheet engine parses
   authored values once and renders CSS or JavaScript directly from declarations,
@@ -36,7 +40,9 @@ Node is used only for development setup, lint and the independent offline oracle
   `emmet2-extensions` keeps the public expansion entries. Project JSX class
   conversion runs on the markup AST before formatting. A rendered class value
   cannot safely be recovered by regex.
-- `emmet2-expand` owns project options and translates confirmed analysis plus
+- `emmet2-expand` owns the expansion options (markup variant, JSX class style,
+  CSS Modules names and scale functions; the CSS-in-JS host options live in
+  `emmet2-context-js`) and translates confirmed analysis plus
   buffer layout into pure language requests. It is buffer-aware; `emmet2-mode`
   only registers completion and coordinates resource lifetime.
 - `emmet2-insert` is the only source-text writer. It checks buffer, mode, tick,
@@ -49,26 +55,32 @@ Node is used only for development setup, lint and the independent offline oracle
   the typed abbreviation; text properties identify distinct canonical results.
   Each choice also owns its current-fragment menu label and complete preview,
   supplied by the language and prepared once for display in the current input
-  revision. The next revision can reuse canonical results from the immediately
-  preceding candidate set, with fresh choice identities and display projections.
-  The table also retains one confirmed-prefix result while that prefix is unchanged.
-  Both reuse paths remain under the table's context and render-settings guards.
+  revision. The next revision can reuse results from the buffer's last batch:
+  results for identical abbreviations and the confirmed-prefix result. Reuse
+  requires the same provider, render settings, anchor and host context
+  (`emmet2-capf--same-context-p`); reused results get fresh choice identities
+  and display text. The buffer keeps only the last batch in
+  `emmet2-capf--batch`, keyed by the analysis, `emmet2-context-revision`,
+  provider and settings. Corfu calls the CAPF more than once per keystroke;
+  later calls for the same input reuse this batch, so each keystroke costs one
+  search. Each call copies the choices, so tables never share candidate
+  identities.
   Frontends query a table many times per keystroke; the table classifies the
   host again only when `emmet2-context-revision` changes. The context module
   owns that revision, which lists every input of an analysis besides its owned
   caches; add a new input there, never a second cache in the table.
   A table also captures its context provider's identity and rejects replacement
   or removal before querying, previewing or accepting its previous candidates.
-  Presentation never
-  changes insertion text or field offsets.
+  Presentation never changes insertion text or field offsets.
   Only a current `finished` callback inserts; metadata and frontend prefix checks
   do not expand, except the first batch that confirms a bare CSS word. Results
   are deduplicated and share one expansion budget. A failed table offers no
-  choice and cannot revive after a later query. A new request may create a new
-  table. Initial analysis and every lazy callback share the automatic/explicit
-  error policy; quit propagates and debug errors stay visible. No global
-  expansion cache, source-restoration state or frontend configuration mutation
-  is allowed.
+  choice and cannot revive after a later query; a query interrupted by new input
+  is not a failure, and the next query retries it. A new request may create a
+  new table. Initial analysis and every lazy callback share the automatic/explicit
+  error policy; quit propagates and debug errors stay visible. No global or
+  accumulating expansion cache, source-restoration state or frontend
+  configuration mutation is allowed.
 - `emmet2-preview` owns at most three lazy, read-only, non-file buffers. Built-in
   HTML/JSX/CSS modes fontify final text without extra grammars. Creation isolates
   user mode hooks. Failed initialization, module unload and package unload clear
@@ -82,7 +94,8 @@ Node is used only for development setup, lint and the independent offline oracle
   remain user settings; non-Emmet categories pass through unchanged.
 
 `emmet2-engine-expand` accepts `:preset` (`html`, `jsx`, `stylesheet`), literal
-`:indent`/`:base-indent`, structured `:jsx` settings and integer `:seed`. Seed
+`:indent`/`:base-indent`, structured `:jsx` settings, `:at-rule` for stylesheet
+descriptors and integer `:seed`. Seed
 defaults to zero and its low 32 bits drive call-local lorem generation; CSS ignores
 its value. Invalid seed types fail for every preset. Global random state is never
 read or modified. `emmet2-engine-with-expansion` gives nested calls one shared
@@ -134,52 +147,65 @@ without enabling the mode. `:analyze` receives the automatic/explicit flag,
 returns nil to decline or confirms a typed range and render context. The adapter
 validates supported language/position pairs and visible integer bounds, derives
 the abbreviation from source, and copies the plist without changing host state.
-Optional `:indent-width` overrides built-in mode width through the existing renderer.
+Optional `:indent-width` overrides the built-in mode width.
 `:revision` is a cheap immutable token covering every extra analysis dependency;
 source tick, point, narrowing and modes remain centrally tracked. A changed
 token triggers reanalysis, while changed property/at-rule identities end a live
 session. Hosts must not mutate a published descriptor or token. Invalid contracts
 signal `emmet2-error`; refusal or an invisible/empty range returns nil.
 
-`emmet2-expand-analysis` is the public canonical expansion path for a confirmed
-analysis in the buffer-aware `emmet2-expand` facade. CAPF uses its batch entry
-so resolved choices reach the renderer without another search or parse. Synchronous direct callers take an insertion snapshot
-before expansion and use `emmet2-insert`; deferred choices use the shared CAPF
-for context/settings/candidate revalidation. See the [host interface](API.md#host-completion-interface)
-for the complete contract. Tests use an independent host without a CSS major mode;
-they do not depend on scss2 or claim its integration has already been migrated.
+`emmet2-expand-analysis` is the public expansion path for a confirmed analysis
+in the buffer-aware `emmet2-expand` facade; for CSS it returns the first
+choice's result, so a pending separator is consumed as in completion. CAPF uses
+its batch entry so resolved choices reach the renderer without another search
+or parse. Synchronous direct callers take an insertion snapshot before
+expansion and use `emmet2-insert`; deferred choices use the shared CAPF for
+context, settings and candidate revalidation. See the
+[host interface](API.md#host-completion-interface) for the complete contract.
+Provider tests use an independent host without a CSS major mode and do not
+depend on scss2.
 
-`emmet2-extensions-css` accepts `:css-in-js`, `:syntax`, `:indent` and
-`:base-indent`. Context reports `:syntax` `scss` for `scss-mode` and
-`<style lang="scss">` and standalone `.scss` files in web-mode, otherwise `css`; the extension default is `scss`.
-A balanced scanner splits only top-level comma/plus separators. Authored aliases
-such as `posa` and `all` produce property readings. Search resolves other compact
-names before parsing their authored values; known property identities are retained
-through rendering. `emmet2-extensions-css-choices` projects programs to independently
-expandable strings for external callers. Internal completion uses declarations and
-explicit fragment labels, never these strings as a second semantic input.
+`emmet2-extensions-css` accepts `:css-in-js`, `:syntax`, `:indent`,
+`:base-indent`, `:at-rule` and `:scale-functions`; see
+[API.md](API.md#expand-strings-and-consume-results). Context reports `:syntax`
+`scss` for `scss-mode`, `<style lang="scss">` and standalone `.scss` files in
+web-mode, otherwise `css`; the extension default is `scss`. A balanced scanner
+splits only top-level comma/plus separators. Built-in aliases in
+`emmet2-css--aliases` (`posa`, `posf`, the four-side `all`, `fwN`, `wf`/`hf`)
+produce several property readings. Search resolves other compact names before
+parsing their authored values; resolved property names are kept through
+rendering. `emmet2-extensions-css-choices` returns the same ranking as
+expandable strings for external callers. Property completion never reparses
+these strings; selector and at-rule choices are plain names and do use them.
 
 Field defaults, whitespace omission, coincident fields and independent property
-groups are handled while rendering. Raw/rhythm/ms/var values remain literal tokens.
+groups are handled while rendering. Bracketed raw values and `--name` variables
+are emitted verbatim. Parenthesized steps such as `p(1)(2)` become function
+calls only in SCSS with `:scale-functions` (`emmet2-css-scale-functions`);
+otherwise they are parse errors.
 CSS-in-JS chooses numbers, quoted values and keys from the declaration structure;
 escaping and field offsets are emitted together, without inspecting CSS output.
 
-Pseudo/at-rule lookup applies authored aliases before fuzzy matching, retaining
-the initial-letter guard for implicit expansion. `emmet2-fuzzy` is project-owned:
-every query character consumes a distinct candidate position, exact names and
-prefixes rank first, word initials receive priority, and consecutive characters
-and smaller gaps improve the remaining matches. Ties keep the first input item.
-Matches return both scores and character positions; the same matcher supplies
-menu highlighting and host candidate ranking. No fuzzy cache is needed.
-Unknown at-rules, pseudos, properties, value words and units signal a parse
-error, so nothing outside the data is offered. Bracketed values and pseudos
-before the final query, as in `:global(.a):hv`, keep their spelling.
-Templates change only authored layout, leaving literal tabs untouched. Empty
-alias tables retain the fuzzy fallback. Plain `css` resolves names among CSS
-at-rules, directly or through an authored alias, without Sass templates. Only
-`:not` spreads comma arguments into chained calls. Pseudo completion expands
-selector names and editable function arguments only. It preserves authored
-prefixes and adds no rule bodies or declarations.
+Pseudo and at-rule lookup applies authored aliases first, then fuzzy-ranks only
+names that share the query's first letter, so `@us` cannot become
+`@counter-style`. `emmet2-fuzzy` is original project code: every query character
+consumes a distinct candidate position, exact names and prefixes rank first,
+word initials receive priority, and consecutive characters and smaller gaps
+improve the remaining matches. Ties keep the first input item. Matches return
+both scores and character positions; the same matcher supplies menu highlighting
+and host candidate ranking. No fuzzy cache is needed. In `emmet2-extensions-css`
+and completion, unknown at-rules, final pseudos, properties, top-level value
+words and units signal `emmet2-parse-error`, so nothing outside the data is
+offered. Bracketed values and unknown earlier pseudos, as in `:global(.a):hv`,
+keep their spelling. The complete-name core (`emmet2-engine-expand` with
+`:preset 'stylesheet`) keeps unknown words as written. Templates change only
+authored layout, leaving literal tabs untouched. Without authored aliases,
+ranking alone still resolves names: `@fa` gives `@font-face`, not `@forward`,
+and `:fu` gives `:future`. Plain `css` resolves names among CSS at-rules,
+directly or through an authored alias, without Sass templates. Only `:not`
+spreads comma arguments into chained calls. Pseudo completion expands selector
+names and editable function arguments only. It preserves authored prefixes and
+adds no rule bodies or declarations.
 
 `emmet2-css-search` aligns query segments with the words of a property and,
 for compact queries, of one keyword value. A segment is a whole word, a word
@@ -190,40 +216,44 @@ relevance of the property and the size of the keyword's value set add a prior,
 so popularity decides short queries while longer queries follow their words.
 Small sets that are valid but rarely written, such as system colors, take a low
 fixed prior instead; explicit queries such as `cCanvas` still reach them.
-Property aliases and complete names rank first without hiding other choices.
+Property aliases rank first without hiding other choices. A complete property
+name longer than one letter expands as typed and ranks first in completion,
+ahead of other matches (`gap10` also offers `column-gap` and `row-gap`).
 Values combine a property's own keywords, keywords reachable through its
 syntax and CSS-wide keywords; function arguments and deprecated types are not
-values. Obsolete properties stay canonical names but are never offered. The
+values. Obsolete properties stay complete names but are never offered. The
 frozen corpus in `test/fixtures/css-search-corpus.json` and its gates in
 `emmet2-css-search-test.el` guard ranking changes; retune parameters only
 against that corpus.
 
-`emmet2-extensions-markup` accepts `:jsx`, `:variant`, `:css-modules-object`,
-`:class-names-constructor`, `:indent` and `:base-indent`. Literal class names use
+`emmet2-extensions-markup` accepts `:jsx`, `:variant`, `:class-style`,
+`:css-modules-object`, `:class-names-constructor`, `:indent` and `:base-indent`;
+a leading `_` selects plain class names for one expansion. Literal class names use
 dot access for identifiers and escaped bracket access otherwise. Fields preserve
 priority, mirrors and multiword expression spans. Whitespace-only fields remain
 separate arguments. Authored class expressions are renamed for React/Solid without
 interpretation. Project reference strings are emitted as source, never evaluated.
 
-CSS/SCSS context uses `syntax-ppss`; web-mode owns its pending scanner, attribute
-markers, part ranges and engine blocks, which bound markup text. Its style parts
-parse with CSS syntax, or SCSS syntax for `lang` `scss` or `less`.
-JS/TS/JSX requires the matching pinned tree-sitter grammar.
-CSS classification starts at the extracted abbreviation, including when point is
-inside a balanced raw value. Comments and strings are forbidden. Automatic analysis
-also excludes values, at-rule preludes, ordinary selectors and unrelated script
-expressions. A bare name and single colon at a declaration start belong to a
-value position even without whitespace, unless the name is a known HTML element,
-as in `button:hv`; automatic top-level selectors need `@`, `_`, a leading colon,
-or a structural selector prefix or known element with a pseudo part. Explicit completion skips
-confidence checks only outside built-in CSS: CSS accepts declaration starts, at-rule names and
-selectors with a pseudo part, and never values, at-rule preludes, arguments or
-Sass interpolation. A known, custom or vendor property before the colon leaves
-the value to the host; an embedded host may permit a requested custom element.
-Built-in CSS uses the automatic position policy for explicit requests too. Every
-`css-base-mode` descendant, including `css-ts-mode`, is a CSS host.
-Unknown major modes retain manual markup only. Missing grammars give capf nil and an explicit
-completion diagnostic; HTML/CSS paths do not need additional grammars.
+CSS/SCSS context uses `syntax-ppss`; web-mode owns its pending scanner,
+attribute markers, part ranges and engine blocks, which bound markup text. Its
+style parts parse with CSS syntax, or SCSS syntax for `lang` `scss` or `less`.
+JS/TS/JSX requires the matching pinned tree-sitter grammar. CSS classification
+starts at the extracted abbreviation, including when point is inside a balanced
+raw value. Comments and strings are forbidden. Automatic analysis also excludes
+values, at-rule preludes, ordinary selectors and unrelated script expressions. A
+bare name and single colon at a declaration start belong to a value position
+even without whitespace, unless the name is a known HTML element, as in
+`button:hv`; automatic top-level selectors need `@`, `_`, a leading colon, or a
+structural selector prefix or known element with a pseudo part. Explicit
+completion skips confidence checks only outside built-in CSS: CSS accepts
+declaration starts, at-rule names and selectors with a pseudo part, and never
+values, at-rule preludes, arguments or Sass interpolation. A known, custom or
+vendor property before the colon leaves the value to the host; an embedded host
+may permit a requested custom element. Built-in CSS uses the automatic position
+policy for explicit requests too. Every `css-base-mode` descendant, including
+`css-ts-mode`, is a CSS host. Other major modes offer markup only on explicit
+request. Missing grammars give capf nil and an explicit completion diagnostic;
+HTML/CSS paths do not need additional grammars.
 
 `emmet2-extract-css-pseudo` is the shared, buffer-independent boundary scan for
 the trailing pseudo chain. Context, expansion classification and menu labels
@@ -238,8 +268,10 @@ prefix reuse; selectors never enter that property-list path.
 Narrowed web buffers temporarily expose the full host to its scanner and restore
 narrowing afterward; accepted abbreviations must remain entirely visible. TSX error
 recovery must retain complete attached Emmet text while keeping ordinary object
-and expression exclusions. Astro expressions not identified by the pinned web-mode
-scanner retain the documented host limitation; do not weaken the JS grammar gate.
+and expression exclusions. web-mode does not mark Astro `{expression}` regions,
+so they are analyzed as markup (see the `astro {expr}` case in
+`test/emmet2-context-lexical-test.el`); do not weaken the JS grammar gate to
+cover them.
 
 Candidate queries, display batches, previews and acceptance recheck source and
 host. Source changes invalidate the previous revision. Only candidate queries
@@ -247,41 +279,46 @@ can replace it when the abbreviation changes at the same source anchor, in the
 same host and with the same settings. Switching mode/settings, narrowing away,
 disabling the mode or leaving the original point/end invalidate the current
 revision. Acceptance never advances a revision, and an old choice identity
-cannot select a new revision's result.
-Corfu accepts identical text without changing the character tick and can move
-point to END; acceptance takes a fresh strict insertion snapshot. This preserves
-single-writer insertion, editable fields and one-step undo for every choice.
-Frontends that rewrite identical text and change the tick are rejected.
-`emmet2-complete` temporarily selects only Emmet capf and invokes
-`completion-at-point`, following the same pattern as Cape interactive CAPFs.
-Built-in CSS uses the automatic admission rules. Other hosts retain explicit
-analysis and confidence bypass, including cold JSX initialization and manual
-markup. The session keeps that analysis policy while the input changes. The
-frontend owns popup and sole-match acceptance, except that the Corfu adapter
-keeps a sole Emmet choice open; Emmet never chooses the first candidate itself.
-There is no separate expansion command or default key. Mode enable/disable owns
-local registration at depth -50. Corfu styles/category/ exact-match policies are
-described below; optional mode setup is in README. Batch drawing replacements
-are never evidence of real GUI interaction.
+cannot select a new revision's result. Corfu accepts identical text without
+changing the character tick and can move point to END; acceptance takes a fresh
+strict insertion snapshot. This preserves single-writer insertion, editable
+fields and one-step undo for every choice. Frontends that rewrite identical text
+and change the tick are rejected. `emmet2-complete` temporarily selects only
+Emmet capf and invokes `completion-at-point`, following the same pattern as Cape
+interactive CAPFs. Built-in CSS uses the automatic admission rules. Other hosts
+use explicit analysis and skip the confidence check, including cold JSX
+initialization and markup in other major modes. The session keeps that analysis
+policy while the input changes. The frontend owns popup and sole-match
+acceptance, except that the Corfu adapter keeps a sole Emmet choice open; Emmet
+never chooses the first candidate itself. `emmet2-expand-at-point` uses the same
+explicit analysis and inserts the first choice through `emmet2-insert`, without
+a frontend. Neither command has a default key; `emmet2-mode-map` is empty.
+Enabling the mode adds `emmet2-capf` locally at depth -50 and, in CSS Base modes
+without a provider, `emmet2-css-value-capf` at -60; disabling removes both.
+Corfu style, category and exact-match policies are described below; optional
+mode setup is in README. Batch drawing replacements are never evidence of real
+GUI interaction.
 
 ## Completion behavior
 
-Each menu label renders the current fragment, folding line breaks and indentation
-into spaces. It applies `completions-common-part` to the positions returned by
-the same project matcher for the abbreviation's word characters in the label.
-An alias with no literal correspondence remains unhighlighted. Only the display
-copy hides the typed candidate; acceptance keeps its original text and choice
-identity. There is no provider label or expansion annotation. Only multiline
-complete results supply documentation to `corfu-popupinfo-mode`, even if their
-current fragment alone is one line. Their preview text
-removes the renderer's source-column prefix from subsequent lines and expands
-leading tabs using the source width. HTML/JSX and nested CSS keep relative
-indentation; ordinary CSS declarations align at column zero. The canonical
-insertion result retains its original layout and fields.
+Each menu label renders the current fragment, folding line breaks and
+indentation into spaces. It applies `completions-common-part` to the positions
+returned by the same project matcher for the abbreviation's word characters in
+the label. An alias with no literal correspondence remains unhighlighted. Only
+the display copy hides the typed candidate; acceptance keeps its original text
+and choice identity. There is no provider label or expansion annotation. Only
+multiline complete results supply documentation to `corfu-popupinfo-mode`, even
+if their current fragment alone is one line. Their preview text removes the
+renderer's source-column prefix from subsequent lines and expands leading tabs
+using the source width. HTML/JSX and nested CSS keep relative indentation;
+ordinary CSS declarations align at column zero. The canonical insertion result
+retains its original layout and fields.
 
-CSS completion builds at most `emmet2-capf--limit` (ten) choices for the last
-property, selector or at-rule, from `emmet2-extensions-css-choices`; the first
-equals the abbreviation's own expansion. When the query begins the best bare
+CSS completion builds at most `emmet2-css-choice-limit` (ten) choices for the last
+property, selector or at-rule through `emmet2-css-completions`. Property choices
+are ranked programs rendered directly; selector and at-rule choices are the
+names from `emmet2-extensions-css-choices`. The first choice equals the
+abbreviation's own expansion. When the query begins the best bare
 property, up to half of the list offers that property's own keywords. A value
 suffix such as `32` or `--gap` is carried to every property choice, so `ins32`
 offers `inset: 32px;` and `inset-block: 32px;`. Hyphenated letters either
@@ -289,8 +326,8 @@ continue a name, as in `inset-b`, or are keyword values, as in `t-a`; the
 reading whose values the best property accepts ranks first. Selectors rank the
 final simple pseudo; at-rules rank names. An unmatched query offers nothing
 rather than a fabricated property. Equivalent canonical results are
-deduplicated. Complete names longer than one letter bypass the search; single
-letters such as `d` and `r` abbreviate common properties despite SVG names.
+deduplicated. Single letters such as `d` and `r` abbreviate common properties
+despite SVG names.
 A bare CSS word is confirmed by its first choice batch, which then answers the
 table's first query, so it is searched once. Bare markup words in text,
 declaration values and unconfirmed host positions remain with other providers; a
@@ -299,35 +336,32 @@ a property, as in `m$gutter`, is a signal, including the incomplete prefixes
 `p$` and `p$-`. A bare `$name` stays with the host's variable completion; plain
 CSS and CSS-in-JS leave `$` to explicit requests.
 
-Compound CSS completion enumerates the last property through the language-owned
-`emmet2-css-completions` batch. `emmet2-css-completion-parts` remains a public
-string projection of the same balanced fragment splitter. A single trailing top-level comma
-or plus after a property requests the preceding choices against a fresh snapshot
-that includes the separator.
-CSS-in-JS allows this for plus; a trailing comma belongs to the JavaScript host.
-Acceptance consumes the separator; old candidate identities still cannot insert.
-The confirmed prefix is everything before the last top-level comma or plus. Once the last
-property is nonempty, its menu label omits that prefix without a marker, while
-documentation preserves the complete result.  The table retains only its
-current confirmed prefix and canonical result, so typing `ovh,ta` then `ovh,tac`,
-or `m10+p5+b` then `m10+p5+bo`, neither searches nor expands the prefix again.
-Editing or removing the prefix replaces or clears this slot; leaving the valid
-context or changing render settings invalidates the table. When both sides use
-the extension's property-list syntax, each full candidate reuses that canonical
+Compound CSS completion enumerates the last property through the
+`emmet2-css-completions` batch. A single trailing top-level comma or plus after
+a property requests the preceding choices against a fresh snapshot that includes
+the separator. CSS-in-JS allows this for plus; a trailing comma belongs to the
+JavaScript host. Acceptance consumes the separator; old candidate identities
+still cannot insert. The confirmed prefix is everything before the last
+top-level comma or plus. Once the last property is nonempty, its menu label
+omits that prefix without a marker, while documentation preserves the complete
+result. The batch keeps the current confirmed prefix and its result, so typing
+`ovh,ta` then `ovh,tac`, or `m10+p5+b` then `m10+p5+bo`, neither searches nor
+expands the prefix again. A changed or removed prefix replaces or clears it;
+another context or render setting prevents reuse. When both sides use the
+extension's property-list syntax, each full candidate reuses that canonical
 prefix result and concatenates only its last property, preserving independent
 field groups; property lists expand each property independently, so the
-concatenation equals the whole expansion.
-Selectors and at-rules retain whole-expression expansion. Each revision also
-reuses complete canonical results for exact abbreviation keys from the
-immediately preceding materialized choices. Only that preceding set survives a
-transition; there is no accumulating or global result cache. Fresh choice
-objects prevent old callbacks from inserting after an input round trip. Menu
-labels, highlights and root-aligned previews are prepared once per choice per
-revision, including reused results; display queries perform no expansion or
-indentation pass. Affixation returns a copy of each label so frontend text
-properties cannot change the stored projection.  Expansion remains strict about
-empty properties, and JavaScript host commas and commas inside values retain
-their existing meaning.
+concatenation equals the whole expansion. Selectors and at-rules always expand
+as a whole. Each revision also reuses complete canonical results for exact
+abbreviation keys from the immediately preceding materialized choices. Only that
+preceding set survives a transition; there is no accumulating or global result
+cache. Fresh choice objects prevent old callbacks from inserting after an input
+round trip. Menu labels, highlights and root-aligned previews are prepared once
+per choice per revision, including reused results; display queries perform no
+expansion or indentation pass. Affixation returns a copy of each label so
+frontend text properties cannot change the stored projection. Expansion remains
+strict about empty properties, and JavaScript host commas and commas inside
+values belong to the host or to the value.
 
 Corfu preserves candidates differing only in text properties, as for overloaded
 LSP methods. Other frontends may merge these choices or strip identity properties;
@@ -349,29 +383,28 @@ set to `prompt`, select the candidate before accepting it; accepting the prompt
 does not expand. Valid edits refresh the table in place; leaving the context
 ends it.
 
-## Data and oracle authority
+## Data and oracle
 
-`data/emmet/source.json` pins Emmet 2.4.11's archive, source commit and individual
-SHA-256 hashes. `test/vendor/emmet-2.4.11.mjs`, HTML snippet JSON and lorem
-dictionaries are copied verbatim. The source contains 155 HTML snippets and 5
-variables; resolved alias counts can differ. Emmet's CSS snippets are retired:
-the project searches CSS data instead. `data/emmet/LICENSE` ships with the
-native port and data; `data/COPYING` carries the project GPL license. Do not substitute newer upstream files or edit generated
-vendor code. Version/hash changes need a separately reviewed data upgrade.
+`data/emmet/source.json` pins Emmet 2.4.11's archive, source commit and
+individual SHA-256 hashes. `test/vendor/emmet-2.4.11.mjs`, HTML snippet JSON and
+lorem dictionaries are copied verbatim. The source contains 155 HTML snippets
+and 5 variables; resolved alias counts can differ. Emmet's CSS snippets are not
+used; CSS abbreviations search the CSS data instead. `data/emmet/LICENSE` ships
+with the vendored data; `data/COPYING` carries the project GPL license. Do not
+substitute newer upstream files or edit generated vendor code. Version/hash
+changes need a separately reviewed data upgrade.
 
 `test/oracle/adapter.mjs` and `test/oracle/jsx.mjs` are independent development
 references for markup. The Node tests retain hand-written field, Unicode,
 error, JSX, generator and CSS data checks. The generator consumes explicit
 `core-inputs.json` cases; it never infers expectations from arbitrary source
-strings. The 526 fixed markup cases include errors. Stylesheet output is
-project-owned since the CSS snippets were retired, so neither the adapter nor
-the oracle compares CSS with Emmet. `--check` regenerates in
-memory and compares contents plus complete inventory without writing. Extra files
-fail; nothing is silently deleted. Intentional input/contract changes require
-reviewing both output files. These fixtures are not exhaustive upstream coverage.
-Lorem uses 42 structural cases and five native seeds instead of random text goldens.
-With authored aliases disabled, `@fa` resolves to `@font-face` rather than
-`@forward`.
+strings. The 526 fixed markup cases include errors. CSS output is defined by
+this project, so the oracle covers markup only. `--check` regenerates in memory
+and compares contents plus complete inventory without writing. Extra files
+fail; nothing is silently deleted. An intentional input or contract change
+requires reviewing both `core-inputs.json` and the regenerated
+`oracle/markup.json`. These fixtures are not exhaustive upstream coverage.
+Lorem uses 42 structural cases and five seeds instead of random text goldens.
 
 `data/css-source.json` pins VS Code Custom Data (CSS and HTML) and MDN data's
 CSS type syntaxes by commit, hashes, schema and input counts.
@@ -381,19 +414,20 @@ compact `css-index.json` search index and both upstream licenses. The files are
 generated together; tests verify the index against the metadata. The full
 snapshot has 888 property/descriptor records including vendor entries, named
 values, restrictions and documentation. Comma-separated value presets such as
-font stacks are dropped, so values are single keywords. The index contains 579
-ordinary properties with relevance, obsolete status, own keywords and the shared
-value sets reachable through property and type references, plus the CSS-wide
+font stacks are dropped, so no value contains a comma. The index contains 579
+ordinary properties (relevance, obsolete status, own keywords and the shared
+value sets reachable through property and type references), 34 at-rule
+descriptors kept apart from them, 175 shared value sets, the five CSS-wide
 keywords, 19 at-rules, 117 pseudos and 116 HTML elements. A shared set stores
-only its own keywords once. Vendor names, descriptor-only entries, function
-arguments and deprecated types are excluded. An `atRule` association does not
-exclude ordinary use: the generator also admits entries whose source reference
-identifies an ordinary CSS property. The shared query library uses this same
-membership; descriptor-only entries are admitted for the supplied at-rule. This
-snapshot remains pinned and offline at runtime; updating data does not
-automatically add grammar support. `css-overrides.json` alone owns authored
-aliases, functions and SCSS templates; its word and property aliases belong to
-the search and the others to the extension layer. The generator never writes it.
+its own keywords once. Vendor names, function arguments and deprecated types
+are excluded; descriptors are searched only for their own at-rule. An `atRule`
+association does not exclude ordinary use: the generator also admits entries
+whose source reference identifies an ordinary CSS property. The shared query
+library uses this same membership. This snapshot remains pinned and offline at
+runtime; updating data does not automatically add grammar support.
+`css-overrides.json` holds the data-driven overrides: word and property aliases
+used by search, and pseudo and at-rule aliases, pseudo functions and SCSS
+at-rule templates used by `emmet2-css`. The generator never writes it.
 Review upstream names and local targets together.
 
 `CHANGELOG.md` states every user-visible change for users; list breaking changes
@@ -426,7 +460,12 @@ add `--eval '(setq native-comp-enable-subr-trampolines nil)'` before
 `-l test/integration.el` and `-l test/editor-bytecode.el`: their process guards
 redefine primitives, and compiling trampolines would start a process. To run one
 test file, load it after the bootstrap:
-`emacs --batch -Q -L . -L test -l test/bootstrap.el -l test/emmet2-fuzzy-test.el -f ert-run-tests-batch-and-exit`.
+
+```sh
+emacs --batch -Q -L . -L test -l test/bootstrap.el -l test/emmet2-fuzzy-test.el \
+  -f ert-run-tests-batch-and-exit
+```
+
 The full integration runner includes all of these contracts, compares the full
 canonical core results and rejects synchronous/asynchronous process creation with
 an empty `exec-path`. The bytecode runner exercises real compiled editor and
@@ -435,11 +474,9 @@ optional dependencies; a copied payload is not a package-manager installation.
 Compilation treats project warnings as errors. Fixed third-party warnings remain
 visible. `package-quality.el` checks every runtime library with package-lint and
 checkdoc; all diagnostics fail. The compiler runner is named `byte-compile.el` to
-avoid shadowing Emacs's built-in `compile.el`. ESLint recommended rules and
-`prefer-const` replace the retired Deno lint step. Only immutable third-party
-vendor output and ignored working plans are excluded. For meaningful JS edits,
-query ESLint MCP and file-scoped Wallaby first; no Wallaby data is inconclusive,
-so use the Node runner for module-load, process and filesystem behavior.
+avoid shadowing Emacs's built-in `compile.el`. ESLint runs its recommended rules
+plus `prefer-const`; only immutable third-party vendor output and ignored working
+plans are excluded. For JavaScript changes, run `npm run lint` and `npm test`.
 
 CI uses the same commands on Ubuntu 24.04. `test/build-emacs.mjs` verifies official
 GNU release archive hashes and builds a private static tree-sitter 0.25.10, avoiding
@@ -455,8 +492,10 @@ After a reviewed commit, install that exact HEAD in a new directory:
 
 ```sh
 export EMMET2_TEST_DEPS=~/.cache/emmet2-test-deps
-EMMET2_INSTALL_ROOT=/tmp/emmet2-install-new emacs --batch -Q -l test/install.el
-EMMET2_TEST_PACKAGE=/tmp/emmet2-install-new/straight/build/emmet2-mode emacs --batch -Q -l test/integration.el
+export EMMET2_INSTALL_ROOT=/tmp/emmet2-install-new
+emacs --batch -Q -l test/install.el
+EMMET2_TEST_PACKAGE="$EMMET2_INSTALL_ROOT/straight/build/emmet2-mode" \
+  emacs --batch -Q -l test/integration.el
 ```
 
 As above, a native-compiling Emacs needs the trampoline setting before
