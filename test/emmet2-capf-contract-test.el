@@ -131,19 +131,22 @@ ACTION runs after presentation instead of ordinary acceptance."
               (when completion-in-region-mode (corfu-quit)))))))))
 
 (ert-deftest emmet2-contract-corfu-configuration-matrix ()
-  (dolist (style '(((basic partial-completion emacs22) nil cons)
-                   ((partial-completion basic) nil t)
-                   ((partial-completion) nil t)
-                   ((basic partial-completion emacs22)
-                    ((emmet2 (styles partial-completion))) t)))
-    (pcase-let ((`(,styles ,overrides ,try-result) style))
+  (dolist (style '(((basic partial-completion emacs22) nil)
+                   ((partial-completion basic) nil)
+                   ((partial-completion) nil)
+                   ((basic partial-completion emacs22) ((emmet2 (styles partial-completion))))))
+    (pcase-let ((`(,styles ,overrides) style))
       (dolist (exact '(nil show insert quit))
         (dolist (automatic '(nil t))
-          (let* ((popup (or (eq try-result 'cons) (eq exact 'show)))
-                 (result (emmet2-test--completion-session styles overrides exact automatic)))
-            (should (eq (car result) popup))
-            (should (eq (cadr result) (and (not automatic) (not popup) 'finished)))
-            (when popup (should (= (nth 2 result) 0)))))))))
+          ;; Text after point, as from auto-paired quotes, makes even basic report
+          ;; exactness; Emmet choices still behave as with `show'.
+          (dolist (middle '(nil t))
+            (let ((result (emmet2-test--completion-session
+                           styles overrides exact automatic nil nil nil nil middle)))
+              (ert-info ((format "%S exact=%S automatic=%S middle=%S" styles exact automatic middle))
+                (should (car result))
+                (should-not (cadr result))
+                (should (= (nth 2 result) 0))))))))))
 
 (ert-deftest emmet2-contract-auto-prefix-and-explicit-acceptance ()
   (let ((styles '(basic partial-completion emacs22)))

@@ -72,7 +72,6 @@ The following example uses straight.el and use-package:
   :hook ((web-mode css-base-mode js-base-mode typescript-ts-base-mode) . corfu-mode)
   :custom
   (corfu-auto t)
-  (corfu-on-exact-match 'show)
   :config
   (corfu-popupinfo-mode 1))
 
@@ -85,9 +84,12 @@ The following example uses straight.el and use-package:
 Corfu normally waits for three characters before point. For one- or two-character
 abbreviations such as `d`, `ta` and `@f`, request completion manually or set
 `corfu-auto-prefix` to `1`; emmet2-mode leaves that threshold to your configuration.
-`corfu-on-exact-match 'show` keeps expansion choices visible when your completion
-styles consider the unchanged abbreviation an exact match, including configurations
-whose first style is not `basic`.
+Emmet choices need no `corfu-on-exact-match` setting. Each choice's text is the
+abbreviation itself, so Corfu could treat the unchanged input as already
+complete, as when auto-paired quotes follow point in `a[href="│"]`. emmet2-mode
+never lets Corfu treat Emmet input as complete, so Emmet choices behave as if
+`corfu-on-exact-match` were `show`, whatever your value and completion styles.
+The variable is not changed, so other completion sources keep your setting.
 
 Corfu is the tested frontend. Other CAPF frontends may merge choices with identical
 text or discard the properties identifying alternatives; full alternative selection
@@ -114,8 +116,9 @@ With [automatic completion](#corfu-and-yasnippet) enabled in your frontend:
 2. Select a choice from the completion popup as you type.
 3. Accept a choice to replace the abbreviation; undo once to restore it.
 
-You can keep point anywhere inside the abbreviation. Your completion frontend
-controls whether a sole match is accepted automatically.
+You can keep point anywhere inside the abbreviation. With Corfu, a sole Emmet
+choice stays in the popup until you accept it; other frontends decide whether a
+sole match is accepted automatically.
 
 CSS property values also match fuzzily, with documentation: `display: if`
 offers `inline-flex`. Accepting a function such as `calc()` places point inside

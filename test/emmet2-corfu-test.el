@@ -82,7 +82,20 @@
                (lambda (&rest _) (ert-fail "Foreign completion must keep its position"))))
       (should (eq (emmet2-corfu--anchor #'identity 'original-position) 'original-position)))
     (should (eq (nth 4 completion-in-region--data) properties))
-    (should-not (plist-member properties :emmet2-corfu-anchor))))
+    (should-not (plist-member properties :emmet2-corfu-anchor))
+    ;; A foreign sole exact match keeps the user's `corfu-on-exact-match' policy.
+    (emmet2-corfu--enable)
+    (should (eq (corfu--try-completion "foo" '("foo") nil 3) t))))
+
+(ert-deftest emmet2-corfu-emmet-input-is-never-complete ()
+  ;; Text after point makes even `basic' report the sole choice as exact.
+  (with-temp-buffer
+    (insert "<main>a[href=\"\"]</main>") (web-mode) (emmet2-mode 1)
+    (search-backward "\"]")
+    (pcase-let ((`(,beg ,end ,table) (emmet2-capf)))
+      (let ((str (buffer-substring-no-properties beg end)) (pt (- (point) beg)))
+        (should (eq (completion-try-completion str table nil pt) t))
+        (should (equal (corfu--try-completion str table nil pt) (cons str pt)))))))
 
 (ert-deftest emmet2-corfu-installation-and-unload ()
   (let ((compiled (byte-code-function-p (symbol-function 'emmet2-corfu--rows))))
@@ -90,7 +103,8 @@
         (progn
           (dotimes (_ 3) (emmet2-corfu--enable))
           (dolist (entry '((corfu--format-candidates . emmet2-corfu--rows)
-                           (corfu--candidates-popup . emmet2-corfu--anchor)))
+                           (corfu--candidates-popup . emmet2-corfu--anchor)
+                           (corfu--try-completion . emmet2-corfu--try-completion)))
             (let ((count 0))
               (advice-mapc (lambda (function _properties)
                              (when (eq function (cdr entry)) (cl-incf count))) (car entry))
@@ -107,6 +121,7 @@
           (emmet2-mode-unload-function)
           (should-not (advice-member-p #'emmet2-corfu--rows 'corfu--format-candidates))
           (should-not (advice-member-p #'emmet2-corfu--anchor 'corfu--candidates-popup))
+          (should-not (advice-member-p #'emmet2-corfu--try-completion 'corfu--try-completion))
           ;; Independent hosts may keep using CAPF after the minor mode unloads.
           (with-temp-buffer
             (css-mode) (insert ".a{ta}") (backward-char)
@@ -115,6 +130,7 @@
           (unload-feature 'emmet2-corfu t)
           (should-not (advice-member-p 'emmet2-corfu--rows 'corfu--format-candidates))
           (should-not (advice-member-p 'emmet2-corfu--anchor 'corfu--candidates-popup))
+          (should-not (advice-member-p 'emmet2-corfu--try-completion 'corfu--try-completion))
           (with-temp-buffer
             (css-mode) (insert ".a{ta}") (backward-char)
             (should (emmet2-capf)))

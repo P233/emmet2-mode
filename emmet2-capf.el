@@ -271,8 +271,9 @@ can still accept the first expansion."
   "Request Emmet choices through the configured completion frontend.
 Built-in CSS uses exactly the automatic CAPF's admission rules.  Other hosts
 retain their explicit-request contract, including manual markup and grammar
-initialization.  The frontend decides presentation and sole-match acceptance;
-this command does not choose or insert the first candidate itself."
+initialization.  The frontend decides presentation and sole-match acceptance,
+though Corfu keeps a sole Emmet choice open; this command does not choose or
+insert the first candidate itself."
   (interactive)
   (emmet2-capf--guard nil nil
     (let ((completion-at-point-functions '(emmet2-capf))

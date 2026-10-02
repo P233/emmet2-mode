@@ -87,12 +87,12 @@ lexical parse because web-mode's buffer syntax is not CSS syntax.
 `emmet2-complete` requests the same CAPF and admission rules as automatic
 completion in built-in CSS. It neither selects a candidate nor changes the
 frontend's settings. The frontend owns popup behavior, prefix thresholds and
-sole-match acceptance. Manual markup, cold JSX initialization and external
-hosts retain their explicit-request contracts, which is why the command remains.
-The command delegates analysis and grammar initialization to CAPF once; there
-is no separate analysis preflight. `emmet2-expand-at-point` uses the same
-explicit analysis and inserts the first expansion through `emmet2-insert`,
-without a frontend.
+sole-match acceptance; the optional Corfu adapter keeps a sole Emmet choice in
+the popup. Manual markup, cold JSX initialization and external hosts retain
+their explicit-request contracts, which is why the command remains. The command
+delegates analysis and grammar initialization to CAPF once; there is no separate
+analysis preflight. `emmet2-expand-at-point` uses the same explicit analysis and
+inserts the first expansion through `emmet2-insert`, without a frontend.
 
 ## Resource and write ownership
 

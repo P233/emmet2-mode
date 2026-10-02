@@ -26,9 +26,9 @@ below belong to this release and are relative to the earlier 0.2 implementation.
 - `emmet2-expand` and its default `C-j` binding are removed. Accept a completion
   choice through `completion-at-point` or a frontend such as Corfu, or run
   `emmet2-expand-at-point` to insert the first choice directly.
-  `emmet2-complete` requests Emmet choices and respects the frontend's popup
-  and sole-match settings. `emmet2-mode-map` is empty; bind either command
-  yourself if you want a dedicated key.
+  `emmet2-complete` requests Emmet choices through your completion frontend;
+  with Corfu, a sole choice stays in the popup. `emmet2-mode-map` is empty;
+  bind either command yourself if you want a dedicated key.
 - Package recipes need `:files (:defaults "data")`; the `*.ts` and `src`
   entries are no longer needed.
 - Syntax follows the major mode and surrounding context instead of the file
@@ -95,6 +95,9 @@ below belong to this release and are relative to the earlier 0.2 implementation.
 - Insert CSS without yasnippet fields, so typed or completed values are not
   highlighted and TAB keeps your own binding. Point starts in the first value,
   as in `d` (before `;`). HTML and JSX keep yasnippet fields and mirrors.
+- Show Emmet choices in Corfu whatever `corfu-on-exact-match` is, including
+  when auto-paired quotes follow point as in `a[href="│"]`. The variable is not
+  changed, so other completion sources keep your setting.
 - Keep Emmet choice labels visible with Corfu icon margin formatters such as
   kind-icon or nerd-icons-corfu. Emmet and value choices declare no completion
   kind and stay plain text.

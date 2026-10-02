@@ -73,10 +73,11 @@ Node is used only for development setup, lint and the independent offline oracle
   HTML/JSX/CSS modes fontify final text without extra grammars. Creation isolates
   user mode hooks. Failed initialization, module unload and package unload clear
   owned buffers; ordinary kill hooks still run. There is no timer or result cache.
-- `emmet2-corfu` owns two category-scoped display advices, installed idempotently
+- `emmet2-corfu` owns three category-scoped advices, installed idempotently
   when CAPF offers an Emmet table, without loading or enabling Corfu. Labels move
   from the affix to the main display column; the unchanged candidate still owns
   acceptance. The popup anchor lives only in the completion session's properties.
+  Corfu's exactness check never reports Emmet input as complete.
   Adapter or package unload removes the advice. Timing, thresholds and width
   remain user settings; non-Emmet categories pass through unchanged.
 
@@ -256,11 +257,12 @@ Frontends that rewrite identical text and change the tick are rejected.
 Built-in CSS uses the automatic admission rules. Other hosts retain explicit
 analysis and confidence bypass, including cold JSX initialization and manual
 markup. The session keeps that analysis policy while the input changes. The
-frontend owns popup and sole-match acceptance; Emmet never chooses the first
-candidate itself. There is no separate expansion command or default key.
-Mode enable/disable owns local registration at depth -50. Corfu styles/category/
-exact-match policies are described below; optional mode setup is in README.
-Batch drawing replacements are never evidence of real GUI interaction.
+frontend owns popup and sole-match acceptance, except that the Corfu adapter
+keeps a sole Emmet choice open; Emmet never chooses the first candidate itself.
+There is no separate expansion command or default key. Mode enable/disable owns
+local registration at depth -50. Corfu styles/category/ exact-match policies are
+described below; optional mode setup is in README. Batch drawing replacements
+are never evidence of real GUI interaction.
 
 ## Completion behavior
 
@@ -330,18 +332,22 @@ their existing meaning.
 Corfu preserves candidates differing only in text properties, as for overloaded
 LSP methods. Other frontends may merge these choices or strip identity properties;
 they can still accept the default result. The optional `emmet2-corfu` adapter
-uses Corfu's private formatting and popup entry points only for Emmet display;
-candidate identity and acceptance stay in CAPF. Presentation tests exercise the
-pinned Corfu's matching, affixation, acceptance and adapter cleanup.
+uses Corfu's private formatting, popup and exactness entry points only for Emmet
+tables; candidate identity and acceptance stay in CAPF. Presentation tests
+exercise the pinned Corfu's matching, affixation, acceptance and adapter
+cleanup.
 
 Automatic presentation respects Corfu's prefix, delay and trigger settings.
-With `basic` first, the exact candidate can remain visible for `nil`, `show`,
-`insert` and `quit` policies. With `partial-completion` first, alone, or selected
-by an `emmet2` category override, automatic completion skips it unless the
-persistent `corfu-on-exact-match` is `show`; manual completion may expand directly.
-The package changes none of these settings. With `corfu-preselect` set to
-`prompt`, select the candidate before accepting it; accepting the prompt does
-not expand. Valid edits refresh the table in place; leaving the context ends it.
+Completion styles report the unchanged abbreviation as exact when text follows
+point, as with auto-paired quotes, or when `partial-completion` comes first, is
+alone, or is selected by an `emmet2` category override. Corfu would then skip
+the popup or expand directly unless `corfu-on-exact-match` is `show`. The
+adapter turns Corfu's exact result for an Emmet table into the unchanged input,
+so every policy shows Emmet choices, as with `show`. The package changes none of
+these settings, and other tables keep the user's policy. With `corfu-preselect`
+set to `prompt`, select the candidate before accepting it; accepting the prompt
+does not expand. Valid edits refresh the table in place; leaving the context
+ends it.
 
 ## Data and oracle authority
 
