@@ -261,6 +261,8 @@ A colon starts a pseudo-class, so use `dn` or `dN` rather than `d:n`.
 
 Join properties with `,` or `+` without spaces, as in `m10,p.5`. Put literal
 values and functions in `[...]`; commas and plus signs inside brackets stay literal.
+Unknown properties, values, units, at-rules and pseudos offer no choice, so write
+a font or project value in brackets: `ff[Inter]` gives `font-family: Inter;`.
 Lengths default to `px` for integers and `rem` for decimals. Zero and numeric
 properties such as `line-height`, `order`, Grid line numbers and opacity stay
 unitless. Override units with `r` for `rem`, `e` for `em` or `p` for `%`, and
@@ -466,6 +468,8 @@ Host integrations and pure expansion interfaces are documented in [API.md](API.m
 - Replace `:files (:defaults "*.ts" "src" "data")` with `:files (:defaults "data")`.
 - CSS properties now leave an empty value field; replace value presets such as
   `lg` with property-and-value queries such as `bgilg`.
+- Unknown CSS names, values and units no longer expand literally; write a
+  project value in brackets, as in `ff[Inter]`.
 
 See [CHANGELOG.md](CHANGELOG.md) for the full list of changes.
 

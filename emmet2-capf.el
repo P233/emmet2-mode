@@ -31,7 +31,8 @@
        (save-excursion (goto-char (plist-get analysis :end)) (skip-chars-forward " \t") (eolp))))
 
 (defun emmet2-capf--confident-p (analysis)
-  "Whether ANALYSIS has an expansion signal or a CSS search choice."
+  "Return t when ANALYSIS has an expansion signal, or nil.
+Return `search' for a bare CSS word, which only its search choices confirm."
   (let ((abbreviation (plist-get analysis :abbr)) (case-fold-search nil))
     (pcase (plist-get analysis :lang)
       ;; Words ending a sentence, such as end. or e.g., are prose.  A known
@@ -44,9 +45,7 @@
            ;; A bare $name stays with the host's variable completion.
            (and (eq (plist-get analysis :syntax) 'scss)
                 (string-match-p "\\`[a-z][-a-z]*\\$-?\\(?:[_[:alpha:]]\\|\\'\\)" abbreviation))
-           (and (string-match-p "\\`[a-z][-a-z]*\\'" abbreviation)
-                (emmet2-extensions-css-choices abbreviation :css-in-js (eq (plist-get analysis :lang) 'css-in-js)
-                                               :limit 1 :at-rule (plist-get analysis :at-rule)))
+           (and (string-match-p "\\`[a-z][-a-z]*\\'" abbreviation) 'search)
            (and (eq (plist-get analysis :lang) 'css)
                 (string-match-p "\\`\\(?:@[[:alpha:]]\\|[^:]*::?[[:alpha:]]\\)" abbreviation)))))))
 
@@ -137,26 +136,33 @@ Cancellation propagates, and `debug-on-error' retains the original debugger."
          (unless ,completed ,cleanup)))))
 
 (defun emmet2-capf--admit (explicit)
-  "Return (AUTOMATIC . ANALYSIS) for the abbreviation at point, or nil.
+  "Return (AUTOMATIC ANALYSIS CONFIDENCE) for the abbreviation at point, or nil.
 EXPLICIT requests keep their host's explicit contract, except in built-in CSS,
-where every entry uses the automatic rules and offers the same choices."
+where every entry uses the automatic rules and offers the same choices.
+CONFIDENCE is `search' when only CSS choices can confirm the abbreviation."
   (let ((automatic (or (not explicit)
                        (and (derived-mode-p 'css-base-mode) (not emmet2-context-provider)))))
     (when-let* ((analysis (and (not buffer-read-only) (emmet2-context-analyze automatic)))
-                (_ (or (not automatic) (emmet2-capf--confident-p analysis))))
-      (cons automatic analysis))))
+                (confidence (or (not automatic) (emmet2-capf--confident-p analysis))))
+      (list automatic analysis confidence))))
 
 ;;;###autoload
 (defun emmet2-capf ()
   "Offer expansion choices and update them while typing in the same context.
-Expansion is lazy so a frontend can apply its prefix threshold first.
+Expansion is lazy so a frontend can apply its prefix threshold first, except
+for a bare CSS word, whose first batch both confirms it and answers the table.
 Candidate properties distinguish choices with identical source text, as with
 overloaded language-server completions.  Frontends which discard properties
 can still accept the first expansion."
   (emmet2-capf--guard (not emmet2-capf--explicit) nil
     (pcase-let ((quiet (not emmet2-capf--explicit))
-                (`(,automatic . ,analysis) (emmet2-capf--admit emmet2-capf--explicit)))
-      (when analysis
+                (`(,automatic ,analysis ,confidence) (emmet2-capf--admit emmet2-capf--explicit)))
+      (when-let* ((_ analysis)
+                  ;; A bare word needs CSS choices; that batch then answers the first query.
+                  (first (if (eq confidence 'search)
+                             (let ((batch (emmet2-capf--choices analysis)))
+                               (and (plist-get batch :choices) batch))
+                           'unexpanded)))
         (require 'emmet2-corfu)
         (emmet2-corfu--enable)
         (let* ((provider emmet2-context-provider)
@@ -166,8 +172,8 @@ can still accept the first expansion."
                ;; host again only when an input of that analysis has changed.
                (validated (emmet2-context-revision))
                (abbreviation (plist-get analysis :abbr))
-               (choices 'unexpanded)
-               (cache nil)
+               (choices (if (eq first 'unexpanded) first (plist-get first :choices)))
+               (cache (unless (eq first 'unexpanded) first))
                (live t))
           (cl-labels
               ((invalidate () (setq live nil choices nil cache nil))
@@ -282,7 +288,7 @@ choice.  Fields, initial cursor and one-step undo match an accepted choice."
   (interactive)
   (emmet2-capf--guard nil nil
     (barf-if-buffer-read-only)
-    (let* ((analysis (or (cdr (emmet2-capf--admit t))
+    (let* ((analysis (or (nth 1 (emmet2-capf--admit t))
                          (user-error "There is no Emmet abbreviation at point")))
            (snapshot (emmet2-insert-snapshot analysis)))
       (emmet2-insert snapshot (emmet2-expand-analysis analysis)))))

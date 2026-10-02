@@ -33,18 +33,23 @@
      (web-mode "<script>const styles=StyleSheet.create({card:{c+bg│}});</script>" nil "color: , background: "))))
 
 (ert-deftest emmet2-stylesheet-at-rules-follow-host-syntax ()
-  (dolist (case '((css-mode "@i│" "@import ") (css-mode "@us│" "@us")
+  ;; A Sass template is unknown in plain CSS and Less, which then offer nothing.
+  (dolist (case '((css-mode "@i│" "@import ") (css-mode "@us│" nil)
                   (scss-mode "@us│" "@use \"\";")
                   (web-mode "<style>@im│</style>" "<style>@import </style>")
                   (web-mode "<style lang=\"scss\">@us│</style>" "<style lang=\"scss\">@use \"\";</style>")
-                  (web-mode "<style lang=\"less\">@us│</style>" "<style lang=\"less\">@us</style>")))
+                  (web-mode "<style lang=\"less\">@us│</style>" nil)))
     (ert-info ((format "%S" case))
       (with-temp-buffer
         (insert (nth 1 case)) (search-backward "│") (delete-char 1)
-        (let ((position (point))) (funcall (car case)) (goto-char position))
-        (emmet2-mode 1)
-        (emmet2-test--complete-first)
-        (should (equal (buffer-string) (nth 2 case)))))))
+        (let ((position (point)) (before (buffer-string)))
+          (funcall (car case)) (goto-char position)
+          (emmet2-mode 1)
+          (if (nth 2 case)
+              (progn (emmet2-test--complete-first)
+                     (should (equal (buffer-string) (nth 2 case))))
+            (should-error (emmet2-test--complete-first) :type 'user-error)
+            (should (equal (buffer-string) before))))))))
 
 (ert-deftest emmet2-stylesheet-property-prefix-offers-completion ()
   (with-temp-buffer

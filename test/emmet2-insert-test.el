@@ -295,7 +295,7 @@
     (insert "const a = 'div';") (js-mode) (goto-char 13)
     (should-error (emmet2-expand-at-point) :type 'user-error)
     (should (equal (buffer-string) "const a = 'div';")))
-  ;; Built-in CSS admits exactly what `emmet2-complete' would offer.
+  ;; Built-in CSS uses the admission of `emmet2-complete'; unknown names never expand.
   (dolist (input '("xyz" "-webkit-transition"))
     (with-temp-buffer
       (css-mode) (insert ".a{" input "}") (backward-char)

@@ -131,7 +131,11 @@ joined by `:class-names-constructor` (`:class-style 'css-modules`, the default).
 `emmet2-extensions-css` writes SCSS values such as `p(1)` as Sass calls only when
 `:scale-functions` maps the property, as in `emmet2-css-scale-functions`;
 otherwise they are parse errors. `emmet2-expand-analysis` passes the
-corresponding user options.
+corresponding user options. Property, pseudo and at-rule names, value words and
+units outside the CSS data also signal `emmet2-parse-error`; bracketed values
+such as `ff[Inter]` and pseudos before the final one, as in `:global(.a):hv`,
+keep their spelling. `emmet2-extensions-css-choices` accepts the same
+`:scale-functions` and returns only choices that expand.
 
 Choices are independently expandable strings for one property, pseudo chain or
 at-rule. Returned strings may contain a separator preserving an otherwise ambiguous

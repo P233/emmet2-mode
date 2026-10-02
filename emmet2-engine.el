@@ -37,7 +37,6 @@ Nested core invocations inherit the same deadline."
 (autoload 'emmet2-engine-markup-expand "emmet2-engine-markup")
 (autoload 'emmet2-engine-stylesheet-expand "emmet2-engine-stylesheet")
 (autoload 'emmet2-engine-stylesheet-property-end "emmet2-engine-stylesheet")
-(autoload 'emmet2-engine-stylesheet-property-prefix "emmet2-engine-stylesheet")
 
 (defun emmet2-engine-js-character (character)
   "Encode Unicode CHARACTER inside a JavaScript double-quoted string.

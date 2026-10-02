@@ -653,6 +653,21 @@
       (setq emmet2-css-scale-functions '((t . "space")))
       (should-not (all-completions "p(1)(2)" table)))))
 
+(ert-deftest emmet2-capf-bare-words-search-once-and-decline-without-choices ()
+  (let ((calls 0))
+    (cl-letf* ((search (symbol-function 'emmet2-css-search))
+               ((symbol-function 'emmet2-css-search)
+                (lambda (&rest args) (cl-incf calls) (apply search args))))
+      (with-temp-buffer
+        (css-mode) (insert ".a{colo}") (backward-char)
+        (should (all-completions "colo" (nth 2 (emmet2-capf))))
+        (should (= calls 1))
+        ;; A declined word costs one search too.
+        (erase-buffer) (insert ".a{zzqq}") (backward-char)
+        (setq calls 0)
+        (should-not (emmet2-capf))
+        (should (= calls 1))))))
+
 (ert-deftest emmet2-capf-reuses-results-with-fresh-highlights-and-choice-identities ()
   (emmet2-test--with-css-completion "in"
     (let ((expand (symbol-function 'emmet2-css--declarations)) expanded)
@@ -778,16 +793,11 @@
 
 (ert-deftest emmet2-capf-pending-separator-keeps-strict-syntax-boundaries ()
   (dolist (input '("m10,," "m10,+" "m10++" "m10+," "m10,,p5+" "m10++p5+"
-                  "p[1," "p(calc(1px," "p[1+" "w[calc(1px+" ".a+" "button:hv+" ":hv+"))
+                  "p[1," "p(calc(1px," "p[1+" "w[calc(1px+" ".a+" "button:hv+" ":hv+" "@md+"))
     (with-temp-buffer
       (css-mode) (insert ".a{" input "}") (backward-char)
       (when-let* ((data (emmet2-capf)))
         (should-not (all-completions input (nth 2 data))))))
-  ;; At-rules retain their literal fallback; + is not a pending property here.
-  (emmet2-test--with-css-completion "@md+"
-    (let* ((data (emmet2-capf)) (props (nthcdr 3 data))
-           (candidate (car (all-completions "@md+" (nth 2 data)))))
-      (should (equal (cadar (funcall (plist-get props :affixation-function) (list candidate))) "@md+"))))
   (with-temp-buffer
     (css-mode) (insert ".a{p[calc(1px,2px)],}") (backward-char)
     (let* ((data (emmet2-capf))

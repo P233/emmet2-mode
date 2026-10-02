@@ -43,6 +43,14 @@
 Keep this formatting policy in the shared core.  Other number/length properties
 retain their existing defaults; explicit units always take precedence.")
 
+(defconst emmet2-stylesheet--units
+  '("%" "px" "cm" "mm" "q" "in" "pc" "pt" "em" "rem" "ex" "rex" "cap" "rcap" "ch" "rch"
+    "ic" "ric" "lh" "rlh" "vw" "vh" "vi" "vb" "vmin" "vmax" "svw" "svh" "svi" "svb" "svmin"
+    "svmax" "lvw" "lvh" "lvi" "lvb" "lvmin" "lvmax" "dvw" "dvh" "dvi" "dvb" "dvmin" "dvmax"
+    "cqw" "cqh" "cqi" "cqb" "cqmin" "cqmax" "deg" "grad" "rad" "turn" "s" "ms" "hz" "khz"
+    "dpi" "dpcm" "dppx" "x" "fr")
+  "CSS units a number may carry after the e, p, x and r aliases are applied.")
+
 (defun emmet2-engine-stylesheet-property-end (text &optional start)
   "Return the end of a canonical property at START in TEXT, or nil.
 START defaults to zero.  Hyphens within names stay intact; negative numbers
@@ -271,11 +279,12 @@ The upstream trimming also applies to scientific notation at 1e21 and above."
           ((and (= (% r 17) 0) (= (% g 17) 0) (= (% b 17) 0)) (format "#%x%x%x" (/ r 17) (/ g 17) (/ b 17)))
           (t (format "#%02x%02x%02x" r g b)))))
 
-(defun emmet2-stylesheet--resolve (node &optional at-rule)
+(defun emmet2-stylesheet--resolve (node &optional at-rule strict)
   "Resolve call-owned NODE's keyword values and number units in place.
 A literal becomes the best keyword of NODE's property that it abbreviates,
-as a in top-a is auto.  AT-RULE selects descriptor values.
-Unknown properties and unmatched literals stay."
+as a in top-a is auto.  AT-RULE selects descriptor values.  Unmatched
+literals and units stay, unless STRICT rejects a word that is not a keyword
+of the property or a unit outside `emmet2-stylesheet--units'."
   (when-let* ((name (emmet2-stylesheet--node-name node)))
     (setf (emmet2-stylesheet--node-values node)
           (mapcar (lambda (fragment)
@@ -283,15 +292,24 @@ Unknown properties and unmatched literals stay."
                               (or (and (eq (aref token 0) 'literal)
                                        (when-let* ((keyword (car (emmet2-css-search-values name (aref token 1) 1 at-rule))))
                                          (vector 'literal keyword nil nil)))
-                                  token))
+                                  (if (and strict (eq (aref token 0) 'literal)
+                                           (string-match-p "\\`[a-zA-Z]" (aref token 1)))
+                                      (signal 'emmet2-parse-error
+                                              (list (format "Unknown CSS value: %s" (aref token 1))
+                                                    (or (aref token 2) 0)))
+                                    token)))
                             fragment))
                   (emmet2-stylesheet--node-values node)))
     (dolist (fragment (emmet2-stylesheet--node-values node))
       (dolist (token fragment)
         (when (eq (aref token 0) 'number)
-          (let* ((value (aref token 1)) (unit (aref value 1)))
+          (let* ((value (aref token 1))
+                 (unit (or (cdr (assoc (aref value 1) '(("e" . "em") ("p" . "%") ("x" . "ex") ("r" . "rem"))))
+                           (aref value 1))))
+            (when (and strict (not (equal unit "")) (not (member (downcase unit) emmet2-stylesheet--units)))
+              (signal 'emmet2-parse-error (list (format "Unknown CSS unit: %s" unit) (or (aref token 2) 0))))
             (aset value 1
-                  (cond ((not (equal unit "")) (or (cdr (assoc unit '(("e" . "em") ("p" . "%") ("x" . "ex") ("r" . "rem")))) unit))
+                  (cond ((not (equal unit "")) unit)
                         ((or (= (aref value 0) 0)
                              (member name emmet2-stylesheet--unitless-properties)) "")
                         ((string-search "." (aref value 2)) "rem") (t "px"))))))))
@@ -308,18 +326,6 @@ Unknown properties and unmatched literals stay."
     (setq text (mapconcat #'emmet2-engine-js-character text)))
   (push text (emmet2-stylesheet--output-parts out))
   (cl-incf (emmet2-stylesheet--output-offset out) (length text)))
-
-(defun emmet2-engine-stylesheet-property-prefix (name)
-  "Return a declaration prefix for a parsed property NAME.
-Use the same grammar as ordinary expansion, including errors for invalid
-names, without constructing an empty value, snippet fields or a result."
-  (emmet2-engine-with-expansion
-    (let* ((nodes (emmet2-stylesheet--parse name)) (node (car nodes)))
-      (unless (and (= (length nodes) 1) (equal (emmet2-stylesheet--node-name node) name)
-                   (not (emmet2-stylesheet--node-values node))
-                   (not (emmet2-stylesheet--node-important node)))
-        (signal 'emmet2-parse-error '("Expected a CSS property" 0)))
-      (concat name ": "))))
 
 (defun emmet2-stylesheet--emit-token (out token)
   "Format TOKEN into OUT, recording field spans before normalization."
@@ -473,7 +479,7 @@ The returned declaration is call-owned and is opaque to the caller."
     (if literal
         (setf (emmet2-stylesheet--node-values node) (list (list (vector 'raw source nil nil))))
       (setf (emmet2-stylesheet--node-clear-defaults node) t)
-      (emmet2-stylesheet--resolve node at-rule))
+      (emmet2-stylesheet--resolve node at-rule t))
     (when important (setf (emmet2-stylesheet--node-important node) t))
     node))
 

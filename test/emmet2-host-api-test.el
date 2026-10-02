@@ -250,14 +250,13 @@
           (should (equal (buffer-string) ".a{m10}")))))))
 
 (ert-deftest emmet2-host-long-literal-choice-preserves-display-and-source ()
-  (let ((input (concat "m" (make-string 4095 ?A))))
+  (let* ((value (make-string 4090 ?a)) (input (concat "m[" value "]")))
     (emmet2-host-test--with-completion input
       (let* ((data (emmet2-capf))
              (candidates (all-completions input (nth 2 data)))
              (rows (funcall (plist-get (nthcdr 3 data) :affixation-function) candidates)))
-        (should (= (length rows) 1))
-        (should (equal (substring-no-properties (cadar rows))
-                       (concat "m: a" (substring input 2) ";")))
+        (should rows)
+        (should (equal (substring-no-properties (cadar rows)) (concat "margin: " value ";")))
         (should (equal (buffer-string) (concat ".a{" input "}")))))))
 
 (ert-deftest emmet2-host-css-provider-and-builtin-share-expansion-results ()

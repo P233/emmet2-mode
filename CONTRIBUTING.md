@@ -62,12 +62,13 @@ Node is used only for development setup, lint and the independent offline oracle
   Presentation never
   changes insertion text or field offsets.
   Only a current `finished` callback inserts; metadata and frontend prefix checks
-  do not expand. Results are deduplicated and share one expansion budget. A failed
-  table offers no choice and cannot revive after a later query. A new request
-  may create a new table. Initial analysis and every lazy callback share the
-  automatic/explicit error policy; quit propagates and debug errors stay visible.
-  No global expansion cache, source-restoration state or frontend configuration
-  mutation is allowed.
+  do not expand, except the first batch that confirms a bare CSS word. Results
+  are deduplicated and share one expansion budget. A failed table offers no
+  choice and cannot revive after a later query. A new request may create a new
+  table. Initial analysis and every lazy callback share the automatic/explicit
+  error policy; quit propagates and debug errors stay visible. No global
+  expansion cache, source-restoration state or frontend configuration mutation
+  is allowed.
 - `emmet2-preview` owns at most three lazy, read-only, non-file buffers. Built-in
   HTML/JSX/CSS modes fontify final text without extra grammars. Creation isolates
   user mode hooks. Failed initialization, module unload and package unload clear
@@ -166,12 +167,15 @@ prefixes rank first, word initials receive priority, and consecutive characters
 and smaller gaps improve the remaining matches. Ties keep the first input item.
 Matches return both scores and character positions; the same matcher supplies
 menu highlighting and host candidate ranking. No fuzzy cache is needed.
-Unknown at-rules stay literal; templates change only authored layout, leaving
-literal tabs untouched. Empty alias tables retain the fuzzy fallback. Plain
-`css` resolves names among CSS at-rules, directly or through an authored alias,
-without Sass templates. Only `:not` spreads comma arguments into chained calls.
-Pseudo completion expands selector names and editable function arguments only.
-It preserves authored prefixes and adds no rule bodies or declarations.
+Unknown at-rules, pseudos, properties, value words and units signal a parse
+error, so nothing outside the data is offered. Bracketed values and pseudos
+before the final query, as in `:global(.a):hv`, keep their spelling.
+Templates change only authored layout, leaving literal tabs untouched. Empty
+alias tables retain the fuzzy fallback. Plain `css` resolves names among CSS
+at-rules, directly or through an authored alias, without Sass templates. Only
+`:not` spreads comma arguments into chained calls. Pseudo completion expands
+selector names and editable function arguments only. It preserves authored
+prefixes and adds no rule bodies or declarations.
 
 `emmet2-css-search` aligns query segments with the words of a property and,
 for compact queries, of one keyword value. A segment is a whole word, a word
@@ -282,13 +286,13 @@ final simple pseudo; at-rules rank names. An unmatched query offers nothing
 rather than a fabricated property. Equivalent canonical results are
 deduplicated. Complete names longer than one letter bypass the search; single
 letters such as `d` and `r` abbreviate common properties despite SVG names.
-Confidence asks for one choice; a single-choice search keeps only its best
-candidate. Bare markup words in text, declaration values and unconfirmed host
-positions remain with other providers; a known HTML element alone on its line
-is offered. In SCSS, a Sass variable after a property, as in `m$gutter`, is a
-signal, including the incomplete prefixes `p$` and `p$-`. A bare `$name` stays
-with the host's variable completion; plain CSS and CSS-in-JS leave `$` to
-explicit requests.
+A bare CSS word is confirmed by its first choice batch, which then answers the
+table's first query, so it is searched once. Bare markup words in text,
+declaration values and unconfirmed host positions remain with other providers; a
+known HTML element alone on its line is offered. In SCSS, a Sass variable after
+a property, as in `m$gutter`, is a signal, including the incomplete prefixes
+`p$` and `p$-`. A bare `$name` stays with the host's variable completion; plain
+CSS and CSS-in-JS leave `$` to explicit requests.
 
 Compound CSS completion enumerates the last property through the language-owned
 `emmet2-css-completions` batch. `emmet2-css-completion-parts` remains a public

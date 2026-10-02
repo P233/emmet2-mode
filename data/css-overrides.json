@@ -86,6 +86,10 @@
       "text": "@at-root  {\n\t\n}",
       "cursor": 9
     },
+    "@content": {
+      "text": "@content;",
+      "cursor": 9
+    },
     "@debug": {
       "text": "@debug ;",
       "cursor": 7
@@ -141,6 +145,10 @@
     "@mixin": {
       "text": "@mixin  {\n\t\n}",
       "cursor": 7
+    },
+    "@return": {
+      "text": "@return ;",
+      "cursor": 8
     },
     "@use": {
       "text": "@use \"\";",
