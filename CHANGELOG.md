@@ -2,131 +2,122 @@
 
 ## v2.0.0 (Unreleased)
 
-The native Emacs Lisp implementation is being prepared as v2.0.0. All changes
-below belong to this release and are relative to the earlier 0.2 implementation.
-
-### Architecture and completion correctness
-
-- CSS completion retains resolved property identities through rendering. CSS and
-  JavaScript output share declarations, with fields emitted at their final offsets.
-- Project options and buffer-aware expansion live in `emmet2-expand`; loading CAPF
-  does not require minor-mode registration. Public expansion names remain available.
-- React labels use `htmlFor`; empty JSX class fields start an editable CSS Modules
-  key. Solid retains `class` and `for`. Invalid required references and raw non-Unicode
-  class bytes report domain errors.
-- Automatic errors expire the completion table; explicit requests and acceptance
-  report the cause. Provider callbacks restore point and narrowing. Web script/style
-  parts share exclusive endpoints, and standalone `.scss` files retain Sass syntax.
+emmet2-mode 2.0 is a native Emacs Lisp rewrite. All changes below are relative
+to the earlier 0.2 implementation. See
+[Upgrading from 0.2](README.md#upgrading-from-02) for the configuration checklist.
 
 ### Breaking changes
 
-- Emacs 30 or later is required. Expansion runs entirely in Emacs Lisp;
-  Deno, `deno-bridge`, `websocket` and the Emmet npm package are no longer used.
-  Remove their configuration and restart Emacs after upgrading.
-- `emmet2-expand` and its default `C-j` binding are removed. Accept a completion
-  choice through `completion-at-point` or a frontend such as Corfu, or run
-  `emmet2-expand-at-point` to insert the first choice directly.
-  `emmet2-complete` requests Emmet choices through your completion frontend;
-  with Corfu, a sole choice stays in the popup. `emmet2-mode-map` is empty;
-  bind either command yourself if you want a dedicated key.
+- Emacs 30 or later is required. Expansion runs entirely in Emacs Lisp; Deno,
+  `deno-bridge`, `websocket` and the Emmet npm package are no longer used.
+  Remove their configuration, including `:after deno-bridge` in the
+  emmet2-mode declaration, and restart Emacs.
 - Package recipes need `:files (:defaults "data")`; the `*.ts` and `src`
   entries are no longer needed.
-- Syntax follows the major mode and surrounding context instead of the file
-  extension. Plain CSS hosts offer CSS at-rule names; `scss-mode` and
-  `<style lang="scss">` also offer Sass templates.
-- CSS abbreviations use a bundled property/value catalog instead of Emmet's
-  CSS snippet table:
-  - Properties have no default values: `d` is `display: ;` and `c` is `color: ;`.
-  - Value presets such as `lg`, `cr`, `qen` and `qru` are replaced by combined
-    property/value queries: `bgilg` gives `background-image: linear-gradient();`
-    and `crgb` gives `color: rgb();`. Use brackets for literal values, such as `q[none]`.
+- The `emmet2-expand` command and its `C-j` binding are removed. Abbreviations
+  expand when you accept a completion choice; run `emmet2-expand-at-point` to
+  insert the first choice directly, or `emmet2-complete` to request choices.
+  `emmet2-mode-map` is empty; bind either command yourself.
+- The Deno-era functions and variables `emmet2-expand-css`,
+  `emmet2-expand-markup`, `emmet2-expand-css-in-js`, `emmet2-detect-*`,
+  `emmet2-check-in-between`, `emmet2-after-hook`, `emmet2-file-extension` and
+  `emmet2-backend-path` are removed. `emmet2-insert` now takes a snapshot and
+  a result; see [API.md](API.md).
+- Syntax follows the major mode and surrounding context. A `.css` file in
+  `css-mode` is now plain CSS, so Sass at-rules and scale functions need
+  `scss-mode`, `<style lang="scss">` or a `.scss` file in web-mode.
+- The default `emmet2-css-modules-object` is now `"styles"` instead of `"css"`,
+  so `.card` gives `className={styles.card}`. Set it to `"css"` to keep 0.2
+  output. `emmet2-class-names-constructor` still defaults to `"clsx"`.
+- CSS abbreviations are found by searching a bundled CSS property and value
+  catalog instead of Emmet's snippet table:
+  - Many short forms now resolve differently. Of Emmet's 226 stock CSS
+    abbreviations, 59 give a different property and 9 give no choice. For
+    example, `fs` is `font-size` (was `font-style`), `bdr` and `rs` are
+    `border-radius` (were `border-right` and `resize`), `f` is `float` (was
+    `font`), `fd` is `flex-direction` (was `font-display`), `ga` is `gap` (was
+    `grid-area`), `ws` is `white-space` (was `word-spacing`), `wm` is
+    `width: max-content;` (was `writing-mode`), `ap` is `animation: paused;`
+    (was `appearance: none;`) and `b-n` is `border: none;` (was
+    `bottom: none;`). `gg`, `grg`, `gcg`, `pgba`, `pgbb` and `ffv` give no
+    choice. Most old readings remain completion choices, and full property
+    names always work.
+  - Emmet's preset values are gone: `us` gives `user-select: ;` (was
+    `user-select: none;`), `zom` gives `zoom: ;` (was `zoom: 1;`) and `bgi`
+    gives `background-image: ;` (was `background-image: url();`). Type the
+    value as part of the query instead, as in `usn`, `zom1` or `bgi[url()]`.
+  - Value presets are gone too, and their old abbreviations now mean something
+    else: `lg` gives `list-style: georgian;`, `cr` gives `clear: right;` and
+    `qen` gives `quotes: none;`. Use combined property/value queries instead:
+    `bgilg` gives `background-image: linear-gradient();` and `crgb` gives
+    `color: rgb();`.
   - Unknown property, at-rule and pseudo names, value words and units offer no
-    choice instead of expanding literally: `ff-inter` and `w10zz` give nothing,
-    while `ff[Inter]` still gives `font-family: Inter;`.
+    choice instead of expanding literally: `ff-inter` and `w10zz` give nothing.
+    Write a project value in brackets, as in `ff[Inter]`.
   - Comma-separated value presets such as font stacks are not offered;
     `font-family` offers generic families such as `sans-serif` and `monospace`.
-  - Some short forms rank differently: `fs` prefers `font-size` and `bdr`
-    prefers `border-radius`. Other readings remain completion choices.
-- Pseudo completion inserts names and editable function arguments, without a
-  trailing space, rule body or `content` declaration. CSS and SCSS preserve
-  authored selector prefixes and never add an implicit `&`.
-- JSX class names use `styles` for CSS Modules and `clsx` to join multiple
-  classes by default. Set `emmet2-css-modules-object` and
-  `emmet2-class-names-constructor` to match your project's imports.
+- Pseudo completion inserts only the selector: `:fu` gives `:focus` instead of
+  `&:focus { }`. No `&` and no rule braces are added; type them yourself.
+  `:is()` and other functions keep comma-separated lists, as in
+  `:is(:focus, :hover)`, while `:not()` still becomes chained calls.
+- `allu` and `all[unset]` give the real `all: unset;` instead of four
+  `top`/`right`/`bottom`/`left` declarations; other values, as in `all8`, keep
+  the four-side alias.
 - Scale and rhythm values such as `p(1)` and `fz(1)` are opt-in through
   `emmet2-css-scale-functions`, and apply only to SCSS.
-- The Deno-era functions `emmet2-expand-css`, `emmet2-expand-markup`,
-  `emmet2-expand-css-in-js` and the `emmet2-detect-*` helpers are removed.
 
 ### Added
 
-- Completion offers the expansion and up to ten ranked CSS choices. Queries
-  combine properties and keywords (`tac`), numeric suffixes (`ins32`), custom
-  properties (`w--gap`) and Sass variables (`m$gutter`). Value search includes
-  keywords inherited from a property's value types.
-- Full previews with `corfu-popupinfo-mode`, HTML and JSX editable fields and
-  mirrors with yasnippet, and one undo that restores the abbreviation. An installed
-  yasnippet is enabled when fields are first needed; no separate hook is required.
-- Empty parentheses and quoted CSS values take the cursor, as in `w[calc()]`.
-- Automatic markup completion recognizes distinctive abbreviations, known
-  elements with a pseudo-class such as `button:hv`, and standalone tags such as `div`.
-- CSS support covers every `css-base-mode` descendant, including `css-ts-mode`
-  and `less-css-mode`. Manual and automatic completion share position rules
-  and candidates; existing property values stay with language completion.
-- Selector lists, attributes and combinators are preserved during pseudo
-  completion. Rows show the pseudo chain; insertion retains the full selector.
-- Public [library and host APIs](API.md) for shared CSS data, matching and
-  expansion. Hosts such as scss2-mode can supply context, replacement bounds,
-  indentation and revisions through `emmet2-context-provider`, and use
-  `emmet2-expand-analysis` for synchronous expansion.
-- Enclosing at-rules select descriptor names and values through the same CSS
-  data, search and expansion paths as ordinary properties.
+- Abbreviations appear as completion choices while you type, with full
+  previews through `corfu-popupinfo-mode` and one undo that restores the
+  abbreviation.
+- CSS completion offers up to ten ranked choices. Property names are found by
+  initials and word fragments (`bgc`, `ins32`), and a query can combine a
+  property and a keyword (`tac`). Value search includes keywords inherited
+  from a property's value types.
 - Property values complete fuzzily with documentation, and accepting a function
-  places point inside its parentheses. In CSS Base modes this replaces
-  css-mode's own value list for known properties.
+  places point inside its parentheses. In built-in CSS modes such as
+  `css-mode`, this replaces css-mode's own value list for known properties.
+- Inside rules such as `@font-face`, abbreviations offer that rule's
+  descriptors and their values.
+- CSS support covers every `css-base-mode` descendant, including `css-ts-mode`
+  and `less-css-mode`.
+- In CSS, a known element followed by a pseudo, as in `button:hv`, completes as
+  a nested selector. Selector lists, attributes and combinators are preserved.
+- Automatic markup completion recognizes distinctive abbreviations and
+  standalone tags such as `div` alone on a line.
+- HTML and JSX fields become yasnippet fields with TAB navigation and mirrors
+  when yasnippet is installed; it is enabled when fields are first needed.
+- With Corfu, Emmet choices stay plain text next to icon margins such as
+  kind-icon or nerd-icons-corfu, and a sole Emmet choice stays in the popup
+  whatever `corfu-on-exact-match` is.
 - `emmet2-css-in-js-attributes` and `emmet2-css-in-js-functions` add style-object
   hosts such as `sx={{...}}` or `css({...})`.
 - A leading `_` keeps an abbreviation's JSX classes as a string, as in `_.a.b`
   for `className="a b"`. `emmet2-jsx-class-style` set to `plain` does this for
   a whole project.
+- Public [library and host APIs](API.md) for CSS data, matching and expansion.
+  Other major modes, such as scss2-mode, can supply their own syntax context
+  through `emmet2-context-provider`.
 
-### Fixes included during development
+### Changed
 
-- Insert CSS without yasnippet fields, so typed or completed values are not
-  highlighted and TAB keeps your own binding. Point starts in the first value,
-  as in `d` (before `;`). HTML and JSX keep yasnippet fields and mirrors.
-- Show Emmet choices in Corfu whatever `corfu-on-exact-match` is, including
-  when auto-paired quotes follow point as in `a[href="│"]`. The variable is not
-  changed, so other completion sources keep your setting.
-- Keep Emmet choice labels visible with Corfu icon margin formatters such as
-  kind-icon or nerd-icons-corfu. Emmet and value choices declare no completion
-  kind and stay plain text.
-- Keep numeric CSS properties such as `order`, `column-count`, Grid line numbers
-  and SVG opacity unitless in direct expansion, completion and CSS-in-JS.
-- Keep full CSS property names such as `clip` consistent between direct
-  expansion and the first completion choice, including obsolete properties.
-- Preserve CSS-in-JS raw values with leading zeros as strings, avoiding octal
-  interpretation and JavaScript syntax errors.
-- Preserve selector commas and quoted attribute colons instead of treating
-  them as declaration separators or pseudo names.
-- Reject stale completion candidates and insertion snapshots before editing.
-  Roll back source edits if on-demand yasnippet activation hooks fail or
-  invalidate the abbreviation.
-- Expand CSS-wide keywords of the real `all` property: `allu` or `all[unset]`
-  gives `all: unset;`. Other values, as in `all8`, keep the four-side alias.
-- Keep 4- and 8-digit hex colors such as `#ffffff80` instead of truncating them
-  to six digits.
-- Apply a trailing `!` of `posa` or `posf` to both `position` and `z-index`.
+- Markup puts point in the first empty attribute: `a.link` starts in `href`
+  instead of the element content.
+- An empty JSX class, as in `.`, `div.` or `Component./`, gives an editable
+  CSS Modules key, `className={styles["│"]}`, instead of `className={│}`.
 
-### Internal organization
+### Fixed
 
-- Separate CSS, Web and JSX host adapters from the pure HTML/JSX and CSS
-  expansion pipelines. Completion, previews and insertion share canonical results.
-- Share one authored CSS override catalog across search and expansion. Remove
-  the unused stylesheet value-parser mode and empty-declaration intermediate.
-- Remove the development-only `:selector-block` option together with automatic
-  pseudo-element rule bodies. Hosts no longer need rule-body permission checks.
-- Remove the workarounds that relied on private yasnippet symbols. A field that
-  ends at the very end of a buffer gets yasnippet's usual trailing newline.
-
-See [Upgrading from 0.2](README.md#upgrading-from-02) for the configuration checklist.
+- Numeric properties stay unitless: `order1` gives `order: 1;`, and
+  `column-count2`, `grid-row-start2` and `fill-opacity.5` expand to those
+  properties instead of being split, as in `column: count 2px;`.
+- 4- and 8-digit hex colors are kept: `c#ffffff80` gives `color: #ffffff80;`
+  instead of `color: #fff;`.
+- A trailing `!` on `posa` or `posf` makes both `position` and `z-index`
+  `!important`, not only `z-index`.
+- CSS-in-JS raw values with leading zeros stay strings: `p[010px]` gives
+  `padding: "010px"` instead of `padding: 010`.
+- Hyphenated JSX classes use bracket access: `.btn-primary` gives
+  `styles["btn-primary"]` instead of the invalid `css.btn-primary`.
+- React JSX writes `htmlFor` for `for`.

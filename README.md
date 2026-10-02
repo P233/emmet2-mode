@@ -1,70 +1,116 @@
 # emmet2-mode
 
-emmet2-mode offers Emmet abbreviations as completion choices for HTML, JSX,
-CSS and SCSS in Emacs. Expansion runs locally in Emacs Lisp.
-JSX classes use CSS Modules and a project class-joining function, or plain
-strings with a leading `_`; see [project settings](#jsx-and-project-settings).
+emmet2-mode brings [Emmet](https://emmet.io/) abbreviations to Emacs as
+completion choices for HTML, JSX, CSS, SCSS and CSS-in-JS. Type `ul>li*3`,
+`.card.active` or `m10,p.5`, pick a choice from the completion popup, and the
+abbreviation becomes code.
+
+> **emmet2-mode 2.0 is a native rewrite.** Everything now runs inside Emacs as
+> Emacs Lisp: Deno, deno-bridge, websocket and the Emmet npm package are no
+> longer needed. Abbreviations appear as completion choices with previews
+> instead of expanding on `C-j`. Coming from 0.2? See
+> [Upgrading from 0.2](#upgrading-from-02).
+
+## Features
+
+- Emmet abbreviations as completion choices, with full previews and one-step
+  undo.
+- Fast CSS search such as `bgc`, `tac` and `ins32`; see
+  [CSS search and aliases](#css-search-and-aliases).
+- Fuzzy CSS value completion with documentation; see
+  [CSS value completion](#css-value-completion).
+- JSX output for CSS Modules, plain classes or Solid; see
+  [JSX and project settings](#jsx-and-project-settings).
+- Styles in `<style>`, `style=""`, JSX `style={{...}}` and style objects such
+  as `StyleSheet.create({...})`.
+- Pseudo-classes, pseudo-elements and at-rules, with Sass templates in SCSS.
+- HTML and JSX attributes become yasnippet fields you visit with **TAB**; CSS
+  selects nothing and leaves TAB to you; see [Cursor and fields](#cursor-and-fields).
+
+## Better with scss2-mode
+
+For CSS and SCSS files, use emmet2-mode together with
+**[scss2-mode](https://github.com/P233/scss2-mode)**, a native major mode
+package that provides `scss2-mode` and `css2-mode`. It is built on
+**[tree-sitter-scss](https://github.com/P233/tree-sitter-scss)**, a new parser
+written for SCSS and CSS that parses everyday Sass, such as maps, `!default`
+and `@use ... as`, without errors.
+
+The two packages share one completion popup:
+
+- **The syntax tree decides where abbreviations expand.** `m10` expands at the
+  start of a declaration, never inside a value or selector, and descriptors
+  inside rules such as `@font-face` come from the enclosing at-rule.
+- **scss2-mode completes everything else:** property values, CSS functions,
+  pseudo-selectors, media queries, custom properties in `var()`, import paths,
+  and Sass variables, functions, mixins and module members.
+- **Structural editing:** kill, copy, duplicate or clear a selector branch,
+  declaration, value, argument or block. **TAB** leaves a value past its `;`.
+
+scss2-mode bundles its parser and compiles it on first use, so there is no
+grammar to install, and it installs emmet2-mode as a dependency. It is in
+active development and currently installs from a locally built package
+archive; see the [scss2-mode README](https://github.com/P233/scss2-mode) for
+setup.
+
+emmet2-mode also works on its own in the built-in CSS modes listed below.
 
 ## Supported modes
 
-- **CSS and SCSS:** `scss2-mode`, `css2-mode`, `css-mode`, `scss-mode`,
-  `css-ts-mode` and `less-css-mode`.
-- **HTML and JSX:** `web-mode` and `tsx-ts-mode`.
-- **JavaScript and TypeScript:** `js-mode`, `js-ts-mode` and `typescript-ts-mode`.
-
-For CSS/SCSS, the optional development packages scss2-mode and css2-mode combine
-abbreviation completion with context-aware suggestions. They currently install
-from a locally built archive; see the
-[scss2-mode documentation](https://github.com/P233/scss2-mode) for setup and usage.
+- **CSS and SCSS:** `scss2-mode` and `css2-mode` (recommended), `css-mode`,
+  `scss-mode`, `css-ts-mode` and `less-css-mode`.
+- **HTML and JSX:** `web-mode` (a separate package) and `tsx-ts-mode`. In the
+  default HTML mode, `mhtml-mode`, only manual completion works, and it treats
+  everything as markup, including `<style>` blocks; use web-mode for CSS in
+  HTML.
+- **JavaScript and TypeScript:** `js-mode` and `js-ts-mode` for JSX and style
+  objects, and `typescript-ts-mode` for style objects. Use `tsx-ts-mode` for
+  TypeScript JSX.
 
 ## Installation
 
-Requires **Emacs 30+**. Add the package directory to your Emacs configuration
-and enable emmet2-mode in the modes you use:
+emmet2-mode requires **Emacs 30 or later** and has no external runtime. With
+straight.el and use-package:
+
+```elisp
+(use-package emmet2-mode
+  :straight (emmet2-mode :type git :host github :repo "P233/emmet2-mode"
+                         :files (:defaults "data"))
+  :hook ((web-mode css-base-mode js-base-mode typescript-ts-base-mode) . emmet2-mode))
+```
+
+Keep the bundled `data/` directory alongside the Lisp files; other package
+managers need the same `:files (:defaults "data")` recipe. From a plain
+checkout:
 
 ```elisp
 (add-to-list 'load-path "/path/to/emmet2-mode")
 (autoload 'emmet2-mode "emmet2-mode" nil t)
+(autoload 'emmet2-complete "emmet2-capf" nil t)
+(autoload 'emmet2-expand-at-point "emmet2-capf" nil t)
 (dolist (hook '(web-mode-hook css-base-mode-hook
                 js-base-mode-hook typescript-ts-base-mode-hook))
   (add-hook hook #'emmet2-mode))
 ```
 
-Keep the bundled `data/` directory alongside the Lisp files. Package-manager
-recipes should include `:files (:defaults "data")`. You can also enable emmet2-mode
-in an open buffer with `M-x emmet2-mode`.
+You can also enable it in an open buffer with `M-x emmet2-mode`.
 
-For straight.el with use-package, the equivalent package recipe is:
+To check the installation, open a `.css` file, type `.a { m10 }`, put point
+after `m10` and run `M-x emmet2-expand-at-point`; it becomes
+`.a { margin: 10px; }`.
 
-```elisp
-(use-package emmet2-mode
-  :straight (emmet2-mode :type git :host github :repo "P233/emmet2-mode"
-                        :files (:defaults "data"))
-  :hook ((web-mode css-base-mode js-base-mode typescript-ts-base-mode) . emmet2-mode))
-```
-
-JavaScript/JSX contexts require Emacs built with tree-sitter and an installed
-matching grammar: `javascript` for `js-mode`, `js-ts-mode` and Web script parts;
-`typescript` for `typescript-ts-mode` and typed Web script parts; `tsx` for
-`tsx-ts-mode` and Web JSX files.
-Automatic completion waits for a grammar; a manual request reports a missing
-one. HTML and built-in CSS/SCSS analysis need no additional grammar. The exact
-tested grammar revisions are in [test/dependencies.json](test/dependencies.json).
-The default HTML mode, `mhtml-mode`, supports manual Emmet completion only.
+JavaScript, TypeScript and JSX buffers need Emacs built with tree-sitter and
+the matching grammar: `javascript` for `js-mode`, `js-ts-mode` and web-mode
+script parts, `typescript` for `typescript-ts-mode`, and `tsx` for `tsx-ts-mode`
+and web-mode JSX files. HTML and CSS need no grammar. The tested grammar
+revisions are listed in [test/dependencies.json](test/dependencies.json).
 
 ### Corfu and yasnippet
 
-Use **[Corfu](https://github.com/minad/corfu)** for automatic completion popups
-and full previews, and **[yasnippet](https://github.com/joaotavora/yasnippet)**
-for **TAB** navigation and linked fields in HTML and JSX. Both are optional
-packages that you install and configure in your Emacs setup.
-
-Emmet2 automatically adapts its Corfu rows to show expansion labels in the main
-column, honoring your width limit. Rows stay plain text, without icons from
-packages such as kind-icon or nerd-icons-corfu. Each popup stays at its initial
-cursor position while typing. Other completion providers keep their normal display.
-
-The following example uses straight.el and use-package:
+Use **[Corfu](https://github.com/minad/corfu)**, a completion frontend that shows
+choices in a popup, for automatic completion and full previews, and **[yasnippet](https://github.com/joaotavora/yasnippet)**
+for **TAB** navigation and linked fields in HTML and JSX. Both are optional;
+install and configure them as usual:
 
 ```elisp
 (use-package corfu
@@ -81,34 +127,26 @@ The following example uses straight.el and use-package:
   :defer t)
 ```
 
-Corfu normally waits for three characters before point. For one- or two-character
-abbreviations such as `d`, `ta` and `@f`, request completion manually or set
-`corfu-auto-prefix` to `1`; emmet2-mode leaves that threshold to your configuration.
-Emmet choices need no `corfu-on-exact-match` setting. Each choice's text is the
-abbreviation itself, so Corfu could treat the unchanged input as already
-complete, as when auto-paired quotes follow point in `a[href="│"]`. emmet2-mode
-never lets Corfu treat Emmet input as complete, so Emmet choices behave as if
-`corfu-on-exact-match` were `show`, whatever your value and completion styles.
-The variable is not changed, so other completion sources keep your setting.
+emmet2-mode needs no other Corfu settings, changes none of yours, and works
+with icon margins such as kind-icon and nerd-icons-corfu.
 
-Corfu is the tested frontend. Other CAPF frontends may merge choices with identical
-text or discard the properties identifying alternatives; full alternative selection
-and preview behavior has not been verified with those frontends.
+Corfu waits for three characters by default. For short abbreviations such as
+`d`, `ta` and `@f`, request completion manually or lower `corfu-auto-prefix`.
+Corfu is the tested frontend; other frontends may merge choices with identical
+text, so selecting alternatives and previews may not work there.
 
-### Optional Corfu settings
-
-These are **personal examples, not emmet2-mode defaults**; they also affect
-other completion providers in the same buffers.
+These **optional personal settings** also affect other completion sources in
+the same buffers:
 
 | Setting | Example | Effect |
 | --- | --- | --- |
 | `corfu-auto-delay` | `0.08` | Delay before automatic candidates. |
-| `corfu-popupinfo-delay` | `'(0 . 0)` | Immediate initial and subsequent previews. |
+| `corfu-popupinfo-delay` | `'(0 . 0)` | Immediate previews. |
 | `corfu-auto-prefix` | `1` | Offer candidates after one character. |
 | `corfu-max-width` | `32` | Limit menu width. |
-| `corfu-count` | `10` | Visible rows; does not change candidate count. |
+| `corfu-count` | `15` | Visible rows; does not change the number of choices. |
 
-## Use
+## Usage
 
 With [automatic completion](#corfu-and-yasnippet) enabled in your frontend:
 
@@ -117,26 +155,14 @@ With [automatic completion](#corfu-and-yasnippet) enabled in your frontend:
 3. Accept a choice to replace the abbreviation; undo once to restore it.
 
 You can keep point anywhere inside the abbreviation. With Corfu, a sole Emmet
-choice stays in the popup until you accept it; other frontends decide whether a
-sole match is accepted automatically.
+choice stays in the popup until you accept it, even when auto-paired quotes
+follow point as in `a[href="│"]`; other frontends decide whether a sole match is
+accepted automatically.
 
-CSS property values also match fuzzily, with documentation: `display: if`
-offers `inline-flex`. Accepting a function such as `calc()` places point inside
-its parentheses; `css2-mode` / `scss2-mode` use TAB to leave the parentheses,
-then skip the declaration's semicolon. Value completion creates no snippet fields.
-
-In CSS Base modes such as `css-mode`, `scss-mode` and `less-css-mode`, this value
-completion runs before css-mode's own `css-completion-at-point` and replaces its
-value list for known properties, which matches only by prefix and shows no
-documentation. When no value matches, other completion sources such as Eglot
-still run. Other positions are unaffected. To keep css-mode's value
-completion instead:
-
-```elisp
-(add-hook 'emmet2-mode-hook
-          (lambda ()
-            (remove-hook 'completion-at-point-functions #'emmet2-css-value-capf t)))
-```
+Without Corfu, the default completion UI shows only "Complete, but not
+unique" on the first request; request again to list the choices in
+*Completions*, or use `M-x emmet2-expand-at-point` to insert the first choice
+directly.
 
 | Context | Abbreviation | Result |
 | --- | --- | --- |
@@ -164,6 +190,24 @@ completion instead:
 In supported modes, emmet2-mode skips ordinary comments, strings and unrelated
 JavaScript.
 
+### CSS value completion
+
+After a property's colon, values match fuzzily and show documentation:
+`display: if` offers `inline-flex`. Accepting a function such as `calc()` places
+point inside its parentheses; in `scss2-mode` and `css2-mode`, **TAB** then
+leaves the value past its semicolon.
+
+In built-in modes such as `css-mode`, `scss-mode` and `less-css-mode`, this
+replaces css-mode's own value list for known properties, which matches only by
+prefix and shows no documentation. When no value matches, other completion
+sources such as Eglot still run. To keep css-mode's value completion instead:
+
+```elisp
+(add-hook 'emmet2-mode-hook
+          (lambda ()
+            (remove-hook 'completion-at-point-functions #'emmet2-css-value-capf t)))
+```
+
 ### Choosing an expansion
 
 CSS completion offers up to ten choices. For example, `ta` offers `text-align: ;`,
@@ -174,9 +218,10 @@ Corfu's default keys. If `corfu-preselect` is `prompt`, select a candidate first
 For `ovh,ta` or `ovh+ta`, the menu shows choices for the active property;
 the full preview and insertion include `overflow: hidden;` too. Accepting after
 a trailing `,` or `+` consumes that separator. In a JSX style object, a trailing
-comma stays as an object separator.
+comma ends the member, so `m10,` offers nothing; join properties with `+` or
+keep typing, as in `m10,p.5`.
 
-### Editable fields
+### Cursor and fields
 
 After accepting `a.link` from completion, point starts in `href`. With yasnippet
 installed, **TAB** visits subsequent HTML and JSX fields and exits at the end,
@@ -190,14 +235,14 @@ highlighted, and **TAB** keeps your own binding.
 
 ### Manual completion
 
-To request choices manually, run **`M-x emmet2-complete`**. In other major modes,
-this command also offers plain markup, including in `text-mode` and `mhtml-mode`.
-It works without enabling the minor mode first.
+To request choices manually, run **`M-x emmet2-complete`**. In major modes
+without built-in support, such as `text-mode` and `mhtml-mode`, it offers plain
+markup. It works without enabling the minor mode first.
 
 To expand immediately without a menu, run **`M-x emmet2-expand-at-point`**. It
 uses the same contexts as `emmet2-complete` and inserts the first choice, with
 the same fields and one-step undo. For CSS, the first choice is the top-ranked
-reading, so `fs` always gives `font-size`.
+interpretation, so `fs` always gives `font-size`.
 
 emmet2-mode binds no keys by default. You can bind either command; these
 bindings apply only while the minor mode is enabled:
@@ -255,11 +300,11 @@ Use `b` for `bottom`, `ct` for `content`, `fz` for `font-size` and `bxz` for `bo
 A bare property leaves an editable value: `d` gives `display: │;`.
 `bgilg` gives `background-image: linear-gradient(│);` and `crgb` gives `color: rgb(│);`.
 For ambiguous forms, `fs` prefers `font-size` and `bdr` prefers `border-radius`;
-select another choice for a different reading. Full names retain their meaning,
+select another choice for a different interpretation. Full names retain their meaning,
 including obsolete properties such as `clip`, which are omitted from fuzzy search.
 
 A colon starts a pseudo-class, so use `dn` or `dN` rather than `d:n`.
-`display:fl` stays with language completion; `button:hv` can start a nested selector.
+`display:fl` stays with the major mode's own completion; `button:hv` can start a nested selector.
 
 ### CSS values
 
@@ -295,7 +340,7 @@ append `!` for `!important`.
 
 SCSS supports property-plus-variable forms such as `m$gutter` and `p$a$b$c`
 (`padding: $a $b $c;`). Completion stays
-available while typing `p$` or `p$-`; bare `$name` uses your language mode's completion.
+available while typing `p$` or `p$-`; bare `$name` uses the major mode's own completion.
 
 A hyphen after an explicit unit means a negative value: `m10px-20px` gives
 `margin: 10px -20px;`. Use `m[10px 20px]` for two positive values.
@@ -449,31 +494,47 @@ and `css({m10})` expands to `css({margin: 10})`; the project must provide
 
 ## Troubleshooting
 
-- No automatic popup: enable the frontend's automatic completion, check its prefix
+- No automatic popup: enable Corfu's automatic completion, check its prefix
   threshold, and try `M-x emmet2-complete` for a diagnostic.
 - No Emmet choice: check the [allowed contexts](#where-to-type-abbreviations).
   Property values offer value completion; comments belong to the language mode.
 - No choice inside a style object: add its attribute or function to
   `emmet2-css-in-js-attributes` or `emmet2-css-in-js-functions`.
-- Missing tree-sitter grammar: install the grammar for the host listed above.
+- Missing tree-sitter grammar: `M-x emmet2-complete` reports it, as in
+  `Missing tree-sitter grammar: javascript`. Install it with
+  `M-x treesit-install-language-grammar`; [Installation](#installation) lists
+  the grammar each mode needs.
 - Missing JSX names: configure and import the CSS Modules object and class helper
   used by your project, or use `_` or `plain` for string classes.
 
-Host integrations and pure expansion interfaces are documented in [API.md](API.md).
+## For package authors
+
+emmet2-mode's CSS data, search and expansion can also be used as a library,
+and other major modes can supply their own syntax context, as scss2-mode does.
+See [API.md](API.md).
 
 ## Upgrading from 0.2
 
-- Remove the Deno, `deno-bridge` and `websocket` configuration, then restart Emacs.
-- Accept choices from automatic completion to expand abbreviations. To keep a
-  direct expansion key, bind `emmet2-expand-at-point` in place of `emmet2-expand`,
-  or bind `emmet2-complete` to request choices.
-- Scale and rhythm values such as `p(1)` are opt-in; set
-  `emmet2-css-scale-functions` to keep them.
+- Emacs 30 or later is required.
+- Remove the Deno, `deno-bridge` and `websocket` configuration, and remove
+  `:after deno-bridge` from the emmet2-mode declaration; otherwise use-package
+  never loads emmet2-mode. Restart Emacs.
 - Replace `:files (:defaults "*.ts" "src" "data")` with `:files (:defaults "data")`.
-- CSS properties now leave an empty value; replace value presets such as
-  `lg` with property-and-value queries such as `bgilg`.
-- Unknown CSS names, values and units no longer expand literally; write a
-  project value in brackets, as in `ff[Inter]`.
+- Abbreviations expand when you accept a completion choice; `C-j` is no longer
+  bound. To keep a direct expansion key, bind `emmet2-expand-at-point` in place
+  of `emmet2-expand`, or bind `emmet2-complete` to request choices.
+- The default CSS Modules object is now `styles` instead of `css`; set
+  `emmet2-css-modules-object` to `"css"` to keep 0.2 output.
+- Syntax follows the major mode: `.css` files in `css-mode` are plain CSS, so
+  Sass at-rules such as `@use` need `scss-mode` or `<style lang="scss">`.
+- Scale and rhythm values such as `p(1)` are opt-in and SCSS-only; set
+  `emmet2-css-scale-functions` to `'(("font-size" . "ms") (t . "rhythm"))`
+  to keep 0.2 output.
+- Pseudo-selectors expand without `&` and rule braces: `:fu` gives `:focus`.
+- Emmet's preset values are gone and some short forms changed meaning, such as
+  `fs` (now `font-size`) and `lg` (now `list-style: georgian;`); use `bgilg`
+  for a linear gradient. Unknown CSS names, values and units no longer expand
+  literally; write a project value in brackets, as in `ff[Inter]`.
 
 See [CHANGELOG.md](CHANGELOG.md) for the full list of changes.
 
