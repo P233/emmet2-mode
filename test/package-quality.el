@@ -6,6 +6,8 @@
 (require 'checkdoc)
 
 (let ((package-lint-main-file (expand-file-name "emmet2-mode.el" emmet2-test-root))
+      ;; Emacs 30 checks docstring verb voice by default and Emacs 31 does not.
+      (checkdoc-verb-check-experimental-flag t)
       (files (directory-files emmet2-test-root t "\\.el\\'"))
       failures)
   (dolist (file files)
