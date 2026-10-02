@@ -3,10 +3,14 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;;; Commentary:
-;; A table owns the current input revision and its lazy expansion choices.
-;; Candidates retain the typed text; properties identify alternative expansions.
-;; Only a finished, current choice may write through the single insert owner.
-;; Affixation supplies display text without changing the completion payload.
+;; Each completion table keeps the analysis of one input revision and expands
+;; its choices when first asked; a bare CSS word is expanded at once, because
+;; it counts as an abbreviation only if it has a choice.  The buffer keeps the
+;; last expansion batch so repeated calls for the same input reuse it.  Every
+;; candidate string is the typed abbreviation and a text property identifies
+;; its expansion; the affixation function supplies the menu text.  Only a
+;; choice accepted with status `finished' on unchanged source is inserted,
+;; through `emmet2-insert'.
 
 ;;; Code:
 (require 'cl-lib)
@@ -18,11 +22,17 @@
 (autoload 'emmet2-preview "emmet2-preview")
 (declare-function emmet2-corfu--enable "emmet2-corfu" ())
 
-(defconst emmet2-capf--limit 10
-  "Most CSS choices built for one input revision; each costs an expansion.")
-
 (defvar emmet2-capf--explicit nil
   "Non-nil when the user explicitly requests completion.")
+
+(defvar-local emmet2-capf--batch nil
+  "Last choice batch, with the analysis and revision it was built for.
+The value is (:revision R :settings S :provider P :analysis A :batch B).  B
+came from `emmet2-expand-choices' for analysis A when
+`emmet2-context-revision' was R.  `emmet2-capf--choices' reuses its results
+but copies its choices, so tables never share candidates.  Each expansion
+replaces the entry, or leaves it nil when the source changed meanwhile;
+changing the major mode discards it.")
 
 (defun emmet2-capf--element-line-p (analysis)
   "Whether ANALYSIS is a known HTML element name alone on its line."
@@ -31,18 +41,18 @@
        (save-excursion (goto-char (plist-get analysis :end)) (skip-chars-forward " \t") (eolp))))
 
 (defun emmet2-capf--confident-p (analysis)
-  "Return t when ANALYSIS has an expansion signal, or nil.
-Return `search' for a bare CSS word, which only its search choices confirm."
+  "Return non-nil when ANALYSIS's abbreviation looks like Emmet input.
+Return `search' for a bare lowercase CSS word, such as ta, which counts only
+if it has a CSS choice.  A bare markup word counts only when it is a known
+element alone on its line; a word ending in a period never counts."
   (let ((abbreviation (plist-get analysis :abbr)) (case-fold-search nil))
     (pcase (plist-get analysis :lang)
-      ;; Words ending a sentence, such as end. or e.g., are prose.  A known
-      ;; element such as div alone on its line is being written as markup.
+      ;; A bare word or sentence end (e.g.) is prose unless an element is alone on its line.
       ('markup (or (not (string-match-p "\\`\\(?:[[:alnum:]_:-]+\\|[[:alnum:]_:.-]*\\.\\)\\'" abbreviation))
                    (emmet2-capf--element-line-p analysis)))
       ((or 'css 'css-in-js)
        (or (string-match-p (rx (or digit upper (in "#!%,(+["))) abbreviation)
-           ;; Keep p$ and p$- live while a Sass variable name is being typed.
-           ;; A bare $name stays with the host's variable completion.
+           ;; Keep p$ and p$- live while a Sass variable is typed; a bare $name is the host's.
            (and (eq (plist-get analysis :syntax) 'scss)
                 (string-match-p "\\`[a-z][-a-z]*\\$-?\\(?:[_[:alpha:]]\\|\\'\\)" abbreviation))
            (and (string-match-p "\\`[a-z][-a-z]*\\'" abbreviation) 'search)
@@ -50,17 +60,17 @@ Return `search' for a bare CSS word, which only its search choices confirm."
                 (string-match-p "\\`\\(?:@[[:alpha:]]\\|[^:]*::?[[:alpha:]]\\)" abbreviation)))))))
 
 (defun emmet2-capf--settings (analysis)
-  "Return the source settings affecting ANALYSIS's result and lifetime."
+  "Return the options that decide ANALYSIS's expansion and its lifetime."
   (list emmet2-mode emmet2-markup-variant emmet2-jsx-class-style emmet2-css-modules-object
         emmet2-class-names-constructor emmet2-css-scale-functions
         (emmet2-insert-render-options analysis)))
 
 (defun emmet2-capf--current-p (analysis snapshot settings automatic &optional analyzed)
-  "Whether ANALYSIS, SNAPSHOT and SETTINGS still describe this input revision.
-Completion may move point from its original position to the candidate end.
-Source checks remain strict; only table queries may advance the revision.
-AUTOMATIC repeats the session's kind of context analysis, unless ANALYZED
-says ANALYSIS already matched at the current `emmet2-context-revision'."
+  "Whether ANALYSIS, SNAPSHOT and SETTINGS still match the buffer.
+Point may be at the snapshot's point or at the abbreviation end, where
+completion leaves it.  AUTOMATIC is the kind of context analysis to repeat;
+non-nil ANALYZED skips the repeat because ANALYSIS already matched at the
+current `emmet2-context-revision'."
   (and (not buffer-read-only)
        (eq (current-buffer) (plist-get snapshot :buffer))
        (<= (point-min) (plist-get snapshot :point) (point-max))
@@ -92,13 +102,42 @@ the source buffer's `tab-width', so preview buffers need no source settings."
        (make-string column ?\s)))
    text t t))
 
-(defun emmet2-capf--choices (analysis &optional previous)
-  "Prepare ANALYSIS's language-owned results for the completion frontend.
-PREVIOUS is a batch from the same verified context and render settings.
-The language owns choice construction, fragment labels and any result reuse;
-the frontend only prepares preview layout and menu highlighting."
-  (let* ((options (emmet2-insert-render-options analysis))
-         (batch (emmet2-expand-choices analysis emmet2-capf--limit previous)))
+(defun emmet2-capf--choices (analysis)
+  "Return ANALYSIS's choice batch with preview text and menu rows added.
+Reuse `emmet2-capf--batch' when it was built for the same analysis and
+`emmet2-context-revision'.  Otherwise expand again, passing the old batch to
+`emmet2-expand-choices' when the provider, settings and context match.  Each
+call copies the choices, so tables never share candidates, and adds :text,
+the result moved to column zero for previews, and :display, the highlighted
+menu row."
+  (let* ((revision (emmet2-context-revision))
+         (settings (emmet2-capf--settings analysis))
+         (provider emmet2-context-provider)
+         (previous emmet2-capf--batch)
+         (compatible (and previous
+                          (eq provider (plist-get previous :provider))
+                          (equal settings (plist-get previous :settings))
+                          (emmet2-capf--same-context-p (plist-get previous :analysis) analysis)))
+         (batch
+          (if (and compatible
+                   (equal revision (plist-get previous :revision))
+                   (equal analysis (plist-get previous :analysis)))
+              (plist-get previous :batch)
+            ;; A failed or interrupted expansion must not leave reusable results.
+            (setq emmet2-capf--batch nil)
+            (let ((result (emmet2-expand-choices
+                           analysis emmet2-css-choice-limit
+                           (and compatible (plist-get previous :batch)))))
+              (when (and (eq provider emmet2-context-provider)
+                         (equal revision (emmet2-context-revision))
+                         (equal settings (emmet2-capf--settings analysis)))
+                (setq emmet2-capf--batch
+                      (list :revision revision :settings settings :provider provider
+                            :analysis analysis :batch result))
+                result))))
+         (options (emmet2-insert-render-options analysis))
+         (batch (plist-put (copy-sequence batch) :choices
+                           (mapcar #'copy-sequence (plist-get batch :choices)))))
     (dolist (entry (plist-get batch :choices))
       (plist-put entry :text (emmet2-capf--preview-text
                               (plist-get (plist-get entry :result) :text)
@@ -110,8 +149,8 @@ the frontend only prepares preview layout and menu highlighting."
   "Return TEXT as one menu row, highlighting ABBREVIATION.
 Normalize line breaks and surrounding indentation.  Use the same ordered
 matcher as candidate search; aliases without a literal correspondence remain
-unhighlighted.  Never modify the supplied text; the full result still owns
-preview, insertion and field positions."
+unhighlighted.  Return a fresh string; preview and insertion still use the
+full result."
   (let* ((text (copy-sequence
                 (replace-regexp-in-string "[ \t]*\n[ \t\n]*" " " text)))
          (needle (replace-regexp-in-string "[^[:alnum:]_-]" "" abbreviation)))
@@ -120,15 +159,22 @@ preview, insertion and field positions."
     text))
 
 (defmacro emmet2-capf--guard (quiet cleanup &rest body)
-  "Run BODY at an editor boundary, invalidating through CLEANUP on failure.
-QUIET automatic requests return no match.  Explicit requests report the cause.
-Cancellation propagates, and `debug-on-error' retains the original debugger."
+  "Run BODY and evaluate CLEANUP if BODY fails or quits.
+When QUIET is non-nil, errors make the form return nil; otherwise they
+signal `user-error' with the cause.  Quitting propagates, and
+`debug-on-error' still enters the debugger.  New input via `throw-on-input'
+propagates without CLEANUP, so an interrupted query can be retried."
   (declare (indent 2) (debug (form form body)))
-  (let ((completed (make-symbol "completed")) (error-data (make-symbol "error-data")))
-    `(let (,completed)
+  (let ((completed (make-symbol "completed")) (error-data (make-symbol "error-data"))
+        (input-tag (make-symbol "input-tag")) (result (make-symbol "result")))
+    `(let (,completed (,input-tag (or throw-on-input (make-symbol "no-input"))))
        (unwind-protect
            (condition-case-unless-debug ,error-data
-               (prog1 (progn ,@body) (setq ,completed t))
+               (let ((,result (catch ,input-tag
+                                (prog1 (progn ,@body) (setq ,completed t)))))
+                 (if ,completed ,result
+                   (setq ,completed t)
+                   (throw ,input-tag ,result)))
              (error (unless ,quiet
                       (if (eq (car ,error-data) 'user-error)
                           (signal 'user-error (cdr ,error-data))
@@ -137,9 +183,11 @@ Cancellation propagates, and `debug-on-error' retains the original debugger."
 
 (defun emmet2-capf--admit (explicit)
   "Return (AUTOMATIC ANALYSIS CONFIDENCE) for the abbreviation at point, or nil.
-EXPLICIT requests keep their host's explicit contract, except in built-in CSS,
-where every entry uses the automatic rules and offers the same choices.
-CONFIDENCE is `search' when only CSS choices can confirm the abbreviation."
+EXPLICIT non-nil analyzes context as an explicit request, except in built-in
+CSS, which always uses the automatic rules.  AUTOMATIC is the kind of
+analysis used.  CONFIDENCE is t after an explicit analysis and otherwise the
+value of `emmet2-capf--confident-p', where `search' means the abbreviation
+counts only if it has a CSS choice."
   (let ((automatic (or (not explicit)
                        (and (derived-mode-p 'css-base-mode) (not emmet2-context-provider)))))
     (when-let* ((analysis (and (not buffer-read-only) (emmet2-context-analyze automatic)))
@@ -148,17 +196,22 @@ CONFIDENCE is `search' when only CSS choices can confirm the abbreviation."
 
 ;;;###autoload
 (defun emmet2-capf ()
-  "Offer expansion choices and update them while typing in the same context.
-Expansion is lazy so a frontend can apply its prefix threshold first, except
-for a bare CSS word, whose first batch both confirms it and answers the table.
-Candidate properties distinguish choices with identical source text, as with
-overloaded language-server completions.  Frontends which discard properties
-can still accept the first expansion."
+  "Return completion data for the Emmet abbreviation at point, or nil.
+Use this in `completion-at-point-functions'; `emmet2-mode' adds it there.
+Choices are expanded when a frontend first asks for them, so it can apply
+its prefix threshold first, but a bare CSS word such as ta is expanded at
+once and offered only when it has a choice.  Choices follow typing in the
+same context.  Every candidate string is the abbreviation itself and a text
+property tells alternative expansions apart, so frontends that drop text
+properties still accept the first choice.  Errors make automatic requests
+offer nothing; explicit requests and acceptance signal `user-error'.
+Offering choices also installs the Corfu advice of emmet2-corfu.el, which
+affects only Emmet candidates."
   (emmet2-capf--guard (not emmet2-capf--explicit) nil
     (pcase-let ((quiet (not emmet2-capf--explicit))
                 (`(,automatic ,analysis ,confidence) (emmet2-capf--admit emmet2-capf--explicit)))
       (when-let* ((_ analysis)
-                  ;; A bare word needs CSS choices; that batch then answers the first query.
+                  ;; A bare CSS word counts only if it has choices; reuse that batch for the first query.
                   (first (if (eq confidence 'search)
                              (let ((batch (emmet2-capf--choices analysis)))
                                (and (plist-get batch :choices) batch))
@@ -166,30 +219,30 @@ can still accept the first expansion."
         (require 'emmet2-corfu)
         (emmet2-corfu--enable)
         (let* ((provider emmet2-context-provider)
-               (snapshot (emmet2-insert-snapshot analysis))
                (settings (emmet2-capf--settings analysis))
-               ;; Frontends query a table many times per keystroke.  Classify the
-               ;; host again only when an input of that analysis has changed.
-               (validated (emmet2-context-revision))
-               (abbreviation (plist-get analysis :abbr))
-               (choices (if (eq first 'unexpanded) first (plist-get first :choices)))
-               (cache (unless (eq first 'unexpanded) first))
-               (live t))
+               ;; Publish a whole revision at once.  An interrupted refresh keeps
+               ;; the preceding revision; interrupted expansion stays unexpanded.
+               ;; STATE is (ANALYSIS SNAPSHOT VALIDATED CHOICES), or nil if invalid.
+               (state (list analysis (emmet2-insert-snapshot analysis)
+                            (emmet2-context-revision)
+                            (if (eq first 'unexpanded) first (plist-get first :choices)))))
           (cl-labels
-              ((invalidate () (setq live nil choices nil cache nil))
+              ((invalidate () (setq state nil))
+               (abbreviation () (plist-get (car state) :abbr))
                (current-p ()
-                 (when (and live (not (eq provider emmet2-context-provider)))
-                   (setq live nil choices nil cache nil))
-                 (and live
+                 (when (and state (not (eq provider emmet2-context-provider)))
+                   (invalidate))
+                 (and state
                       (let ((revision (emmet2-context-revision)))
-                        (when (emmet2-capf--current-p analysis snapshot settings automatic
-                                                      (equal revision validated))
-                          (setq validated revision)
+                        (when (emmet2-capf--current-p (car state) (cadr state) settings automatic
+                                                      (equal revision (nth 2 state)))
+                          (setcar (nthcdr 2 state) revision)
                           t))))
                (refresh ()
                  (or (current-p)
-                     (when live
-                       (let ((next (and (eq (current-buffer) (plist-get snapshot :buffer))
+                     (when state
+                       (let* ((analysis (car state)) (snapshot (cadr state))
+                              (next (and (eq (current-buffer) (plist-get snapshot :buffer))
                                         (eq major-mode (plist-get snapshot :mode))
                                         (not buffer-read-only)
                                         (emmet2-context-analyze automatic))))
@@ -197,25 +250,23 @@ can still accept the first expansion."
                                   (equal settings (emmet2-capf--settings next))
                                   (<= (plist-get next :beg) (point) (plist-get next :end))
                                   (not (= (buffer-chars-modified-tick) (plist-get snapshot :tick)))
-                                  (not (equal abbreviation (plist-get next :abbr)))
+                                  (not (equal (abbreviation) (plist-get next :abbr)))
                                   (or (not automatic) (emmet2-capf--confident-p next)))
                              (progn
-                               (setq analysis next snapshot (emmet2-insert-snapshot next)
-                                     abbreviation (plist-get next :abbr) choices 'unexpanded
-                                     validated (emmet2-context-revision))
+                               (setq state (list next (emmet2-insert-snapshot next)
+                                                 (emmet2-context-revision) 'unexpanded))
                                t)
-                           (setq live nil cache nil choices nil))))))
+                           (invalidate))))))
                (expanded ()
                  (when (current-p)
-                   (when (eq choices 'unexpanded)
-                     ;; Failure belongs to this input revision.  Never retry it on
-                     ;; another metadata or display query.
-                     (setq choices nil)
-                     (let ((next (emmet2-capf--choices analysis cache)))
+                   (when (eq (nth 3 state) 'unexpanded)
+                     ;; Publish only complete choices.  The guard still invalidates
+                     ;; real failures, but new input leaves this query retryable.
+                     (let ((next (emmet2-capf--choices (car state))))
                        (if (current-p)
-                           (setq cache next choices (plist-get next :choices))
-                         (setq live nil cache nil))))
-                   (and live choices)))
+                           (setcar (nthcdr 3 state) (plist-get next :choices))
+                         (invalidate))))
+                   (and state (nth 3 state))))
                (choice (candidate entries)
                  (if-let* ((entry (get-text-property 0 'emmet2--choice candidate)))
                      (and (memq entry entries) entry)
@@ -230,8 +281,10 @@ can still accept the first expansion."
                               (cycle-sort-function . identity)))
                   ((eq (car-safe action) 'boundaries) nil)
                   ((and (refresh) (expanded))
-                   (let ((candidates (mapcar (lambda (entry)
-                                               (propertize abbreviation 'emmet2--choice entry)) choices)))
+                   (let* ((abbreviation (abbreviation))
+                          (candidates (mapcar (lambda (entry)
+                                                (propertize abbreviation 'emmet2--choice entry))
+                                              (nth 3 state))))
                      (if (and (null action) (equal string abbreviation)
                               (test-completion string candidates predicate))
                          string
@@ -240,16 +293,17 @@ can still accept the first expansion."
              :company-doc-buffer
              (lambda (candidate)
                (emmet2-capf--guard quiet (invalidate)
-                 (when-let* ((_ (equal candidate abbreviation))
+                 (when-let* ((_ (equal candidate (abbreviation)))
                              (entry (choice candidate (expanded)))
                              (text (plist-get entry :text))
                              (_ (string-match-p "\n" text)))
-                   (emmet2-preview text (emmet2--output-syntax analysis)))))
+                   (emmet2-preview text (emmet2--output-syntax (car state))))))
              :affixation-function
              (lambda (candidates)
                (emmet2-capf--guard quiet (invalidate)
                  ;; Validate once for this synchronous display batch, not for each row.
-                 (let ((entries (and (member abbreviation candidates) (expanded))))
+                 (let* ((abbreviation (abbreviation))
+                        (entries (and (member abbreviation candidates) (expanded))))
                    (mapcar (lambda (candidate)
                              (let ((label (if-let* ((entry (and (equal candidate abbreviation)
                                                                 (choice candidate entries))))
@@ -262,18 +316,20 @@ can still accept the first expansion."
              :exit-function
              (lambda (candidate status)
                (emmet2-capf--guard nil (invalidate)
-                 (when-let* ((_ (and (eq status 'finished) (equal candidate abbreviation)))
+                 (when-let* ((_ (and (eq status 'finished) (equal candidate (abbreviation))))
                              (entry (choice candidate (expanded))))
-                   (emmet2-insert (emmet2-insert-snapshot analysis) (plist-get entry :result))))))))))))
+                   (emmet2-insert (emmet2-insert-snapshot (car state)) (plist-get entry :result))))))))))))
 
 ;;;###autoload
 (defun emmet2-complete ()
-  "Request Emmet choices through the configured completion frontend.
-Built-in CSS uses exactly the automatic CAPF's admission rules.  Other hosts
-retain their explicit-request contract, including manual markup and grammar
-initialization.  The frontend decides presentation and sole-match acceptance,
-though Corfu keeps a sole Emmet choice open; this command does not choose or
-insert the first candidate itself."
+  "Request Emmet choices at point through `completion-at-point'.
+This is an explicit request: JS hosts create a missing tree-sitter parser
+and report a missing grammar, and a major mode without a built-in host or
+`emmet2-context-provider' offers plain markup.  Built-in CSS modes use the
+automatic rules.  The completion frontend shows the choices and decides
+whether to accept a sole choice at once; Corfu keeps a sole Emmet choice in
+its popup.  Signal `user-error' when there is nothing to complete or the
+expansion fails."
   (interactive)
   (emmet2-capf--guard nil nil
     (let ((completion-at-point-functions '(emmet2-capf))
@@ -283,9 +339,10 @@ insert the first candidate itself."
 
 ;;;###autoload
 (defun emmet2-expand-at-point ()
-  "Expand the abbreviation at point immediately, without showing choices.
-Context and expansion are those of `emmet2-complete'; CSS uses its first
-choice.  Fields, initial cursor and one-step undo match an accepted choice."
+  "Expand the abbreviation at point at once, without showing choices.
+The context is that of `emmet2-complete' and the text is that of its first
+choice, with the same initial cursor, fields and single undo step.  Signal
+`user-error' when there is no abbreviation or it does not expand."
   (interactive)
   (emmet2-capf--guard nil nil
     (barf-if-buffer-read-only)
