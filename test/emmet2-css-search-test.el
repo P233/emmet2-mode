@@ -22,7 +22,7 @@
                cases))
 
 (ert-deftest emmet2-css-search-accuracy-gates ()
-  ;; Gates hold the measured quality; see plans/completion-first-css.md.
+  ;; Gates hold the measured quality; retune only against this corpus (CONTRIBUTING.md).
   ;; Seven Emmet value presets such as cr and qen are intentionally absent.
   (let ((corpus (emmet2-css-search-test--corpus)))
     (dolist (gate '(("user" 1 4) ("frequent" 1 53) ("compounds" 1 54) ("compounds" 3 58)
