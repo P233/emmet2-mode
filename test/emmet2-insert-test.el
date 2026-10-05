@@ -123,7 +123,8 @@
                   (".a { m10│\n}" ".a { margin: 10px;│\n}")
                   (".a {\n  m10│ }" ".a {\n  margin: 10px;│ }")
                   (".a {\n  m10│ /* note */\n}" ".a {\n  margin: 10px;│ /* note */\n}")
-                  (".a {\n  m10│ // note\n}" ".a {\n  margin: 10px;│ // note\n}")))
+                  (".a {\n  m10│ // note\n}" ".a {\n  margin: 10px;│ // note\n}")
+                  (".a {\n  m10│// note\n}" ".a {\n  margin: 10px;│// note\n}")))
     (ert-info ((car case))
       (with-temp-buffer
         (scss-mode) (setq-local indent-tabs-mode nil)
@@ -131,6 +132,27 @@
         (emmet2-test--complete-first)
         (insert "│")
         (should (equal (buffer-string) (cadr case)))))))
+
+(ert-deftest emmet2-insert-css-replaces-a-following-semicolon ()
+  (dolist (case '((".a { m10│; }" ".a { margin: 10px;│ }")
+                  (".a {\n  m10│;\n}" ".a {\n  margin: 10px;│\n}")
+                  (".a {\n  m10+p20│;\n}" ".a {\n  margin: 10px;\n  padding: 20px;│\n}")
+                  (".a { m│; }" ".a { margin: │; }")
+                  (".a { m10│ ; }" ".a { margin: 10px;│ ; }")))
+    (dolist (mode '(css-mode scss-mode))
+      (dolist (accept '(emmet2-test--complete-first emmet2-expand-at-point))
+        (ert-info ((format "%s %s %S" mode accept (car case)))
+          (with-temp-buffer
+            (funcall mode) (setq-local indent-tabs-mode nil)
+            (insert (car case)) (goto-char 1) (search-forward "│") (delete-char -1)
+            (let ((source (buffer-string)))
+              (buffer-enable-undo)
+              (funcall accept)
+              (should (equal (concat (buffer-substring-no-properties (point-min) (point)) "│"
+                                     (buffer-substring-no-properties (point) (point-max)))
+                             (cadr case)))
+              (undo-only 1)
+              (should (equal (buffer-string) source)))))))))
 
 (ert-deftest emmet2-insert-css-newline-excludes-embedded-styles ()
   (dolist (source '("<div style=\"\n  m10│\n\"></div>"

@@ -102,11 +102,14 @@ compounds, excluding trailing whitespace."
                     (unless token (setq token (point)))
                     (push (pcase character (?\[ ?\]) (?\( ?\)) (_ ?})) stack)))
                  (stack nil)
-                 ((and css (< (1+ (point)) limit) (looking-at "/\\*"))
+                 ((and css (< (1+ (point)) limit) (looking-at "/[*/]"))
                   (finish)
                   (unless result
                     (forward-char 2)
-                    (goto-char (1- (or (search-forward "*/" limit t) limit)))))
+                    ;; `//' may sit in a top-level string, so only end the token; hosts reject line comments.
+                    (goto-char (1- (if (eq (char-before) ?*)
+                                       (or (search-forward "*/" limit t) limit)
+                                     (point))))))
                  ((and css (< (1+ (point)) limit) (looking-at "\\*/"))
                   ;; The current line may begin inside a multiline comment.
                   (finish)

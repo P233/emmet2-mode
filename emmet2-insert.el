@@ -157,7 +157,9 @@ yasnippet is installed, RESULT's fields become snippet fields and
 `yas-minor-mode' is enabled if needed, as Eglot does.  Otherwise, including
 every CSS and CSS-in-JS result, point moves to RESULT's :cursor and no
 fields are created, so TAB keeps its binding.  The text is inserted as is,
-without reindenting.  With `emmet2-css-auto-newline', complete standalone
+without reindenting; a non-markup result ending in a semicolon also replaces
+a semicolon right after the abbreviation, so the declaration keeps one
+terminator.  With `emmet2-css-auto-newline', complete standalone
 CSS declarations continue on an indented blank line in the same undo group.
 On any error the buffer and point are restored."
   (unless (emmet2-insert-snapshot-valid-p snapshot)
@@ -188,7 +190,10 @@ On any error the buffer and point are restored."
                          ;; web-mode otherwise reformats the whole expansion on exit.
                          (yas-after-exit-snippet-hook
                           (remq 'web-mode-yasnippet-exit-hook yas-after-exit-snippet-hook))))))
-                (delete-region beg end)
+                (delete-region beg (if (and (not (eq (plist-get snapshot :lang) 'markup))
+                                            (string-suffix-p ";" (plist-get result :text))
+                                            (eq (char-after end) ?\;))
+                                       (1+ end) end))
                 (goto-char beg) (insert (plist-get result :text))
                 (goto-char (+ beg (plist-get result :cursor)))
                 (when continuation (emmet2-insert--css-continue continuation)))))

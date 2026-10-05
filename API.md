@@ -211,7 +211,7 @@ return a plist:
 
 | Key | Host contract |
 | --- | --- |
-| `:beg`, `:end` | Nonempty, fully visible replacement range in absolute integer positions. `:end` is exclusive; point may lie anywhere from `:beg` through `:end`. |
+| `:beg`, `:end` | Nonempty, fully visible replacement range in absolute integer positions. `:end` is exclusive; point may lie anywhere from `:beg` through `:end`. A CSS or CSS-in-JS result ending in `;` also replaces a `;` right at `:end`, so the declaration keeps one terminator. |
 | `:lang`, `:syntax` | `css` with `css` or `scss`; `css-in-js` with `jsx`; `markup` with `html` or `jsx`. |
 | `:position` | `declaration-start` or `selector` for CSS; `declaration-start` for CSS-in-JS; `markup` for markup. |
 | `:indent-width` | Optional nonnegative integer number of columns. Overrides built-in mode width; tabs and base indentation still follow buffer settings. |

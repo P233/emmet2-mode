@@ -421,8 +421,10 @@ CSS and CSS-in-JS leave `$` to explicit requests.
 In a property list, a single trailing top-level comma or plus after a property
 requests the preceding choices against a fresh snapshot that includes the
 separator. CSS-in-JS allows this for plus; a trailing comma belongs to the
-JavaScript host. Acceptance consumes the separator, and old choice identities
-still cannot insert. Once the last property is nonempty, its menu label omits
+JavaScript host. A known HTML element name before a single trailing comma, as
+in `th,`, reads as a selector-list line and is not offered automatically.
+Acceptance consumes the separator, and old choice identities still cannot
+insert. Once the last property is nonempty, its menu label omits
 the confirmed prefix without a marker, while documentation keeps the complete
 result. The batch keeps the confirmed prefix and its result, so typing `ovh,ta`
 then `ovh,tac`, or `m10+p5+b` then `m10+p5+bo`, neither searches nor expands the
@@ -517,7 +519,10 @@ abbreviation ranking keep their separate contracts.
 
 `emmet2-insert` is the only source writer; preview and parsing are read-only.
 It checks buffer, mode, tick, point, visible bounds and original text, then
-inserts in one atomic undo group, together with any markup snippet fields.
+inserts in one atomic undo group, together with any markup snippet fields. A
+CSS or CSS-in-JS result ending in a semicolon also replaces a visible semicolon
+right after the abbreviation, so re-typing a property before an existing `;`
+keeps one terminator.
 Layout derives from the mode width and the abbreviation's display column before
 insertion; there is no later `indent-region` pass.
 

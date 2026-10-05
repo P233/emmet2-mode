@@ -51,6 +51,10 @@
                   (css-mode ".a{--brand│}" nil)
                   (css-mode ".a{p[1px]│}" t) (css-mode ".a{p(1 + 2)│}" t)
                   (css-mode ".a{m,p│}" t) (css-mode ".a{c+bg│}" t)
+                  ;; An element before a trailing comma is a selector-list line.
+                  (css-mode ".a{th,│}" nil) (css-mode ".a{p,│}" nil)
+                  (scss-mode ".a{color:red;\n  h1,│\n}" nil) (css-mode ".a{p,m│}" t)
+                  (css-mode ".a{m10,│}" t) (css-mode ".a{p10,│}" t) (css-mode ".a{p+│}" t)
                   (css-mode ".a{color: m1│}" nil) (css-mode ".card│" nil)
                   (css-mode ".a{display:fl│}" nil) (css-mode ".a{--accent:re│}" nil)
                   (css-mode ".a{future-prop:foo│}" nil) (css-mode ".a{d:n│}" nil)

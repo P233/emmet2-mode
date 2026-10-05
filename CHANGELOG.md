@@ -93,6 +93,8 @@ to the earlier 0.2 implementation. See
   and `less-css-mode`.
 - In CSS, a known element followed by a pseudo, as in `button:hv`, completes as
   a nested selector. Selector lists, attributes and combinators are preserved.
+  An element followed by a comma, as in a `th,` selector-list line, is not
+  offered automatically, so RET keeps the selector.
 - Automatic markup completion recognizes distinctive abbreviations and
   standalone tags such as `div` alone on a line.
 - HTML and JSX fields become yasnippet fields with TAB navigation and mirrors
@@ -129,6 +131,8 @@ to the earlier 0.2 implementation. See
   instead of `color: #fff;`.
 - A trailing `!` on `posa` or `posf` makes both `position` and `z-index`
   `!important`, not only `z-index`.
+- Expanding a declaration before an existing semicolon reuses it: `m10│;`
+  gives `margin: 10px;` instead of `margin: 10px;;`.
 - CSS-in-JS raw values with leading zeros stay strings: `p[010px]` gives
   `padding: "010px"` instead of `padding: 010`.
 - Hyphenated JSX classes use bracket access: `.btn-primary` gives

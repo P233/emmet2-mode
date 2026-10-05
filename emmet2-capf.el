@@ -77,6 +77,9 @@ line; a markup word ending in a period never counts."
                 ;; rejecting dollars inside a raw value such as ct['$'].
                 (or (eq (plist-get analysis :syntax) 'scss)
                     (not (string-match-p "\\`[-[:alpha:]]+\\$" abbreviation)))
+                ;; An element name before a single trailing comma is a selector-list line.
+                (not (and (string-suffix-p "," abbreviation)
+                          (emmet2-css-search-element-p (substring abbreviation 0 -1))))
                 (if (string-match-p "\\`[a-z][-a-z]*\\'" abbreviation) 'search t))
            (and (eq (plist-get analysis :lang) 'css)
                 (string-match-p "\\`\\(?:@[[:alpha:]]\\|[^:]*::?[[:alpha:]]\\)" abbreviation)))))))
