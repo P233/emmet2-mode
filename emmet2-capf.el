@@ -96,8 +96,7 @@ Point may be at the snapshot's point or at the abbreviation end, where
 completion leaves it.  AUTOMATIC is the kind of context analysis to repeat;
 non-nil ANALYZED skips the repeat because ANALYSIS already matched at the
 current `emmet2-context-revision'."
-  (and (not buffer-read-only)
-       (eq (current-buffer) (plist-get snapshot :buffer))
+  (and (eq (current-buffer) (plist-get snapshot :buffer))
        (<= (point-min) (plist-get snapshot :point) (point-max))
        (memq (point) (list (plist-get snapshot :point) (plist-get snapshot :end)))
        (save-excursion
@@ -211,7 +210,8 @@ value of `emmet2-capf--confident-p', where `search' means the abbreviation
 counts only if it has a CSS choice."
   (let ((automatic (or (not explicit)
                        (and (derived-mode-p 'css-base-mode) (not emmet2-context-provider)))))
-    (when-let* ((analysis (and (not buffer-read-only) (emmet2-capf--analyze automatic)))
+    ;; Company binds `buffer-read-only' while it probes and tries tables; only insertion checks it.
+    (when-let* ((analysis (emmet2-capf--analyze automatic))
                 (confidence (or (not automatic) (emmet2-capf--confident-p analysis))))
       (list automatic analysis confidence))))
 
@@ -265,7 +265,6 @@ affects only tables that emmet2 builds."
                        (let* ((analysis (car state)) (snapshot (cadr state))
                               (next (and (eq (current-buffer) (plist-get snapshot :buffer))
                                         (eq major-mode (plist-get snapshot :mode))
-                                        (not buffer-read-only)
                                         (emmet2-capf--analyze automatic))))
                          (if (and (emmet2-capf--same-context-p analysis next)
                                   (equal settings (emmet2-capf--settings next))

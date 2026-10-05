@@ -581,9 +581,11 @@ into pure language requests; it is an editor facade, not a pure engine. CAPF
 can load independently of the minor mode. String expansion stays
 buffer-independent through `emmet2-extensions` and the native engines.
 
-Every completion entry and lazy completion callback shares one failure policy.
-Automatic failures return no choice and invalidate the table. Explicit requests
-and acceptance report the cause. An explicit quit propagates and invalidates
-the table, while an interruption by new input leaves it retryable;
-`debug-on-error` still reaches the original error. Pure APIs signal typed
-failures.
+The Emmet entries `emmet2-capf`, `emmet2-complete` and `emmet2-expand-at-point`
+and their lazy table callbacks share one failure policy. Automatic failures
+return no choice and invalidate the table. Explicit requests and acceptance
+report the cause. An explicit quit propagates and invalidates the table, while
+an interruption by new input leaves it retryable; `debug-on-error` still reaches
+the original error. Name tables from `emmet2-completion-capf` have no such
+boundary: an error from their entries, including host discovery, reaches the
+completion frontend. Pure APIs signal typed failures.

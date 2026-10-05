@@ -15,9 +15,10 @@ contracts.
 - Add no global or accumulating cache. A new analysis input belongs in
   `emmet2-context-revision`, never in a second cache inside a completion table
   ([Tables and revisions](ARCHITECTURE.md#tables-and-revisions)).
-- Keep the [failure policy](ARCHITECTURE.md#request-and-failure-boundaries):
+- Keep the Emmet tables' [failure policy](ARCHITECTURE.md#request-and-failure-boundaries):
   automatic failures offer no choice, explicit requests report the cause, quit
-  propagates, and an input interruption leaves a table retryable.
+  propagates, and an input interruption leaves a table retryable. Errors from
+  `emmet2-completion-capf` entries reach the frontend.
 - Never change completion-frontend configuration; adapt only tables emmet2
   builds, as the [Corfu adapter](ARCHITECTURE.md#corfu-adapter) does.
 - Use only public yasnippet interfaces, and keep snippets to markup. Tests

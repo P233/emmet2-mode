@@ -1396,12 +1396,30 @@
 (ert-deftest emmet2-capf-read-only-and-invalid-syntax ()
   (emmet2-test--with-capf "ul>li*3"
     (setq buffer-read-only t)
-    (should-not (emmet2-capf)))
+    (should (equal (all-completions "ul>li*3" table) '("ul>li*3")))
+    (pcase-let ((`(,_beg ,_end ,table . ,props) (emmet2-capf)))
+      (should (equal (all-completions "ul>li*3" table) '("ul>li*3")))
+      (should-error (funcall (plist-get props :exit-function) "ul>li*3" 'finished)))
+    (should (equal (buffer-string) "ul>li*3")))
   (with-temp-buffer
     (insert ".a{p(1}") (css-mode) (backward-char)
     (let ((table (nth 2 (emmet2-capf))))
       (should table)
       (should-not (all-completions "p(1" table)))))
+
+(ert-deftest emmet2-capf-admits-while-a-frontend-binds-read-only ()
+  ;; Company binds `buffer-read-only' to t while it probes each CAPF and tries its table.
+  (dolist (case '(("m10" ".a{margin: 10px;│}") ("ta" ".a{text-align: │;}")))
+    (ert-info ((car case))
+      (with-temp-buffer
+        (css-mode) (insert ".a{" (car case) "}") (backward-char)
+        (pcase-let* ((`(,_capf ,_beg ,_end ,table . ,props)
+                      (let ((buffer-read-only t)) (completion--capf-wrapper #'emmet2-capf 'optimist)))
+                     (candidate (car (all-completions (car case) table))))
+          (should (equal candidate (car case)))
+          (funcall (plist-get props :exit-function) candidate 'finished)
+          (insert "│")
+          (should (equal (buffer-string) (cadr case))))))))
 
 (provide 'emmet2-capf-test)
 ;;; emmet2-capf-test.el ends here

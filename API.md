@@ -271,8 +271,9 @@ default for `emmet2-value`; a host passing its own `:category` must give it the
 `emmet2-name` style, as in
 `(add-to-list 'completion-category-defaults '(my-category (styles emmet2-name)))`.
 The host
-still owns context, bounds and candidate discovery. The frontend owns text
-replacement and its undo group; acceptance changes only point.
+still owns context, bounds and candidate discovery, including its failures: an
+error from a function `ENTRIES` propagates to the completion frontend. The
+frontend owns text replacement and its undo group; acceptance changes only point.
 
 ## Runnable provider example
 
