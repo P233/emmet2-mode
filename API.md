@@ -191,8 +191,10 @@ read-only:
 
 Offsets count characters, not bytes; `emmet2-insert` maps them to buffer
 positions. Markup fields become yasnippet fields when it is installed; CSS and
-CSS-in-JS results only place point at `:cursor`. Do not reformat `:text`
-independently.
+CSS-in-JS results place point at `:cursor` without creating snippets. The
+editor may then continue on the next line under `emmet2-css-auto-newline`, as
+described below. Pure results and previews contain no continuation line. Do
+not reformat `:text` independently.
 
 ## Host completion interface
 
@@ -228,7 +230,9 @@ other malformed values signal `emmet2-error`.
 token covering extra inputs such as dialect, settings and parser generation.
 Emmet already tracks source tick, point, visible bounds, major mode and `emmet2-mode`.
 Both callbacks are read-only; revision must stay stable until inputs change and
-must not parse. Unchanged revisions reuse the analysis.
+must not parse. Unchanged revisions reuse the analysis within a table and from
+the buffer's last completed choice batch. Reuse also requires the same provider
+identity and automatic/explicit request policy; declined analyses are not cached.
 
 Direct context APIs signal invalid contracts. Automatic CAPF errors invalidate
 that table and offer no match; `emmet2-complete` and acceptance report the error.
@@ -340,6 +344,17 @@ captured snapshot. Use
 
 Layout uses source column, optional `:indent-width` and buffer tab settings.
 Pure expansion uses caller-supplied indentation strings.
+
+`emmet2-css-auto-newline` defaults to `t` and is read at insertion time. In
+`css-base-mode` derivatives, an analysis with `:lang css` and
+`:position declaration-start` can continue on the next line when its source
+abbreviation occupies a line by itself and its result has no fields, ends in
+a semicolon and places `:cursor` at the end. Insertion reuses the immediately
+following blank line or creates one before existing text, copying the source
+line's indentation. Hidden continuation text outside a narrowed region is
+left alone. This shares expansion's atomic undo group; setting the option to
+`nil` preserves the result's cursor position. Embedded styles and semantic
+value completion do not use this behavior.
 
 `emmet2-preview` returns a shared read-only buffer for the host to display. The
 next preview of the same syntax reuses it, so display it but do not modify or

@@ -22,6 +22,48 @@
      (should-not (emmet2-context-js--owner))
      ,@body))
 
+(ert-deftest emmet2-host-batch-analysis-keeps-request-policies-separate ()
+  (emmet2-host-test--with-completion "m"
+    (let (requests)
+      (setq-local emmet2-context-provider
+                  (list :analyze
+                        (lambda (automatic)
+                          (push automatic requests)
+                          (plist-put (emmet2-host-test--analysis automatic)
+                                     :property (if automatic "automatic" "explicit")))
+                        :revision #'ignore))
+      (let ((table (nth 2 (emmet2-capf))))
+        (should (all-completions "m" table))
+        (insert "a")
+        (let* ((emmet2-capf--explicit t) (explicit (emmet2-capf)))
+          (should (all-completions "ma" (nth 2 explicit))))
+        ;; An explicit batch cannot confirm this automatic table's context.
+        (should (all-completions "ma" table))
+        (should (equal (reverse requests) '(t nil t)))
+        (should (emmet2-capf))
+        (should (equal (reverse requests) '(t nil t)))))))
+
+(ert-deftest emmet2-host-batch-analysis-rechecks-host-revisions ()
+  (emmet2-host-test--with-completion "m"
+    (let ((version 0) (allowed t) (calls 0))
+      (setq-local emmet2-context-provider
+                  (list :analyze (lambda (automatic)
+                                   (cl-incf calls)
+                                   (and allowed (emmet2-host-test--analysis automatic)))
+                        :revision (lambda () version)))
+      (let ((table (nth 2 (emmet2-capf))))
+        (should (all-completions "m" table))
+        (should (emmet2-capf))
+        (should (= calls 1))
+        (setq allowed nil) (cl-incf version)
+        (should-not (emmet2-capf))
+        (should-not (all-completions "m" table))
+        ;; Declined analysis must not hide a host becoming ready on this revision.
+        (let ((before calls))
+          (setq allowed t)
+          (should (emmet2-capf))
+          (should (= calls (1+ before))))))))
+
 (ert-deftest emmet2-host-provider-is-the-only-context-authority ()
   (with-temp-buffer
     (insert "m10")

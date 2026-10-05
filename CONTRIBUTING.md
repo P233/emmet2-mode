@@ -18,8 +18,8 @@ contracts.
 - Keep the [failure policy](ARCHITECTURE.md#request-and-failure-boundaries):
   automatic failures offer no choice, explicit requests report the cause, quit
   propagates, and an input interruption leaves a table retryable.
-- Never change completion-frontend configuration; adapt only Emmet tables, as
-  the [Corfu adapter](ARCHITECTURE.md#corfu-adapter) does.
+- Never change completion-frontend configuration; adapt only tables emmet2
+  builds, as the [Corfu adapter](ARCHITECTURE.md#corfu-adapter) does.
 - Use only public yasnippet interfaces, and keep snippets to markup. Tests
   simulate an absent yasnippet with `emmet2-test--with-yasnippet`.
 - Retune search parameters only against the frozen corpus in

@@ -24,10 +24,17 @@
 (cl-defstruct (emmet2-stylesheet--output (:constructor emmet2-stylesheet--output (base-indent)))
   base-indent parts fields (offset 0) clear-defaults trim-leading escape)
 
-(defconst emmet2-stylesheet--property-regexp
-  (concat (regexp-opt (emmet2-css-search-property-names t) t)
-          "\\(?:\\'\\|[^a-zA-Z-]\\|-[0-9]\\|-\\.[0-9]\\|--\\)")
-  "Match a complete property or descriptor name and the boundary after it.")
+;; A set, not a 7 KB regexp-opt pattern that Emacs's 20-entry regexp cache evicts.
+(defconst emmet2-stylesheet--property-names
+  (let ((names (make-hash-table :test #'equal)))
+    (dolist (name (emmet2-css-search-property-names t) names)
+      (puthash name t names)))
+  "Every complete property and descriptor name.")
+
+(defconst emmet2-stylesheet--property-name-limit
+  (cl-loop for name being the hash-keys of emmet2-stylesheet--property-names
+           maximize (length name))
+  "Length of the longest property or descriptor name.")
 
 (defconst emmet2-stylesheet--unitless-properties
   '("additive-symbols" "animation-iteration-count" "aspect-ratio" "base-palette"
@@ -52,14 +59,38 @@ point; an explicit unit always wins.")
     "dpi" "dpcm" "dppx" "x" "fr")
   "CSS units a number may carry after the e, p, x and r aliases are applied.")
 
+(defun emmet2-stylesheet--name-boundary-p (text end)
+  "Whether a complete property name in TEXT may end at END.
+The name must end TEXT or precede a character other than a letter or
+hyphen, a negative number or a double-dash variable."
+  (let ((size (length text)))
+    (or (= end size)
+        (let ((character (aref text end)))
+          (if (eq character ?-)
+              (and (< (1+ end) size)
+                   (let ((next (aref text (1+ end))))
+                     (or (<= ?0 next ?9) (eq next ?-)
+                         (and (eq next ?.) (< (+ end 2) size) (<= ?0 (aref text (+ end 2)) ?9)))))
+            (not (or (<= ?a character ?z) (<= ?A character ?Z))))))))
+
 (defun emmet2-engine-stylesheet-property-end (text &optional start)
   "Return the end of a complete property name at START in TEXT, or nil.
 START defaults to zero.  Hyphens within names stay intact; negative numbers
-and double-dash variable values can follow a complete name."
-  (let ((case-fold-search nil) (start (or start 0)))
-    (when (and (string-match emmet2-stylesheet--property-regexp text start)
-               (= (match-beginning 0) start))
-      (match-end 1))))
+and double-dash variable values can follow a complete name.  The longest
+name followed by such a boundary wins."
+  (let* ((start (or start 0)) (end start) found
+         (limit (min (length text) (+ start emmet2-stylesheet--property-name-limit))))
+    ;; Names contain only lowercase letters, digits and hyphens.
+    (while (and (< end limit)
+                (let ((character (aref text end)))
+                  (or (<= ?a character ?z) (<= ?0 character ?9) (eq character ?-))))
+      (setq end (1+ end)))
+    (while (and (not found) (> end start))
+      (when (and (emmet2-stylesheet--name-boundary-p text end)
+                 (gethash (substring text start end) emmet2-stylesheet--property-names))
+        (setq found end))
+      (setq end (1- end)))
+    found))
 
 (defun emmet2-stylesheet--tokenize (text &optional value-only)
   "Tokenize stylesheet abbreviation TEXT.

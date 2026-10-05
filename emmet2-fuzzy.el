@@ -23,19 +23,64 @@
       (and (<= ?a (aref text (1- position)) ?z)
            (<= ?A (aref text position) ?Z))))
 
-(defun emmet2-fuzzy--positions (needle text &optional original)
+(defun emmet2-fuzzy--fold (text)
+  "Return TEXT in lowercase with every character at its original index.
+Match positions therefore index TEXT.  Return TEXT itself when no character
+changes.  Special casing can lengthen a string, as for İ; such text folds
+one character at a time."
+  (let ((index 0) (size (length text)))
+    (while (and (< index size)
+                (let ((character (aref text index)))
+                  (if (< character 128) (not (<= ?A character ?Z))
+                    (eq (downcase character) character))))
+      (setq index (1+ index)))
+    (if (= index size) text
+      (let ((folded (downcase text)))
+        (if (= (length folded) size) folded
+          (apply #'string (mapcar #'downcase text)))))))
+
+(defun emmet2-fuzzy--find (character text start &optional original)
+  "Return the first index from START where TEXT has CHARACTER, or nil.
+With ORIGINAL, the index must also begin a word in ORIGINAL."
+  (let ((size (length text)))
+    (while (and (< start size)
+                (not (and (eq (aref text start) character)
+                          (or (not original) (emmet2-fuzzy--boundary-p original start)))))
+      (setq start (1+ start)))
+    (and (< start size) start)))
+
+(defun emmet2-fuzzy--subsequence-p (needle text)
+  "Whether the already case-folded NEEDLE occurs in order in TEXT."
+  (let ((offset 0) (index 0) (count (length needle)))
+    (while (and offset (< index count))
+      (when (setq offset (emmet2-fuzzy--find (aref needle index) text offset))
+        (setq offset (1+ offset)))
+      (setq index (1+ index)))
+    (and offset t)))
+
+(defun emmet2-fuzzy--positions (needle text original)
   "Find ordered, already case-folded NEEDLE positions in TEXT, or nil.
-When ORIGINAL is supplied, require word initials in its original spelling."
+Every position must begin a word in ORIGINAL, TEXT's original spelling."
   (let ((offset 0) positions)
     (catch 'missing
       (dotimes (index (length needle))
-        (let ((position (cl-position (aref needle index) text :start offset)))
-          (while (and position original (not (emmet2-fuzzy--boundary-p original position)))
-            (setq position (cl-position (aref needle index) text :start (1+ position))))
+        (let ((position (emmet2-fuzzy--find (aref needle index) text offset original)))
           (unless position (throw 'missing nil))
           (push position positions)
           (setq offset (1+ position))))
       (nreverse positions))))
+
+(defun emmet2-fuzzy--highlight (positions string)
+  "Add `completions-common-part' to STRING at POSITIONS and return STRING.
+POSITIONS strictly increase; each contiguous run gets one face interval."
+  (let (start end)
+    (dolist (position positions)
+      (unless (eql position end)
+        (when start (add-face-text-property start end 'completions-common-part nil string))
+        (setq start position))
+      (setq end (1+ position)))
+    (when start (add-face-text-property start end 'completions-common-part nil string))
+    string))
 
 (defun emmet2-fuzzy-match (query candidate &optional partial)
   "Return QUERY's match against CANDIDATE, or nil.
@@ -45,7 +90,7 @@ query characters.  With PARTIAL, a nonempty matched query prefix suffices;
 the score is discounted by the proportion of query characters consumed.
 Empty queries do not match.  Work grows with the product of the two string
 lengths."
-  (let* ((needle (downcase query)) (text (downcase candidate))
+  (let* ((needle (emmet2-fuzzy--fold query)) (text (emmet2-fuzzy--fold candidate))
          (size (length text)) (count (length needle)) initials substring)
     (when (and (> count 0) (> size 0))
       (cond
@@ -55,7 +100,7 @@ lengths."
        ((and partial (string-prefix-p text needle))
         (list :score (+ (* 0.49 (/ (float size) count)) 0.001)
               :positions (number-sequence 0 (1- size))))
-       ((and (not partial) (not (emmet2-fuzzy--positions needle text))) nil)
+       ((and (not partial) (not (emmet2-fuzzy--subsequence-p needle text))) nil)
        ((setq initials (emmet2-fuzzy--positions needle text candidate))
         (list :score (+ 0.8 (/ 0.09 (1+ (+ (car initials) (- size count))))) :positions initials))
        ((setq substring (string-search needle text))

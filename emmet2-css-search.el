@@ -64,33 +64,76 @@ Their size alone would give each keyword a high prior.")
 (defconst emmet2-css-search--directory
   (file-name-directory (or load-file-name buffer-file-name)))
 
+(defun emmet2-css-search--share (object strings)
+  "Return parsed data OBJECT with its equal strings shared through STRINGS.
+Lists and pairs are updated in place, so OBJECT must be call-owned; hash
+tables are copied.  The shared strings must stay read-only."
+  (cond
+   ((stringp object) (or (gethash object strings) (puthash object object strings)))
+   ((consp object)
+    (let ((tail object))
+      (while (consp tail)
+        (setcar tail (emmet2-css-search--share (car tail) strings))
+        (unless (listp (cdr tail))
+          (setcdr tail (emmet2-css-search--share (cdr tail) strings)))
+        (setq tail (cdr tail))))
+    object)
+   ((hash-table-p object)
+    (let ((copy (make-hash-table :test (hash-table-test object) :size (hash-table-count object))))
+      (maphash (lambda (key value)
+                 (puthash (emmet2-css-search--share key strings)
+                          (emmet2-css-search--share value strings) copy))
+               object)
+      copy))
+   (t object)))
+
 (defun emmet2-css-search--read (name)
-  "Read packaged JSON data NAME."
+  "Read packaged JSON data NAME, sharing its equal strings."
   (with-temp-buffer
     (insert-file-contents (expand-file-name name emmet2-css-search--directory))
-    (json-parse-buffer :array-type 'list)))
+    (emmet2-css-search--share (json-parse-buffer :array-type 'list)
+                              (make-hash-table :test #'equal))))
 
 (cl-defstruct (emmet2-css-search--property (:constructor emmet2-css-search--property) (:copier nil))
-  name words prior keywords own sets descriptor)
+  name words prior keywords own sets descriptor letters)
 (cl-defstruct (emmet2-css-search--value (:constructor emmet2-css-search--value) (:copier nil))
   name words prior)
 
-(defun emmet2-css-search--words (name)
-  "Return NAME's lowercase words as a vector."
-  (vconcat (split-string (downcase name) "-" t)))
+(defun emmet2-css-search--words (name pool)
+  "Return NAME's lowercase words as a vector shared through POOL.
+POOL maps (NAME) to the vector, and NAME and each word to one shared string,
+so a single-word lowercase NAME can be its own word."
+  (with-memoization (gethash (list name) pool)
+    (with-memoization (gethash name pool) name)
+    (vconcat (mapcar (lambda (word) (with-memoization (gethash word pool) word))
+                     (split-string (downcase name) "-" t)))))
 
-(defun emmet2-css-search--bucket (names prior)
+(defun emmet2-css-search--letters (text)
+  "Return the set of lowercase ASCII letters and digits in TEXT as a fixnum."
+  (let ((letters 0))
+    (dotimes (index (length text))
+      (let ((character (aref text index)))
+        (cond ((<= ?a character ?z) (setq letters (logior letters (ash 1 (- character ?a)))))
+              ((<= ?0 character ?9) (setq letters (logior letters (ash 1 (+ 26 (- character ?0)))))))))
+    letters))
+
+(defun emmet2-css-search--bucket (names prior pool)
   "Index keyword NAMES by lowercase initial with score PRIOR.
-Functions score no higher than the function prior; common keywords no lower
-than the own prior."
-  (let ((bucket (make-hash-table :test #'eql)) (own (emmet2-css-search--weight 'own)))
+Return an alist of (INITIAL . VALUES).  Functions score no higher than the
+function prior; common keywords no lower than the own prior.  Equal entries
+are shared through POOL under (NAME . SCORE), and their words as in
+`emmet2-css-search--words'."
+  (let ((own (emmet2-css-search--weight 'own)) bucket)
     (dolist (name names bucket)
-      (push (emmet2-css-search--value
-             :name name :words (emmet2-css-search--words name)
-             :prior (cond ((string-suffix-p "()" name) (min prior (emmet2-css-search--weight 'function)))
+      (let* ((score (cond ((string-suffix-p "()" name) (min prior (emmet2-css-search--weight 'function)))
                           ((member name emmet2-css-search--common) (max prior own))
                           (t prior)))
-            (gethash (downcase (aref name 0)) bucket)))))
+             (value (with-memoization (gethash (cons name score) pool)
+                      (emmet2-css-search--value
+                       :name name :words (emmet2-css-search--words name pool) :prior score)))
+             (initial (downcase (aref name 0)))
+             (cell (assq initial bucket)))
+        (if cell (push value (cdr cell)) (push (list initial value) bucket))))))
 
 (defconst emmet2-css-search--index (emmet2-css-search--read "data/css-index.json")
   "Names, relevance and keyword sets generated alongside data/css-data.json.")
@@ -120,46 +163,60 @@ Callers must not modify the returned data."
   (cl-loop for (alias . _) in emmet2-css-search--word-aliases maximize (length alias))
   "Longest authored word alias, which bounds a matching segment.")
 
-(defconst emmet2-css-search--sets
-  (let ((sets (make-hash-table :test #'equal)) (own (alist-get 'own emmet2-css-search--likelihoods)))
+(defun emmet2-css-search--index-property (entry pool)
+  "Build one immutable search property from generated ENTRY.
+Equal keyword entries and words are shared through POOL."
+  (let ((name (gethash "name" entry)) (keywords (gethash "values" entry)))
+    (emmet2-css-search--property
+     :name name :words (emmet2-css-search--words name pool)
+     :prior (and (not (gethash "obsolete" entry))
+                 (* emmet2-css-search--prior-scale (round (gethash "relevance" entry))))
+     :keywords keywords
+     :own (emmet2-css-search--bucket keywords (emmet2-css-search--weight 'own) pool)
+     :sets (gethash "sets" entry)
+     :descriptor (and (gethash "atRule" entry) t)
+     :letters (emmet2-css-search--letters name))))
+
+(defun emmet2-css-search--build (index)
+  "Build the keyword and property tables of generated INDEX.
+Return (SETS WIDE CANONICAL DESCRIPTORS), the values of the constants of
+those names.  One call-owned pool shares equal keyword entries, word
+vectors and words among them."
+  (let ((pool (make-hash-table :test #'equal))
+        (own (alist-get 'own emmet2-css-search--likelihoods))
+        (sets (make-hash-table :test #'equal))
+        (canonical (make-hash-table :test #'equal))
+        (descriptors (make-hash-table :test #'equal)))
     ;; One keyword among many shared siblings, such as a named color, is unlikely.
     (maphash (lambda (key names)
                (puthash key (emmet2-css-search--bucket
                              names (emmet2-css-search--score
                                     (if (member key emmet2-css-search--rare)
                                         (alist-get 'rare emmet2-css-search--likelihoods)
-                                      (min own (/ emmet2-css-search--set-scale (length names))))))
+                                      (min own (/ emmet2-css-search--set-scale (length names)))))
+                             pool)
                         sets))
-             (gethash "sets" emmet2-css-search--index))
-    sets)
+             (gethash "sets" index))
+    (dolist (entry (gethash "properties" index))
+      (puthash (gethash "name" entry) (emmet2-css-search--index-property entry pool) canonical))
+    (dolist (entry (gethash "descriptors" index))
+      (push (emmet2-css-search--index-property entry pool) (gethash (gethash "atRule" entry) descriptors)))
+    (list sets (emmet2-css-search--bucket (gethash "wide" index) (emmet2-css-search--weight 'wide) pool)
+          canonical descriptors)))
+
+(defconst emmet2-css-search--tables (emmet2-css-search--build emmet2-css-search--index)
+  "The keyword and property tables, built together so they share entries.")
+
+(defconst emmet2-css-search--sets (nth 0 emmet2-css-search--tables)
   "Shared keyword sets by key, each indexed by initial.")
 
-(defconst emmet2-css-search--wide
-  (emmet2-css-search--bucket (gethash "wide" emmet2-css-search--index) (emmet2-css-search--weight 'wide))
+(defconst emmet2-css-search--wide (nth 1 emmet2-css-search--tables)
   "CSS-wide keywords accepted by every ordinary property, not by descriptors.")
 
-(defun emmet2-css-search--index-property (entry)
-  "Build one immutable search property from generated ENTRY."
-  (let ((name (gethash "name" entry)) (keywords (gethash "values" entry)))
-    (emmet2-css-search--property
-     :name name :words (emmet2-css-search--words name)
-     :prior (and (not (gethash "obsolete" entry))
-                 (* emmet2-css-search--prior-scale (round (gethash "relevance" entry))))
-     :keywords keywords
-     :own (emmet2-css-search--bucket keywords (emmet2-css-search--weight 'own))
-     :sets (gethash "sets" entry)
-     :descriptor (and (gethash "atRule" entry) t))))
-
-(defconst emmet2-css-search--canonical
-  (let ((table (make-hash-table :test #'equal)))
-    (dolist (entry (gethash "properties" emmet2-css-search--index) table)
-      (puthash (gethash "name" entry) (emmet2-css-search--index-property entry) table)))
+(defconst emmet2-css-search--canonical (nth 2 emmet2-css-search--tables)
   "Every ordinary property by name.  Obsolete properties have no prior.")
 
-(defconst emmet2-css-search--descriptors
-  (let ((table (make-hash-table :test #'equal)))
-    (dolist (entry (gethash "descriptors" emmet2-css-search--index) table)
-      (push (emmet2-css-search--index-property entry) (gethash (gethash "atRule" entry) table))))
+(defconst emmet2-css-search--descriptors (nth 3 emmet2-css-search--tables)
   "Descriptor entries grouped by their enclosing at-rule, from the same index.")
 
 (defun emmet2-css-search--entry (name at-rule)
@@ -179,15 +236,13 @@ Callers must not modify the returned data."
     (dolist (property (append (hash-table-values emmet2-css-search--canonical)
                               (apply #'append (hash-table-values emmet2-css-search--descriptors))))
       (setq widest (max widest (length (emmet2-css-search--property-words property))))
-      (maphash (lambda (_ values)
-                 (dolist (value values)
-                   (setq widest (max widest (length (emmet2-css-search--value-words value))))))
-               (emmet2-css-search--property-own property)))
+      (dolist (cell (emmet2-css-search--property-own property))
+        (dolist (value (cdr cell))
+          (setq widest (max widest (length (emmet2-css-search--value-words value)))))))
     (dolist (bucket (cons emmet2-css-search--wide (hash-table-values emmet2-css-search--sets)) widest)
-      (maphash (lambda (_ values)
-                 (dolist (value values)
-                   (setq widest (max widest (length (emmet2-css-search--value-words value))))))
-               bucket)))
+      (dolist (cell bucket)
+        (dolist (value (cdr cell))
+          (setq widest (max widest (length (emmet2-css-search--value-words value))))))))
   "Most words in any property or keyword name, which bounds alignment tables.")
 
 (defconst emmet2-css-search--max-query-length
@@ -359,7 +414,7 @@ are scored once per query through CACHE."
                   ;; Shorter keywords break structural ties, as block before blink.
                   (- (+ score (emmet2-css-search--value-prior value))
                      (length (emmet2-css-search--value-name value))))))
-      (dolist (value (gethash initial (emmet2-css-search--property-own property)))
+      (dolist (value (cdr (assq initial (emmet2-css-search--property-own property))))
         (when-let* ((score (score value)))
           (setq hits (emmet2-css-search--offer hits limit (+ score offset) name
                                                (emmet2-css-search--value-name value)))))
@@ -369,7 +424,8 @@ are scored once per query through CACHE."
         (let* ((cache-key (cons key tail)) (shared (gethash cache-key cache 'miss)))
           (when (eq shared 'miss)
             (setq shared nil)
-            (dolist (value (gethash initial (if key (gethash key emmet2-css-search--sets) emmet2-css-search--wide)))
+            (dolist (value (cdr (assq initial (if key (gethash key emmet2-css-search--sets)
+                                                emmet2-css-search--wide))))
               (when-let* ((score (score value)))
                 (push (cons score (emmet2-css-search--value-name value)) shared)))
             (puthash cache-key shared cache))
@@ -395,7 +451,7 @@ LIMIT defaults to ten.  AT-RULE admits its descriptors.  Signal
                  (string-match-p "\\`[a-zA-Z][-a-zA-Z0-9]*\\'" query))
         (let* ((boundary (and (not bare) (<= ?a (aref query 0) ?z)
                               (string-match "[A-Z]" query 1) (match-beginning 0)))
-               (text (downcase query)) (n (length text))
+               (text (downcase query)) (n (length text)) (letters (emmet2-css-search--letters text))
                (compact (and (not bare) (<= n 8) (not (string-search "-" text))))
                (head (if boundary (substring text 0 boundary) text))
                (tables (emmet2-css-search--prepare head))
@@ -428,7 +484,10 @@ LIMIT defaults to ten.  AT-RULE admits its descriptors.  Signal
                    (prior (emmet2-css-search--property-prior property))
                    (anchored (eq (aref text 0) (aref name 0)))
                    (heads (and (or (and anchored (or boundary compact))
-                                   (emmet2-css-search--subsequence-p text name))
+                                   ;; A subsequence needs every letter of TEXT.
+                                   (and (= (logand letters (emmet2-css-search--property-letters property))
+                                           letters)
+                                        (emmet2-css-search--subsequence-p text name)))
                                (emmet2-css-search--align head (emmet2-css-search--property-words property)
                                                          tables nil heads-scratch))))
               (unless boundary
@@ -491,9 +550,10 @@ Without AT-RULE, accept only ordinary properties, including obsolete ones."
   (and (emmet2-css-search--entry name at-rule) t))
 
 (defun emmet2-css-search-property-names (&optional descriptors)
-  "Return fresh ordinary CSS property names; DESCRIPTORS includes descriptors.
-The stylesheet tokenizer recognizes every spelling; ranked search admits
-descriptors only in their enclosing at-rule."
+  "Return ordinary CSS property names; DESCRIPTORS includes descriptors.
+The list is fresh; its strings are shared and read-only.  The stylesheet
+tokenizer recognizes every spelling; ranked search admits descriptors only
+in their enclosing at-rule."
   (let ((names (mapcar (lambda (entry) (gethash "name" entry))
                        (gethash "properties" emmet2-css-search--index))))
     (if descriptors

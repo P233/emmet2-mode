@@ -8,7 +8,8 @@
 ;; it counts as an abbreviation only if it has a choice.  The buffer keeps the
 ;; last expansion batch so repeated calls for the same input reuse it.  Every
 ;; candidate string is the typed abbreviation and a text property identifies
-;; its expansion; the affixation function supplies the menu text.  Only a
+;; its expansion; the affixation function supplies the menu text.
+;; Labels and previews are formatted only when requested.  Only a
 ;; choice accepted with status `finished' on unchanged source is inserted,
 ;; through `emmet2-insert'.
 
@@ -27,12 +28,25 @@
 
 (defvar-local emmet2-capf--batch nil
   "Last choice batch, with the analysis and revision it was built for.
-The value is (:revision R :settings S :provider P :analysis A :batch B).  B
+The value is (:revision R :settings S :provider P :request K :analysis A
+:batch B).  K is `automatic' or `explicit', identifying the analysis policy.  B
 came from `emmet2-expand-choices' for analysis A when
 `emmet2-context-revision' was R.  `emmet2-capf--choices' reuses its results
 but copies its choices, so tables never share candidates.  Each expansion
 replaces the entry, or leaves it nil when the source changed meanwhile;
 changing the major mode discards it.")
+
+(defun emmet2-capf--analyze (automatic)
+  "Analyze AUTOMATIC's request, reusing the last batch's unchanged context.
+Only a completed batch can supply an answer; declined or interrupted
+analyses are never cached.  Provider identity, request kind and all context
+inputs must still match."
+  (if (and emmet2-capf--batch
+           (eq emmet2-context-provider (plist-get emmet2-capf--batch :provider))
+           (eq (if automatic 'automatic 'explicit) (plist-get emmet2-capf--batch :request))
+           (equal (emmet2-context-revision) (plist-get emmet2-capf--batch :revision)))
+      (plist-get emmet2-capf--batch :analysis)
+    (emmet2-context-analyze automatic)))
 
 (defun emmet2-capf--element-line-p (analysis)
   "Whether ANALYSIS is a known HTML element name alone on its line."
@@ -43,19 +57,27 @@ changing the major mode discards it.")
 (defun emmet2-capf--confident-p (analysis)
   "Return non-nil when ANALYSIS's abbreviation is likely Emmet input.
 Return `search' for a bare lowercase CSS word, such as ta, which counts only
-if it has a CSS choice.  A bare markup word counts only when it is a known
-element alone on its line; a word ending in a period never counts."
+if it has a CSS choice.  Other property-led input in a confirmed declaration
+slot is expanded lazily; the expansion owns its continuation punctuation.
+A bare markup word counts only when it is a known element alone on its
+line; a markup word ending in a period never counts."
   (let ((abbreviation (plist-get analysis :abbr)) (case-fold-search nil))
     (pcase (plist-get analysis :lang)
       ;; A bare word or sentence end (e.g.) is prose unless an element is alone on its line.
       ('markup (or (not (string-match-p "\\`\\(?:[[:alnum:]_:-]+\\|[[:alnum:]_:.-]*\\.\\)\\'" abbreviation))
                    (emmet2-capf--element-line-p analysis)))
       ((or 'css 'css-in-js)
-       (or (string-match-p (rx (or digit upper (in "#!%,(+["))) abbreviation)
-           ;; Keep p$ and p$- live while a Sass variable is typed; a bare $name is the host's.
-           (and (eq (plist-get analysis :syntax) 'scss)
-                (string-match-p "\\`[a-z][-a-z]*\\$-?\\(?:[_[:alpha:]]\\|\\'\\)" abbreviation))
-           (and (string-match-p "\\`[a-z][-a-z]*\\'" abbreviation) 'search)
+       (or (and (eq (plist-get analysis :position) 'declaration-start)
+                ;; Bare Sass variables and custom property names belong to the host.
+                (string-match-p "\\`-?[[:alpha:]]" abbreviation)
+                (eq (emmet2-extensions-css-kind abbreviation
+                                                (eq (plist-get analysis :lang) 'css-in-js))
+                    'properties)
+                ;; Preserve Sass-only admission for p$ and p$name, without
+                ;; rejecting dollars inside a raw value such as ct['$'].
+                (or (eq (plist-get analysis :syntax) 'scss)
+                    (not (string-match-p "\\`[-[:alpha:]]+\\$" abbreviation)))
+                (if (string-match-p "\\`[a-z][-a-z]*\\'" abbreviation) 'search t))
            (and (eq (plist-get analysis :lang) 'css)
                 (string-match-p "\\`\\(?:@[[:alpha:]]\\|[^:]*::?[[:alpha:]]\\)" abbreviation)))))))
 
@@ -102,14 +124,14 @@ the source buffer's `tab-width', so preview buffers need no source settings."
        (make-string column ?\s)))
    text t t))
 
-(defun emmet2-capf--choices (analysis)
-  "Return ANALYSIS's choice batch with preview text and menu rows added.
+(defun emmet2-capf--choices (analysis &optional automatic)
+  "Return ANALYSIS's choice batch with independent choice identities.
+AUTOMATIC identifies the request policy that produced ANALYSIS.
 Reuse `emmet2-capf--batch' when it was built for the same analysis and
 `emmet2-context-revision'.  Otherwise expand again, passing the old batch to
 `emmet2-expand-choices' when the provider, settings and context match.  Each
-call copies the choices, so tables never share candidates, and adds :text,
-the result moved to column zero for previews, and :display, the highlighted
-menu row."
+call copies the choices, so tables never share candidates.  Presentation is
+derived only when the frontend requests labels or a preview."
   (let* ((revision (emmet2-context-revision))
          (settings (emmet2-capf--settings analysis))
          (provider emmet2-context-provider)
@@ -133,17 +155,12 @@ menu row."
                          (equal settings (emmet2-capf--settings analysis)))
                 (setq emmet2-capf--batch
                       (list :revision revision :settings settings :provider provider
+                            :request (if automatic 'automatic 'explicit)
                             :analysis analysis :batch result))
-                result))))
-         (options (emmet2-insert-render-options analysis))
-         (batch (plist-put (copy-sequence batch) :choices
-                           (mapcar #'copy-sequence (plist-get batch :choices)))))
-    (dolist (entry (plist-get batch :choices))
-      (plist-put entry :text (emmet2-capf--preview-text
-                              (plist-get (plist-get entry :result) :text)
-                              (plist-get options :base-indent)))
-      (plist-put entry :display (emmet2-capf--display (plist-get entry :label) (plist-get entry :query))))
-    batch))
+                result)))))
+    (plist-put (copy-sequence batch) :choices
+               (mapcar (lambda (entry) (append entry (list :text nil :display nil)))
+                       (plist-get batch :choices)))))
 
 (defun emmet2-capf--display (text abbreviation)
   "Return TEXT as one menu row, highlighting ABBREVIATION.
@@ -151,12 +168,13 @@ Normalize line breaks and surrounding indentation.  Use the same ordered
 matcher as candidate search; aliases without a literal correspondence remain
 unhighlighted.  Return a fresh string; preview and insertion still use the
 full result."
-  (let* ((text (copy-sequence
-                (replace-regexp-in-string "[ \t]*\n[ \t\n]*" " " text)))
-         (needle (replace-regexp-in-string "[^[:alnum:]_-]" "" abbreviation)))
-    (dolist (position (plist-get (emmet2-fuzzy-match needle text) :positions))
-      (add-face-text-property position (1+ position) 'completions-common-part nil text))
-    text))
+  (let ((text (if (string-search "\n" text)
+                  (replace-regexp-in-string "[ \t]*\n[ \t\n]*" " " text)
+                (copy-sequence text)))
+        (needle (if (string-match-p "[^[:alnum:]_-]" abbreviation)
+                    (replace-regexp-in-string "[^[:alnum:]_-]" "" abbreviation)
+                  abbreviation)))
+    (emmet2-fuzzy--highlight (plist-get (emmet2-fuzzy-match needle text) :positions) text)))
 
 (defmacro emmet2-capf--guard (quiet cleanup &rest body)
   "Run BODY and evaluate CLEANUP if BODY fails or quits.
@@ -190,7 +208,7 @@ value of `emmet2-capf--confident-p', where `search' means the abbreviation
 counts only if it has a CSS choice."
   (let ((automatic (or (not explicit)
                        (and (derived-mode-p 'css-base-mode) (not emmet2-context-provider)))))
-    (when-let* ((analysis (and (not buffer-read-only) (emmet2-context-analyze automatic)))
+    (when-let* ((analysis (and (not buffer-read-only) (emmet2-capf--analyze automatic)))
                 (confidence (or (not automatic) (emmet2-capf--confident-p analysis))))
       (list automatic analysis confidence))))
 
@@ -206,14 +224,14 @@ property tells alternative expansions apart, so frontends that drop text
 properties still accept the first choice.  Errors make automatic requests
 offer nothing; explicit requests and acceptance signal `user-error'.
 Offering choices also installs the Corfu advice of emmet2-corfu.el, which
-affects only Emmet candidates."
+affects only tables that emmet2 builds."
   (emmet2-capf--guard (not emmet2-capf--explicit) nil
     (pcase-let ((quiet (not emmet2-capf--explicit))
                 (`(,automatic ,analysis ,confidence) (emmet2-capf--admit emmet2-capf--explicit)))
       (when-let* ((_ analysis)
                   ;; A bare CSS word counts only if it has choices; reuse that batch for the first query.
                   (first (if (eq confidence 'search)
-                             (let ((batch (emmet2-capf--choices analysis)))
+                             (let ((batch (emmet2-capf--choices analysis automatic)))
                                (and (plist-get batch :choices) batch))
                            'unexpanded)))
         (require 'emmet2-corfu)
@@ -245,7 +263,7 @@ affects only Emmet candidates."
                               (next (and (eq (current-buffer) (plist-get snapshot :buffer))
                                         (eq major-mode (plist-get snapshot :mode))
                                         (not buffer-read-only)
-                                        (emmet2-context-analyze automatic))))
+                                        (emmet2-capf--analyze automatic))))
                          (if (and (emmet2-capf--same-context-p analysis next)
                                   (equal settings (emmet2-capf--settings next))
                                   (<= (plist-get next :beg) (point) (plist-get next :end))
@@ -262,7 +280,7 @@ affects only Emmet candidates."
                    (when (eq (nth 3 state) 'unexpanded)
                      ;; Publish only complete choices.  The guard still invalidates
                      ;; real failures, but new input leaves this query retryable.
-                     (let ((next (emmet2-capf--choices (car state))))
+                     (let ((next (emmet2-capf--choices (car state) automatic)))
                        (if (current-p)
                            (setcar (nthcdr 3 state) (plist-get next :choices))
                          (invalidate))))
@@ -295,9 +313,14 @@ affects only Emmet candidates."
                (emmet2-capf--guard quiet (invalidate)
                  (when-let* ((_ (equal candidate (abbreviation)))
                              (entry (choice candidate (expanded)))
-                             (text (plist-get entry :text))
+                             (text (plist-get (plist-get entry :result) :text))
                              (_ (string-match-p "\n" text)))
-                   (emmet2-preview text (emmet2--output-syntax (car state))))))
+                   (emmet2-preview
+                    (or (plist-get entry :text)
+                        (setf (plist-get entry :text)
+                              (emmet2-capf--preview-text
+                               text (plist-get (emmet2-insert-render-options (car state)) :base-indent))))
+                    (emmet2--output-syntax (car state))))))
              :affixation-function
              (lambda (candidates)
                (emmet2-capf--guard quiet (invalidate)
@@ -307,7 +330,11 @@ affects only Emmet candidates."
                    (mapcar (lambda (candidate)
                              (let ((label (if-let* ((entry (and (equal candidate abbreviation)
                                                                 (choice candidate entries))))
-                                              (copy-sequence (plist-get entry :display)) "")))
+                                              (copy-sequence
+                                               (or (plist-get entry :display)
+                                                   (setf (plist-get entry :display)
+                                                         (emmet2-capf--display (plist-get entry :label)
+                                                                              (plist-get entry :query))))) "")))
                                ;; Preserve the candidate and its choice identity for native
                                ;; *Completions* too.  Only this display copy is concealed; it
                                ;; also carries the label past frontend margin formatters.

@@ -58,5 +58,20 @@
       (should (equal (plist-get (emmet2-fuzzy-match query candidate) :positions)
                      (cons 0 (number-sequence 3 (+ 2 (length tail)))))))))
 
+(ert-deftest emmet2-fuzzy-positions-index-candidates-that-lowercase-longer ()
+  ;; String downcasing turns İ into two characters.
+  (dolist (candidate '("İstanbul" "İSTANBUL"))
+    (ert-info (candidate)
+      (should (equal (plist-get (emmet2-fuzzy-match "al" candidate) :positions) '(3 7)))
+      (should (equal (plist-get (emmet2-fuzzy-match "AL" candidate t) :positions) '(3 7)))))
+  (should (equal (emmet2-fuzzy-filter "al" '("İstanbul" "alpha")) '("alpha" "İstanbul"))))
+
+(ert-deftest emmet2-fuzzy-highlight-marks-each-contiguous-run-once ()
+  (let ((label (copy-sequence "abcdefg")))
+    (should (eq (emmet2-fuzzy--highlight '(0 1 2 5) label) label))
+    (should (equal (object-intervals label)
+                   '((0 3 (face completions-common-part)) (3 5 nil)
+                     (5 6 (face completions-common-part)) (6 7 nil))))))
+
 (provide 'emmet2-fuzzy-test)
 ;;; emmet2-fuzzy-test.el ends here

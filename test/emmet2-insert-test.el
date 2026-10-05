@@ -79,6 +79,118 @@
           (should-not (yas-active-snippets))
           (should-not mark-active))))))
 
+(ert-deftest emmet2-insert-css-newline-acceptance-and-undo ()
+  (dolist (mode '(css-mode scss-mode))
+    (dolist (accept '(emmet2-test--complete-first emmet2-expand-at-point))
+      (with-temp-buffer
+        (funcall mode) (insert ".a {\n  m10\n}")
+        (goto-char 1) (search-forward "m10")
+        (buffer-enable-undo)
+        (funcall accept)
+        (should (equal (buffer-string) ".a {\n  margin: 10px;\n  \n}"))
+        (should (looking-at "\n}"))
+        (should (= (current-column) 2))
+        (undo-only 1)
+        (should (equal (buffer-string) ".a {\n  m10\n}"))))))
+
+(ert-deftest emmet2-insert-css-newline-reuses-only-the-next-blank-line ()
+  (dolist (case '((".a {\n  m10│" ".a {\n  margin: 10px;\n  │")
+                  (".a {\n  m10│\n" ".a {\n  margin: 10px;\n  │")
+                  (".a {\n  m10│\n\n}" ".a {\n  margin: 10px;\n  │\n}")
+                  (".a {\n  m10│\n \t \n}" ".a {\n  margin: 10px;\n  │\n}")
+                  (".a {\n  m10│\n\n\n}" ".a {\n  margin: 10px;\n  │\n\n}")
+                  (".a {\n  m10│\n  color: red;\n\n}"
+                   ".a {\n  margin: 10px;\n  │\n  color: red;\n\n}")
+                  (".a {\n  m10│\n  /* next */\n}"
+                   ".a {\n  margin: 10px;\n  │\n  /* next */\n}")
+                  (".a {\n  m10│ \t\n}" ".a {\n  margin: 10px;\n  │\n}")
+                  (".a {\n\tm10│\n}" ".a {\n\tmargin: 10px;\n\t│\n}")
+                  (".a {\nm10│\n}" ".a {\nmargin: 10px;\n│\n}")
+                  (".a {\n  m10+p20│\n}"
+                   ".a {\n  margin: 10px;\n  padding: 20px;\n  │\n}")))
+    (ert-info ((car case))
+      (with-temp-buffer
+        (css-mode) (setq-local indent-tabs-mode nil)
+        (insert (car case)) (goto-char 1) (search-forward "│") (delete-char -1)
+        (emmet2-test--complete-first)
+        (insert "│")
+        (should (equal (buffer-string) (cadr case)))))))
+
+(ert-deftest emmet2-insert-css-newline-preserves-fields-and-shared-lines ()
+  (dolist (case '((".a {\n  m│\n}" ".a {\n  margin: │;\n}")
+                  (".a {\n  w[calc()]│\n}" ".a {\n  width: calc(│);\n}")
+                  (".a {\n  m10+p│\n}" ".a {\n  margin: 10px;\n  padding: │;\n}")
+                  (".a { m10│\n}" ".a { margin: 10px;│\n}")
+                  (".a {\n  m10│ }" ".a {\n  margin: 10px;│ }")
+                  (".a {\n  m10│ /* note */\n}" ".a {\n  margin: 10px;│ /* note */\n}")
+                  (".a {\n  m10│ // note\n}" ".a {\n  margin: 10px;│ // note\n}")))
+    (ert-info ((car case))
+      (with-temp-buffer
+        (scss-mode) (setq-local indent-tabs-mode nil)
+        (insert (car case)) (goto-char 1) (search-forward "│") (delete-char -1)
+        (emmet2-test--complete-first)
+        (insert "│")
+        (should (equal (buffer-string) (cadr case)))))))
+
+(ert-deftest emmet2-insert-css-newline-excludes-embedded-styles ()
+  (dolist (source '("<div style=\"\n  m10│\n\"></div>"
+                    "<style>\n.a {\n  m10│\n}\n</style>"
+                    "const A = <div style={{\n  m10│\n}} />;"))
+    (with-temp-buffer
+      (insert source) (goto-char 1) (search-forward "│") (delete-char -1)
+      (let ((position (point)))
+        (if (string-prefix-p "const" source) (tsx-ts-mode) (web-mode))
+        (goto-char position))
+      (let* ((analysis (emmet2-context-analyze))
+             (snapshot (emmet2-insert-snapshot analysis))
+             (result (emmet2-expand-analysis analysis))
+             (before (buffer-string)) (beg (plist-get analysis :beg))
+             (end (plist-get analysis :end)))
+        (emmet2-insert snapshot result)
+        (should (equal (buffer-string) (concat (substring before 0 (1- beg))
+                                              (plist-get result :text) (substring before (1- end)))))
+        (should (= (point) (+ beg (plist-get result :cursor))))))))
+
+(ert-deftest emmet2-insert-css-newline-can-be-disabled-at-acceptance ()
+  (with-temp-buffer
+    (css-mode) (insert ".a {\n  m10\n}") (goto-char 1) (search-forward "m10")
+    (pcase-let* ((`(,_beg ,_end ,table . ,props) (emmet2-capf))
+                (candidate (car (all-completions "m10" table))))
+      (setq-local emmet2-css-auto-newline nil)
+      (funcall (plist-get props :exit-function) candidate 'finished)
+      (should (equal (buffer-string) ".a {\n  margin: 10px;\n}"))
+      (should (looking-at "\n}"))
+      (should (= (current-column) 15)))))
+
+(ert-deftest emmet2-insert-css-newline-does-not-split-hidden-text ()
+  (dolist (source '(".a { m10\n}" ".a {\n  m10 }" ".a {\n  m10\n \n}"))
+    (with-temp-buffer
+      (css-mode) (insert source) (goto-char 1) (search-forward "m10")
+      (let* ((end (point)) (beg (- end 3))
+             (analysis (list :beg beg :end end :abbr "m10" :lang 'css :position 'declaration-start))
+             (snapshot (emmet2-insert-snapshot analysis)))
+        (narrow-to-region beg end)
+        (emmet2-insert snapshot (emmet2-extensions-css "m10"))
+        (should (equal (buffer-string) "margin: 10px;"))
+        (widen)
+        (should (equal (buffer-string) (replace-regexp-in-string "m10" "margin: 10px;" source)))))))
+
+(ert-deftest emmet2-insert-css-newline-failure-restores-source-and-point ()
+  (dolist (undo '(nil t))
+    (with-temp-buffer
+      (css-mode) (insert ".a {\n  m10\n}") (goto-char 1) (search-forward "m10")
+      (when undo (buffer-enable-undo))
+      (let* ((before (buffer-string)) (position (point)) failed
+             (after-change-functions
+              (list (lambda (&rest _)
+                      (when (and (not failed) (> (count-lines (point-min) (point-max)) 3))
+                        (setq failed t) (error "Continuation hook failed"))))))
+        (should-error (emmet2-test--complete-first))
+        (should failed)
+        (should (equal (buffer-string) before))
+        (should (= (point) position))
+        (unless undo (should (eq buffer-undo-list t)))))))
+
 (defvar emmet2-test-evaluated nil)
 (ert-deftest emmet2-insert-literals-never-evaluate ()
   (let ((literal "😀 \\ $ ${9:x} ` (setq emmet2-test-evaluated t) ` { } \\` \\\\}")

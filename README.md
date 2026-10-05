@@ -233,6 +233,14 @@ CSS expansions start no snippet: after `c,bg` point starts in the first value,
 and after `d` before the semicolon. Typed or completed values are never
 highlighted, and **TAB** keeps your own binding.
 
+In CSS/SCSS modes, accepting a complete declaration alone on its line, such
+as `m10`, moves to the next line with the same indentation. An immediately
+following blank line is reused; otherwise one is inserted. Empty values and
+function arguments keep point at the field. Embedded styles, value completion
+and abbreviations sharing a line with other code or comments do not move to
+the next line. Set `emmet2-css-auto-newline` to `nil` to disable this behavior.
+Expansion and the new line undo together.
+
 ### Manual completion
 
 To request choices manually, run **`M-x emmet2-complete`**. In major modes
@@ -475,6 +483,7 @@ can set `emmet2-jsx-class-style` to `plain` instead of typing `_` each time.
 | `emmet2-css-in-js-attributes` | `("style")` | JSX attributes holding style objects, such as `"sx"` |
 | `emmet2-css-in-js-functions` | `("StyleSheet.create" "createTheme")` | Functions whose object arguments hold styles, written as called, such as `"css"` or `"stylex.create"` |
 | `emmet2-css-scale-functions` | `nil` | SCSS [scale and rhythm functions](#scale-and-rhythm-functions) |
+| `emmet2-css-auto-newline` | `t` | Continue on the next line after a complete standalone CSS/SCSS declaration |
 
 Set these globally with `setq` or per project in `.dir-locals.el`.
 Keep `emmet2-markup-variant` project-local: `"solid"` changes all markup output,

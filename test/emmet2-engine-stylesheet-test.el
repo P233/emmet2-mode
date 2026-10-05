@@ -23,6 +23,23 @@
     (ert-info ((car case))
       (should (equal (plist-get (emmet2-engine-stylesheet-expand (car case)) :text) (cdr case))))))
 
+(ert-deftest emmet2-stylesheet-property-end-recognizes-every-name ()
+  ;; A name ends the text or precedes a non-name character, a negative number
+  ;; or a double-dash variable; a following letter or hyphenated word does not end it.
+  (dolist (name (emmet2-css-search-property-names t))
+    (ert-info (name)
+      (dolist (suffix '("" "10" "-10" "-.5" "--gap" ":" "!" "+m10" " " "#fff" "[x]" "$x" "(1)" ".5" "_"))
+        (should (eql (emmet2-engine-stylesheet-property-end (concat "m10+" name suffix) 4)
+                     (+ 4 (length name)))))
+      (dolist (suffix '("x" "A" "-a" "-" "-."))
+        (should-not (eql (emmet2-engine-stylesheet-property-end (concat name suffix)) (length name))))
+      (should-not (emmet2-engine-stylesheet-property-end (upcase name)))))
+  ;; The longest name followed by a boundary wins.
+  (dolist (case '(("margin-top10" . 10) ("margin-top-10" . 10) ("flex-grow1" . 9)
+                  ("z-index-1" . 7) ("margin-a" . nil) ("inset-b" . nil) ("m10" . nil)))
+    (ert-info ((car case))
+      (should (eql (emmet2-engine-stylesheet-property-end (car case)) (cdr case))))))
+
 (ert-deftest emmet2-stylesheet-units-colors-and-unitless-properties ()
   (dolist (case '(("margin10" . "margin: 10px;") ("margin.5" . "margin: 0.5rem;")
                   ("margin1e" . "margin: 1em;") ("margin1p" . "margin: 1%;") ("margin1x" . "margin: 1ex;")

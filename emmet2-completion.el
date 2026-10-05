@@ -12,6 +12,7 @@
 (require 'cl-lib)
 (require 'subr-x)
 (require 'emmet2-fuzzy)
+(declare-function emmet2-corfu--enable "emmet2-corfu" ())
 ;; A completion table must return candidates that start with its input, so
 ;; fuzzy, escape-aware and Sass-equivalent matching happen in the emmet2-name
 ;; style, which reads the table's identity rules from its metadata.
@@ -51,9 +52,7 @@ With FOLD the match is fuzzy; otherwise INPUT is a prefix."
   (let ((name (copy-sequence spelling)))
     (cond
      (fold
-      (dolist (position (plist-get (emmet2-fuzzy-match input spelling) :positions))
-        (add-face-text-property position (1+ position)
-                                'completions-common-part nil name)))
+      (emmet2-fuzzy--highlight (plist-get (emmet2-fuzzy-match input spelling) :positions) name))
      ((string-prefix-p input spelling)
       (add-face-text-property 0 (length input) 'completions-common-part nil name)))
     name))
@@ -142,7 +141,12 @@ prefixes.  ANNOTATION is a string shown after every candidate.  PREFIX is
 passed as :company-prefix-length; t lets Corfu and Company complete before
 their prefix threshold.  When ( already follows END, names ending in () are
 offered without them.  Accepting an empty call such as calc() moves point
-inside its parentheses; no snippet fields are created."
+inside its parentheses; no snippet fields are created.  Offering a table also
+installs the Corfu advice of emmet2-corfu.el, which affects only tables that
+emmet2 builds."
+  ;; INTERIM (since 2026-10-03, until Corfu skips strings without line breaks): only the line-break guard needs this; see ARCHITECTURE.md#corfu-adapter.
+  (require 'emmet2-corfu)
+  (emmet2-corfu--enable)
   (let* ((buffer (current-buffer))
          (mode major-mode)
          (revision (list major-mode (buffer-chars-modified-tick) (point) (point-min) (point-max)))

@@ -58,7 +58,7 @@ load paths and package recipes discover every library. Public contracts are in
 | Semantic completion | `emmet2-completion.el`, `emmet2-css-value.el` | Shared name tables, fuzzy styles and function acceptance; adapt CSS Base value context to that shared path. |
 | Editor requests | `emmet2-expand.el` | Own the expansion options and translate host analysis plus buffer layout into language requests. |
 | Editor | `emmet2-mode.el`, `emmet2-capf.el`, `emmet2-preview.el`, `emmet2-insert.el` | Compose the package, own completion revisions, show previews, and accept results atomically. |
-| Optional Corfu adapter | `emmet2-corfu.el` | For the `emmet2` category only, advise Corfu's row formatting, popup anchor and exactness check; installed when CAPF first offers a table and removed on unload. |
+| Optional Corfu adapter | `emmet2-corfu.el` | For the `emmet2` category, advise Corfu's row formatting, popup anchor and exactness check; for every table emmet2 builds, spare row strings Corfu's line-break copy. Installed when an Emmet or semantic completion table is first built and removed on unload. |
 
 ## CSS entry paths
 
@@ -209,6 +209,11 @@ CSS-in-JS chooses numbers, quoted values and keys from the declaration
 structure, and emits escaping and field offsets together, without inspecting
 CSS output.
 
+The tokenizer recognizes a complete property name as the longest name in a set
+that ends at a value boundary, as `margin-top` in `margin-top-10`. A regexp
+alternation of every name would be evicted from Emacs's 20-entry regexp cache
+and recompiled on every keystroke.
+
 Completion receives full results with explicit fragment labels and matching
 queries, so CAPF never reconstructs CSS syntax or layout. Property choices
 never pass through the string-choice API: `emmet2-extensions-css-choices`
@@ -241,7 +246,10 @@ and the single immutable authored override catalog; CSS expansion reads
 templates from that catalog through `emmet2-css-search-override`. Completion
 and expansion both use it, and the stylesheet core receives complete property
 names and never guesses one. Scores are fixnums, and each query owns its
-tables.
+tables. Loading shares equal strings, keyword entries and word vectors among
+the index tables, which stay read-only. Each property records the letters and
+digits of its name, so the in-order letter test rejects most properties
+without scanning them.
 
 Search aligns query segments with the words of a property and, for compact
 queries, of one keyword value. A segment is a whole word, a word prefix, a
@@ -266,7 +274,10 @@ distinct candidate position, exact names and prefixes rank first, word initials
 receive priority, and consecutive characters and smaller gaps improve the
 remaining matches. Ties keep the first input item. Matches return both scores
 and character positions, so the same matcher supplies menu highlighting and
-host candidate ranking. No fuzzy cache is needed.
+host candidate ranking. Case folding keeps every character at its index, even
+where special casing would lengthen a string, so positions always index the
+candidate; each run of contiguous positions is highlighted as one face
+interval. No fuzzy cache is needed.
 
 ## Completion
 
@@ -312,6 +323,11 @@ render settings, and discards it on major-mode changes. Corfu calls the CAPF
 more than once per keystroke; later calls for the same input, including
 admission probes, reuse that batch, so each keystroke costs one search. Each
 call copies the choices, so tables never share choice identities.
+
+The completed batch also confirms its analysis for later probes and table
+refreshes at the same context revision, with the same provider identity and
+automatic/explicit request policy. Declined or interrupted analyses are not
+retained. The host remains the context authority through its revision token.
 
 The next input revision can reuse results from the last batch: complete results
 for identical abbreviations and the confirmed-prefix result. Reuse requires the
@@ -367,10 +383,12 @@ the source width. HTML, JSX and nested CSS keep relative indentation; ordinary
 CSS declarations align at column zero. The canonical insertion result keeps its
 original layout and fields.
 
-Labels, highlights and root-aligned previews are prepared once per choice per
-input revision, including reused results; display queries perform no expansion
-or indentation pass. Affixation returns a copy of each label so frontend text
-properties cannot change the stored label.
+Affixation formats and highlights only the requested rows; documentation requests
+align only their selected multiline result. Each table retains the prepared
+label or preview in that choice for repeated requests. Affixation returns fresh
+strings so frontend text properties cannot change expansion results or the rows
+of another call. Admission and candidate queries prepare neither labels nor
+previews; display queries perform no expansion or indentation pass.
 
 ### CSS choices
 
@@ -389,9 +407,13 @@ fabricated property. Equivalent canonical results are deduplicated. Single
 letters such as `d` and `r` abbreviate common properties despite SVG names.
 
 A bare CSS word is confirmed by its first choice batch, which then answers the
-table's first query, so it is searched once. Bare markup words in text,
-declaration values and unconfirmed host positions remain with other providers; a
-known HTML element alone on its line is offered. In SCSS, a Sass variable after
+table's first query, so it is searched once. In a confirmed declaration slot,
+other property abbreviations are admitted without a punctuation whitelist: the
+CSS expansion supplies current choices, including for `o.` while typing `o.5`.
+No choices means normal frontend dismissal, not reuse of stale rows. Property
+and selector readings still use the CSS module's kind classifier. Bare markup
+words in text, declaration values and unconfirmed host positions remain with
+other providers; a known HTML element alone on its line is offered. In SCSS, a Sass variable after
 a property, as in `m$gutter`, is a signal, including the incomplete prefixes
 `p$` and `p$-`. A bare `$name` stays with the host's variable completion; plain
 CSS and CSS-in-JS leave `$` to explicit requests.
@@ -419,8 +441,9 @@ Corfu keeps candidates that differ only in text properties, as for overloaded
 LSP methods. Other frontends may merge these choices or strip identity
 properties; they can still accept the default result. `emmet2-corfu` advises
 three private Corfu functions, installed idempotently when CAPF offers an Emmet
-table, without loading or enabling Corfu; each advice applies only to the
-`emmet2` category, so a Corfu upgrade can break the adapter:
+table or `emmet2-completion-capf` builds a name table, without loading or
+enabling Corfu. Each advice applies only to tables emmet2 builds, so a Corfu
+upgrade can break the adapter. For the `emmet2` category:
 
 - Row formatting moves the label from the affix to the main display column; the
   unchanged candidate still owns acceptance.
@@ -434,6 +457,25 @@ the popup or expand directly unless `corfu-on-exact-match` is `show`. The
 adapter turns Corfu's exact result for an Emmet table into the unchanged input,
 so every policy shows Emmet choices, as with `show`. A sole Emmet choice
 therefore stays in the popup.
+
+On every refresh, Corfu 2.16 folds line breaks in each row's candidate, prefix
+and suffix with `replace-regexp-in-string`, which copies the string even when
+it has no line break. Rows of every emmet2 table skip that copy. An emmet2
+table has the `emmet2` category or metadata carrying `emmet2-identity`, as
+every `emmet2-completion-capf` table does, including scss2's. While Corfu
+formats such a table, the adapter rebinds `replace-regexp-in-string` for that
+call only: Corfu's exact replacement (its pattern, a single space and no
+further arguments) returns a string without a line break unchanged, and every
+other call reaches the original function, so rows, faces and widths stay
+identical. Corfu keeps its own layout code: a copy of
+`corfu--format-candidates` would drift from Corfu's width and truncation rules
+on upgrade, and permanent advice on `replace-regexp-in-string` would tax every
+caller in Emacs. The guard is interim: once Corfu skips strings without line
+breaks itself, remove `emmet2-corfu--format`, the install in
+`emmet2-completion-capf` (its `declare-function` and docstring sentence), the
+semantic-table block in `emmet2-corfu-installation-and-unload`, and the
+semantic install wording here and in the module table. The test that expects
+foreign tables to keep every copy fails on the first pinned Corfu that does.
 
 Timing, prefix thresholds, triggers and width remain user settings, and other
 categories keep the user's policy; the package changes none of them. With
@@ -450,9 +492,10 @@ property and value names with documentation for a host to combine with Sass
 symbols, without a buffer; it owns no mode, parser, completion frontend,
 source-buffer state or query cache. Hosts own syntax, replacement ranges, Sass
 scopes, local symbols and insertion. The full metadata is loaded only when the
-query library is required. Value queries reuse the compact index's own and
-shared keyword sets and keep the full metadata's documentation and
-restriction-derived functions; expansion loads only the compact index.
+query library is required; its equal strings are shared and read-only. Value
+queries reuse the compact index's own and shared keyword sets and keep the full
+metadata's documentation and restriction-derived functions; expansion loads
+only the compact index.
 `emmet2-css-search-value-names` exposes that membership without scores, and
 `emmet2-css-search-property-p` optionally admits descriptors for an at-rule.
 Consumers do not read private search entries.
@@ -490,6 +533,14 @@ active field would highlight typed or completed values like a selection and
 send TAB to the final exit. Plain insertion uses the same text and initial
 cursor, and one undo restores the abbreviation.
 
+`emmet2-css-auto-newline` is an insertion-only preference, read when accepting
+a result. The snapshot also carries the analysis's insertion role. In CSS
+Base modes, a complete declaration alone on its source line can continue
+after its final semicolon. Insertion reuses the next blank line or creates
+one, copies the source indentation and includes those edits in the same undo
+group. Fields, embedded styles and shared lines retain the canonical cursor.
+This adds no continuation text to pure results, previews or completion caches.
+
 `emmet2-preview` owns at most three lazy, read-only, non-file buffers. Built-in
 HTML, JSX and CSS modes fontify the final text without extra grammars. Creation
 isolates user mode hooks. Failed initialization, module unload and package
@@ -506,8 +557,8 @@ timer or result cache.
   parser and does not share cleanup with the JSX adapter. Its region entry scans
   on its own.
 - Search loads the pinned index and CSS overrides once. Expansion reads the
-  same immutable override catalog. ASTs and search scratch tables are
-  call-owned.
+  same immutable override catalog. The pools that share equal loaded data are
+  dropped once loading ends. ASTs and search scratch tables are call-owned.
 - A completion table keeps immutable input revisions and choice identities; the
   buffer keeps only its last batch.
 - The preview buffers and Corfu advice are released on unload.

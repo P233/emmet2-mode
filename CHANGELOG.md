@@ -68,6 +68,12 @@ to the earlier 0.2 implementation. See
 
 ### Added
 
+- Complete declaration expansions alone on a line in CSS/SCSS modes now
+  continue on an indented next line, reusing an immediately following blank
+  line. Expansion and continuation undo together. Empty fields, embedded
+  styles, value completion and lines shared with code or comments retain
+  their cursor behavior. Set `emmet2-css-auto-newline` to `nil` to disable it.
+
 - Abbreviations appear as completion choices while you type, with full
   previews through `corfu-popupinfo-mode` and one undo that restores the
   abbreviation.
@@ -75,6 +81,9 @@ to the earlier 0.2 implementation. See
   initials and word fragments (`bgc`, `ins32`), and a query can combine a
   property and a keyword (`tac`). Value search includes keywords inherited
   from a property's value types.
+- Declaration completion stays open through decimal prefixes such as `o.` in
+  `o.5`. Continuation follows the current expansion in a confirmed declaration
+  slot, while host boundaries and unsupported input still end completion.
 - Property values complete fuzzily with documentation, and accepting a function
   places point inside its parentheses. In built-in CSS modes such as
   `css-mode`, this replaces css-mode's own value list for known properties.
@@ -101,6 +110,10 @@ to the earlier 0.2 implementation. See
   through `emmet2-context-provider`.
 
 ### Changed
+
+- Completion probes and live tables reuse the last batch's unchanged host
+  analysis. Labels and previews are formatted only when requested, reducing
+  temporary allocation while typing without changing candidate order or output.
 
 - Markup puts point in the first empty attribute: `a.link` starts in `href`
   instead of the element content.

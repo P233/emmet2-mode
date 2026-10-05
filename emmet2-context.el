@@ -54,9 +54,9 @@ without any CSS choice.
 reason that Emmet does not track itself, such as dialect, settings or parser
 generation; Emmet tracks the text, point, visible region, major mode and
 `emmet2-mode'.  Neither function may modify the buffer.  Within one
-completion table, Emmet reuses an answer while `emmet2-context-revision',
-which includes this value, is unchanged; it never caches answers across
-tables.")
+completion table and from the buffer's last completed choice batch, Emmet
+reuses an answer while `emmet2-context-revision', which includes this value,
+and the automatic/explicit request policy are unchanged.")
 
 (defun emmet2-context--provider-function (key)
   "Return the host provider's function at KEY, or report a contract error."

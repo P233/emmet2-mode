@@ -23,26 +23,29 @@
     (insert-file-contents
      (expand-file-name "data/css-data.json"
                        (file-name-directory (or load-file-name buffer-file-name))))
-    (let ((data (json-parse-buffer :object-type 'alist :array-type 'list)))
+    (let ((data (json-parse-buffer :object-type 'alist :array-type 'list))
+          (strings (make-hash-table :test #'equal)))
       ;; Keep the source file's browser support, references and syntax metadata
       ;; on disk.  Completion needs only names, documentation and value scope.
       (cl-labels
-          ((entry (item)
+          ((share (object) (emmet2-css-search--share object strings))
+           (entry (item)
              (let ((description (alist-get 'description item)))
-               (list (assq 'name item)
+               (list (share (assq 'name item))
                      (cons 'description
-                           (if (stringp description) description
-                             (alist-get 'value description))))))
+                           (share (if (stringp description) description
+                                    (alist-get 'value description)))))))
            (property (item)
              (append (entry item)
-                     (list (assq 'atRule item) (assq 'restrictions item)
+                     (list (share (assq 'atRule item)) (share (assq 'restrictions item))
                            (cons 'values (mapcar #'entry (alist-get 'values item)))))))
         (list (cons 'properties (mapcar #'property (alist-get 'properties data)))
               (cons 'atDirectives (mapcar #'entry (alist-get 'atDirectives data)))
               (cons 'pseudoClasses (mapcar #'entry (alist-get 'pseudoClasses data)))
               (cons 'pseudoElements (mapcar #'entry (alist-get 'pseudoElements data)))))))
   "Immutable CSS completion metadata loaded once with this library.
-Fields unused by completion are discarded after reading the source file.")
+Fields unused by completion are discarded after reading the source file.
+Equal strings are shared and read-only.")
 
 (defun emmet2-css-data--property-available-p (entry at-rule)
   "Whether property ENTRY is ordinary or a descriptor admitted by AT-RULE."
