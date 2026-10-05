@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFile } from "node:fs/promises";
-import { cssIndex, cssMetadata, cssNames, cssSyntaxes, htmlElements, scanSyntax } from "./update-web-data.mjs";
+import { cssCompletionData, cssIndex, cssMetadata, cssNames, cssSyntaxes, htmlElements, scanSyntax } from "./update-web-data.mjs";
 
 const source = { schemaVersion: 1.1, counts: { properties: 7, atDirectives: 2, pseudoClasses: 3, pseudoElements: 1 } };
 const data = {
@@ -64,6 +64,28 @@ test("comma-separated value presets are not offered as values", () => {
   assert.deepEqual(stacked, before);
 });
 
+test("written metadata keeps only completion fields, with string documentation", () => {
+  const complete = structuredClone(data);
+  Object.assign(complete, { extra: true });
+  Object.assign(complete.properties[0], {
+    browsers: ["FF1"], syntax: "auto", relevance: 50, status: "obsolete", baseline: { status: "high" },
+    description: { kind: "markdown", value: "Property documentation" }, restrictions: ["length"],
+    values: [{ name: "auto", description: { kind: "markdown", value: "Automatic" }, browsers: ["FF1"] }, { name: "none" }],
+  });
+  Object.assign(complete.atDirectives[0], { description: "Media", descriptors: [{ name: "width" }] });
+  const before = structuredClone(complete);
+  const written = JSON.parse(JSON.stringify(cssCompletionData(complete, source)));
+  assert.deepEqual(complete, before);
+  assert.deepEqual(Object.keys(written), ["version", ...Object.keys(source.counts)]);
+  assert.deepEqual(written.properties[0], {
+    name: "inset", description: "Property documentation", restrictions: ["length"],
+    values: [{ name: "auto", description: "Automatic" }, { name: "none" }],
+  });
+  assert.deepEqual(written.properties[6], { name: "src", atRule: "@font-face" });
+  assert.deepEqual(written.atDirectives[0], { name: "@media", description: "Media" });
+  assert.deepEqual(written.pseudoClasses, data.pseudoClasses);
+});
+
 test("value syntax scanning keeps top-level keywords and references only", () => {
   assert.deepEqual(scanSyntax("<line-width> || <line-style> || <color>"),
     { keywords: [], references: ["type:line-width", "type:line-style", "type:color"] });
@@ -100,11 +122,17 @@ test("the index shares value sets and skips deprecated types", () => {
   assert.throws(() => cssSyntaxes({ a: { syntax: "x" } }, pinned), /Unexpected CSS type/);
 });
 
-test("complete metadata and the compact index have exactly the same pinned source", async () => {
-  const json = async (name) => JSON.parse(await readFile(new URL(`../data/${name}`, import.meta.url), "utf8"));
-  const [metadata, index, pinned] = await Promise.all([json("css-data.json"), json("css-index.json"), json("css-source.json")]);
+test("written metadata and the compact index have the same pinned source", async () => {
+  const texts = await Promise.all(["css-data.json", "css-index.json", "css-source.json"]
+    .map((name) => readFile(new URL(`../data/${name}`, import.meta.url), "utf8")));
+  const [metadata, index, pinned] = texts.map((text) => JSON.parse(text));
+  assert.equal(JSON.stringify(cssCompletionData(metadata, pinned), null, 2) + "\n", texts[0]);
   const names = cssNames(cssMetadata(metadata, pinned), pinned);
-  assert.deepEqual(index.properties.map((entry) => entry.name), names.properties);
+  // Without upstream references, which admit dual-role descriptors, the metadata only bounds the index.
+  const indexed = index.properties.map((entry) => entry.name);
+  const known = new Set(metadata.properties.map((entry) => entry.name));
+  assert.deepEqual(names.properties.filter((name) => !indexed.includes(name)), []);
+  assert.deepEqual(indexed.filter((name) => !known.has(name)), []);
   assert.deepEqual(index.descriptors.map(({ name, atRule }) => [name, atRule]),
     metadata.properties.filter((entry) => entry.atRule && !entry.name.startsWith("-"))
       .map(({ name, atRule }) => [name, atRule]));

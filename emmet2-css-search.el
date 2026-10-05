@@ -136,7 +136,8 @@ are shared through POOL under (NAME . SCORE), and their words as in
         (if cell (push value (cdr cell)) (push (list initial value) bucket))))))
 
 (defconst emmet2-css-search--index (emmet2-css-search--read "data/css-index.json")
-  "Names, relevance and keyword sets generated alongside data/css-data.json.")
+  "Keyword sets, at-rules, pseudos and elements generated with data/css-data.json.
+`emmet2-css-search--build' replaces the generated properties and descriptors.")
 
 (defconst emmet2-css-search--overrides (emmet2-css-search--read "data/css-overrides.json")
   "Authored CSS overrides, shared by search and expansion.
@@ -181,7 +182,8 @@ Equal keyword entries and words are shared through POOL."
   "Build the keyword and property tables of generated INDEX.
 Return (SETS WIDE CANONICAL DESCRIPTORS), the values of the constants of
 those names.  One call-owned pool shares equal keyword entries, word
-vectors and words among them."
+vectors and words among them.  Remove INDEX's raw properties and
+descriptors, which the returned tables replace."
   (let ((pool (make-hash-table :test #'equal))
         (own (alist-get 'own emmet2-css-search--likelihoods))
         (sets (make-hash-table :test #'equal))
@@ -201,6 +203,8 @@ vectors and words among them."
       (puthash (gethash "name" entry) (emmet2-css-search--index-property entry pool) canonical))
     (dolist (entry (gethash "descriptors" index))
       (push (emmet2-css-search--index-property entry pool) (gethash (gethash "atRule" entry) descriptors)))
+    (remhash "properties" index)
+    (remhash "descriptors" index)
     (list sets (emmet2-css-search--bucket (gethash "wide" index) (emmet2-css-search--weight 'wide) pool)
           canonical descriptors)))
 
@@ -226,9 +230,9 @@ vectors and words among them."
       (gethash name emmet2-css-search--canonical)))
 
 (defconst emmet2-css-search--ranked
-  (cl-remove-if-not #'emmet2-css-search--property-prior
-                    (mapcar (lambda (entry) (gethash (gethash "name" entry) emmet2-css-search--canonical))
-                            (gethash "properties" emmet2-css-search--index)))
+  (sort (cl-remove-if-not #'emmet2-css-search--property-prior
+                          (hash-table-values emmet2-css-search--canonical))
+        (lambda (a b) (string< (emmet2-css-search--property-name a) (emmet2-css-search--property-name b))))
   "Properties offered as choices, in name order.")
 
 (defconst emmet2-css-search--widest
@@ -247,10 +251,10 @@ vectors and words among them."
 
 (defconst emmet2-css-search--max-query-length
   (let ((property-width 0) (value-width 0))
-    (dolist (entry (append (gethash "properties" emmet2-css-search--index)
-                          (gethash "descriptors" emmet2-css-search--index)))
-      (setq property-width (max property-width (length (gethash "name" entry))))
-      (dolist (value (gethash "values" entry))
+    (dolist (property (append (hash-table-values emmet2-css-search--canonical)
+                              (apply #'append (hash-table-values emmet2-css-search--descriptors))))
+      (setq property-width (max property-width (length (emmet2-css-search--property-name property))))
+      (dolist (value (emmet2-css-search--property-keywords property))
         (setq value-width (max value-width (length value)))))
     (dolist (alias (hash-table-keys emmet2-css-search--property-aliases))
       (setq property-width (max property-width (length alias))))
@@ -551,15 +555,15 @@ Without AT-RULE, accept only ordinary properties, including obsolete ones."
 
 (defun emmet2-css-search-property-names (&optional descriptors)
   "Return ordinary CSS property names; DESCRIPTORS includes descriptors.
-The list is fresh; its strings are shared and read-only.  The stylesheet
-tokenizer recognizes every spelling; ranked search admits descriptors only
-in their enclosing at-rule."
-  (let ((names (mapcar (lambda (entry) (gethash "name" entry))
-                       (gethash "properties" emmet2-css-search--index))))
-    (if descriptors
-        (delete-dups (append names (mapcar (lambda (entry) (gethash "name" entry))
-                                          (gethash "descriptors" emmet2-css-search--index))))
-      names)))
+The list is fresh and in name order; its strings are shared and read-only.
+The stylesheet tokenizer recognizes every spelling; ranked search admits
+descriptors only in their enclosing at-rule."
+  (let ((names (hash-table-keys emmet2-css-search--canonical)))
+    (when descriptors
+      (maphash (lambda (_ entries)
+                 (dolist (entry entries) (push (emmet2-css-search--property-name entry) names)))
+               emmet2-css-search--descriptors))
+    (sort (delete-dups names) #'string<)))
 
 (defun emmet2-css-search-element-p (name)
   "Whether NAME is a known HTML element, also usable as a CSS type selector."

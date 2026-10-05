@@ -115,11 +115,12 @@ Lorem uses 42 structural cases and five seeds instead of random text goldens.
 `data/css-source.json` pins VS Code Custom Data (CSS and HTML) and MDN data's
 CSS type syntaxes by commit, hashes, schema and input counts.
 `node test/update-web-data.mjs` is an explicit networked maintenance step; it
-verifies all inputs before writing the full `css-data.json` metadata, the
+verifies all inputs before writing the `css-data.json` completion metadata, the
 compact `css-index.json` search index and both upstream licenses. The files are
-generated together; tests verify the index against the metadata. The full
-snapshot has 888 property/descriptor records including vendor entries, named
-values, restrictions and documentation. Comma-separated value presets such as
+generated together from the full upstream data; tests verify the index against
+the metadata. The metadata's 888 property/descriptor records include vendor
+entries. It keeps only what `emmet2-css-data` reads: names, string
+documentation, at-rule scope, restrictions and values. Comma-separated value presets such as
 font stacks are dropped, so no value contains a comma. The index contains 579
 ordinary properties (relevance, obsolete status, own keywords and the shared
 value sets reachable through property and type references), 34 at-rule

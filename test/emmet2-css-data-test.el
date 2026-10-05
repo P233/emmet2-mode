@@ -7,29 +7,6 @@
 (require 'ert)
 (require 'emmet2-css-data)
 
-(ert-deftest emmet2-css-data-preserves-source-candidates-and-documentation ()
-  (let* ((source
-          (with-temp-buffer
-            (insert-file-contents
-             (expand-file-name "data/css-data.json" emmet2-css-search--directory))
-            (json-parse-buffer :object-type 'alist :array-type 'list)))
-         (queries
-          (append '((property) (property :vendor t) (at-rule) (at-rule :vendor t) (pseudo) (pseudo :vendor t)
-                    (property :query "bg") (value :property "display" :query "ib")
-                    (pseudo :query "be" :vendor t) (at-rule :query "fo")
-                    (property :at-rule "@font-face") (property :at-rule "@page" :query "si"))
-                  (cl-loop for entry in (alist-get 'properties source)
-                           append (list (list 'value :property (alist-get 'name entry)
-                                              :at-rule (alist-get 'atRule entry) :vendor t)
-                                        (list 'value :property (alist-get 'name entry)))))))
-    ;; Compare every property's values and documentation, including descriptors,
-    ;; against the unabridged source rather than a second hand-maintained list.
-    (dolist (query queries)
-      (ert-info ((format "%S" query))
-        (should (equal (apply #'emmet2-css-data-query query)
-                       (let ((emmet2-css-data--data source))
-                         (apply #'emmet2-css-data-query query))))))))
-
 (ert-deftest emmet2-css-data-searches-real-names-and-scoped-values ()
   (should (equal (caar (emmet2-css-data-query 'property :query "ins")) "inset"))
   (should (assoc "inline-size" (emmet2-css-data-query 'property :query "size")))

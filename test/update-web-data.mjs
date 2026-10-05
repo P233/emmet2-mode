@@ -54,6 +54,19 @@ export function cssMetadata(data, source) {
   return { ...data, ...Object.fromEntries(Object.keys(source.counts).map((key) => [key, data[key].map(single)])) };
 }
 
+/** Keep only the metadata fields that emmet2-css-data reads, with descriptions as strings. */
+export function cssCompletionData(data, source) {
+  const text = (description) => (typeof description === "string" ? description : description?.value);
+  const entry = ({ name, description }) => ({ name, description: text(description) });
+  const property = ({ name, atRule, description, restrictions, values }) =>
+    ({ name, atRule, description: text(description), restrictions, values: values?.map(entry) });
+  return {
+    version: data.version,
+    ...Object.fromEntries(Object.keys(source.counts)
+      .map((key) => [key, data[key].map(key === "properties" ? property : entry)])),
+  };
+}
+
 export function htmlElements(data, source) {
   if (data?.version !== source.html.schemaVersion || !Array.isArray(data.tags) ||
       data.tags.length !== source.html.counts.tags ||
@@ -177,7 +190,7 @@ if (import.meta.main) {
     JSON.parse(vscode["web-data/data/browsers.html-data.json"]), source);
   // Validate every input before writing; local overrides are never outputs.
   await writeFile(new URL("../data/css-data.json", import.meta.url),
-    JSON.stringify(data, null, 2) + "\n");
+    JSON.stringify(cssCompletionData(data, source), null, 2) + "\n");
   await writeFile(new URL("../data/css-index.json", import.meta.url), JSON.stringify(index, null, 2) + "\n");
   await writeFile(new URL("../data/vscode-custom-data-LICENSE", import.meta.url), vscode.LICENSE);
   await writeFile(new URL("../data/mdn-data-LICENSE", import.meta.url), mdn.LICENSE);

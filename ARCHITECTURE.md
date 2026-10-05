@@ -493,11 +493,12 @@ Semantic completion is a different request. `emmet2-css-data-query` returns
 property and value names with documentation for a host to combine with Sass
 symbols, without a buffer; it owns no mode, parser, completion frontend,
 source-buffer state or query cache. Hosts own syntax, replacement ranges, Sass
-scopes, local symbols and insertion. The full metadata is loaded only when the
-query library is required; its equal strings are shared and read-only. Value
-queries reuse the compact index's own and shared keyword sets and keep the full
-metadata's documentation and restriction-derived functions; expansion loads
-only the compact index.
+scopes, local symbols and insertion. The completion metadata, which the
+generator limits to the fields queries read, is loaded only when the query
+library is required; its equal strings are shared and read-only. Value queries
+reuse the compact index's own and shared keyword sets and keep the metadata's
+documentation and restriction-derived functions; expansion loads only the
+compact index, whose search structs replace its generated property entries.
 `emmet2-css-search-value-names` exposes that membership without scores, and
 `emmet2-css-search-property-p` optionally admits descriptors for an at-rule.
 Consumers do not read private search entries.

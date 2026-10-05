@@ -119,6 +119,9 @@ to the earlier 0.2 implementation. See
 - Completion probes and live tables reuse the last batch's unchanged host
   analysis. Labels and previews are formatted only when requested, reducing
   temporary allocation while typing without changing candidate order or output.
+- The bundled CSS data keeps only the fields that completion reads, about
+  540 KB in `data/css-data.json`, and the search index keeps no raw property
+  entries after loading.
 
 - Markup puts point in the first empty attribute: `a.link` starts in `href`
   instead of the element content.

@@ -32,10 +32,10 @@
                     (nth 2 gate))))))
   ;; A complete name ranks first.  Single SVG letters such as d are
   ;; abbreviations of common properties instead.
-  (dolist (entry (gethash "properties" emmet2-css-search--index))
-    (let ((name (gethash "name" entry)))
-      (unless (or (gethash "obsolete" entry) (= (length name) 1))
-        (ert-info (name) (should (equal (car (emmet2-css-search name)) (cons name nil))))))))
+  (maphash (lambda (name property)
+             (when (and (emmet2-css-search--property-prior property) (> (length name) 1))
+               (ert-info (name) (should (equal (car (emmet2-css-search name)) (cons name nil))))))
+           emmet2-css-search--canonical))
 
 (ert-deftest emmet2-css-search-words-aliases-and-values ()
   (dolist (case '(("m" "margin" nil) ("d" "display" nil) ("r" "right" nil) ("ins" "inset" nil) ("inset-b" "inset-block" nil)
@@ -108,6 +108,17 @@
   (let ((names (emmet2-css-search-property-names)))
     (setcar names "mutated")
     (should-not (member "mutated" (emmet2-css-search-property-names)))))
+
+(ert-deftest emmet2-css-search-structs-replace-generated-property-entries ()
+  ;; Only the structs keep properties and descriptors after load.
+  (should (equal (sort (hash-table-keys emmet2-css-search--index) #'string<)
+                 '("atRules" "elements" "pseudos" "sets" "wide")))
+  (let ((names (emmet2-css-search-property-names t)))
+    (should (equal names (sort (copy-sequence names) #'string<)))
+    (should (equal (cl-remove-if-not (lambda (name) (gethash name emmet2-css-search--canonical)) names)
+                   (emmet2-css-search-property-names)))
+    (should (member "font-display" names))
+    (should-not (member "font-display" (emmet2-css-search-property-names)))))
 
 (ert-deftest emmet2-css-search-rejects-impossible-length-before-scratch-allocation ()
   (let ((input (concat "m" (make-string 4096 ?A))))
