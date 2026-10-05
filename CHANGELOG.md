@@ -102,9 +102,10 @@ to the earlier 0.2 implementation. See
 - With Corfu, Emmet choices stay plain text next to icon margins such as
   kind-icon or nerd-icons-corfu, and a sole Emmet choice stays in the popup
   whatever `corfu-on-exact-match` is.
-- Choices also appear under Company, which marks the buffer read-only while it
-  asks for completions. In a buffer that is really read-only, choices are
-  listed but accepting one is refused.
+- Choices also appear under Company through standard completion-at-point.
+  Accepting a function value such as `calc()` there leaves point after the
+  parentheses, and a buffer that is really read-only lists choices but refuses
+  to insert one.
 - `emmet2-css-in-js-attributes` and `emmet2-css-in-js-functions` add style-object
   hosts such as `sx={{...}}` or `css({...})`.
 - A leading `_` keeps an abbreviation's JSX classes as a string, as in `_.a.b`
