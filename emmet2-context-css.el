@@ -11,10 +11,12 @@
 ;;; Code:
 
 (require 'cl-lib)
-(require 'css-mode)
 (require 'emmet2-engine)
 (require 'emmet2-extract)
 (require 'emmet2-css-search)
+
+(defvar css-mode-syntax-table)
+(defvar scss-mode-syntax-table)
 
 (defun emmet2-context-css--state (region position)
   "Return CSS REGION's lexical state at POSITION.
@@ -22,6 +24,8 @@ Native CSS uses `css-base-mode' syntax state.  Embedded hosts need a bounded
 parse because their major mode does not supply CSS syntax at buffer level."
   (save-excursion
     (if (not (nth 5 region)) (syntax-ppss position)
+      ;; Loading css-mode here keeps its cost off hosts that never embed styles.
+      (require 'css-mode)
       ;; web-mode's comment properties would mislead the parse; use only the dialect's syntax table.
       (let ((parse-sexp-lookup-properties nil))
         (with-syntax-table (if (memq (nth 4 region) '(scss less))

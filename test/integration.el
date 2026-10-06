@@ -23,6 +23,11 @@
           (featurep 'emmet2-engine-stylesheet))
   (error "Run native integration in a fresh Emacs process"))
 
+;; Hosts that never embed styles skip css-mode; only the test files below load it.
+(require 'emmet2-mode)
+(when (featurep 'css-mode)
+  (error "Loading emmet2-mode also loaded css-mode"))
+
 (let ((expand (symbol-function 'emmet2-engine-expand))
       (package (getenv "EMMET2_TEST_PACKAGE"))
       (exec-path nil) (calls 0))

@@ -10,6 +10,7 @@
 (require 'emmet2-mode)
 (require 'emmet2-capf)
 (require 'web-mode)
+(require 'css-mode)
 
 (defmacro emmet2-test--with-yasnippet (installed &rest body)
   "Run BODY with yasnippet enabled when INSTALLED, otherwise as if absent."

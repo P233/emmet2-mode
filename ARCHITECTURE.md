@@ -562,6 +562,9 @@ timer or result cache.
   discards that extent and lets web-mode perform its normal scan. It owns no
   parser and does not share cleanup with the JSX adapter. Its region entry scans
   on its own.
+- The CSS adapter loads css-mode only to parse styles embedded in another host.
+  Native CSS buffers read `syntax-ppss` and never need it; hosts with a context
+  provider, such as scss2-mode, never reach the adapter.
 - Search loads the pinned index and CSS overrides once. Expansion reads the
   same immutable override catalog. The pools that share equal loaded data are
   dropped once loading ends. ASTs and search scratch tables are call-owned.

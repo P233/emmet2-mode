@@ -6,6 +6,7 @@
 (require 'emmet2-context)
 (require 'emmet2-mode)
 (require 'web-mode)
+(require 'css-mode)
 
 ;; All 38 planning probes are assertions; full real-point extraction is tested
 ;; separately below so supplied abbreviation bounds cannot hide scanner bugs.
