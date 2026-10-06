@@ -24,17 +24,25 @@
 (cl-defstruct (emmet2-stylesheet--output (:constructor emmet2-stylesheet--output (base-indent)))
   base-indent parts fields (offset 0) clear-defaults trim-leading escape)
 
-;; A set, not a 7 KB regexp-opt pattern that Emacs's 20-entry regexp cache evicts.
-(defconst emmet2-stylesheet--property-names
-  (let ((names (make-hash-table :test #'equal)))
-    (dolist (name (emmet2-css-search-property-names t) names)
-      (puthash name t names)))
-  "Every complete property and descriptor name.")
+(defvar emmet2-stylesheet--property-names nil
+  "Every complete property and descriptor name, or nil until first needed.")
 
-(defconst emmet2-stylesheet--property-name-limit
-  (cl-loop for name being the hash-keys of emmet2-stylesheet--property-names
-           maximize (length name))
-  "Length of the longest property or descriptor name.")
+;; A set, not a 7 KB regexp-opt pattern that Emacs's 20-entry regexp cache evicts.
+(defun emmet2-stylesheet--property-names ()
+  "Return the set of complete property and descriptor names."
+  (with-memoization emmet2-stylesheet--property-names
+    (let ((names (make-hash-table :test #'equal)))
+      (dolist (name (emmet2-css-search-property-names t) names)
+        (puthash name t names)))))
+
+(defvar emmet2-stylesheet--property-name-limit nil
+  "Length of the longest property or descriptor name, or nil until first needed.")
+
+(defun emmet2-stylesheet--property-name-limit ()
+  "Return the length of the longest property or descriptor name."
+  (with-memoization emmet2-stylesheet--property-name-limit
+    (cl-loop for name being the hash-keys of (emmet2-stylesheet--property-names)
+             maximize (length name))))
 
 (defconst emmet2-stylesheet--unitless-properties
   '("additive-symbols" "animation-iteration-count" "aspect-ratio" "base-palette"
@@ -79,7 +87,7 @@ START defaults to zero.  Hyphens within names stay intact; negative numbers
 and double-dash variable values can follow a complete name.  The longest
 name followed by such a boundary wins."
   (let* ((start (or start 0)) (end start) found
-         (limit (min (length text) (+ start emmet2-stylesheet--property-name-limit))))
+         (limit (min (length text) (+ start (emmet2-stylesheet--property-name-limit)))))
     ;; Names contain only lowercase letters, digits and hyphens.
     (while (and (< end limit)
                 (let ((character (aref text end)))
@@ -87,7 +95,7 @@ name followed by such a boundary wins."
       (setq end (1+ end)))
     (while (and (not found) (> end start))
       (when (and (emmet2-stylesheet--name-boundary-p text end)
-                 (gethash (substring text start end) emmet2-stylesheet--property-names))
+                 (gethash (substring text start end) (emmet2-stylesheet--property-names)))
         (setq found end))
       (setq end (1- end)))
     found))

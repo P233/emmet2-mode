@@ -226,7 +226,12 @@ word or unit outside the CSS data."
   "Remove the : or @ prefix of pseudo or at-rule NAME for fuzzy scoring."
   (string-trim-left name "[:@]+"))
 
-(defconst emmet2-css--pseudos (emmet2-css-search-pseudos))
+(defvar emmet2-css--pseudos nil
+  "Standard pseudo-class and pseudo-element names, or nil until first needed.")
+
+(defun emmet2-css--pseudos ()
+  "Return the standard pseudo-class and pseudo-element names."
+  (with-memoization emmet2-css--pseudos (emmet2-css-search-pseudos)))
 
 (defun emmet2-css--rank (abbreviation names alias-key)
   "Return NAMES ranked for ABBREVIATION, with its authored alias first.
@@ -339,7 +344,7 @@ FINAL makes the last pseudo the query, which must be a known name."
                     (dolist (argument arguments)
                       (push (emmet2-css--pseudo-function name (list argument)) pieces))
                   (push (emmet2-css--pseudo-function name arguments) pieces))))
-          (setq name (emmet2-css--pseudo-name name emmet2-css--pseudos (and final (= pos (length text)))))
+          (setq name (emmet2-css--pseudo-name name (emmet2-css--pseudos) (and final (= pos (length text)))))
           (push (if (and (member name (emmet2-css-search-override "pseudoFunctions"))
                          (not (member name (emmet2-css-search-override "pseudoOptionalFunctions"))))
                     (emmet2-css--pseudo-function name (list (emmet2-result-create "")))
@@ -371,7 +376,7 @@ not the source buffer's host context."
   (when (string-match "::?[-a-zA-Z0-9]+\\'" abbreviation)
     (let ((head (substring abbreviation 0 (match-beginning 0))) (pseudo (match-string 0 abbreviation)))
       (mapcar (lambda (name) (concat head name))
-              (seq-take (emmet2-css--rank pseudo emmet2-css--pseudos "pseudoAliases") limit)))))
+              (seq-take (emmet2-css--rank pseudo (emmet2-css--pseudos) "pseudoAliases") limit)))))
 
 (defun emmet2-css--property-choices (abbreviation limit at-rule)
   "Return up to LIMIT ranked programs for ABBREVIATION.

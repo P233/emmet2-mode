@@ -124,7 +124,7 @@
                    (cdr case)))))
 
 (ert-deftest emmet2-stylesheet-results-are-fresh-and-the-index-immutable ()
-  (let ((before (prin1-to-string emmet2-css-search--index))
+  (let ((before (prin1-to-string (emmet2-css-search--index)))
         (input "transform:scale3d(1,2,3)+margin.5+border1#2s") first)
     (setq first (emmet2-engine-stylesheet-expand input))
     (dolist (abbreviation '("border" "color+background" "padding$a$b$c" "top-a" "border${1:solid}"))
@@ -137,7 +137,7 @@
       (aset text 5 ?X)
       (should (equal (plist-get (emmet2-engine-stylesheet-expand "top-a") :text) "top: auto;")))
     (should (equal first (emmet2-engine-stylesheet-expand input)))
-    (should (equal before (prin1-to-string emmet2-css-search--index)))))
+    (should (equal before (prin1-to-string (emmet2-css-search--index))))))
 
 (ert-deftest emmet2-stylesheet-pure-and-deadline-bound ()
   (let ((exec-path nil))

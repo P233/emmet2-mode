@@ -498,8 +498,12 @@ scopes, local symbols and insertion. The completion metadata, which the
 generator limits to the fields queries read, is loaded only when the query
 library is required; its equal strings are shared and read-only. Value queries
 reuse the compact index's own and shared keyword sets and keep the metadata's
-documentation and restriction-derived functions; expansion loads only the
+documentation and restriction-derived functions; expansion reads only the
 compact index, whose search structs replace its generated property entries.
+Search reads that index and the authored overrides on its first call, and the
+stylesheet engine's property-name set and CSS pseudo list follow it, so loading
+the libraries reads no data: sessions that only display files never pay the
+parse.
 `emmet2-css-search-value-names` exposes that membership without scores, and
 `emmet2-css-search-property-p` optionally admits descriptors for an at-rule.
 Consumers do not read private search entries.

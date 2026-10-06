@@ -135,35 +135,6 @@ are shared through POOL under (NAME . SCORE), and their words as in
              (cell (assq initial bucket)))
         (if cell (push value (cdr cell)) (push (list initial value) bucket))))))
 
-(defconst emmet2-css-search--index (emmet2-css-search--read "data/css-index.json")
-  "Keyword sets, at-rules, pseudos and elements generated with data/css-data.json.
-`emmet2-css-search--build' replaces the generated properties and descriptors.")
-
-(defconst emmet2-css-search--overrides (emmet2-css-search--read "data/css-overrides.json")
-  "Authored CSS overrides, shared by search and expansion.
-Search reads the word and property aliases; emmet2-css reads the pseudo and
-at-rule keys.")
-
-(defun emmet2-css-search-override (key)
-  "Return authored CSS override KEY from the shared immutable catalog.
-Search aliases and expansion templates share one packaged data load.
-Callers must not modify the returned data."
-  (gethash key emmet2-css-search--overrides))
-
-(defconst emmet2-css-search--word-aliases
-  (let (aliases)
-    (maphash (lambda (key word) (push (cons key word) aliases))
-             (gethash "wordAliases" emmet2-css-search--overrides))
-    aliases)
-  "Authored (ABBREVIATION . WORD) pairs, such as bg for background.")
-
-(defconst emmet2-css-search--property-aliases (gethash "propertyAliases" emmet2-css-search--overrides)
-  "Authored abbreviations of properties without a word structure, such as fz.")
-
-(defconst emmet2-css-search--max-alias-length
-  (cl-loop for (alias . _) in emmet2-css-search--word-aliases maximize (length alias))
-  "Longest authored word alias, which bounds a matching segment.")
-
 (defun emmet2-css-search--index-property (entry pool)
   "Build one immutable search property from generated ENTRY.
 Equal keyword entries and words are shared through POOL."
@@ -180,9 +151,9 @@ Equal keyword entries and words are shared through POOL."
 
 (defun emmet2-css-search--build (index)
   "Build the keyword and property tables of generated INDEX.
-Return (SETS WIDE CANONICAL DESCRIPTORS), the values of the constants of
-those names.  One call-owned pool shares equal keyword entries, word
-vectors and words among them.  Remove INDEX's raw properties and
+Return (SETS WIDE CANONICAL DESCRIPTORS), the tables of those names.  One
+call-owned pool shares equal keyword entries, word vectors and words among
+them.  Remove INDEX's raw properties and
 descriptors, which the returned tables replace."
   (let ((pool (make-hash-table :test #'equal))
         (own (alist-get 'own emmet2-css-search--likelihoods))
@@ -208,67 +179,132 @@ descriptors, which the returned tables replace."
     (list sets (emmet2-css-search--bucket (gethash "wide" index) (emmet2-css-search--weight 'wide) pool)
           canonical descriptors)))
 
-(defconst emmet2-css-search--tables (emmet2-css-search--build emmet2-css-search--index)
-  "The keyword and property tables, built together so they share entries.")
+(cl-defstruct (emmet2-css-search--tables (:constructor emmet2-css-search--tables) (:copier nil))
+  index overrides word-aliases property-aliases max-alias-length
+  sets wide canonical descriptors ranked widest max-query-length elements)
 
-(defconst emmet2-css-search--sets (nth 0 emmet2-css-search--tables)
-  "Shared keyword sets by key, each indexed by initial.")
+(defvar emmet2-css-search--data nil
+  "The search tables, or nil until a search or expansion first needs them.")
 
-(defconst emmet2-css-search--wide (nth 1 emmet2-css-search--tables)
-  "CSS-wide keywords accepted by every ordinary property, not by descriptors.")
+(defun emmet2-css-search--data ()
+  "Return the search tables, reading the packaged data on first use.
+Parsing and indexing the data was most of this library's load time, which
+sessions that only read stylesheets never need."
+  (with-memoization emmet2-css-search--data (emmet2-css-search--load)))
 
-(defconst emmet2-css-search--canonical (nth 2 emmet2-css-search--tables)
-  "Every ordinary property by name.  Obsolete properties have no prior.")
+(defun emmet2-css-search--load ()
+  "Read the packaged data and build every search table from it."
+  (let* ((index (emmet2-css-search--read "data/css-index.json"))
+         (overrides (emmet2-css-search--read "data/css-overrides.json"))
+         (word-aliases (let (aliases)
+                         (maphash (lambda (key word) (push (cons key word) aliases))
+                                  (gethash "wordAliases" overrides))
+                         aliases))
+         (property-aliases (gethash "propertyAliases" overrides))
+         (max-alias-length (cl-loop for (alias . _) in word-aliases maximize (length alias)))
+         (built (emmet2-css-search--build index))
+         (wide (nth 1 built)) (canonical (nth 2 built)) (descriptors (nth 3 built))
+         (properties (append (hash-table-values canonical)
+                             (apply #'append (hash-table-values descriptors))))
+         (widest (let ((widest 1))
+                   (dolist (property properties)
+                     (setq widest (max widest (length (emmet2-css-search--property-words property))))
+                     (dolist (cell (emmet2-css-search--property-own property))
+                       (dolist (value (cdr cell))
+                         (setq widest (max widest (length (emmet2-css-search--value-words value)))))))
+                   (dolist (bucket (cons wide (hash-table-values (nth 0 built))) widest)
+                     (dolist (cell bucket)
+                       (dolist (value (cdr cell))
+                         (setq widest (max widest (length (emmet2-css-search--value-words value))))))))))
+    (emmet2-css-search--tables
+     :index index :overrides overrides :word-aliases word-aliases
+     :property-aliases property-aliases :max-alias-length max-alias-length
+     :sets (nth 0 built) :wide wide :canonical canonical :descriptors descriptors
+     :ranked (sort (cl-remove-if-not #'emmet2-css-search--property-prior (hash-table-values canonical))
+                   (lambda (a b) (string< (emmet2-css-search--property-name a)
+                                          (emmet2-css-search--property-name b))))
+     :widest widest
+     :max-query-length
+     (let ((property-width 0) (value-width 0))
+       (dolist (property properties)
+         (setq property-width (max property-width (length (emmet2-css-search--property-name property))))
+         (dolist (value (emmet2-css-search--property-keywords property))
+           (setq value-width (max value-width (length value)))))
+       (dolist (alias (hash-table-keys property-aliases))
+         (setq property-width (max property-width (length alias))))
+       (dolist (values (cons (gethash "wide" index) (hash-table-values (gethash "sets" index))))
+         (dolist (value values) (setq value-width (max value-width (length value)))))
+       (+ property-width value-width (* 2 widest max-alias-length)))
+     :elements (let ((table (make-hash-table :test #'equal)))
+                 (dolist (name (gethash "elements" index) table) (puthash name t table))))))
 
-(defconst emmet2-css-search--descriptors (nth 3 emmet2-css-search--tables)
-  "Descriptor entries grouped by their enclosing at-rule, from the same index.")
+(defsubst emmet2-css-search--index ()
+  "Return the generated at-rules, pseudos, elements and shared keywords.
+`emmet2-css-search--build' replaced its generated properties and descriptors."
+  (emmet2-css-search--tables-index (emmet2-css-search--data)))
+
+(defsubst emmet2-css-search--word-aliases ()
+  "Return authored (ABBREVIATION . WORD) pairs, such as bg for background."
+  (emmet2-css-search--tables-word-aliases (emmet2-css-search--data)))
+
+(defsubst emmet2-css-search--property-aliases ()
+  "Return authored abbreviations of unstructured properties, such as fz."
+  (emmet2-css-search--tables-property-aliases (emmet2-css-search--data)))
+
+(defsubst emmet2-css-search--max-alias-length ()
+  "Return the longest authored word alias, which bounds a matching segment."
+  (emmet2-css-search--tables-max-alias-length (emmet2-css-search--data)))
+
+(defsubst emmet2-css-search--sets ()
+  "Return the shared keyword groups by key, each indexed by initial."
+  (emmet2-css-search--tables-sets (emmet2-css-search--data)))
+
+(defsubst emmet2-css-search--wide ()
+  "Return CSS-wide keywords, accepted by ordinary properties, not descriptors."
+  (emmet2-css-search--tables-wide (emmet2-css-search--data)))
+
+(defsubst emmet2-css-search--canonical ()
+  "Return every ordinary property by name.  Obsolete properties have no prior."
+  (emmet2-css-search--tables-canonical (emmet2-css-search--data)))
+
+(defsubst emmet2-css-search--descriptors ()
+  "Return descriptor entries grouped by their enclosing at-rule."
+  (emmet2-css-search--tables-descriptors (emmet2-css-search--data)))
+
+(defsubst emmet2-css-search--ranked ()
+  "Return the properties offered as choices, in name order."
+  (emmet2-css-search--tables-ranked (emmet2-css-search--data)))
+
+(defsubst emmet2-css-search--widest ()
+  "Return the most words in any property or keyword name.
+That count bounds alignment tables."
+  (emmet2-css-search--tables-widest (emmet2-css-search--data)))
+
+(defsubst emmet2-css-search--max-query-length ()
+  "Return a conservative length bound for a property and keyword.
+It includes authored aliases and derives from the pinned vocabulary, not
+the length of untrusted input."
+  (emmet2-css-search--tables-max-query-length (emmet2-css-search--data)))
+
+(defsubst emmet2-css-search--elements ()
+  "Return known HTML element names, which are also CSS type selectors."
+  (emmet2-css-search--tables-elements (emmet2-css-search--data)))
+
+(defsubst emmet2-css-search--overrides ()
+  "Return the authored CSS overrides shared by search and expansion."
+  (emmet2-css-search--tables-overrides (emmet2-css-search--data)))
+
+(defun emmet2-css-search-override (key)
+  "Return authored CSS override KEY from the shared immutable catalog.
+Search aliases and expansion templates share one packaged data load.
+Callers must not modify the returned data."
+  (gethash key (emmet2-css-search--overrides)))
 
 (defun emmet2-css-search--entry (name at-rule)
   "Return NAME's descriptor in AT-RULE, or its ordinary property entry."
-  (or (and at-rule (cl-find name (gethash (downcase at-rule) emmet2-css-search--descriptors)
+  (or (and at-rule (cl-find name (gethash (downcase at-rule) (emmet2-css-search--descriptors))
                             :key #'emmet2-css-search--property-name :test #'equal))
-      (gethash name emmet2-css-search--canonical)))
-
-(defconst emmet2-css-search--ranked
-  (sort (cl-remove-if-not #'emmet2-css-search--property-prior
-                          (hash-table-values emmet2-css-search--canonical))
-        (lambda (a b) (string< (emmet2-css-search--property-name a) (emmet2-css-search--property-name b))))
-  "Properties offered as choices, in name order.")
-
-(defconst emmet2-css-search--widest
-  (let ((widest 1))
-    (dolist (property (append (hash-table-values emmet2-css-search--canonical)
-                              (apply #'append (hash-table-values emmet2-css-search--descriptors))))
-      (setq widest (max widest (length (emmet2-css-search--property-words property))))
-      (dolist (cell (emmet2-css-search--property-own property))
-        (dolist (value (cdr cell))
-          (setq widest (max widest (length (emmet2-css-search--value-words value)))))))
-    (dolist (bucket (cons emmet2-css-search--wide (hash-table-values emmet2-css-search--sets)) widest)
-      (dolist (cell bucket)
-        (dolist (value (cdr cell))
-          (setq widest (max widest (length (emmet2-css-search--value-words value))))))))
-  "Most words in any property or keyword name, which bounds alignment tables.")
-
-(defconst emmet2-css-search--max-query-length
-  (let ((property-width 0) (value-width 0))
-    (dolist (property (append (hash-table-values emmet2-css-search--canonical)
-                              (apply #'append (hash-table-values emmet2-css-search--descriptors))))
-      (setq property-width (max property-width (length (emmet2-css-search--property-name property))))
-      (dolist (value (emmet2-css-search--property-keywords property))
-        (setq value-width (max value-width (length value)))))
-    (dolist (alias (hash-table-keys emmet2-css-search--property-aliases))
-      (setq property-width (max property-width (length alias))))
-    (dolist (values (cons (gethash "wide" emmet2-css-search--index)
-                         (hash-table-values (gethash "sets" emmet2-css-search--index))))
-      (dolist (value values) (setq value-width (max value-width (length value)))))
-    (+ property-width value-width (* 2 emmet2-css-search--widest emmet2-css-search--max-alias-length)))
-  "Conservative bound for a property and keyword, including authored aliases.
-It derives from the pinned vocabulary, not the length of untrusted input.")
-
-(defconst emmet2-css-search--elements
-  (let ((table (make-hash-table :test #'equal)))
-    (dolist (name (gethash "elements" emmet2-css-search--index) table) (puthash name t table)))
-  "Known HTML element names, which are also CSS type selectors.")
+      (gethash name (emmet2-css-search--canonical))))
 
 ;;; Matching
 
@@ -288,7 +324,7 @@ never a skeleton of background, though rsz may still abbreviate resize."
   (emmet2-engine--check-deadline)
   (let* ((n (length query)) (width (1+ n))
          (fixed (make-vector (* width width) nil)) (claimed (make-vector (* width width) nil)))
-    (dolist (alias emmet2-css-search--word-aliases)
+    (dolist (alias (emmet2-css-search--word-aliases))
       (let ((size (length (car alias))))
         (dotimes (start (max 0 (1+ (- n size))))
           (when (eq t (compare-strings query start (+ start size) (car alias) 0 nil))
@@ -318,7 +354,7 @@ TABLES come from `emmet2-css-search--prepare' for QUERY."
 
 (defun emmet2-css-search--scratch (n)
   "Return reusable alignment vectors for queries of at most N characters."
-  (let ((size (* (1+ n) (1+ emmet2-css-search--widest))))
+  (let ((size (* (1+ n) (1+ (emmet2-css-search--widest)))))
     (vector (make-vector size nil) (make-vector size nil) (make-vector (1+ n) nil))))
 
 (defun emmet2-css-search--align (query words tables anchored scratch)
@@ -343,7 +379,7 @@ result is SCRATCH's own vector, valid until SCRATCH aligns again."
                 (when (> before 0) (setq best (aref ended (+ (* before width) j))))
               (let ((start before)
                     (minimum (max 0 (- i (max (length (aref words word))
-                                             emmet2-css-search--max-alias-length)))))
+                                             (emmet2-css-search--max-alias-length))))))
                 (while (and (>= start minimum) (or (= start before) (not (eq (aref query start) ?-))))
                   (let ((prior (if (= start 0) (and (or (not anchored) (= word 0)) (* word leading))
                                  (aref reach (+ (* start width) word)))))
@@ -428,8 +464,8 @@ are scored once per query through CACHE."
         (let* ((cache-key (cons key tail)) (shared (gethash cache-key cache 'miss)))
           (when (eq shared 'miss)
             (setq shared nil)
-            (dolist (value (cdr (assq initial (if key (gethash key emmet2-css-search--sets)
-                                                emmet2-css-search--wide))))
+            (dolist (value (cdr (assq initial (if key (gethash key (emmet2-css-search--sets))
+                                                (emmet2-css-search--wide)))))
               (when-let* ((score (score value)))
                 (push (cons score (emmet2-css-search--value-name value)) shared)))
             (puthash cache-key shared cache))
@@ -451,7 +487,7 @@ LIMIT defaults to ten.  AT-RULE admits its descriptors.  Signal
   (emmet2-engine-with-expansion
     (let ((case-fold-search nil) (limit (or limit 10)))
       ;; Digits occur only inside a few names, such as scrollbar-3dlight-color.
-      (when (and (> limit 0) (<= (length query) emmet2-css-search--max-query-length)
+      (when (and (> limit 0) (<= (length query) (emmet2-css-search--max-query-length))
                  (string-match-p "\\`[a-zA-Z][-a-zA-Z0-9]*\\'" query))
         (let* ((boundary (and (not bare) (<= ?a (aref query 0) ?z)
                               (string-match "[A-Z]" query 1) (match-beginning 0)))
@@ -463,9 +499,9 @@ LIMIT defaults to ten.  AT-RULE admits its descriptors.  Signal
                (heads-scratch (emmet2-css-search--scratch (length head)))
                (values-scratch (emmet2-css-search--scratch n))
                (alias-head (emmet2-css-search--weight 'alias))
-               (descriptors (and at-rule (gethash (downcase at-rule) emmet2-css-search--descriptors)))
+               (descriptors (and at-rule (gethash (downcase at-rule) (emmet2-css-search--descriptors))))
                (shadowed (mapcar (lambda (entry)
-                                  (gethash (emmet2-css-search--property-name entry) emmet2-css-search--canonical))
+                                  (gethash (emmet2-css-search--property-name entry) (emmet2-css-search--canonical)))
                                 descriptors))
                ;; Each split's value tail, its tables and the alias of its head.
                (splits (and (or boundary compact)
@@ -474,7 +510,7 @@ LIMIT defaults to ten.  AT-RULE admits its descriptors.  Signal
                                      collect (let ((tail (substring text split)))
                                                (list split tail (emmet2-css-search--prepare tail)
                                                      (gethash (substring text 0 split)
-                                                              emmet2-css-search--property-aliases))))))
+                                                              (emmet2-css-search--property-aliases)))))))
                hits)
           (dolist (property (if descriptors
                                (append (cl-remove-if-not
@@ -482,8 +518,8 @@ LIMIT defaults to ten.  AT-RULE admits its descriptors.  Signal
                                        descriptors)
                                        (cl-remove-if
                                         (lambda (entry) (memq entry shadowed))
-                                        emmet2-css-search--ranked))
-                             emmet2-css-search--ranked))
+                                        (emmet2-css-search--ranked)))
+                             (emmet2-css-search--ranked)))
             (let* ((name (emmet2-css-search--property-name property))
                    (prior (emmet2-css-search--property-prior property))
                    (anchored (eq (aref text 0) (aref name 0)))
@@ -495,7 +531,7 @@ LIMIT defaults to ten.  AT-RULE admits its descriptors.  Signal
                                (emmet2-css-search--align head (emmet2-css-search--property-words property)
                                                          tables nil heads-scratch))))
               (unless boundary
-                (when-let* ((score (cond ((or (equal (gethash text emmet2-css-search--property-aliases) name)
+                (when-let* ((score (cond ((or (equal (gethash text (emmet2-css-search--property-aliases)) name)
                                               (and (> n 1) (string= text name)))
                                           emmet2-css-search--exact)
                                          (heads (aref heads n)))))
@@ -517,7 +553,7 @@ AT-RULE selects a descriptor's values when PROPERTY is declared there."
   (emmet2-engine-with-expansion
     (when-let* ((entry (emmet2-css-search--entry property at-rule))
                 (limit (or limit 10))
-                (_ (and (> limit 0) (<= (length query) emmet2-css-search--max-query-length)
+                (_ (and (> limit 0) (<= (length query) (emmet2-css-search--max-query-length))
                         (string-match-p "\\`[a-zA-Z][-a-zA-Z]*\\'" query))))
       (let ((text (downcase query)))
         (mapcar #'cddr (emmet2-css-search--value-matches text entry (emmet2-css-search--prepare text)
@@ -534,11 +570,11 @@ caller may remove.
 AT-RULE selects descriptor values, as in ranked search."
   (let* ((entry (emmet2-css-search--entry property at-rule))
          (cascading (not (and entry (emmet2-css-search--property-descriptor entry))))
-         (sets (gethash "sets" emmet2-css-search--index)))
+         (sets (gethash "sets" (emmet2-css-search--index))))
     (append (and entry (emmet2-css-search--property-keywords entry))
             (cl-loop for key in (and entry (emmet2-css-search--property-sets entry))
                      append (copy-sequence (gethash key sets)))
-            (when cascading (gethash "wide" emmet2-css-search--index))
+            (when cascading (gethash "wide" (emmet2-css-search--index)))
             (when cascading '("var()"))
             (list "env()"))))
 
@@ -558,24 +594,24 @@ Without AT-RULE, accept only ordinary properties, including obsolete ones."
 The list is fresh and in name order; its strings are shared and read-only.
 The stylesheet tokenizer recognizes every spelling; ranked search admits
 descriptors only in their enclosing at-rule."
-  (let ((names (hash-table-keys emmet2-css-search--canonical)))
+  (let ((names (hash-table-keys (emmet2-css-search--canonical))))
     (when descriptors
       (maphash (lambda (_ entries)
                  (dolist (entry entries) (push (emmet2-css-search--property-name entry) names)))
-               emmet2-css-search--descriptors))
+               (emmet2-css-search--descriptors)))
     (sort (delete-dups names) #'string<)))
 
 (defun emmet2-css-search-element-p (name)
   "Whether NAME is a known HTML element, also usable as a CSS type selector."
-  (and (gethash name emmet2-css-search--elements) t))
+  (and (gethash name (emmet2-css-search--elements)) t))
 
 (defun emmet2-css-search-at-rules ()
   "Return a fresh list of standard CSS at-rule names."
-  (copy-sequence (gethash "atRules" emmet2-css-search--index)))
+  (copy-sequence (gethash "atRules" (emmet2-css-search--index))))
 
 (defun emmet2-css-search-pseudos ()
   "Return a fresh list of standard CSS pseudo-class and pseudo-element names."
-  (copy-sequence (gethash "pseudos" emmet2-css-search--index)))
+  (copy-sequence (gethash "pseudos" (emmet2-css-search--index))))
 
 (provide 'emmet2-css-search)
 ;;; emmet2-css-search.el ends here
