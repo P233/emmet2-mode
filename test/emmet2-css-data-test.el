@@ -97,5 +97,32 @@
       (should (assoc "inherit" values))
       (should (assoc "var()" values)))))
 
+(ert-deftest emmet2-css-data-descriptors-exclude-same-named-property-values ()
+  ;; One upstream record documents both the font-weight property and its descriptor.
+  (let ((values (emmet2-css-data-query 'value :property "font-weight" :at-rule "@font-face")))
+    ;; Keywords that both accept keep their documentation.
+    (should (cdr (assoc "bold" values)))
+    (should-not (assoc "bolder" values))
+    (should-not (assoc "lighter" values)))
+  (dolist (rule '("@font-face" "@FONT-PALETTE-VALUES"))
+    (let ((values (emmet2-css-data-query 'value :property "font-family" :at-rule rule)))
+      (dolist (name '("serif" "sans-serif" "monospace" "inherit" "var()"))
+        (should-not (assoc name values)))))
+  (dolist (rule '(nil "@media"))
+    (should (assoc "bolder" (emmet2-css-data-query 'value :property "font-weight" :at-rule rule)))
+    (should (assoc "serif" (emmet2-css-data-query 'value :property "font-family" :at-rule rule)))))
+
+(ert-deftest emmet2-css-data-agrees-with-search-on-every-descriptor ()
+  (maphash
+   (lambda (at-rule entries)
+     (dolist (entry entries)
+       (let* ((name (emmet2-css-search--property-name entry))
+              (values (mapcar #'car (emmet2-css-data-query 'value :property name :at-rule at-rule))))
+         (ert-info ((concat at-rule " " name))
+           (should (assoc name (emmet2-css-data-query 'property :at-rule at-rule)))
+           (should-not (member "inherit" values))
+           (should (cl-subsetp (emmet2-css-search-value-names name at-rule) values :test #'equal))))))
+   (emmet2-css-search--descriptors)))
+
 (provide 'emmet2-css-data-test)
 ;;; emmet2-css-data-test.el ends here

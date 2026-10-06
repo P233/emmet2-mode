@@ -156,7 +156,13 @@
   (should (member '("font-style" . "inherit") (emmet2-css-search "font-styleI" 30)))
   (should (equal (emmet2-css-search-values "inherits" "t" 10 "@property") '("true")))
   (should (member "italic" (emmet2-css-search-values "font-style" "i" 10 "@font-face")))
-  (should (member "inherit" (emmet2-css-search-values "font-style" "i" 30))))
+  (should (member "inherit" (emmet2-css-search-values "font-style" "i" 30)))
+  ;; A descriptor never borrows a same-named property's keywords.
+  (should-not (member "bolder" (emmet2-css-search-value-names "font-weight" "@font-face")))
+  (should (member "bolder" (emmet2-css-search-value-names "font-weight")))
+  (should-not (member "serif" (emmet2-css-search-value-names "font-family" "@font-face")))
+  ;; The descriptor, not the ordinary property, answers in @font-face.
+  (should-not (member "inherit" (emmet2-css-search-value-names "font-family" "@font-face"))))
 
 (provide 'emmet2-css-search-test)
 ;;; emmet2-css-search-test.el ends here

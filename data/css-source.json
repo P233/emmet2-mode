@@ -24,10 +24,12 @@
     "tag": "v2.37.0",
     "commit": "3a465f974817d680aaeee81acb446464c8c4baa7",
     "counts": {
-      "syntaxes": 378
+      "syntaxes": 378,
+      "descriptors": 36
     },
     "files": {
       "css/syntaxes.json": "14217403b8b4909b9c9be17c6e20cdc69d56d7255c6ff2b5991767f206f07058",
+      "css/at-rules.json": "ec1051a97c63b107d62e9e81cb6f99fe87d70bda0592730a67d1e8f37a824db7",
       "LICENSE": "36ffd9dc085d529a7e60e1276d73ae5a030b020313e6c5408593a6ae2af39673"
     }
   }

@@ -113,7 +113,8 @@ requires reviewing both `test/fixtures/core-inputs.json` and the regenerated
 Lorem uses 42 structural cases and five seeds instead of random text goldens.
 
 `data/css-source.json` pins VS Code Custom Data (CSS and HTML) and MDN data's
-CSS type syntaxes by commit, hashes, schema and input counts.
+CSS type syntaxes and at-rule descriptors by commit, hashes, schema and input
+counts.
 `node test/update-web-data.mjs` is an explicit networked maintenance step; it
 verifies all inputs before writing the `css-data.json` completion metadata, the
 compact `css-index.json` search index and both upstream licenses. The files are
@@ -123,15 +124,19 @@ entries. It keeps only what `emmet2-css-data` reads: names, string
 documentation, at-rule scope, restrictions and values. Comma-separated value presets such as
 font stacks are dropped, so no value contains a comma. The index contains 579
 ordinary properties (relevance, obsolete status, own keywords and the shared
-value sets reachable through property and type references), 34 at-rule
+value sets reachable through property and type references), 35 at-rule
 descriptors kept apart from them, 175 shared value sets, the five CSS-wide
 keywords, 19 at-rules, 117 pseudos and 116 HTML elements. A shared set stores
 its own keywords once. Vendor names, function arguments and deprecated types
-are excluded; descriptors are searched only for their own at-rule. An `atRule`
+are excluded; descriptors are searched only for their own at-rule. Descriptors
+and their syntax come from MDN, limited to those the metadata admits in their
+at-rule; every metadata descriptor must have one. An `atRule`
 association does not exclude ordinary use: the generator also admits entries
-whose source reference identifies an ordinary CSS property. The shared query
-library uses this same membership. This snapshot remains pinned and offline at
-runtime; updating data does not automatically add grammar support.
+whose source reference identifies an ordinary CSS property. Such a record
+lists the property's values, so its descriptor takes keywords only from its
+own syntax. The shared query library uses this same membership. This snapshot
+remains pinned and offline at runtime; updating data does not automatically add
+grammar support.
 `css-overrides.json` holds the data-driven overrides: word and property aliases
 used by search, and pseudo and at-rule aliases, pseudo functions and SCSS
 at-rule templates used by `emmet2-css`. The generator never writes it.

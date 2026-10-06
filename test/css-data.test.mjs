@@ -2,7 +2,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFile } from "node:fs/promises";
-import { cssCompletionData, cssIndex, cssMetadata, cssNames, cssSyntaxes, htmlElements, scanSyntax } from "./update-web-data.mjs";
+import { cssCompletionData, cssDescriptors, cssIndex, cssMetadata, cssNames, cssSyntaxes, htmlElements, scanSyntax }
+  from "./update-web-data.mjs";
 
 const source = { schemaVersion: 1.1, counts: { properties: 7, atDirectives: 2, pseudoClasses: 3, pseudoElements: 1 } };
 const data = {
@@ -17,6 +18,21 @@ const data = {
   pseudoClasses: [{ name: ":host" }, { name: ":host" }, { name: ":-vendor" }],
   pseudoElements: [{ name: "::part" }],
 };
+const atRules = {
+  "@font-face": { descriptors: {
+    "font-display": { syntax: "auto | swap", status: "standard" },
+    "font-style": { syntax: "normal | italic", status: "standard" },
+    src: { syntax: "<url>", status: "standard" }, "font-family": { syntax: "<family-name>", status: "obsolete" },
+  } },
+  "@media": {},
+  "@page": { descriptors: { "page-margin-safety": { syntax: "none | add", status: "standard" } } },
+};
+const pinned = { ...source, html: { schemaVersion: 1.1, counts: { tags: 2 } }, mdn: { counts: { syntaxes: 3, descriptors: 5 } } };
+const syntaxes = {
+  "line-style": { syntax: "none | solid" }, "deprecated-old": { syntax: "legacy" },
+  color: { syntax: "<named-color> | currentColor | <deprecated-old>" },
+};
+const html = { version: 1.1, tags: [{ name: "div" }, { name: "button" }] };
 
 test("CSS names retain ordinary properties that also serve as descriptors", () => {
   const before = structuredClone(data);
@@ -99,16 +115,10 @@ test("value syntax scanning keeps top-level keywords and references only", () =>
 });
 
 test("the index shares value sets and skips deprecated types", () => {
-  const pinned = { ...source, html: { schemaVersion: 1.1, counts: { tags: 2 } }, mdn: { counts: { syntaxes: 3 } } };
-  const syntaxes = {
-    "line-style": { syntax: "none | solid" }, "deprecated-old": { syntax: "legacy" },
-    color: { syntax: "<named-color> | currentColor | <deprecated-old>" },
-  };
-  const html = { version: 1.1, tags: [{ name: "div" }, { name: "button" }] };
   const complete = structuredClone(data);
   Object.assign(complete.properties[0], { syntax: "<line-style> || <color>", relevance: 69 });
   Object.assign(complete.properties[1], { syntax: "auto | <'inset'>", values: [{ name: "-vendor" }, { name: "auto" }] });
-  const index = cssIndex(complete, syntaxes, html, pinned);
+  const index = cssIndex(complete, syntaxes, atRules, html, pinned);
   assert.deepEqual(index.properties.find((entry) => entry.name === "inset"),
     { name: "inset", relevance: 69, values: [], sets: ["type:color", "type:line-style"] });
   assert.deepEqual(index.properties.find((entry) => entry.name === "inset-block"),
@@ -116,10 +126,50 @@ test("the index shares value sets and skips deprecated types", () => {
   assert.deepEqual(index.sets, { "type:color": ["currentColor"], "type:line-style": ["none", "solid"] });
   assert.deepEqual(index.elements, ["button", "div"]);
   assert.deepEqual(index.wide, ["inherit", "initial", "unset", "revert", "revert-layer"]);
+  // Metadata names neither font-family nor page-margin-safety here.
   assert.deepEqual(index.descriptors.map(({ name, atRule }) => [name, atRule]),
     [["font-display", "@font-face"], ["font-style", "@font-face"], ["src", "@font-face"]]);
+  const { src, ...withoutSource } = atRules["@font-face"].descriptors;
+  assert.equal(src.syntax, "<url>");
+  assert.throws(() => cssIndex(complete, syntaxes, { "@font-face": { descriptors: withoutSource } }, html,
+    { ...pinned, mdn: { counts: { syntaxes: 3, descriptors: 3 } } }), /without MDN syntax: src$/);
   assert.throws(() => htmlElements({ ...html, tags: [{ name: "Div" }, { name: "b" }] }, pinned), /Unexpected HTML/);
   assert.throws(() => cssSyntaxes({ a: { syntax: "x" } }, pinned), /Unexpected CSS type/);
+});
+
+test("descriptors take values from their own syntax, not from a property's record", () => {
+  const complete = structuredClone(data);
+  complete.properties[4].values = [{ name: "fallback" }];
+  // An upstream record that also documents the font-style property lists the property's values.
+  complete.properties[5].values = [{ name: "italic" }, { name: "bolder" }];
+  // An ordinary record names font-family, whose descriptor the upstream data does not associate.
+  complete.properties.push({ name: "font-family", values: [{ name: "serif" }] });
+  const index = cssIndex(complete, syntaxes, atRules, html,
+    { ...pinned, counts: { ...pinned.counts, properties: 8 } });
+  const descriptor = (name) => index.descriptors.find((entry) => entry.name === name);
+  assert.deepEqual(descriptor("font-display").values, ["fallback", "auto", "swap"]);
+  assert.deepEqual(descriptor("font-style").values, ["normal", "italic"]);
+  assert.deepEqual(descriptor("font-family"),
+    { atRule: "@font-face", name: "font-family", relevance: 50, obsolete: true, values: [], sets: [] });
+  assert.deepEqual(index.properties.find((entry) => entry.name === "font-style").values, ["italic", "bolder"]);
+  // The metadata admits font-display only in @font-face.
+  const elsewhere = { ...atRules, "@font-feature-values": { descriptors: { "font-display": { syntax: "auto", status: "standard" } } } };
+  assert.deepEqual(cssIndex(complete, syntaxes, elsewhere, html,
+    { ...pinned, counts: { ...pinned.counts, properties: 8 }, mdn: { counts: { syntaxes: 3, descriptors: 6 } } })
+    .descriptors.filter(({ name }) => name === "font-display").map(({ atRule }) => atRule), ["@font-face"]);
+});
+
+test("at-rule descriptor drift fails before output", () => {
+  assert.deepEqual(cssDescriptors({ ...atRules, "@page": { descriptors: { "-vendor": { syntax: "x", status: "standard" } } } },
+    { mdn: { counts: { descriptors: 5 } } }).map(({ name }) => name), ["font-display", "font-style", "src", "font-family"]);
+  for (const broken of [null, [], { "@font-face": { descriptors: { src: { status: "standard" } } } },
+    { "@font-face": { descriptors: { src: { syntax: "x" } } } },
+    { page: { descriptors: { size: { syntax: "x", status: "standard" } } } },
+    { "@page": { descriptors: { Size: { syntax: "x", status: "standard" } } } },
+    { "@page": 5 }, { "@page": { descriptors: [{ syntax: "x", status: "standard" }] } }]) {
+    assert.throws(() => cssDescriptors(broken, { mdn: { counts: { descriptors: 1 } } }), /Unexpected CSS at-rule descriptors/);
+  }
+  assert.throws(() => cssDescriptors(atRules, { mdn: { counts: { descriptors: 3 } } }), /Unexpected CSS at-rule descriptors/);
 });
 
 test("written metadata and the compact index have the same pinned source", async () => {
@@ -133,9 +183,12 @@ test("written metadata and the compact index have the same pinned source", async
   const known = new Set(metadata.properties.map((entry) => entry.name));
   assert.deepEqual(names.properties.filter((name) => !indexed.includes(name)), []);
   assert.deepEqual(indexed.filter((name) => !known.has(name)), []);
-  assert.deepEqual(index.descriptors.map(({ name, atRule }) => [name, atRule]),
-    metadata.properties.filter((entry) => entry.atRule && !entry.name.startsWith("-"))
-      .map(({ name, atRule }) => [name, atRule]));
+  // MDN supplies descriptors that one upstream record per name cannot associate, such as @font-face font-family.
+  const descriptors = index.descriptors.map(({ name, atRule }) => `${atRule}:${name}`);
+  assert.ok(descriptors.includes("@font-face:font-family"));
+  assert.deepEqual(index.descriptors.filter(({ name }) => !known.has(name)), []);
+  assert.deepEqual(metadata.properties.filter((entry) => entry.atRule && !entry.name.startsWith("-"))
+    .map(({ name, atRule }) => `${atRule}:${name}`).filter((key) => !descriptors.includes(key)), []);
   assert.deepEqual([index.atRules, index.pseudos], [names.atRules, names.pseudos]);
   assert.equal(index.elements.length, pinned.html.counts.tags);
   assert.ok(metadata.properties.find((entry) => entry.name === "display").values.some((entry) => entry.name === "grid"));
@@ -149,5 +202,15 @@ test("written metadata and the compact index have the same pinned source", async
     assert.ok(values(name).includes(value), `${name}: ${value}`);
   }
   assert.ok(!values("grid-template-columns").includes("auto-fill"));
+  assert.ok(values("font-weight").includes("bolder"));
+  // Descriptors share no keyword with a same-named property that their syntax lacks.
+  const descriptor = (atRule, name) => {
+    const entry = index.descriptors.find((item) => item.atRule === atRule && item.name === name);
+    return [...entry.values, ...entry.sets.flatMap((key) => index.sets[key])];
+  };
+  assert.deepEqual(descriptor("@font-face", "font-weight"), ["normal", "bold"]);
+  assert.deepEqual(descriptor("@font-face", "font-family"), []);
+  assert.deepEqual(descriptor("@font-palette-values", "font-family"), []);
+  assert.ok(descriptor("@font-face", "font-display").includes("swap"));
   assert.ok(!Object.values(index.sets).flat().some((value) => value.startsWith("-")));
 });

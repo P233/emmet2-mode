@@ -6352,205 +6352,6 @@
       "sets": []
     },
     {
-      "atRule": "@font-palette-values",
-      "name": "font-family",
-      "relevance": 94,
-      "values": [
-        "cursive",
-        "fantasy",
-        "monospace",
-        "sans-serif",
-        "serif"
-      ],
-      "sets": []
-    },
-    {
-      "atRule": "@font-face",
-      "name": "font-feature-settings",
-      "relevance": 59,
-      "values": [
-        "\"aalt\"",
-        "\"abvf\"",
-        "\"abvm\"",
-        "\"abvs\"",
-        "\"afrc\"",
-        "\"akhn\"",
-        "\"blwf\"",
-        "\"blwm\"",
-        "\"blws\"",
-        "\"calt\"",
-        "\"case\"",
-        "\"ccmp\"",
-        "\"cfar\"",
-        "\"cjct\"",
-        "\"clig\"",
-        "\"cpct\"",
-        "\"cpsp\"",
-        "\"cswh\"",
-        "\"curs\"",
-        "\"c2pc\"",
-        "\"c2sc\"",
-        "\"dist\"",
-        "\"dlig\"",
-        "\"dnom\"",
-        "\"dtls\"",
-        "\"expt\"",
-        "\"falt\"",
-        "\"fin2\"",
-        "\"fin3\"",
-        "\"fina\"",
-        "\"flac\"",
-        "\"frac\"",
-        "\"fwid\"",
-        "\"half\"",
-        "\"haln\"",
-        "\"halt\"",
-        "\"hist\"",
-        "\"hkna\"",
-        "\"hlig\"",
-        "\"hngl\"",
-        "\"hojo\"",
-        "\"hwid\"",
-        "\"init\"",
-        "\"isol\"",
-        "\"ital\"",
-        "\"jalt\"",
-        "\"jp78\"",
-        "\"jp83\"",
-        "\"jp90\"",
-        "\"jp04\"",
-        "\"kern\"",
-        "\"lfbd\"",
-        "\"liga\"",
-        "\"ljmo\"",
-        "\"lnum\"",
-        "\"locl\"",
-        "\"ltra\"",
-        "\"ltrm\"",
-        "\"mark\"",
-        "\"med2\"",
-        "\"medi\"",
-        "\"mgrk\"",
-        "\"mkmk\"",
-        "\"nalt\"",
-        "\"nlck\"",
-        "\"nukt\"",
-        "\"numr\"",
-        "\"onum\"",
-        "\"opbd\"",
-        "\"ordn\"",
-        "\"ornm\"",
-        "\"palt\"",
-        "\"pcap\"",
-        "\"pkna\"",
-        "\"pnum\"",
-        "\"pref\"",
-        "\"pres\"",
-        "\"pstf\"",
-        "\"psts\"",
-        "\"pwid\"",
-        "\"qwid\"",
-        "\"rand\"",
-        "\"rclt\"",
-        "\"rlig\"",
-        "\"rkrf\"",
-        "\"rphf\"",
-        "\"rtbd\"",
-        "\"rtla\"",
-        "\"rtlm\"",
-        "\"ruby\"",
-        "\"salt\"",
-        "\"sinf\"",
-        "\"size\"",
-        "\"smcp\"",
-        "\"smpl\"",
-        "\"ssty\"",
-        "\"stch\"",
-        "\"subs\"",
-        "\"sups\"",
-        "\"swsh\"",
-        "\"titl\"",
-        "\"tjmo\"",
-        "\"tnam\"",
-        "\"tnum\"",
-        "\"trad\"",
-        "\"twid\"",
-        "\"unic\"",
-        "\"valt\"",
-        "\"vatu\"",
-        "\"vert\"",
-        "\"vhal\"",
-        "\"vjmo\"",
-        "\"vkna\"",
-        "\"vkrn\"",
-        "\"vpal\"",
-        "\"vrt2\"",
-        "\"zero\"",
-        "normal",
-        "off",
-        "on"
-      ],
-      "sets": [
-        "type:feature-tag-value"
-      ]
-    },
-    {
-      "atRule": "@font-face",
-      "name": "font-stretch",
-      "relevance": 13,
-      "obsolete": true,
-      "values": [
-        "condensed",
-        "expanded",
-        "extra-condensed",
-        "extra-expanded",
-        "narrower",
-        "normal",
-        "semi-condensed",
-        "semi-expanded",
-        "ultra-condensed",
-        "ultra-expanded",
-        "wider"
-      ],
-      "sets": [
-        "type:font-stretch-absolute"
-      ]
-    },
-    {
-      "atRule": "@font-face",
-      "name": "font-style",
-      "relevance": 89,
-      "values": [
-        "italic",
-        "normal",
-        "oblique"
-      ],
-      "sets": []
-    },
-    {
-      "atRule": "@font-face",
-      "name": "font-weight",
-      "relevance": 93,
-      "values": [
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900",
-        "bold",
-        "bolder",
-        "lighter",
-        "normal"
-      ],
-      "sets": [
-        "type:font-weight-absolute"
-      ]
-    },
-    {
       "atRule": "@counter-style",
       "name": "negative",
       "relevance": 50,
@@ -6591,32 +6392,31 @@
       "sets": []
     },
     {
-      "atRule": "@page",
-      "name": "size",
-      "relevance": 53,
+      "atRule": "@counter-style",
+      "name": "speak-as",
+      "relevance": 50,
       "values": [
         "auto",
-        "portrait",
-        "landscape"
-      ],
-      "sets": [
-        "type:page-size"
-      ]
-    },
-    {
-      "atRule": "@font-face",
-      "name": "src",
-      "relevance": 85,
-      "values": [
-        "url()",
-        "format()",
-        "local()"
+        "bullets",
+        "numbers",
+        "words",
+        "spell-out"
       ],
       "sets": []
     },
     {
       "atRule": "@counter-style",
       "name": "suffix",
+      "relevance": 50,
+      "values": [],
+      "sets": [
+        "type:gradient",
+        "type:image"
+      ]
+    },
+    {
+      "atRule": "@counter-style",
+      "name": "symbols",
       "relevance": 50,
       "values": [],
       "sets": [
@@ -6640,14 +6440,119 @@
       "sets": []
     },
     {
-      "atRule": "@counter-style",
-      "name": "symbols",
-      "relevance": 50,
+      "atRule": "@font-face",
+      "name": "ascent-override",
+      "relevance": 51,
+      "values": [
+        "normal"
+      ],
+      "sets": []
+    },
+    {
+      "atRule": "@font-face",
+      "name": "descent-override",
+      "relevance": 51,
+      "values": [
+        "normal"
+      ],
+      "sets": []
+    },
+    {
+      "atRule": "@font-face",
+      "name": "font-display",
+      "relevance": 77,
+      "values": [
+        "auto",
+        "block",
+        "swap",
+        "fallback",
+        "optional"
+      ],
+      "sets": []
+    },
+    {
+      "atRule": "@font-face",
+      "name": "font-family",
+      "relevance": 94,
+      "values": [],
+      "sets": []
+    },
+    {
+      "atRule": "@font-face",
+      "name": "font-feature-settings",
+      "relevance": 59,
+      "values": [
+        "normal"
+      ],
+      "sets": [
+        "type:feature-tag-value"
+      ]
+    },
+    {
+      "atRule": "@font-face",
+      "name": "font-stretch",
+      "relevance": 13,
+      "obsolete": true,
       "values": [],
       "sets": [
-        "type:gradient",
-        "type:image"
+        "type:font-stretch-absolute"
       ]
+    },
+    {
+      "atRule": "@font-face",
+      "name": "font-style",
+      "relevance": 89,
+      "values": [
+        "normal",
+        "italic",
+        "oblique"
+      ],
+      "sets": []
+    },
+    {
+      "atRule": "@font-face",
+      "name": "font-variation-settings",
+      "relevance": 59,
+      "values": [
+        "normal"
+      ],
+      "sets": []
+    },
+    {
+      "atRule": "@font-face",
+      "name": "font-weight",
+      "relevance": 93,
+      "values": [],
+      "sets": [
+        "type:font-weight-absolute"
+      ]
+    },
+    {
+      "atRule": "@font-face",
+      "name": "line-gap-override",
+      "relevance": 51,
+      "values": [
+        "normal"
+      ],
+      "sets": []
+    },
+    {
+      "atRule": "@font-face",
+      "name": "size-adjust",
+      "relevance": 51,
+      "values": [],
+      "sets": []
+    },
+    {
+      "atRule": "@font-face",
+      "name": "src",
+      "relevance": 85,
+      "values": [
+        "url()",
+        "format()",
+        "local()"
+      ],
+      "sets": []
     },
     {
       "atRule": "@font-face",
@@ -6729,75 +6634,6 @@
       "sets": []
     },
     {
-      "atRule": "@font-face",
-      "name": "font-variation-settings",
-      "relevance": 59,
-      "values": [
-        "normal"
-      ],
-      "sets": []
-    },
-    {
-      "atRule": "@counter-style",
-      "name": "speak-as",
-      "relevance": 50,
-      "values": [
-        "auto",
-        "bullets",
-        "numbers",
-        "words",
-        "spell-out"
-      ],
-      "sets": []
-    },
-    {
-      "atRule": "@font-face",
-      "name": "ascent-override",
-      "relevance": 51,
-      "values": [
-        "normal"
-      ],
-      "sets": []
-    },
-    {
-      "atRule": "@font-face",
-      "name": "descent-override",
-      "relevance": 51,
-      "values": [
-        "normal"
-      ],
-      "sets": []
-    },
-    {
-      "atRule": "@font-face",
-      "name": "font-display",
-      "relevance": 77,
-      "values": [
-        "auto",
-        "block",
-        "swap",
-        "fallback",
-        "optional"
-      ],
-      "sets": []
-    },
-    {
-      "atRule": "@font-face",
-      "name": "line-gap-override",
-      "relevance": 51,
-      "values": [
-        "normal"
-      ],
-      "sets": []
-    },
-    {
-      "atRule": "@font-face",
-      "name": "size-adjust",
-      "relevance": 51,
-      "values": [],
-      "sets": []
-    },
-    {
       "atRule": "@font-palette-values",
       "name": "base-palette",
       "relevance": 50,
@@ -6805,6 +6641,13 @@
         "light",
         "dark"
       ],
+      "sets": []
+    },
+    {
+      "atRule": "@font-palette-values",
+      "name": "font-family",
+      "relevance": 94,
+      "values": [],
       "sets": []
     },
     {
@@ -6850,6 +6693,19 @@
         "rotate-right"
       ],
       "sets": []
+    },
+    {
+      "atRule": "@page",
+      "name": "size",
+      "relevance": 53,
+      "values": [
+        "auto",
+        "portrait",
+        "landscape"
+      ],
+      "sets": [
+        "type:page-size"
+      ]
     },
     {
       "atRule": "@property",

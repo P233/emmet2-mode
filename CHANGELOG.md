@@ -84,7 +84,8 @@ to the earlier 0.2 implementation. See
   places point inside its parentheses. In built-in CSS modes such as
   `css-mode`, this replaces css-mode's own value list for known properties.
 - Inside rules such as `@font-face`, abbreviations offer that rule's
-  descriptors and their values.
+  descriptors and their values, never the values of a same-named property,
+  such as `bolder` for `font-weight`.
 - CSS support covers every `css-base-mode` descendant, including `css-ts-mode`
   and `less-css-mode`.
 - In CSS, a known element followed by a pseudo, as in `button:hv`, completes as

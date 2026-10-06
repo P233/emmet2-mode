@@ -69,7 +69,7 @@ kind signals an error.
 Values share compact search's keyword sets, plus restriction-derived functions.
 Ordinary and unknown properties include the CSS-wide keywords, `var()` and
 `env()`; descriptors use their enclosing `:at-rule`, with `env()` but without
-CSS-wide keywords or `var()`.
+CSS-wide keywords, `var()` or a same-named property's values.
 Lists and pairs are fresh, strings are shared read-only, and documentation may
 be nil.
 

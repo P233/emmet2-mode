@@ -29,8 +29,9 @@ not included in the installed package.
 data/css-data.json contains metadata from Microsoft VS Code Custom Data;
 data/css-index.json is its compact, generated search index, which also holds
 HTML element names from the same project and value keywords expanded with CSS
-type syntaxes from MDN's mdn-data. VS Code Custom Data uses commit
-01df47ad7cc0b140624fc941ff57618c36ed46a1; its MIT license is reproduced in
+type syntaxes and at-rule descriptor definitions from MDN's mdn-data. VS Code
+Custom Data uses commit 01df47ad7cc0b140624fc941ff57618c36ed46a1; its MIT
+license is reproduced in
 data/vscode-custom-data-LICENSE. mdn-data uses tag v2.37.0, commit
 3a465f974817d680aaeee81acb446464c8c4baa7; its CC0 1.0 dedication is reproduced
 in data/mdn-data-LICENSE. data/css-source.json records source paths, checksums

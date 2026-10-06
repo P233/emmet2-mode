@@ -6,6 +6,11 @@ import { readFile, writeFile } from "node:fs/promises";
 // Every property also accepts the CSS-wide keywords.
 const cssWide = ["inherit", "initial", "unset", "revert", "revert-layer"];
 
+// atRule is an association, not an exclusive role. A property reference
+// identifies entries such as font-style that are also ordinary properties.
+const documentsProperty = (item) => !item.atRule ||
+  item.references?.some((reference) => reference.url.endsWith(`/Web/CSS/Reference/Properties/${item.name}`));
+
 export function cssNames(data, source) {
   if (data?.version !== source.schemaVersion) throw new Error("Unexpected CSS data schema");
   for (const [key, count] of Object.entries(source.counts)) {
@@ -21,10 +26,7 @@ export function cssNames(data, source) {
   const names = (items) => [...new Set(items.map((item) => item.name))]
     .filter((name) => !/^[:@]*-/.test(name)).sort();
   return {
-    // atRule is an association, not an exclusive role. A property reference
-    // identifies entries such as font-style that are also ordinary properties.
-    properties: names(data.properties.filter((item) => !item.atRule ||
-      item.references?.some((reference) => reference.url.endsWith(`/Web/CSS/Reference/Properties/${item.name}`)))),
+    properties: names(data.properties.filter(documentsProperty)),
     atRules: names(data.atDirectives),
     pseudos: names([...data.pseudoClasses, ...data.pseudoElements]),
   };
@@ -76,6 +78,24 @@ export function htmlElements(data, source) {
   return [...new Set(data.tags.map((tag) => tag.name))].sort();
 }
 
+/** Return MDN's at-rule descriptors as { atRule, name, syntax, status }, without vendor names. */
+export function cssDescriptors(atRules, source) {
+  const object = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
+  if (!object(atRules) || Object.values(atRules).some((entry) =>
+    !object(entry) || (entry.descriptors !== undefined && !object(entry.descriptors)))) {
+    throw new Error("Unexpected CSS at-rule descriptors");
+  }
+  const descriptors = Object.entries(atRules).flatMap(([atRule, entry]) =>
+    Object.entries(entry.descriptors ?? {}).map(([name, descriptor]) =>
+      ({ atRule, name, syntax: descriptor?.syntax, status: descriptor?.status })));
+  if (descriptors.length !== source.mdn.counts.descriptors ||
+      descriptors.some(({ atRule, name, syntax, status }) => !/^@[-a-z]+$/.test(atRule) ||
+        !/^-?[a-z][a-z0-9-]*$/.test(name) || typeof syntax !== "string" || typeof status !== "string")) {
+    throw new Error("Unexpected CSS at-rule descriptors");
+  }
+  return descriptors.filter(({ name }) => !name.startsWith("-"));
+}
+
 export function cssSyntaxes(syntaxes, source) {
   if (syntaxes === null || typeof syntaxes !== "object" || Array.isArray(syntaxes) ||
       Object.keys(syntaxes).length !== source.mdn.counts.syntaxes ||
@@ -118,7 +138,7 @@ export function scanSyntax(syntax) {
  * A set stores only its own keywords, so shared sets such as named colors
  * appear once.  Obsolete properties remain canonical names but are marked.
  */
-export function cssIndex(data, syntaxes, html, source) {
+export function cssIndex(data, syntaxes, atRules, html, source) {
   const names = cssNames(data, source);
   const entries = new Map();
   for (const entry of data.properties) entries.set(entry.name, [...(entries.get(entry.name) ?? []), entry]);
@@ -128,8 +148,16 @@ export function cssIndex(data, syntaxes, html, source) {
   for (const name of names.properties) {
     if (ordinary(name).syntax !== undefined) definitions.set(`property:${name}`, ordinary(name).syntax);
   }
-  const descriptors = data.properties.filter((entry) => entry.atRule && !entry.name.startsWith("-"));
-  for (const entry of descriptors) definitions.set(`${entry.atRule}:${entry.name}`, entry.syntax ?? "");
+  // One upstream record per name cannot place font-family in both @font-face and @font-palette-values.
+  // Metadata must admit every indexed descriptor, as an ordinary property or in that at-rule.
+  const descriptors = cssDescriptors(atRules, source).filter(({ atRule, name }) =>
+    entries.get(name)?.some((entry) => documentsProperty(entry) || entry.atRule === atRule));
+  const unsupported = data.properties.filter((entry) => entry.atRule && !entry.name.startsWith("-") &&
+    !descriptors.some(({ atRule, name }) => atRule === entry.atRule && name === entry.name));
+  if (unsupported.length) {
+    throw new Error(`Unexpected CSS descriptors without MDN syntax: ${unsupported.map((entry) => entry.name).join(", ")}`);
+  }
+  for (const { atRule, name, syntax } of descriptors) definitions.set(`${atRule}:${name}`, syntax);
   const scanned = new Map();
   const scan = (key) => {
     if (!scanned.has(key)) scanned.set(key, scanSyntax(definitions.get(key) ?? ""));
@@ -151,12 +179,16 @@ export function cssIndex(data, syntaxes, html, source) {
     for (const key of keys) sets.set(key, scan(key).keywords);
     const values = [...new Set([...(entry.values ?? []).map((value) => value.name), ...scan(start).keywords])]
       .filter((value) => !value.startsWith("-"));
-    const relevance = entry.relevance ?? entries.get(name).find((item) => item.relevance !== undefined)?.relevance ?? 50;
+    const relevance = entry.relevance ?? entries.get(name)?.find((item) => item.relevance !== undefined)?.relevance ?? 50;
     return { name, relevance, ...(entry.status === "obsolete" ? { obsolete: true } : {}), values, sets: keys };
   };
   return {
     properties: names.properties.map((name) => indexEntry(ordinary(name), `property:${name}`)),
-    descriptors: descriptors.map((entry) => ({ atRule: entry.atRule, ...indexEntry(entry, `${entry.atRule}:${entry.name}`) })),
+    descriptors: descriptors.map(({ atRule, name, status }) => {
+      // A record that also documents a property lists the property's values, such as bolder.
+      const record = entries.get(name)?.find((entry) => entry.atRule === atRule && !documentsProperty(entry));
+      return { atRule, ...indexEntry({ name, values: record?.values, relevance: record?.relevance, status }, `${atRule}:${name}`) };
+    }),
     sets: Object.fromEntries([...sets].sort(([a], [b]) => (a < b ? -1 : 1))),
     wide: cssWide,
     atRules: names.atRules,
@@ -186,7 +218,7 @@ if (import.meta.main) {
   const vscode = await download(`https://raw.githubusercontent.com/microsoft/vscode-custom-data/${source.commit}`, source.files);
   const mdn = await download(`https://raw.githubusercontent.com/mdn/data/${source.mdn.commit}`, source.mdn.files);
   const data = cssMetadata(JSON.parse(vscode["web-data/data/browsers.css-data.json"]), source);
-  const index = cssIndex(data, JSON.parse(mdn["css/syntaxes.json"]),
+  const index = cssIndex(data, JSON.parse(mdn["css/syntaxes.json"]), JSON.parse(mdn["css/at-rules.json"]),
     JSON.parse(vscode["web-data/data/browsers.html-data.json"]), source);
   // Validate every input before writing; local overrides are never outputs.
   await writeFile(new URL("../data/css-data.json", import.meta.url),
