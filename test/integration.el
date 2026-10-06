@@ -23,10 +23,22 @@
           (featurep 'emmet2-engine-stylesheet))
   (error "Run native integration in a fresh Emacs process"))
 
-;; Hosts that never embed styles skip css-mode; only the test files below load it.
+;; emmet2 never loads css-mode, even for embedded styles or CSS previews; only the tests below do.
 (require 'emmet2-mode)
+(require 'emmet2-preview)
+(require 'web-mode)
+(dolist (style '("<style>" "<style lang=\"scss\">"))
+  (with-temp-buffer
+    (insert style ".a { m10+p10 }</style>")
+    (web-mode)
+    (search-backward "+p10")
+    (forward-char 4)
+    (unless (eq (plist-get (emmet2-context-analyze) :lang) 'css)
+      (error "Integration did not analyze an embedded style"))))
+(emmet2-preview "margin: 10px;\npadding: 10px;" 'css)
 (when (featurep 'css-mode)
-  (error "Loading emmet2-mode also loaded css-mode"))
+  (error "emmet2 loaded css-mode"))
+(emmet2-preview-clear)
 
 (let ((expand (symbol-function 'emmet2-engine-expand))
       (package (getenv "EMMET2_TEST_PACKAGE"))

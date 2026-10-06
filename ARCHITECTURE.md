@@ -548,7 +548,10 @@ group. Fields, embedded styles and shared lines retain the canonical cursor.
 This adds no continuation text to pure results, previews or completion caches.
 
 `emmet2-preview` owns at most three lazy, read-only, non-file buffers. Built-in
-HTML, JSX and CSS modes fontify the final text without extra grammars. Creation
+HTML and JSX modes and `emmet2-preview-css-mode` fontify the final text without
+extra grammars; the CSS mode colors names, at-rules, variables, `!important`
+and color swatches as css-mode would, reading CSS color names from `shr-color`.
+Creation
 isolates user mode hooks. Failed initialization, module unload and package
 unload clear the owned buffers; ordinary kill hooks still run. There is no
 timer or result cache.
@@ -562,9 +565,9 @@ timer or result cache.
   discards that extent and lets web-mode perform its normal scan. It owns no
   parser and does not share cleanup with the JSX adapter. Its region entry scans
   on its own.
-- The CSS adapter loads css-mode only to parse styles embedded in another host.
-  Native CSS buffers read `syntax-ppss` and never need it; hosts with a context
-  provider, such as scss2-mode, never reach the adapter.
+- emmet2 never loads css-mode. The CSS adapter parses embedded styles with
+  copies of css-mode's syntax tables, which a test keeps equal; native CSS
+  buffers read `syntax-ppss`; CSS previews use `emmet2-preview-css-mode`.
 - Search loads the pinned index and CSS overrides once. Expansion reads the
   same immutable override catalog. The pools that share equal loaded data are
   dropped once loading ends. ASTs and search scratch tables are call-owned.

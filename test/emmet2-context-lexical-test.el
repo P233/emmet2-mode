@@ -8,6 +8,14 @@
 (require 'web-mode)
 (require 'css-mode)
 
+(ert-deftest emmet2-context-css-embedded-tables-match-css-mode ()
+  ;; The adapter keeps its own copies so that embedded styles never load css-mode.
+  (pcase-dolist (`(,ours . ,theirs) `((,emmet2-context-css--syntax-table . ,css-mode-syntax-table)
+                                      (,emmet2-context-css--scss-syntax-table . ,scss-mode-syntax-table)))
+    (dotimes (char 256)
+      (ert-info ((format "char %d" char))
+        (should (equal (aref ours char) (aref theirs char)))))))
+
 ;; All 38 planning probes are assertions; full real-point extraction is tested
 ;; separately below so supplied abbreviation bounds cannot hide scanner bugs.
 

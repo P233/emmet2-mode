@@ -117,6 +117,11 @@ to the earlier 0.2 implementation. See
 
 ### Changed
 
+- emmet2 never loads `css-mode`, which also loads eww, shr and SMIE. Embedded
+  styles parse with copies of its syntax tables, and CSS previews use
+  `emmet2-preview-css-mode`, which colors property names, at-rules,
+  `$` variables, `!important` and color swatches. The first embedded style or
+  multi-line CSS preview of a session no longer spends about 110 ms and 2.7 MB.
 - Completion probes and live tables reuse the last batch's unchanged host
   analysis. Labels and previews are formatted only when requested, reducing
   temporary allocation while typing without changing candidate order or output.

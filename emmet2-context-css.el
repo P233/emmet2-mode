@@ -15,8 +15,31 @@
 (require 'emmet2-extract)
 (require 'emmet2-css-search)
 
-(defvar css-mode-syntax-table)
-(defvar scss-mode-syntax-table)
+;; Copies of css-mode's tables, since loading css-mode for them also loads eww, shr and SMIE.
+(defconst emmet2-context-css--syntax-table
+  (let ((table (make-syntax-table)))
+    (modify-syntax-entry ?/ ". 14" table)
+    (modify-syntax-entry ?* ". 23b" table)
+    (modify-syntax-entry ?\" "\"" table)
+    (modify-syntax-entry ?\' "\"" table)
+    (pcase-dolist (`(,open . ,close) '((?{ . ?}) (?\( . ?\)) (?\[ . ?\])))
+      (modify-syntax-entry open (string ?\( close) table)
+      (modify-syntax-entry close (string ?\) open) table))
+    (dolist (char '(?@ ?# ?. ?-))
+      (modify-syntax-entry char "_" table))
+    (dolist (char '(?! ?$ ?% ?& ?+ ?, ?< ?> ?= ??))
+      (modify-syntax-entry char "." table))
+    table)
+  "Syntax table for CSS embedded in another host.")
+
+(defconst emmet2-context-css--scss-syntax-table
+  (let ((table (make-syntax-table emmet2-context-css--syntax-table)))
+    (modify-syntax-entry ?/ ". 124" table)
+    (modify-syntax-entry ?\n ">" table)
+    (modify-syntax-entry ?$ "_" table)
+    (modify-syntax-entry ?% "_" table)
+    table)
+  "Syntax table for SCSS and Less embedded in another host.")
 
 (defun emmet2-context-css--state (region position)
   "Return CSS REGION's lexical state at POSITION.
@@ -24,12 +47,11 @@ Native CSS uses `css-base-mode' syntax state.  Embedded hosts need a bounded
 parse because their major mode does not supply CSS syntax at buffer level."
   (save-excursion
     (if (not (nth 5 region)) (syntax-ppss position)
-      ;; Loading css-mode here keeps its cost off hosts that never embed styles.
-      (require 'css-mode)
       ;; web-mode's comment properties would mislead the parse; use only the dialect's syntax table.
       (let ((parse-sexp-lookup-properties nil))
         (with-syntax-table (if (memq (nth 4 region) '(scss less))
-                               scss-mode-syntax-table css-mode-syntax-table)
+                               emmet2-context-css--scss-syntax-table
+                             emmet2-context-css--syntax-table)
           (parse-partial-sexp (nth 1 region) position))))))
 
 (defun emmet2-context-css--position (region beg state)
