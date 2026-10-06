@@ -223,8 +223,9 @@ names.
 
 Pseudo and at-rule lookup applies authored aliases first, then fuzzy-ranks only
 names that share the query's first letter, so `@us` cannot become
-`@counter-style`. Without an authored alias, ranking alone resolves names: `@fa`
-gives `@font-face`, not `@forward`, and `:fu` gives `:future`. Plain `css`
+`@counter-style`. With the alias maps emptied, ranking alone gives
+`@font-face` for `@fa`, not `@forward`, and `:future` for `:fu`; the shipped
+`:fu` alias gives `:focus`. Plain `css`
 resolves names among CSS at-rules, directly or through an authored alias,
 without Sass templates. Templates change only authored layout, leaving literal
 tabs untouched. Only `:not` spreads comma arguments into chained calls. Pseudo
@@ -413,8 +414,8 @@ CSS expansion supplies current choices, including for `o.` while typing `o.5`.
 No choices means normal frontend dismissal, not reuse of stale rows. Property
 and selector readings still use the CSS module's kind classifier. Bare markup
 words in text, declaration values and unconfirmed host positions remain with
-other providers; a known HTML element alone on its line is offered. In SCSS, a Sass variable after
-a property, as in `m$gutter`, is a signal, including the incomplete prefixes
+other providers; a known HTML element alone on its line is offered. In SCSS, a
+Sass variable after a property, as in `m$gutter`, is a signal, including the incomplete prefixes
 `p$` and `p$-`. A bare `$name` stays with the host's variable completion; plain
 CSS and CSS-in-JS leave `$` to explicit requests.
 
@@ -539,20 +540,17 @@ active field would highlight typed or completed values like a selection and
 send TAB to the final exit. Plain insertion uses the same text and initial
 cursor, and one undo restores the abbreviation.
 
-`emmet2-css-auto-newline` is an insertion-only preference, read when accepting
-a result. The snapshot also carries the analysis's insertion role. In CSS
-Base modes, a complete declaration alone on its source line can continue
-after its final semicolon. Insertion reuses the next blank line or creates
-one, copies the source indentation and includes those edits in the same undo
-group. Fields, embedded styles and shared lines retain the canonical cursor.
-This adds no continuation text to pure results, previews or completion caches.
+`emmet2-css-auto-newline` is an insertion-only preference read when accepting
+a result; the snapshot carries the analysis's insertion role. Continuation
+edits share the expansion's undo group and add no text to pure results,
+previews or completion caches; the conditions are in
+[API.md](API.md#synchronous-expansion-preview-and-insertion).
 
 `emmet2-preview` owns at most three lazy, read-only, non-file buffers. Built-in
 HTML and JSX modes and `emmet2-preview-css-mode` fontify the final text without
 extra grammars; the CSS mode colors names, at-rules, variables, `!important`
 and color swatches as css-mode would, reading CSS color names from `shr-color`.
-Creation
-isolates user mode hooks. Failed initialization, module unload and package
+Creation isolates user mode hooks. Failed initialization, module unload and package
 unload clear the owned buffers; ordinary kill hooks still run. There is no
 timer or result cache.
 

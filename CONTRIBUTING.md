@@ -108,8 +108,8 @@ strings. The 526 fixed markup cases include errors. CSS output is defined by
 this project, so the oracle covers markup only. `--check` regenerates in memory
 and compares contents plus complete inventory without writing. Extra files
 fail; nothing is silently deleted. An intentional input or contract change
-requires reviewing both `core-inputs.json` and the regenerated
-`oracle/markup.json`. These fixtures are not exhaustive upstream coverage.
+requires reviewing both `test/fixtures/core-inputs.json` and the regenerated
+`test/fixtures/oracle/markup.json`. These fixtures are not exhaustive upstream coverage.
 Lorem uses 42 structural cases and five seeds instead of random text goldens.
 
 `data/css-source.json` pins VS Code Custom Data (CSS and HTML) and MDN data's

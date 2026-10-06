@@ -73,7 +73,6 @@ to the earlier 0.2 implementation. See
   line. Expansion and continuation undo together. Empty fields, embedded
   styles, value completion and lines shared with code or comments retain
   their cursor behavior. Set `emmet2-css-auto-newline` to `nil` to disable it.
-
 - Abbreviations appear as completion choices while you type, with full
   previews through `corfu-popupinfo-mode` and one undo that restores the
   abbreviation.
@@ -81,9 +80,6 @@ to the earlier 0.2 implementation. See
   initials and word fragments (`bgc`, `ins32`), and a query can combine a
   property and a keyword (`tac`). Value search includes keywords inherited
   from a property's value types.
-- Declaration completion stays open through decimal prefixes such as `o.` in
-  `o.5`. Continuation follows the current expansion in a confirmed declaration
-  slot, while host boundaries and unsupported input still end completion.
 - Property values complete fuzzily with documentation, and accepting a function
   places point inside its parentheses. In built-in CSS modes such as
   `css-mode`, this replaces css-mode's own value list for known properties.
@@ -116,18 +112,6 @@ to the earlier 0.2 implementation. See
   through `emmet2-context-provider`.
 
 ### Changed
-
-- emmet2 never loads `css-mode`, which also loads eww, shr and SMIE. Embedded
-  styles parse with copies of its syntax tables, and CSS previews use
-  `emmet2-preview-css-mode`, which colors property names, at-rules,
-  `$` variables, `!important` and color swatches. The first embedded style or
-  multi-line CSS preview of a session no longer spends about 110 ms and 2.7 MB.
-- Completion probes and live tables reuse the last batch's unchanged host
-  analysis. Labels and previews are formatted only when requested, reducing
-  temporary allocation while typing without changing candidate order or output.
-- The bundled CSS data keeps only the fields that completion reads, about
-  540 KB in `data/css-data.json`, and the search index keeps no raw property
-  entries after loading.
 
 - Markup puts point in the first empty attribute: `a.link` starts in `href`
   instead of the element content.
