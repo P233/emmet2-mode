@@ -559,9 +559,11 @@ previews or completion caches; the conditions are in
 HTML and JSX modes and `emmet2-preview-css-mode` fontify the final text without
 extra grammars; the CSS mode colors names, at-rules, variables, `!important`
 and color swatches as css-mode would, reading CSS color names from `shr-color`.
-Creation isolates user mode hooks. Failed initialization, module unload and package
-unload clear the owned buffers; ordinary kill hooks still run. There is no
-timer or result cache.
+Creation isolates user mode hooks, so Font Lock mode stays off and each buffer
+is fontified only when its text changes; an interrupted fontification empties
+the buffer so that the next request rebuilds it. Failed initialization, module
+unload and package unload clear the owned buffers; ordinary kill hooks still
+run. There is no timer or result cache.
 
 ## Resource ownership
 

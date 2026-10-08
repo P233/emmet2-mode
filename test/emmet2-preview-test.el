@@ -47,6 +47,23 @@
           (should (= tick (buffer-chars-modified-tick)))))
     (emmet2-preview-clear)))
 
+(ert-deftest emmet2-preview-fontifies-only-changed-text ()
+  (emmet2-preview-clear)
+  (unwind-protect
+      (let ((calls 0) (fontify (symbol-function 'font-lock-fontify-region)))
+        (cl-letf (((symbol-function 'font-lock-fontify-region)
+                   (lambda (&rest args) (cl-incf calls) (apply fontify args))))
+          (dotimes (_ 3) (emmet2-preview "<p>\n</p>" 'html))
+          (should (= calls 1))
+          (emmet2-preview "<ul>\n</ul>" 'html)
+          (should (= calls 2)))
+        (cl-letf (((symbol-function 'font-lock-ensure) (lambda (&rest _) (signal 'quit nil))))
+          (should (eq (condition-case nil (emmet2-preview "<p>\n</p>" 'html) (quit 'quit)) 'quit)))
+        (with-current-buffer (emmet2-preview "<p>\n</p>" 'html)
+          (should (equal (buffer-string) "<p>\n</p>"))
+          (should (text-property-not-all (point-min) (point-max) 'face nil))))
+    (emmet2-preview-clear)))
+
 (ert-deftest emmet2-preview-colors-css-like-css-mode ()
   (emmet2-preview-clear)
   (unwind-protect

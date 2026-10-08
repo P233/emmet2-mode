@@ -103,10 +103,13 @@ kills it.  The current buffer, point and text are unchanged."
     (with-current-buffer buffer
       (let ((inhibit-read-only t))
         (widen)
+        ;; Font Lock mode is off here, so `font-lock-ensure' would refontify unchanged text.
         (unless (equal text (buffer-substring-no-properties (point-min) (point-max)))
-          (erase-buffer)
-          (insert text))
-        (font-lock-ensure)
+          (let (complete)
+            (unwind-protect
+                (progn (erase-buffer) (insert text) (font-lock-ensure) (setq complete t))
+              ;; Partly fontified text must not pass for a finished preview.
+              (unless complete (erase-buffer)))))
         (goto-char (point-min))
         (set-buffer-modified-p nil)))
     buffer))
