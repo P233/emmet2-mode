@@ -175,28 +175,30 @@ On any error the buffer and point are restored."
         (progn
           (with-undo-amalgamate
             (atomic-change-group
-              (if template
-                  (progn
-                    ;; Enabling yas-minor-mode runs user hooks; roll back their edits with the snippet's.
-                    (unless (bound-and-true-p yas-minor-mode) (yas-minor-mode 1))
-                    (let ((yas-before-expand-snippet-hook
-                           (append yas-before-expand-snippet-hook
-                                   (list (lambda ()
-                                           (unless (emmet2-insert-snapshot-valid-p snapshot)
-                                             (signal 'emmet2-error '("Source changed in yas before-expand hook"))))))))
-                      (yas-expand-snippet
-                       template beg end
-                       `((yas-indent-line nil) (yas-wrap-around-region nil) (case-fold-search nil)
-                         ;; web-mode otherwise reformats the whole expansion on exit.
-                         (yas-after-exit-snippet-hook
-                          (remq 'web-mode-yasnippet-exit-hook yas-after-exit-snippet-hook))))))
-                (delete-region beg (if (and (not (eq (plist-get snapshot :lang) 'markup))
-                                            (string-suffix-p ";" (plist-get result :text))
-                                            (eq (char-after end) ?\;))
-                                       (1+ end) end))
-                (goto-char beg) (insert (plist-get result :text))
-                (goto-char (+ beg (plist-get result :cursor)))
-                (when continuation (emmet2-insert--css-continue continuation)))))
+              ;; Restore the source buffer before transaction and point cleanup.
+              (save-current-buffer
+                (if template
+                    (progn
+                      ;; Enabling yas-minor-mode runs user hooks; roll back their edits with the snippet's.
+                      (unless (bound-and-true-p yas-minor-mode) (yas-minor-mode 1))
+                      (let ((yas-before-expand-snippet-hook
+                             (append yas-before-expand-snippet-hook
+                                     (list (lambda ()
+                                             (unless (emmet2-insert-snapshot-valid-p snapshot)
+                                               (signal 'emmet2-error '("Source changed in yas before-expand hook"))))))))
+                        (yas-expand-snippet
+                         template beg end
+                         `((yas-indent-line nil) (yas-wrap-around-region nil) (case-fold-search nil)
+                           ;; web-mode otherwise reformats the whole expansion on exit.
+                           (yas-after-exit-snippet-hook
+                            (remq 'web-mode-yasnippet-exit-hook yas-after-exit-snippet-hook))))))
+                  (delete-region beg (if (and (not (eq (plist-get snapshot :lang) 'markup))
+                                              (string-suffix-p ";" (plist-get result :text))
+                                              (eq (char-after end) ?\;))
+                                         (1+ end) end))
+                  (goto-char beg) (insert (plist-get result :text))
+                  (goto-char (+ beg (plist-get result :cursor)))
+                  (when continuation (emmet2-insert--css-continue continuation))))))
           (setq success t)
           (undo-boundary))
       (unless success (goto-char original-point)))))

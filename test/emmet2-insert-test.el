@@ -66,6 +66,32 @@
           (should-not (yas-active-snippets))
           (unless undo (should (eq buffer-undo-list t))))))))
 
+(ert-deftest emmet2-insert-yas-failure-restores-the-source-buffer ()
+  (dolist (undo '(nil t))
+    (dolist (hook '(yas-minor-mode-hook yas-before-expand-snippet-hook))
+      (with-temp-buffer
+        (insert "unrelated") (goto-char 2)
+        (let ((other (current-buffer)))
+          (with-temp-buffer
+            (insert "abbr")
+            (when undo (buffer-enable-undo))
+            (let ((origin (current-buffer))
+                  (snapshot (emmet2-insert-snapshot '(:beg 1 :end 5 :abbr "abbr" :lang markup))))
+              (cl-progv (list hook)
+                  (list (list (lambda ()
+                                (insert "changed") (goto-char 1)
+                                (set-buffer other)
+                                (error "Yas hook changed buffer"))))
+                (should-error
+                 (emmet2-insert snapshot (emmet2-result-create "x" '((0 1 1 "x"))))))
+              (should (eq (current-buffer) origin))
+              (should (equal (buffer-string) "abbr"))
+              (should (= (point) 5))
+              (unless undo (should (eq buffer-undo-list t)))
+              (with-current-buffer other
+                (should (equal (buffer-string) "unrelated"))
+                (should (= (point) 2))))))))))
+
 (ert-deftest emmet2-insert-css-starts-no-snippet-with-yasnippet ()
   ;; An active field would highlight typed values and send TAB past the semicolon.
   (dolist (abbreviation '("d" "c+bg" "bgilg" "posa"))
