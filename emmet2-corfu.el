@@ -34,7 +34,7 @@
     arguments))
 
 (defun emmet2-corfu--own-table-p ()
-  "Return non-nil when emmet2 built the table Corfu is completing from.
+  "Return non-nil when emmet2-mode built the table Corfu is completing from.
 These are Emmet tables, of the `emmet2' category, and the name tables of
 `emmet2-completion-capf', whose metadata carries `emmet2-identity'."
   (or (eq (corfu--metadata-get 'category) 'emmet2)
@@ -86,10 +86,10 @@ REST may hold Corfu's metadata; other arguments pass through unchanged."
       result)))
 
 (defun emmet2-corfu--enable ()
-  "Advise Corfu for tables emmet2 builds, without loading Corfu.
+  "Advise Corfu for tables emmet2-mode builds, without loading Corfu.
 The advice formats Emmet rows, keeps the popup at its first position and
-keeps a sole Emmet choice open; rows of every table emmet2 builds skip a
-needless copy.  Other candidates are unaffected.  Installing again changes
+keeps a sole Emmet choice open; rows of every table emmet2-mode builds skip
+a needless copy.  Other candidates are unaffected.  Installing again changes
 nothing, also after `emmet2-corfu-unload-function'.  Existing advice stays in
 place, so it keeps its order relative to advice added later by the user."
   (unless (advice-member-p #'emmet2-corfu--rows 'corfu--format-candidates)

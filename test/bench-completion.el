@@ -1,8 +1,9 @@
 ;;; bench-completion.el --- Measure complete installed editor flows -*- lexical-binding: t; -*-
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
-;; Load bootstrap.el first.  EMMET2_BENCH_PACKAGE is an actual installation;
-;; EMMET2_BENCH_OUTPUT must be new.  Optional FILTER is diagnostic only.
+;; Load bootstrap.el first.  EMMET2_BENCH_PACKAGE names an installed package
+;; directory and EMMET2_BENCH_OUTPUT a new file.  EMMET2_BENCH_FILTER is
+;; diagnostic only.
 (require 'cl-lib)
 (require 'json)
 (require 'web-mode)

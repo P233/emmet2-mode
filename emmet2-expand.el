@@ -36,8 +36,8 @@ as in _div.card, keeps that expansion's classes as a string."
 (defcustom emmet2-css-modules-object "styles"
   "JavaScript reference for the project's CSS Modules class name map.
 Used when `emmet2-jsx-class-style' is `css-modules'.  Use the name imported
-in the source file, such as styles or cardStyles.  Emmet inserts the
-reference; add the matching import in the source file."
+in the source file, such as styles or cardStyles; emmet2-mode does not
+add the import."
   :type 'string :safe #'stringp :group 'emmet2)
 
 (defcustom emmet2-class-names-constructor "clsx"

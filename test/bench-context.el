@@ -102,7 +102,8 @@
 
 (defun emmet2-bench--sample (spec edit changed)
   "Time one complete operation for SPEC, then verify it outside the clock.
-EDIT is nil, `typing', or `programmatic'; CHANGED selects insertion or deletion."
+EDIT is nil, `typing' or `programmatic'; non-nil CHANGED inserts a digit and
+nil deletes one."
   (let ((t0 (current-time)) (gcs gcs-done) (gc-time gc-elapsed) result end-gcs end-gc-time end sample)
     (when edit
       (if changed
@@ -172,7 +173,7 @@ At most five owned buffers survive until this group finishes, even on failure."
                 (let ((entry (emmet2-bench--case-create :buffer (generate-new-buffer " *emmet2-bench*"))))
                   (push entry cases)
                   (with-current-buffer (emmet2-bench--case-buffer entry)
-                    ;; Match the original with-temp-buffer fixture lifecycle.
+                    ;; Record no undo, as `with-temp-buffer' would.
                     (buffer-disable-undo)
                     (let* ((spec (emmet2-bench--fixture kind (car size) (cadr size)))
                            (gcs gcs-done) (gc-time gc-elapsed) (t0 (current-time))
@@ -197,7 +198,7 @@ At most five owned buffers survive until this group finishes, even on failure."
       (dolist (entry cases) (kill-buffer (emmet2-bench--case-buffer entry))))))
 
 (defun emmet2-bench-context ()
-  "Run the context benchmark matrix and write raw samples to EMMET2_BENCH_OUTPUT."
+  "Run the context benchmark and write raw samples to EMMET2_BENCH_OUTPUT."
   (let ((output (or (getenv "EMMET2_BENCH_OUTPUT") (error "Set EMMET2_BENCH_OUTPUT")))
         (filter (getenv "EMMET2_BENCH_FILTER")) cases)
     (when (file-exists-p output) (error "Refusing to overwrite %s" output))

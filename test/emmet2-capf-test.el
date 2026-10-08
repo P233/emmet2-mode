@@ -1351,8 +1351,7 @@
       (should-not (emmet2-capf))
       (emmet2-complete)
       (should (emmet2-capf))))
-  ;; An explicit request also offers positions automatic completion leaves
-  ;; ambiguous, as the retired expansion command did.
+  ;; An explicit request also offers positions automatic completion leaves ambiguous.
   (with-temp-buffer
     (insert "const A=()=>ul>li*2;") (tsx-ts-mode) (backward-char)
     (emmet2-context-analyze)

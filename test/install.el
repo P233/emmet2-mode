@@ -53,10 +53,10 @@
     ;; Remove the source fallback before compilation can require other modules.
     ;; Tests remain available from the source tree's separate test directory.
     (setq load-path (delete source load-path))
-    ;; Load the pinned source, avoiding bootstrap's in-place compilation.
+    ;; Load the pinned source; straight.el's bootstrap would compile it in place.
     (load (expand-file-name "straight.el" (file-name-directory straight-source)) nil t t)
-    ;; Only the fetch source differs from README: the reviewed local commit is
-    ;; cloned rather than an unpushed remote branch.  The file recipe is exact.
+    ;; Only the fetch source differs from README: it clones the reviewed local
+    ;; commit instead of GitHub.  The file recipe is exact.
     (straight-use-package
      `(emmet2-mode :type git :repo ,source :local-repo "emmet2-mode"
                    :files (:defaults "data")))

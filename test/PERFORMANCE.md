@@ -5,28 +5,27 @@ do not satisfy these gates. Keep measurement reports and raw samples outside the
 repository; they belong to the revision and machine that produced them.
 
 Record the repository revision, dirty files, fixture hashes, machine/CPU/OS,
-Emacs build/configuration, dependency lock, render options and GC
-settings. Run before/after comparisons on the same machine and build. Use an
-isolated `-Q` environment prepared by `setup.mjs`; do not change daily settings.
+Emacs build/configuration, dependency lock, render options and GC settings. Run
+before/after comparisons on the same machine and build. Use an isolated `-Q`
+environment prepared by `setup.mjs`; do not change daily settings.
 
 Use byte-compiled project code with compilation warnings treated as errors.
 Native compilation is a separate optional result, never a substitute for the
 bytecode gate. On a build with native compilation, pass the following before
-loading test or package libraries in **both** baseline and candidate processes:
+loading test or package libraries in both baseline and candidate processes:
 
 ```sh
 --eval '(setq load-no-native t native-comp-jit-compilation nil native-comp-enable-subr-trampolines nil)'
 ```
 
-An `.elc` source filename alone does not prove bytecode execution: a native cache
-can replace it. Keep the runners' `byte-code-function-p` checks enabled.
-Disabling trampolines also keeps native compilation out of runners that
-redefine process primitives; it is a measurement setting, not a package
-default.
+An `.elc` source filename alone does not prove bytecode execution: a native
+cache can replace it. Keep the runners' `byte-code-function-p` checks enabled.
+Disabling trampolines also keeps native compilation out of runners that redefine
+process primitives; it is a measurement setting, not a package default.
 
-Keep normal GC thresholds; record `gc-cons-threshold`,
-`gc-cons-percentage`, `gcs-done` and `gc-elapsed` deltas. Do not exclude samples
-which performed GC or raise thresholds to pass. Keep raw per-operation samples.
+Keep normal GC thresholds; record `gc-cons-threshold`, `gc-cons-percentage`,
+`gcs-done` and `gc-elapsed` deltas. Do not exclude samples which performed GC or
+raise thresholds to pass. Keep raw per-operation samples.
 
 For each input/size/path, record cold startup separately, then at least 100
 warmups and 1,000 measured samples. Repeat in three fresh Emacs processes.
@@ -54,17 +53,17 @@ nav>ul>li*10>a[href=#]
 ```
 
 Buffer generators must record actual line/byte counts and keep the same active
-host part when varying unrelated file size. Include tight JSX and a negative
-JSX expression so speed cannot improve by dropping classification work.
-For edit samples, insert/delete at the active token and time each resulting
-full analysis; a precomputed abbreviation start is not an analysis benchmark.
-Report initialization and invalidation cost as well as steady repeated reads.
+host part when varying unrelated file size. Include tight JSX and a negative JSX
+expression so speed cannot improve by dropping classification work. For edit
+samples, insert/delete at the active token and time each resulting full
+analysis; a precomputed abbreviation start is not an analysis benchmark. Report
+initialization and invalidation cost as well as steady repeated reads.
 
 CI runs deterministic correctness and compilation checks. It must not assert
 wall-clock budgets across different hosted machines. When a budget fails, keep
 the samples, identify the expensive stage, change the smallest responsible
-implementation and remeasure. Do not silently weaken a
-budget, omit a size, or replace a full-path result with a microbenchmark.
+implementation and remeasure. Do not silently weaken a budget, omit a size, or
+replace a full-path result with a microbenchmark.
 
 ## Context benchmark
 
@@ -80,11 +79,11 @@ existing output files and source changes during measurement. It compiles only
 project code into an owned temporary directory; package source/bytecode status
 is reported rather than silently altered in the dependency checkout.
 
-Keep `analyze`, `typing-and-analyze` and `programmatic-edit-and-analyze` separate.
-Both edit paths include modification hooks and pending scanning. A programmatic
-`insert` does not necessarily inherit the same web-mode part properties as
-`self-insert-command`; dropping its slow samples would hide real work. A
-context budget fails when either edit path exceeds it. Keep baseline and
+Keep `analyze`, `typing-and-analyze` and `programmatic-edit-and-analyze`
+separate. Both edit paths include modification hooks and pending scanning. A
+programmatic `insert` does not necessarily inherit the same web-mode part
+properties as `self-insert-command`; dropping its slow samples would hide real
+work. A context budget fails when either edit path exceeds it. Keep baseline and
 candidate samples outside the repository, as above; a commit message or pull
 request may quote their summary and hashes.
 
@@ -98,16 +97,16 @@ including GC, is retained. Cold analysis is the first call per fixture after its
 mode setup; only the first fixture in a fresh process includes process-wide
 initialization that later fixtures share.
 
-The ordinary CSS pairs run in css-mode, css-ts-mode, scss-mode and less-css-mode.
-The isolated dependency lock includes CSS's grammar, so css-ts-mode uses its
-real parser. CSS search and its catalog are compiled and hashed with the
-context modules, so the measured path runs only bytecode.
+The ordinary CSS pairs run in css-mode, css-ts-mode, scss-mode and
+less-css-mode. The isolated dependency lock includes CSS's grammar, so
+css-ts-mode uses its real parser. CSS search and its catalog are compiled and
+hashed with the context modules, so the measured path runs only bytecode.
 
 ## Editor-flow benchmark
 
 First build the reviewed revision with `test/install.el` (see
-[CONTRIBUTING](../CONTRIBUTING.md#actual-installation)).
-Then use its actual `straight/build/emmet2-mode` directory:
+[CONTRIBUTING](../CONTRIBUTING.md#actual-installation)). Then use its actual
+`straight/build/emmet2-mode` directory:
 
 ```sh
 EMMET2_TEST_DEPS=~/.cache/emmet2-test-deps \
@@ -126,29 +125,28 @@ the changed module recompiled by the same Emacs; record that distinction and
 its hashes. Such a copy is not a new package-manager installation acceptance.
 
 Each of the eighteen fixtures runs completion and completion with yas paths
-interleaved, rotating the first path each round: 100 warmups and 1,000
-retained samples per path. The first accepted choice defines the expected
-output. Inputs cover the first two markup cases above, TSX numbered text,
-one/six CSS properties, CSS with empty values, ranked CSS choices with and
-without a confirmed prefix, CSS-in-JS and a 138,052-byte web-mode style
-buffer. Additional fixtures cover css-ts-mode, builtin SCSS variables, LESS,
-HTML style attributes, js-mode/js-ts-mode/TypeScript style objects, and the
-built-in html-mode's explicit `emmet2-complete` request. Reset and output/cursor assertions
-are outside the clock. The next operation includes any pending scan left by the
+interleaved, rotating the first path each round: 100 warmups and 1,000 retained
+samples per path. The first accepted choice defines the expected output. Inputs
+cover the first two markup cases above, TSX numbered text, one/six CSS
+properties, CSS with empty values, ranked CSS choices with and without a
+confirmed prefix, CSS-in-JS and a 138,052-byte web-mode style buffer. Additional
+fixtures cover css-ts-mode, builtin SCSS variables, LESS, HTML style attributes,
+js-mode/js-ts-mode/TypeScript style objects, and the built-in html-mode's
+explicit `emmet2-complete` request. Reset and output/cursor assertions are
+outside the clock. The next operation includes any pending scan left by the
 multi-character reset, unlike the context benchmark's single-character typing
-path.
-Yas mode setup is outside the clock, but field creation during acceptance is
-timed and checked; only markup fixtures create fields, CSS inserts plain text.
-Undo recording remains enabled, with history cleared between operations.
+path. Yas mode setup is outside the clock, but field creation during acceptance
+is timed and checked; only markup fixtures create fields, CSS inserts plain
+text. Undo recording remains enabled, with history cleared between operations.
 
-Completion uses the real Corfu control, candidate formatting, popupinfo
-getter and insertion. Popup drawing/hiding is replaced, and Corfu's error
-shield is bypassed so failures propagate to the runner. Stage labels
-mean request (`completion-at-point`), annotation (`corfu--exhibit`, including
-its candidate checks), first/repeated documentation, and acceptance. Nested
-stage times/GC deltas must not be added to the already inclusive total. These
-batch results do not measure screen painting, input-to-display latency, idle
-scheduling or Eglot interaction.
+Completion uses the real Corfu control, candidate formatting, popupinfo getter
+and insertion. Popup drawing/hiding is replaced, and Corfu's error shield is
+bypassed so failures propagate to the runner. Stage labels mean request
+(`completion-at-point`), annotation (`corfu--exhibit`, including its candidate
+checks), first/repeated documentation, and acceptance. Nested stage times/GC
+deltas must not be added to the already inclusive total. These batch results do
+not measure screen painting, input-to-display latency, idle scheduling or Eglot
+interaction.
 
 Four additional live sessions (CSS, css-ts-mode, HTML style attributes and TSX
 style objects) alternate typing `a` and deleting it at `ovh,t`. Each retains 100
@@ -181,21 +179,21 @@ EMMET2_BENCH_OUTPUT=/tmp/markup-31-1.json \
 Run three fresh processes serially on the fixed macOS machine for each pinned
 Emacs build. The runner compiles the pure engine into an owned temporary
 directory and copies packaged data next to it; no installed package or daily
-configuration is changed. It checks bytecode entry points, source/fixture
-hashes before and after, and full oracle output after every operation.
-Fifteen fixtures cover the four markup inputs above with implicit tags, JSX,
-emoji and mirrored fields (nine), three project JSX cases (multiword fields,
-escaped keys and Solid layout) and three seeded lorem cases (`lorem80`,
-`loremru50` and `loremsp50`). Lorem uses seed
-42: its first timed output passes the independent structural contract, then
-every later output must match that complete result. Each raw row retains its
-reference text, fields and cursor. These are measurement records, not new random
-goldens in the correctness corpus. Data/contract hashes cover the three lexicons
-and lorem fixtures as well as the markup inputs. Samples interleave and rotate
-the first fixture each round, with 100 warmups and 1,000 retained measurements.
-GC uses the normal 800000/1.0 settings; all pauses are retained. First expansions and explicit
-bytecode loads are reported separately and exclude Emacs startup, compilation
-and fixture loading. The budget covers the complete markup expansion only.
+configuration is changed. It checks bytecode entry points, source/fixture hashes
+before and after, and full oracle output after every operation. Fifteen fixtures
+cover the four markup inputs above with implicit tags, JSX, emoji and mirrored
+fields (nine), three project JSX cases (multiword fields, escaped keys and Solid
+layout) and three seeded lorem cases (`lorem80`, `loremru50` and `loremsp50`).
+Lorem uses seed 42: its first timed output passes the independent structural
+contract, then every later output must match that complete result. Each raw row
+retains its reference text, fields and cursor. These are measurement records,
+not new random goldens in the correctness corpus. Data/contract hashes cover the
+three lexicons and lorem fixtures as well as the markup inputs. Samples
+interleave and rotate the first fixture each round, with 100 warmups and 1,000
+retained measurements. GC uses the normal 800000/1.0 settings; all pauses are
+retained. First expansions and explicit bytecode loads are reported separately
+and exclude Emacs startup, compilation and fixture loading. The budget covers
+the complete markup expansion only.
 
 ## Stylesheet benchmark
 
@@ -219,15 +217,14 @@ benchmark), the expansion of compact abbreviations including the six-property
 input, and the core alone with complete names. The CSS search budget applies to
 the `search:` rows and the CSS core budget to `core:six-canonical`. The other
 rows, including `expand:m10+p5+bd1#2s+posa+dib+fz16`, which searches once per
-property, are reported without a budget. The first result of each case is kept, and
-every sample must equal it outside the clock.
+property, are reported without a budget. The first result of each case is kept,
+and every sample must equal it outside the clock.
 
 The runner rotates the first case each round and interleaves 100 warmups and
 1,000 samples per case. Normal GC remains 800000/1.0 and all pauses are kept.
 End GC counters are captured before duration/sample allocation. Raw triples and
 per-process statistics use the same units and quantile rule as the markup
-benchmark. The first
-call per case and explicit bytecode loading (including the search index) are
-separate cold values. Compilation and dependencies precede that load; these
-values do not measure whole Emacs startup. Actual package installation, editor
-flow and GUI acceptance remain separate checks.
+benchmark. The first call per case and explicit bytecode loading (including the
+search index) are separate cold values. Compilation and dependencies precede
+that load; these values do not measure whole Emacs startup. Actual package
+installation, editor flow and GUI acceptance remain separate checks.

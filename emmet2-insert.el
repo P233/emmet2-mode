@@ -18,13 +18,13 @@
 (defvar yas-after-exit-snippet-hook)
 
 (defcustom emmet2-css-auto-newline t
-  "Whether complete CSS declarations continue on the next line.
-In `css-base-mode' derivatives, including CSS and SCSS modes, an expansion
-at a declaration start moves to the next line when the abbreviation is
-alone on its line and the result ends in a semicolon with no fields.
-Reuse an immediately following blank line, or insert one, with the source
-line's indentation.  Expansion and continuation share one undo step.
-Embedded styles, value completion and incomplete fields are unaffected."
+  "Whether point moves to the next line after a complete CSS declaration.
+In `css-base-mode' derivatives, including CSS and SCSS modes, this applies
+when an abbreviation alone on its line at a declaration start expands to a
+result that ends in a semicolon and has no fields.  An immediately following
+blank line is reused; otherwise one is inserted with the source line's
+indentation.  Expansion and continuation share one undo step.  Embedded
+styles and value completion are unaffected."
   :type 'boolean :safe #'booleanp :group 'emmet2)
 
 (defun emmet2-insert--indent-width (analysis)

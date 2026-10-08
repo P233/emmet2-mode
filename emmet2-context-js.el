@@ -1,9 +1,9 @@
-;;; emmet2-context-js.el --- JSX and CSS-in-JS context with tree-sitter -*- lexical-binding: t; -*-
+;;; emmet2-context-js.el --- JSX and CSS-in-JS context with Tree-sitter -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;;; Commentary:
-;; Find JSX markup and CSS-in-JS objects with tree-sitter.  Each buffer keeps
+;; Find JSX markup and CSS-in-JS objects with Tree-sitter.  Each buffer keeps
 ;; two parsers per language: one reads the source, the other the projection,
 ;; which is the source with the abbreviation reduced to one identifier
 ;; character, so the surrounding syntax can be checked without it.  Markers
@@ -50,7 +50,7 @@ Write each callee as it appears in source, such as \"css\" or \"stylex.create\".
                (treesit-query-compile language '([(jsx_expression) (object)] @expression)))
              (treesit-query-compile language '((ERROR (regex_pattern) @pattern)))))
      '(tsx javascript typescript)))
-  "Compiled tree-sitter queries per language: (LANGUAGE HOST JSX OBJECT REGEX).
+  "Compiled Tree-sitter queries per language: (LANGUAGE HOST JSX OBJECT REGEX).
 HOST captures enclosing objects, pairs, returns and arrow functions; JSX
 captures JSX opening tags and expressions; OBJECT captures JSX expressions
 and objects; REGEX captures regex patterns inside errors.  The typescript
@@ -183,7 +183,7 @@ Return the source parser, or nil without a JS region or grammar.
 (defun emmet2-context-js--closed-unit-p (node start end)
   "Whether NODE spans START..END as a closed statement or JSX element.
 Require a real terminal delimiter or, for semicolon-free code, a real last
-token ending its line; never tree-sitter error recovery.  Internal errors can
+token ending its line; never Tree-sitter error recovery.  Internal errors can
 be the abbreviation itself; projection checks the remaining syntax."
   (let ((child (and (equal (treesit-node-type node) "expression_statement")
                     (treesit-node-child node 0 t))))

@@ -132,24 +132,24 @@ ENTRIES are (NAME . DOCUMENTATION) pairs, or a zero-argument function which
 collects them on the first candidate query.  Its completed result, including
 nil, belongs to this table; metadata queries do not call it.  Collection
 requires the original buffer, mode, text, point and restriction.  An input
-interruption leaves collection retryable.  DOCUMENTATION, which may be nil,
-is returned through :company-docsig.  Return the value from a function in
-`completion-at-point-functions'.  It is exclusive, so return nil yourself
-when no entry fits; function ENTRIES cannot tell in advance, and an empty
-collection still keeps later completion functions from running.  CATEGORY,
-`emmet2-value' by default, is the completion category; IDENTITY and FUZZY
-take effect only where the emmet2-name style
-applies, which is the default for `emmet2-value' alone.  IDENTITY maps a
-spelling to the name it denotes, `identity' by default; it must be stable
-for the table's lifetime, which reuses its results.  Non-nil FUZZY, the
-default, matches case-insensitively and fuzzily; nil matches literal
-prefixes.  ANNOTATION is a string shown after every candidate.  PREFIX is
-passed as :company-prefix-length; t lets Corfu and Company complete before
-their prefix threshold.  When ( already follows END, names ending in () are
-offered without them.  Accepting an empty call such as calc() moves point
-inside its parentheses; no snippet fields are created.  Offering a table also
-installs the Corfu advice of emmet2-corfu.el, which affects only tables that
-emmet2 builds."
+interruption leaves collection retryable.  :company-docsig returns a
+candidate's DOCUMENTATION, or the candidate itself when DOCUMENTATION is
+nil.  Return the value from a function in `completion-at-point-functions'.
+It is exclusive, so return nil yourself when no entry fits; function ENTRIES
+cannot tell in advance, and an empty collection still keeps later completion
+functions from running.  CATEGORY, `emmet2-value' by default, is the
+completion category; IDENTITY and FUZZY take effect only where the
+emmet2-name style applies, which is the default for `emmet2-value' alone.
+IDENTITY maps a spelling to the name it denotes, `identity' by default; it
+must be stable for the table's lifetime, which reuses its results.  Non-nil
+FUZZY, the default, matches case-insensitively and fuzzily; nil matches
+literal prefixes.  ANNOTATION is a string shown after every candidate.
+PREFIX is passed as :company-prefix-length; t lets Corfu and Company
+complete before their prefix threshold.  When ( already follows END, names
+ending in () are offered without them.  Accepting an empty call such as
+calc() moves point inside its parentheses; no snippet fields are created.
+Offering a table also installs the Corfu advice of emmet2-corfu.el, which
+affects only tables that emmet2-mode builds."
   ;; INTERIM (since 2026-10-03, until Corfu skips strings without line breaks): only the line-break guard needs this; see ARCHITECTURE.md#corfu-adapter.
   (require 'emmet2-corfu)
   (emmet2-corfu--enable)

@@ -10,8 +10,8 @@
                  (insert-file-contents (expand-file-name "test/fixtures/markup-legacy.json" emmet2-test-root))
                  (json-parse-buffer :object-type 'alist :array-type 'list :false-object nil)))
   (let* ((solid (alist-get 'solid entry))
-         ;; Frozen fixtures retain the historical invalid empty JSX expressions.
-         ;; These three cases now use editable empty keys; no legacy case is lost.
+         ;; The frozen fixtures expect invalid empty JSX expressions for these
+         ;; three cases; expansion gives editable empty keys instead.
          (expected (pcase (alist-get 'id entry)
                      ("markup-007" "<div className={css[\"\"]}></div>")
                      ("markup-015" "<ABC className={css[\"\"]} />")

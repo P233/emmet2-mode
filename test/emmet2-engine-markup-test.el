@@ -1,4 +1,4 @@
-;;; emmet2-engine-markup-test.el --- Native markup spike contracts -*- lexical-binding: t; -*-
+;;; emmet2-engine-markup-test.el --- Native markup engine contracts -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -47,7 +47,7 @@
           (mapcar (lambda (i) (format "markup-spike-%02d" i)) (number-sequence 1 15))))
 
 (defun emmet2-markup-test--cases (&optional ids)
-  "Return selected IDS, or spike inputs, and their frozen oracle results."
+  "Return (ID ARGUMENTS EXPECTED) for IDS, or for `emmet2-markup-test--ids'."
   (let ((inputs (emmet2-markup-test--json "test/fixtures/core-inputs.json"))
         (oracle (emmet2-markup-test--json "test/fixtures/oracle/markup.json")))
     (mapcar
@@ -147,7 +147,7 @@
   (dolist (case-fold-search '(nil t))
     (should (equal (emmet2-engine-markup-expand "div{<SECTION>raw</SECTION>}")
                    (emmet2-result-create "<div>\n\t<SECTION>raw</SECTION>\n</div>" nil)))
-    ;; JavaScript's tag regexp is ASCII; Emacs case folding also matches K to K.
+    ;; JavaScript's tag regexp is ASCII; Emacs case folding also matches the Kelvin sign to K.
     (should (equal (emmet2-engine-markup-expand "div{<K>raw</K>}")
                    (emmet2-result-create "<div><K>raw</K></div>" nil)))))
 

@@ -16,8 +16,8 @@
       (ert-info ((format "char %d" char))
         (should (equal (aref ours char) (aref theirs char)))))))
 
-;; All 38 planning probes are assertions; full real-point extraction is tested
-;; separately below so supplied abbreviation bounds cannot hide scanner bugs.
+;; These probes classify a supplied region; `emmet2-context-lexical-real-point'
+;; also extracts at the real point, so supplied bounds cannot hide scanner bugs.
 
 (defconst emmet2-test-css-position-cases
   '((".card at top level"            ".a { color: red; }\n⟨.card\n"                     css-mode  (css . selector))

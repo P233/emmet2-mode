@@ -20,7 +20,7 @@
      (when ,installed (yas-minor-mode 1))
      ,@body))
 
-;; Private Corfu calls inspect the pinned frontend; production uses public APIs.
+;; These tests drive the pinned Corfu through its private functions.
 (defmacro emmet2-test--with-capf (text &rest body)
   "Run BODY in a web buffer with TEXT and a real production capf."
   (declare (indent 1))

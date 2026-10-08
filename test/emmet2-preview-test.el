@@ -7,7 +7,7 @@
 (require 'typescript-ts-mode)
 
 (defun emmet2-test--root-render (analysis)
-  "Render ANALYSIS at column zero, independently of the CAPF display projection."
+  "Render ANALYSIS at column zero, independent of the CAPF display path."
   (let ((indent (make-string (emmet2-insert--indent-width analysis) ?\s)))
     (cl-letf (((symbol-function 'emmet2-insert-render-options)
                (lambda (_) (list :indent indent :base-indent ""))))

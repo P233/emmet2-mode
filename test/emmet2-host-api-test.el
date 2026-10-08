@@ -159,7 +159,7 @@
       (should (equal (plist-get (emmet2-expand-analysis analysis) :text) "@else {\n   \n   }"))
       (setq analysis (plist-put analysis :indent-width -1))
       (should-error (emmet2-insert-render-options analysis) :type 'emmet2-error)
-      ;; An explicit nil width is optional, like an omitted key.
+      ;; An explicit nil width behaves like an omitted key.
       (let ((omitted (copy-sequence analysis)))
         (cl-remf omitted :indent-width)
         (should (equal (emmet2-insert-render-options (plist-put analysis :indent-width nil))

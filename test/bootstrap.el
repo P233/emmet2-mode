@@ -1,4 +1,4 @@
-;;; bootstrap.el --- Isolated native rewrite test dependencies -*- lexical-binding: t; -*-
+;;; bootstrap.el --- Load isolated test dependencies -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 

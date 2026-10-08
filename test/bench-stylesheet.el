@@ -22,7 +22,7 @@
    ;; The same six properties with canonical names measure the core alone.
    (list (list "core:six-canonical" #'emmet2-engine-stylesheet-expand
                "margin10+padding5+border1#2s+position-absolute+display-flex+font-size16")))
-  "Search, completion-choice, expansion and core stages with representative input.")
+  "Benchmark cases for the search, choice, expansion and core stages.")
 
 (defun emmet2-stylesheet-bench--command (program &rest args)
   "Return successful metadata PROGRAM output for ARGS."

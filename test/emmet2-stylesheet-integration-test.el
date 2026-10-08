@@ -77,8 +77,8 @@
         (should-error (emmet2-complete) :type 'user-error)
         (should (equal source (buffer-string)))
         (should (= position (point))))))
-  ;; A known element makes the same shape a nested selector choice.  Manual
-  ;; built-in CSS requests no longer reinterpret an ambiguous property value.
+  ;; A known element makes the same shape a nested selector choice; built-in CSS
+  ;; reads an unknown name as a property and value, even on request.
   (dolist (case '(("button:hv" nil ".a{button:hover}") ("my-card:hv" t ".a{my-card:hover}")))
     (with-temp-buffer
       (insert ".a{" (car case) "}") (css-mode) (backward-char) (emmet2-mode 1)
@@ -195,8 +195,8 @@
                        (nth 2 case)))))))
 
 (ert-deftest emmet2-stylesheet-core-fields-keep-mirrors-and-independent-groups ()
-  ;; Bypass opinionated default removal to verify the actual core's mirrored
-  ;; and conflicting defaults through the existing insertion owner.
+  ;; The core keeps the field defaults that editor expansion clears, so mirrored
+  ;; and conflicting defaults reach `emmet2-insert'.
   (with-temp-buffer
     (insert "abbr")
     (let ((result (emmet2-engine-expand "padding${2:😀}-${1:x}-${2:😀}-${1:y}+margin${1:z}" :preset 'stylesheet)))

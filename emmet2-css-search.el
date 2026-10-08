@@ -153,8 +153,8 @@ Equal keyword entries and words are shared through POOL."
   "Build the keyword and property tables of generated INDEX.
 Return (SETS WIDE CANONICAL DESCRIPTORS), the tables of those names.  One
 call-owned pool shares equal keyword entries, word vectors and words among
-them.  Remove INDEX's raw properties and
-descriptors, which the returned tables replace."
+them.  Remove INDEX's raw properties and descriptors, which the returned
+tables replace."
   (let ((pool (make-hash-table :test #'equal))
         (own (alist-get 'own emmet2-css-search--likelihoods))
         (sets (make-hash-table :test #'equal))
@@ -188,8 +188,8 @@ descriptors, which the returned tables replace."
 
 (defun emmet2-css-search--data ()
   "Return the search tables, reading the packaged data on first use.
-Parsing and indexing the data was most of this library's load time, which
-sessions that only read stylesheets never need."
+Parsing and indexing the data would dominate this library's load time, and
+sessions that only read stylesheets never need it."
   (with-memoization emmet2-css-search--data (emmet2-css-search--load)))
 
 (defun emmet2-css-search--load ()
@@ -548,8 +548,8 @@ LIMIT defaults to ten.  AT-RULE admits its descriptors.  Signal
 Keywords include PROPERTY's own values, values reachable through its syntax,
 and CSS-wide keywords for ordinary properties.  QUERY abbreviates a keyword
 from its first letter, as ib for inline-block.  LIMIT defaults to ten.
-Return nil for an unknown PROPERTY.
-AT-RULE selects a descriptor's values when PROPERTY is declared there."
+AT-RULE selects a descriptor's values when PROPERTY is declared there.
+Return nil for an unknown PROPERTY."
   (emmet2-engine-with-expansion
     (when-let* ((entry (emmet2-css-search--entry property at-rule))
                 (limit (or limit 10))

@@ -45,8 +45,8 @@
     (nreverse (cons (substring text start) parts))))
 
 (cl-defstruct (emmet2-css--property (:constructor emmet2-css--property))
-  "A property reading: NAME, value SOURCE, LITERAL when SOURCE is a search
-keyword kept verbatim, and IMPORTANT."
+  "A property reading holds NAME, value SOURCE and the IMPORTANT flag.
+LITERAL is non-nil when SOURCE is a search keyword kept verbatim."
   name source literal important)
 
 (defun emmet2-css--choice (choice suffix)

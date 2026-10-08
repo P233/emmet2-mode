@@ -8,10 +8,9 @@
 ;; it counts as an abbreviation only if it has a choice.  The buffer keeps the
 ;; last expansion batch so repeated calls for the same input reuse it.  Every
 ;; candidate string is the typed abbreviation and a text property identifies
-;; its expansion; the affixation function supplies the menu text.
-;; Labels and previews are formatted only when requested.  Only a
-;; choice accepted with status `finished' on unchanged source is inserted,
-;; through `emmet2-insert'.
+;; its expansion; the affixation function supplies the menu text.  Labels and
+;; previews are formatted only when requested.  Only a choice accepted with
+;; status `finished' on unchanged source is inserted, through `emmet2-insert'.
 
 ;;; Code:
 (require 'cl-lib)
@@ -229,7 +228,7 @@ property tells alternative expansions apart, so frontends that drop text
 properties still accept the first choice.  Errors make automatic requests
 offer nothing; explicit requests and acceptance signal `user-error'.
 Offering choices also installs the Corfu advice of emmet2-corfu.el, which
-affects only tables that emmet2 builds."
+affects only tables that emmet2-mode builds."
   (emmet2-capf--guard (not emmet2-capf--explicit) nil
     (pcase-let ((quiet (not emmet2-capf--explicit))
                 (`(,automatic ,analysis ,confidence) (emmet2-capf--admit emmet2-capf--explicit)))
@@ -354,7 +353,7 @@ affects only tables that emmet2 builds."
 ;;;###autoload
 (defun emmet2-complete ()
   "Request Emmet choices at point through `completion-at-point'.
-This is an explicit request: JS hosts create a missing tree-sitter parser
+This is an explicit request: JS hosts create a missing Tree-sitter parser
 and report a missing grammar, and a major mode without a built-in host or
 `emmet2-context-provider' offers plain markup.  Built-in CSS modes use the
 automatic rules.  The completion frontend shows the choices and decides

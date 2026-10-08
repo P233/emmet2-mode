@@ -6,8 +6,8 @@
 ;; Case-insensitive subsequence search implemented here, so ranking does not
 ;; depend on the user's completion styles.  Each query character consumes a
 ;; distinct candidate character.  Exact names, prefixes, word initials and
-;; contiguous runs rank ahead of scattered matches.  The same
-;; match supplies scoring and highlighting; equal scores retain source order.
+;; contiguous runs rank ahead of scattered matches.  The same match supplies
+;; scoring and highlighting; equal scores retain source order.
 ;; Optional partial matching is a public utility; CSS abbreviation search
 ;; has its own word-aware index in emmet2-css-search.
 

@@ -7,7 +7,7 @@
 ;; Version: 2.0.0
 ;; URL: https://github.com/P233/emmet2-mode
 ;; Keywords: abbrev, convenience, languages
-;; Package-Requires: ((emacs "30"))
+;; Package-Requires: ((emacs "30.1"))
 
 ;;; This file is NOT part of GNU Emacs
 
@@ -24,14 +24,13 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
 ;; Expand HTML, JSX, CSS, SCSS and CSS-in-JS abbreviations through
 ;; completion-at-point.  Previews and insertion share the same expansion text.
-;; See README.md for installation and examples, and CHANGELOG.md for upgrade
-;; notes.
+;; See README.md for installation, examples and upgrading from 0.2.
 
 ;;; Code:
 (require 'emmet2-context)
@@ -47,9 +46,10 @@
 (define-minor-mode emmet2-mode
   "Offer Emmet expansions as completion choices while typing.
 Accepting a choice replaces the abbreviation; typing alone never expands.
-In CSS Base modes without `emmet2-context-provider', also complete property
-values with `emmet2-css-value-capf'.  The keymap `emmet2-mode-map' is empty;
-bind `emmet2-complete' or `emmet2-expand-at-point' in it."
+In `css-base-mode' derivatives without `emmet2-context-provider', also
+complete property values with `emmet2-css-value-capf'.  The keymap
+`emmet2-mode-map' is empty; bind `emmet2-complete' or
+`emmet2-expand-at-point' in it."
   :lighter " emmet2"
   :keymap (make-sparse-keymap)
   (if emmet2-mode

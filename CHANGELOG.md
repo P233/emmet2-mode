@@ -2,13 +2,13 @@
 
 ## v2.0.0 (Unreleased)
 
-emmet2-mode 2.0 is a native Emacs Lisp rewrite. All changes below are relative
-to the earlier 0.2 implementation. See
-[Upgrading from 0.2](README.md#upgrading-from-02) for the configuration checklist.
+emmet2-mode 2.0 is a rewrite in Emacs Lisp. Changes are relative to 0.2. See
+[Upgrading from 0.2](README.md#upgrading-from-02) for the configuration
+checklist.
 
 ### Breaking changes
 
-- Emacs 30 or later is required. Expansion runs entirely in Emacs Lisp; Deno,
+- Emacs 30.1 or later is required. Expansion runs entirely in Emacs Lisp; Deno,
   `deno-bridge`, `websocket` and the Emmet npm package are no longer used.
   Remove their configuration, including `:after deno-bridge` in the
   emmet2-mode declaration, and restart Emacs.
@@ -31,7 +31,7 @@ to the earlier 0.2 implementation. See
   output. `emmet2-class-names-constructor` still defaults to `"clsx"`.
 - CSS abbreviations are found by searching a bundled CSS property and value
   catalog instead of Emmet's snippet table:
-  - Many short forms now resolve differently. Of Emmet's 226 stock CSS
+  - Many short forms now resolve differently. Of Emmet's stock CSS
     abbreviations, 59 give a different property and 9 give no choice. For
     example, `fs` is `font-size` (was `font-style`), `bdr` and `rs` are
     `border-radius` (were `border-right` and `resize`), `f` is `float` (was
@@ -39,9 +39,9 @@ to the earlier 0.2 implementation. See
     `grid-area`), `ws` is `white-space` (was `word-spacing`), `wm` is
     `width: max-content;` (was `writing-mode`), `ap` is `animation: paused;`
     (was `appearance: none;`) and `b-n` is `border: none;` (was
-    `bottom: none;`). `gg`, `grg`, `gcg`, `pgba`, `pgbb` and `ffv` give no
-    choice. Most old readings remain completion choices, and full property
-    names always work.
+    `bottom: none;`). `femp`, `fems`, `ffv`, `gg`, `gcg`, `grg`, `pgba`,
+    `pgbb` and `qru` give no choice. Most old readings remain completion
+    choices, and full property names always work.
   - Emmet's preset values are gone: `us` gives `user-select: ;` (was
     `user-select: none;`), `zom` gives `zoom: ;` (was `zoom: 1;`) and `bgi`
     gives `background-image: ;` (was `background-image: url();`). Type the
@@ -92,8 +92,8 @@ to the earlier 0.2 implementation. See
   a nested selector. Selector lists, attributes and combinators are preserved.
   An element followed by a comma, as in a `th,` selector-list line, is not
   offered automatically, so RET keeps the selector.
-- Automatic markup completion recognizes distinctive abbreviations and
-  standalone tags such as `div` alone on a line.
+- Automatic markup completion offers abbreviations beyond a bare word, such as
+  `ul>li` or `.card`, and a known element alone on its line, such as `div`.
 - HTML and JSX fields become yasnippet fields with TAB navigation and mirrors
   when yasnippet is installed; it is enabled when fields are first needed.
 - With Corfu, Emmet choices stay plain text next to icon margins such as
@@ -101,10 +101,10 @@ to the earlier 0.2 implementation. See
   whatever `corfu-on-exact-match` is.
 - Choices also appear under Company through standard completion-at-point.
   Accepting a function value such as `calc()` there leaves point after the
-  parentheses, and a buffer that is really read-only lists choices but refuses
+  parentheses, and a read-only buffer lists choices but refuses
   to insert one.
-- `emmet2-css-in-js-attributes` and `emmet2-css-in-js-functions` add style-object
-  hosts such as `sx={{...}}` or `css({...})`.
+- `emmet2-css-in-js-attributes` and `emmet2-css-in-js-functions` add
+  style-object hosts such as `sx={{...}}` or `css({...})`.
 - A leading `_` keeps an abbreviation's JSX classes as a string, as in `_.a.b`
   for `className="a b"`. `emmet2-jsx-class-style` set to `plain` does this for
   a whole project.

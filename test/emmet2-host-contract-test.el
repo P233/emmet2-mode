@@ -10,7 +10,7 @@
 
 (require 'emmet2-context)
 
-;; The original S0 real-point matrix now exercises the production context owner.
+;; Cases: name, source with │ at point, expected :lang and :abbr, and `manual'.
 (defconst emmet2-test-host-cases
   '((tight "const A = () => (<main>ul>li*3│</main>);" markup "ul>li*3")
     (middle "const A = () => (<main>ul>│li*3</main>);" markup "ul>li*3")

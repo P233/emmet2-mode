@@ -54,7 +54,7 @@ Query CSS metadata without a buffer or minor mode:
 (emmet2-css-data-query 'pseudo :query "before")
 (emmet2-css-data-query 'at-rule :query "media" :vendor t)
 
-;; Extract just the best name; queries otherwise retain documentation.
+;; Extract the best name; queries otherwise retain documentation.
 (caar (emmet2-css-data-query 'value :property "display" :query "ib"))
 ;; => "inline-block"
 ```
@@ -69,13 +69,13 @@ kind signals an error.
 Values share compact search's keyword sets, plus restriction-derived functions.
 Ordinary and unknown properties include the CSS-wide keywords, `var()` and
 `env()`; descriptors use their enclosing `:at-rule`, with `env()` but without
-CSS-wide keywords, `var()` or a same-named property's values.
-Lists and pairs are fresh, strings are shared read-only, and documentation may
-be nil.
+CSS-wide keywords, `var()` or a same-named property's values. Lists and pairs
+are fresh, strings are shared read-only, and documentation may be nil.
 
 The host supplies context, adds scoped symbols and restricts legal candidates.
 For `display: fl`, query values for `display` and replace only `fl`; for `m10`,
-use expansion. An analysis's `:property` identifies context, not value completion.
+use expansion. An analysis's `:property` identifies context, not value
+completion.
 
 ## Rank host names or search compact CSS
 
@@ -95,11 +95,11 @@ use expansion. An analysis's `:property` identifies context, not value completio
 ;; => (0 4 11)
 ```
 
-`emmet2-fuzzy-match` returns nil or a plist with `:score` and zero-based `:positions`.
-Matching is case-insensitive and ordered; stronger matches rank first and ties
-keep input order. `emmet2-fuzzy-filter` keeps the input items and matches the
-whole query. Pass non-nil PARTIAL to `emmet2-fuzzy-match` to accept a matched
-query prefix at a lower score; completion does not use it.
+`emmet2-fuzzy-match` returns nil or a plist with `:score` and zero-based
+`:positions`. Matching is case-insensitive and ordered; stronger matches rank
+first and ties keep input order. `emmet2-fuzzy-filter` keeps the input items and
+matches the whole query. Pass non-nil PARTIAL to `emmet2-fuzzy-match` to accept
+a matched query prefix at a lower score; completion does not use it.
 
 ```elisp
 (require 'emmet2-css-search)
@@ -115,11 +115,10 @@ query prefix at a lower score; completion does not use it.
 
 `emmet2-css-search` returns `(PROPERTY . KEYWORD)` pairs, with nil for a bare
 property and a default limit of ten. Use the extension API for complete syntax,
-including units, brackets, functions and property lists.
-The optional fourth argument to either search function selects an enclosing
-at-rule, admitting its descriptors and their values.
-Each search, expansion or choice request must finish within one second;
-otherwise it signals `emmet2-backend-error`.
+including units, brackets, functions and property lists. The optional fourth
+argument to either search function selects an enclosing at-rule, admitting its
+descriptors and their values. Each search, expansion or choice request must
+finish within one second; otherwise it signals `emmet2-backend-error`.
 
 ## Expand strings and consume results
 
@@ -149,36 +148,35 @@ otherwise it signals `emmet2-backend-error`.
 ;; => "<div className=\"a b\"></div>"
 ```
 
-`emmet2-extensions-markup` references JSX classes as `:css-modules-object` members
-joined by `:class-names-constructor` (`:class-style 'css-modules`, the default).
-`:class-style 'plain`, or a leading `_` in the abbreviation, keeps them a string.
-`:variant "solid"` writes `class`; it and the class options apply only with
-`:jsx t`.
+`emmet2-extensions-markup` references JSX classes as `:css-modules-object`
+members joined by `:class-names-constructor` (`:class-style 'css-modules`, the
+default). `:class-style 'plain`, or a leading `_` in the abbreviation, keeps
+them a string. `:variant "solid"` writes `class`; it and the class options apply
+only with `:jsx t`.
 
-`emmet2-extensions-css` writes SCSS values such as `p(1)` as Sass calls only when
-`:scale-functions` maps the property, as in `emmet2-css-scale-functions`;
+`emmet2-extensions-css` writes SCSS values such as `p(1)` as Sass calls only
+when `:scale-functions` maps the property, as in `emmet2-css-scale-functions`;
 otherwise they are parse errors. `emmet2-expand-analysis` passes the
-corresponding user options. Property names, the final pseudo, at-rule names,
-and top-level value words and units outside the CSS data also signal
+corresponding user options. Property names, the final pseudo, at-rule names, and
+top-level value words and units outside the CSS data also signal
 `emmet2-parse-error`. Bracketed values such as `ff[Inter]`, function arguments
 such as `w-calc(10qq)`, and unknown earlier pseudos such as `:global` in
 `:global(.a):hv` keep their spelling. `emmet2-extensions-css-choices` accepts
 the same `:scale-functions` and returns only choices that expand; its first
 choice is what `emmet2-extensions-css` expands.
 
-`emmet2-extensions-css-choices` takes one property, pseudo chain or at-rule
-and returns nil for a list such as `ovh,ta`; `emmet2-extensions-css` expands
-the whole list, and editor completion offers choices for its last item.
-Returned strings may contain a separator that keeps an otherwise ambiguous
-property/value boundary; treat them as opaque and pass each one back with the
-same `:syntax`, `:css-in-js`, `:at-rule` and `:scale-functions`. Set
-`:syntax 'css` or `'scss` explicitly (default: `scss`), and `:css-in-js t` for
-object members. `:indent` (a tab by default) and `:base-indent` are literal
-strings.
-SCSS means brace-based syntax, not indentation-based `.sass` or Sass analysis.
-Both CSS entry points accept `:at-rule` to select the enclosing rule's
-descriptors. Pass the same context when expanding a returned choice;
-`emmet2-expand-analysis` and CAPF already forward a host analysis's `:at-rule`.
+`emmet2-extensions-css-choices` takes one property, pseudo chain or at-rule and
+returns nil for a list such as `ovh,ta`; `emmet2-extensions-css` expands the
+whole list, and editor completion offers choices for its last item. Returned
+strings may contain a separator that keeps an otherwise ambiguous property/value
+boundary; treat them as opaque and pass each one back with the same `:syntax`,
+`:css-in-js`, `:at-rule` and `:scale-functions`. Set `:syntax 'css` or `'scss`
+explicitly (default: `scss`), and `:css-in-js t` for object members. `:indent`
+(a tab by default) and `:base-indent` are literal strings. SCSS means
+brace-based syntax, not indentation-based `.sass` or Sass analysis. Both CSS
+entry points accept `:at-rule` to select the enclosing rule's descriptors. Pass
+the same context when expanding a returned choice; `emmet2-expand-analysis` and
+CAPF already forward a host analysis's `:at-rule`.
 
 Both expansion functions return a result plist with these keys; treat it as
 read-only:
@@ -198,16 +196,16 @@ not reformat `:text` independently.
 
 ## Host completion interface
 
-Set buffer-local `emmet2-context-provider` before enabling `emmet2-mode`, or call
-`emmet2-capf` from the host's dispatcher without enabling the mode, as
-[scss2-mode does](README.md#better-with-scss2-mode). The host supplies parser
-context and bounds; Emmet supplies choices, preview and validated insertion. No `css-mode`
-inheritance, extra parser or frontend configuration is required. See the
-[runnable example](#runnable-provider-example) below.
+Set buffer-local `emmet2-context-provider` before enabling `emmet2-mode`, or
+call `emmet2-capf` from the host's dispatcher without enabling the mode, as
+[scss2-mode does](README.md#with-scss2-mode). The host supplies parser
+context and bounds; Emmet supplies choices, preview and validated insertion. No
+`css-mode` inheritance, extra parser or frontend configuration is required. See
+the [runnable example](#runnable-provider-example) below.
 
-`:analyze` receives `automatic`: non-nil for automatic, nil for explicit requests.
-Return nil to decline, with **no fallback** to built-in detection; otherwise
-return a plist:
+`:analyze` receives `automatic`: non-nil for automatic, nil for explicit
+requests. Return nil to decline, with no fallback to built-in detection;
+otherwise return a plist:
 
 | Key | Host contract |
 | --- | --- |
@@ -228,15 +226,17 @@ other malformed values signal `emmet2-error`.
 
 `:revision` takes no arguments and returns a cheap, immutable `equal`-comparable
 token covering extra inputs such as dialect, settings and parser generation.
-Emmet already tracks source tick, point, visible bounds, major mode and `emmet2-mode`.
-Both callbacks are read-only; revision must stay stable until inputs change and
-must not parse. Unchanged revisions reuse the analysis within a table and from
-the buffer's last completed choice batch. Reuse also requires the same provider
-identity and automatic/explicit request policy; declined analyses are not cached.
+Emmet already tracks source tick, point, visible bounds, major mode and
+`emmet2-mode`. Both callbacks are read-only; revision must stay stable until
+inputs change and must not parse. Unchanged revisions reuse the analysis within
+a table and from the buffer's last completed choice batch. Reuse also requires
+the same provider identity and automatic/explicit request policy; declined
+analyses are not cached.
 
 Direct context APIs signal invalid contracts. Automatic CAPF errors invalidate
-that table and offer no match; `emmet2-complete` and acceptance report the error.
-Cancellation propagates, and `debug-on-error` retains the original debugger.
+that table and offer no match; `emmet2-complete` and acceptance report the
+error. Cancellation propagates, and `debug-on-error` retains the original
+debugger.
 
 Replace the provider plist rather than mutating it; replacement/removal
 invalidates old tables. Major-mode changes clear it. To disable expansion,
@@ -250,9 +250,9 @@ Hosts can pass confirmed bounds and `(NAME . DOCUMENTATION)` pairs to
 `emmet2-completion-capf`. It returns completion data for a CAPF function to
 return, with fuzzy matching, documentation and an acceptance callback for empty
 functions such as `calc()`. The data is exclusive: return nil from your CAPF
-when no entry fits. Acceptance
-only moves point inside the inserted parentheses; it creates no snippet fields.
-Existing call arguments remain intact. Hosts own subsequent TAB navigation.
+when no entry fits. Acceptance only moves point inside the inserted parentheses;
+it creates no snippet fields. Existing call arguments remain intact. Hosts own
+subsequent TAB navigation.
 
 For expensive discovery, `ENTRIES` may instead be a zero-argument function.
 Metadata and completion-boundary queries do not call it. The first candidate
@@ -270,11 +270,11 @@ and `:fuzzy` take effect only under the `emmet2-name` style, which is the
 default for `emmet2-value`; a host passing its own `:category` must give it the
 `emmet2-name` style, as in
 `(add-to-list 'completion-category-defaults '(my-category (styles emmet2-name)))`.
-`:identity` must be stable for a table's lifetime, which reuses its results.
-The host
-still owns context, bounds and candidate discovery, including its failures: an
-error from a function `ENTRIES` propagates to the completion frontend. The
-frontend owns text replacement and its undo group; acceptance changes only point.
+`:identity` must be stable for a table's lifetime, which reuses its results. The
+host still owns context, bounds and candidate discovery, including its failures:
+an error from a function `ENTRIES` propagates to the completion frontend. The
+frontend owns text replacement and its undo group; acceptance changes only
+point.
 
 ## Runnable provider example
 
@@ -307,7 +307,8 @@ replace its string check with syntax analysis.
 ```
 
 Run `M-x emmet2-expand-at-point`, or `M-x emmet2-complete` and accept
-`::before`, to replace `::be`, leaving point after the name. Disabling `my-emmet-demo-enabled` invalidates displayed candidates.
+`::before`, to replace `::be`, leaving point after the name. Setting
+`my-emmet-demo-enabled` to nil invalidates displayed candidates.
 
 ## Synchronous expansion, preview and insertion
 
@@ -339,10 +340,10 @@ For a direct command:
     (emmet2-insert snapshot result)))
 ```
 
-Capture the snapshot **before** expansion so `emmet2-insert` rejects the result
-if the source changed in between; never reuse an old result with a newly
-captured snapshot. Use
-`emmet2-capf` for live/deferred choices and its context, render and identity checks.
+Capture the snapshot before expansion so `emmet2-insert` rejects the result if
+the source changed in between; never reuse an old result with a newly captured
+snapshot. Use `emmet2-capf` for live/deferred choices and its context, render
+and identity checks.
 
 Layout uses source column, optional `:indent-width` and buffer tab settings.
 Pure expansion uses caller-supplied indentation strings.
