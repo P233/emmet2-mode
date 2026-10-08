@@ -60,6 +60,7 @@ bind `emmet2-complete' or `emmet2-expand-at-point' in it."
         (emmet2-context-start))
     (remove-hook 'completion-at-point-functions #'emmet2-capf t)
     (remove-hook 'completion-at-point-functions #'emmet2-css-value-capf t)
+    (kill-local-variable 'emmet2-capf--batch)
     (emmet2-context-stop)))
 
 (defun emmet2-mode-unload-function ()
@@ -67,6 +68,7 @@ bind `emmet2-complete' or `emmet2-expand-at-point' in it."
   (dolist (buffer (buffer-list))
     (with-current-buffer buffer
       (if (bound-and-true-p emmet2-mode) (emmet2-mode -1)
+        (kill-local-variable 'emmet2-capf--batch)
         (emmet2-context-stop))))
   (when (fboundp 'emmet2-preview-clear) (emmet2-preview-clear))
   (when (fboundp 'emmet2-corfu-unload-function) (emmet2-corfu-unload-function))

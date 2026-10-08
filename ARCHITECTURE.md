@@ -354,7 +354,8 @@ sentinel.
 
 Enabling the mode adds `emmet2-capf` locally at depth -50 and, in CSS Base
 modes without a provider, `emmet2-css-value-capf` at -60; disabling removes
-both. `emmet2-complete` temporarily selects only the Emmet CAPF and calls
+both and discards the last choice batch; unloading discards it in every
+buffer. `emmet2-complete` temporarily selects only the Emmet CAPF and calls
 `completion-at-point`, as Cape's interactive CAPFs do; it neither selects a
 candidate nor changes frontend settings, and it delegates analysis and grammar
 initialization to CAPF once, without a separate preflight. Built-in CSS still

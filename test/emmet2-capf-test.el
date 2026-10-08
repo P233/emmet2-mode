@@ -768,6 +768,27 @@
         (should-not (all-completions "m10" table))
         (should (all-completions "m10" (nth 2 (emmet2-capf))))))))
 
+(ert-deftest emmet2-capf-mode-cleanup-releases-last-batch ()
+  (dolist (enabled '(nil t))
+    (dolist (cleanup '(emmet2-mode emmet2-mode-unload-function))
+      (with-temp-buffer
+        (insert "m10")
+        (setq-local emmet2-context-provider
+                    (list :analyze (lambda (_automatic)
+                                     (list :beg 1 :end 4 :lang 'css :syntax 'scss
+                                           :position 'declaration-start))
+                          :revision #'ignore))
+        (when enabled (emmet2-mode 1))
+        (let ((provider emmet2-context-provider))
+          (should (all-completions "m10" (nth 2 (emmet2-capf))))
+          (should emmet2-capf--batch)
+          (if (eq cleanup 'emmet2-mode) (emmet2-mode -1)
+            (emmet2-mode-unload-function))
+          (should-not emmet2-capf--batch)
+          (should (eq provider emmet2-context-provider))
+          ;; Independent hosts still own their dispatcher when the minor mode is off.
+          (should (all-completions "m10" (nth 2 (emmet2-capf)))))))))
+
 (ert-deftest emmet2-capf-direct-expansion-is-the-first-choice ()
   ;; Includes aliases and partial scale functions whose top reading does not expand.
   (let ((emmet2-css-scale-functions '(("font-size" . "ms"))))

@@ -34,7 +34,7 @@ came from `emmet2-expand-choices' for analysis A when
 `emmet2-context-revision' was R.  `emmet2-capf--choices' reuses its results
 but copies its choices, so tables never share candidates.  Each expansion
 replaces the entry, or leaves it nil when the source changed meanwhile;
-changing the major mode discards it.")
+disabling the minor mode, changing the major mode or unloading discards it.")
 
 (defun emmet2-capf--analyze (automatic)
   "Analyze AUTOMATIC's request, reusing the last batch's unchanged context.
