@@ -86,12 +86,21 @@ passes through here, so a provider's :abbr never replaces the source text."
       (when (and (< beg end) (<= (point-min) beg (point) end (point-max)))
         (plist-put (copy-sequence analysis) :abbr (buffer-substring-no-properties beg end))))))
 
+(defun emmet2-context--copy-options (value)
+  "Copy the strings and list structure in option VALUE.
+Other leaves are immutable option values and can be shared."
+  (cond ((stringp value) (copy-sequence value))
+        ((consp value) (cons (emmet2-context--copy-options (car value))
+                            (emmet2-context--copy-options (cdr value))))
+        (t value)))
+
 (defun emmet2-context-revision ()
   "Return the inputs of `emmet2-context-analyze' as one comparable value.
 Compare values with `equal'.  The value covers the text's modification tick,
 point, the visible region, the major mode and `emmet2-mode', plus either the
-provider's :revision or, for built-in hosts, web-mode's engine, content type
-and file name and the CSS-in-JS options.  It ignores parser warmup, which can
+provider's :revision or, for built-in hosts, a copy of web-mode's engine,
+content type and file name and the CSS-in-JS options, so a retained value
+also detects in-place option edits.  It ignores parser warmup, which can
 only turn a nil automatic analysis into a result."
   (list (buffer-chars-modified-tick) (point) (point-min) (point-max) major-mode
         (bound-and-true-p emmet2-mode)
@@ -101,8 +110,9 @@ only turn a nil automatic analysis into a result."
                     (save-excursion
                       (save-restriction
                         (funcall (emmet2-context--provider-function :revision))))))
-          (list (and (derived-mode-p 'web-mode) (emmet2-context-web-revision))
-                (emmet2-context-js-revision)))))
+          (emmet2-context--copy-options
+           (list (and (derived-mode-p 'web-mode) (emmet2-context-web-revision))
+                 (emmet2-context-js-revision))))))
 
 (defun emmet2-context-analyze (&optional automatic)
   "Return the Emmet abbreviation context at point, or nil.

@@ -290,6 +290,8 @@ CSS output nor reads splitter or search-index internals.
 ### Tables and revisions
 
 A table holds an immutable input snapshot and its lazily computed choices.
+Revisions and settings copy built-in option values, so in-place option edits
+also invalidate prior choices; provider revisions stay opaque.
 Frontends query a table many times per keystroke; it classifies the host again
 only when the context revision changes. The context module owns that value,
 which lists every input of an analysis besides the hosts' own caches; add a new

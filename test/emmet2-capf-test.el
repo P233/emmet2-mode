@@ -703,6 +703,71 @@
       (setq emmet2-css-scale-functions '((t . "space")))
       (should-not (all-completions "p(1)(2)" table)))))
 
+(ert-deftest emmet2-capf-in-place-scale-option-change-invalidates-candidates ()
+  (dolist (change '(pair string))
+    (with-temp-buffer
+      (scss-mode) (insert ".a{p(1)(2)}") (backward-char)
+      (let* ((emmet2-css-scale-functions (list (cons t (copy-sequence "rhythm"))))
+             (capf (emmet2-capf)) (table (nth 2 capf))
+             (candidate (car (all-completions "p(1)(2)" table))))
+        (should candidate)
+        (if (eq change 'pair)
+            (setf (alist-get t emmet2-css-scale-functions) "space")
+          (aset (cdar emmet2-css-scale-functions) 0 ?R))
+        ;; Acceptance must recheck settings without a preceding candidate query.
+        (funcall (plist-get (nthcdr 3 capf) :exit-function) candidate 'finished)
+        (should (equal (buffer-string) ".a{p(1)(2)}"))
+        (should-not (all-completions "p(1)(2)" table))
+        (let* ((fresh (emmet2-capf))
+               (choice (car (all-completions "p(1)(2)" (nth 2 fresh))))
+               (expected (if (eq change 'pair) "padding: space(1) space(2);"
+                           "padding: Rhythm(1) Rhythm(2);")))
+          (should (equal (plist-get (plist-get (get-text-property 0 'emmet2--choice choice) :result) :text)
+                         expected))
+          (funcall (plist-get (nthcdr 3 fresh) :exit-function) choice 'finished)
+          (should (equal (buffer-string) (concat ".a{" expected "}"))))))))
+
+(ert-deftest emmet2-capf-in-place-markup-option-change-invalidates-candidates ()
+  (with-temp-buffer
+    (insert "div.card")
+    (emmet2-test--with-yasnippet nil
+      (let* ((emmet2-capf--explicit t) (emmet2-markup-variant "solid")
+             (emmet2-css-modules-object (copy-sequence "styles"))
+             (capf (emmet2-capf)) (table (nth 2 capf))
+             (candidate (car (all-completions "div.card" table))))
+        ;; Repeated queries must not replace a frozen snapshot with live values.
+        (should (all-completions "div.card" table))
+        (aset emmet2-css-modules-object 0 ?S)
+        (funcall (plist-get (nthcdr 3 capf) :exit-function) candidate 'finished)
+        (should (equal (buffer-string) "div.card"))
+        (should-not (all-completions "div.card" table))
+        (let* ((fresh (emmet2-capf))
+               (choice (car (all-completions "div.card" (nth 2 fresh)))))
+          (funcall (plist-get (nthcdr 3 fresh) :exit-function) choice 'finished)
+          (should (equal (buffer-string) "<div class={Styles.card}></div>")))))))
+
+(ert-deftest emmet2-capf-in-place-host-option-change-invalidates-context ()
+  (dolist (change '(list string))
+    (with-temp-buffer
+      (js-mode) (insert "createTheme({m10})") (backward-char 2)
+      (let* ((emmet2-css-in-js-functions (list (copy-sequence "createTheme")))
+             (emmet2-capf--explicit t)
+             (capf (emmet2-capf)) (table (nth 2 capf))
+             (candidate (car (all-completions "m10" table))))
+        (should candidate)
+        (should (all-completions "m10" table))
+        (if (eq change 'list) (setcar emmet2-css-in-js-functions "otherHost")
+          (aset (car emmet2-css-in-js-functions) 0 ?C))
+        (should-not (emmet2-context-analyze))
+        (funcall (plist-get (nthcdr 3 capf) :exit-function) candidate 'finished)
+        (should (equal (buffer-string) "createTheme({m10})"))
+        (should-not (all-completions "m10" table))
+        (should-not (emmet2-capf))
+        ;; Restoring valid settings permits a fresh request, never revives the old table.
+        (setcar emmet2-css-in-js-functions "createTheme")
+        (should-not (all-completions "m10" table))
+        (should (all-completions "m10" (nth 2 (emmet2-capf))))))))
+
 (ert-deftest emmet2-capf-direct-expansion-is-the-first-choice ()
   ;; Includes aliases and partial scale functions whose top reading does not expand.
   (let ((emmet2-css-scale-functions '(("font-size" . "ms"))))

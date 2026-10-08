@@ -85,10 +85,12 @@ line; a markup word ending in a period never counts."
                 (string-match-p "\\`\\(?:@[[:alpha:]]\\|[^:]*::?[[:alpha:]]\\)" abbreviation)))))))
 
 (defun emmet2-capf--settings (analysis)
-  "Return the options that decide ANALYSIS's expansion and its lifetime."
-  (list emmet2-mode emmet2-markup-variant emmet2-jsx-class-style emmet2-css-modules-object
-        emmet2-class-names-constructor emmet2-css-scale-functions
-        (emmet2-insert-render-options analysis)))
+  "Return the options that decide ANALYSIS's expansion and its lifetime.
+The value is a copy, so a retained value also detects in-place option edits."
+  (emmet2-context--copy-options
+   (list emmet2-mode emmet2-markup-variant emmet2-jsx-class-style emmet2-css-modules-object
+         emmet2-class-names-constructor emmet2-css-scale-functions
+         (emmet2-insert-render-options analysis))))
 
 (defun emmet2-capf--current-p (analysis snapshot settings automatic &optional analyzed)
   "Whether ANALYSIS, SNAPSHOT and SETTINGS still match the buffer.
