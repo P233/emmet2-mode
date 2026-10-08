@@ -1,6 +1,6 @@
 # Changelog
 
-## v2.0.0 (Unreleased)
+## v2.0.0 (2026-10-09)
 
 emmet2-mode 2.0 is a rewrite in Emacs Lisp. Changes are relative to 0.2. See
 [Upgrading from 0.2](README.md#upgrading-from-02) for the configuration
