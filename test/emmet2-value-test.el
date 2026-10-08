@@ -5,6 +5,98 @@
 (require 'emmet2-css-value)
 (require 'emmet2-completion)
 
+(ert-deftest emmet2-value-name-identities-belong-to-one-table ()
+  (with-temp-buffer
+    (insert "token")
+    (let* ((entries (cl-loop for i below 1000 collect (list (format "token_%d" i))))
+           (calls 0)
+           (data (emmet2-completion-capf
+                  1 (point) (lambda () entries) :fuzzy nil
+                  :identity (lambda (name)
+                              (when (string-match-p "[0-9]" name) (cl-incf calls))
+                              (string-replace "_" "-" name))))
+           (table (nth 2 data)))
+      (completion-metadata "token" table nil)
+      (should (zerop calls))
+      (should (= (length (all-completions "token" table)) 1000))
+      (should (zerop calls))
+      (dotimes (_ 3)
+        (let ((all (completion-all-completions "token-" table nil 6)))
+          (setcdr (last all) nil)
+          (should (equal all (mapcar #'car entries))))
+        (should (equal (completion-try-completion "token" table nil 5) '("token_" . 6))))
+      (should (= calls 1000)))))
+
+(ert-deftest emmet2-value-name-matching-keeps-dynamic-filters ()
+  (with-temp-buffer
+    (insert "blue")
+    (let* ((data (emmet2-completion-capf
+                  1 (point) '(("blue_token") ("blue-tone")) :fuzzy nil
+                  :identity (lambda (name) (string-replace "_" "-" name))))
+           (table (nth 2 data)))
+      (cl-labels ((names (&optional predicate)
+                    (let ((all (completion-all-completions "blue-" table predicate 5)))
+                      (when all (setcdr (last all) nil)) all)))
+        (should (equal (names) '("blue_token" "blue-tone")))
+        (should (equal (names (lambda (name) (equal name "blue_token"))) '("blue_token")))
+        (let ((completion-regexp-list '("tone$")))
+          (should (equal (names) '("blue-tone"))))
+        (let ((completion-regexp-list '("token$")))
+          (should (equal (names) '("blue_token"))))
+        (should (equal (names) '("blue_token" "blue-tone")))
+        ;; The literal table protocol still uses insertion spellings.
+        (should (equal (all-completions "blue_" table) '("blue_token")))))))
+
+(ert-deftest emmet2-value-name-cache-keeps-wrapped-table-protocol ()
+  (with-temp-buffer
+    (insert "blue")
+    (let* ((base (nth 2 (emmet2-completion-capf
+                        1 (point) '(("blue_token") ("blue-tone")) :fuzzy nil
+                        :identity (lambda (name) (string-replace "_" "-" name)))))
+           (filtered (apply-partially #'completion-table-with-predicate base
+                                      (lambda (name) (equal name "blue-tone")) t))
+           (merged (completion-table-merge base '("blue-extra"))))
+      (cl-labels ((names (table)
+                    (let ((all (completion-all-completions "blue-" table nil 5)))
+                      (when all (setcdr (last all) nil)) all)))
+        ;; Warm the original table before asking wrappers that forward its metadata.
+        (should (equal (names base) '("blue_token" "blue-tone")))
+        (should (equal (names filtered) '("blue-tone")))
+        (should (equal (completion-try-completion "blue-" filtered nil 5) '("blue-tone" . 9)))
+        (should (equal (names merged) '("blue_token" "blue-tone" "blue-extra")))
+        (should (equal (names base) '("blue_token" "blue-tone")))))))
+
+(ert-deftest emmet2-value-name-cache-keeps-category-identity-override ()
+  (with-temp-buffer
+    (insert "foo")
+    (let ((table (nth 2 (emmet2-completion-capf 1 (point) '(("FOO")) :fuzzy nil))))
+      (should-not (completion-all-completions "foo" table nil 3))
+      (let ((completion-category-overrides '((emmet2-value (emmet2-identity . downcase)))))
+        (let ((all (completion-all-completions "foo" table nil 3)))
+          (when all (setcdr (last all) nil))
+          (should (equal all '("FOO"))))
+        (should (equal (completion-try-completion "foo" table nil 3) '("FOO" . 3))))
+      (should-not (completion-all-completions "foo" table nil 3)))))
+
+(ert-deftest emmet2-value-name-identities-retry-interruption ()
+  (with-temp-buffer
+    (insert "a")
+    (let* ((collections 0) (interrupt t)
+           (data (emmet2-completion-capf
+                  1 (point) (lambda () (cl-incf collections) '(("alpha") ("amber")))
+                  :fuzzy nil
+                  :identity (lambda (name)
+                              (when (and interrupt (equal name "amber"))
+                                (setq interrupt nil)
+                                (throw throw-on-input t))
+                              name)))
+           (table (nth 2 data)))
+      (should (eq (while-no-input (completion-all-completions "a" table nil 1)) t))
+      (let ((all (completion-all-completions "a" table nil 1)))
+        (setcdr (last all) nil)
+        (should (equal all '("alpha" "amber"))))
+      (should (= collections 1)))))
+
 (ert-deftest emmet2-value-lazy-entries-are-collected-once ()
   (with-temp-buffer
     (insert "cal")

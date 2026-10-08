@@ -270,6 +270,7 @@ and `:fuzzy` take effect only under the `emmet2-name` style, which is the
 default for `emmet2-value`; a host passing its own `:category` must give it the
 `emmet2-name` style, as in
 `(add-to-list 'completion-category-defaults '(my-category (styles emmet2-name)))`.
+`:identity` must be stable for a table's lifetime, which reuses its results.
 The host
 still owns context, bounds and candidate discovery, including its failures: an
 error from a function `ENTRIES` propagates to the completion frontend. The

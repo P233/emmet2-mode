@@ -520,7 +520,9 @@ the same data and completion modules. The native adapter declines
 external-provider buffers, and scss2 keeps its single dispatcher. Hosts may
 defer candidate discovery until the table is queried. A table keeps one
 completed result; admission probes do not collect symbols or read modules, and
-a new session discovers them again without a project-wide cache. Semantic
+a new session discovers them again without a project-wide cache. Unfiltered
+queries to the owning table reuse its normalized names; filters and wrapped
+tables keep the full completion protocol. Semantic
 completion never expands a declaration. General fuzzy matching and compact CSS
 abbreviation ranking keep their separate contracts.
 

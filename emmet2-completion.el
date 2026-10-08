@@ -31,8 +31,13 @@ it.  FOLD is non-nil when names compare without regard to case."
              (case-fold-search fold)
              (query (funcall identity input))
              (rest (funcall identity (substring string point)))
-             (pairs (mapcar (lambda (name) (cons name (funcall identity name)))
-                            (all-completions "" table predicate)))
+             (pairs (if-let* ((prepared (and (not predicate) (not completion-regexp-list)
+                                            (completion-metadata-get metadata 'emmet2-pairs)))
+                             (data (funcall prepared table identity)))
+                        (cdr data)
+                      ;; Foreign tables and per-query filters retain the full protocol.
+                      (mapcar (lambda (name) (cons name (funcall identity name)))
+                              (all-completions "" table predicate))))
              (pairs (if fold
                         (emmet2-fuzzy-filter query pairs #'cdr)
                       (cl-remove-if-not
@@ -135,7 +140,8 @@ collection still keeps later completion functions from running.  CATEGORY,
 `emmet2-value' by default, is the completion category; IDENTITY and FUZZY
 take effect only where the emmet2-name style
 applies, which is the default for `emmet2-value' alone.  IDENTITY maps a
-spelling to the name it denotes, `identity' by default.  Non-nil FUZZY, the
+spelling to the name it denotes, `identity' by default; it must be stable
+for the table's lifetime, which reuses its results.  Non-nil FUZZY, the
 default, matches case-insensitively and fuzzily; nil matches literal
 prefixes.  ANNOTATION is a string shown after every candidate.  PREFIX is
 passed as :company-prefix-length; t lets Corfu and Company complete before
@@ -154,6 +160,8 @@ emmet2 builds."
          ;; One publication keeps even an interrupted collection retryable.
          ;; A cons of entries and names distinguishes an empty result from nil.
          prepared
+         ;; Names are stable for this table.  A cons also retains an empty result.
+         normalized table
          (metadata `(metadata (category . ,category)
                               (display-sort-function . identity)
                               (cycle-sort-function . identity)
@@ -174,13 +182,25 @@ emmet2 builds."
                                                   (cons (substring (car entry) 0 -2) (cdr entry))
                                                 entry)) values)
                                   values)))
-                   (setq prepared (cons values (delete-dups (mapcar #'car values)))))))))
+                   (setq prepared (cons values (delete-dups (mapcar #'car values))))))))
+         (pairs (queried-table queried-identity)
+           ;; Metadata can pass through wrappers which filter, merge or transform names.
+           ;; Only the owning table and identity may bypass the standard table protocol.
+           (and (eq table queried-table) (eq identity queried-identity)
+                (or normalized
+                    (when-let* ((data (prepare)))
+                      ;; Publish only after every identity succeeds; interruption retries.
+                      (setq normalized
+                            (cons t (mapcar (lambda (name) (cons name (funcall identity name)))
+                                            (cdr data)))))))))
+      (push (cons 'emmet2-pairs #'pairs) (cdr metadata))
       (unless (functionp entries) (prepare))
-      (list begin end
+      (setq table
             (lambda (string predicate action)
               (cond ((eq action 'metadata) metadata)
                     ((eq (car-safe action) 'boundaries) nil)
-                    (t (complete-with-action action (cdr (prepare)) string predicate))))
+                    (t (complete-with-action action (cdr (prepare)) string predicate)))))
+      (list begin end table
             :exclusive t :company-prefix-length prefix
             :annotation-function (lambda (_) annotation)
             :company-docsig (lambda (candidate) (or (cdr (assoc candidate (car (prepare)))) candidate))
