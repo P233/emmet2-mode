@@ -1,6 +1,10 @@
 ;;; emmet2-context-js.el --- JSX and CSS-in-JS context with Tree-sitter -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
+;; Author: Peiwen Lu <hi@peiwen.lu>
+;; Assisted-by: Claude:Opus-5.5
+;; Assisted-by: Codex:gpt-6-astra
+;; Assisted-by: Codex:gpt-6.1-sol
 
 ;;; Commentary:
 ;; Find JSX markup and CSS-in-JS objects with Tree-sitter.  Each buffer keeps

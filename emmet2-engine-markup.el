@@ -1,6 +1,10 @@
 ;;; emmet2-engine-markup.el --- Markup abbreviation expansion -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
+;; Author: Peiwen Lu <hi@peiwen.lu>
+;; Assisted-by: Claude:Opus-5.5
+;; Assisted-by: Codex:gpt-6-astra
+;; Assisted-by: Codex:gpt-6.1-sol
 
 ;;; Commentary:
 ;; Markup expansion shared by commands, completion and previews.  Grammar,

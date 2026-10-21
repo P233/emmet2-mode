@@ -1,5 +1,9 @@
 ;;; emmet2-css-value.el --- Value completion in CSS Base hosts -*- lexical-binding: t; -*-
 ;; SPDX-License-Identifier: GPL-3.0-or-later
+;; Author: Peiwen Lu <hi@peiwen.lu>
+;; Assisted-by: Claude:Opus-5.5
+;; Assisted-by: Codex:gpt-6-astra
+;; Assisted-by: Codex:gpt-6.1-sol
 
 ;;; Commentary:
 ;; Complete property values in CSS Base modes, using `syntax-ppss' to find the

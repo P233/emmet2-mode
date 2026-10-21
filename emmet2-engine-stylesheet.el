@@ -1,6 +1,10 @@
 ;;; emmet2-engine-stylesheet.el --- Stylesheet abbreviation expansion -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
+;; Author: Peiwen Lu <hi@peiwen.lu>
+;; Assisted-by: Claude:Opus-5.5
+;; Assisted-by: Codex:gpt-6-astra
+;; Assisted-by: Codex:gpt-6.1-sol
 ;; Grammar and formatting derived from Emmet 2.4.11 (MIT); see data/emmet/LICENSE.
 
 ;;; Commentary:

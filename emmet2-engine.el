@@ -1,6 +1,10 @@
 ;;; emmet2-engine.el --- Expansion results, errors and deadline -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
+;; Author: Peiwen Lu <hi@peiwen.lu>
+;; Assisted-by: Claude:Opus-5.5
+;; Assisted-by: Codex:gpt-6-astra
+;; Assisted-by: Codex:gpt-6.1-sol
 
 ;;; Commentary:
 ;; A canonical result is the plist from `emmet2-result-create': text, fields

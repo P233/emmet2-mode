@@ -1,6 +1,10 @@
 ;;; emmet2-css-data.el --- Buffer-independent CSS metadata queries -*- lexical-binding: t; -*-
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
+;; Author: Peiwen Lu <hi@peiwen.lu>
+;; Assisted-by: Claude:Opus-5.5
+;; Assisted-by: Codex:gpt-6-astra
+;; Assisted-by: Codex:gpt-6.1-sol
 
 ;;; Commentary:
 ;; Answer CSS name and value queries from data/css-data.json, which carries

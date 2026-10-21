@@ -3,6 +3,9 @@
 ;; Copyright (C) 2022-2026 Peiwen Lu
 
 ;; Author: Peiwen Lu <hi@peiwen.lu>
+;; Assisted-by: Claude:Opus-5.5
+;; Assisted-by: Codex:gpt-6-astra
+;; Assisted-by: Codex:gpt-6.1-sol
 ;; Created: 10 Oct 2022
 ;; Version: 2.0.0
 ;; URL: https://github.com/P233/emmet2-mode
