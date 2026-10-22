@@ -131,6 +131,25 @@
                   (:classAttribute "className" :cssModulesObject "css" :classConstructor 1)))
     (should-error (emmet2-engine-markup-expand ".a" :preset 'jsx :jsx jsx) :type 'emmet2-error)))
 
+(ert-deftest emmet2-markup-jsx-snippets-write-valid-jsx ()
+  ;; Emmet 2.4.11 writes HTML names and comments here, which React rejects.
+  (cl-flet ((expand (input attribute)
+              (plist-get (emmet2-engine-markup-expand input :preset 'jsx :jsx (list :classAttribute attribute))
+                         :text)))
+    (dolist (pair '(("img:s" . "<img src=\"\" alt=\"\" srcSet=\"\" />")
+                    ("ifr" . "<iframe src=\"\" frameBorder=\"0\"></iframe>")
+                    ("time" . "<time dateTime=\"\"></time>")
+                    ("meta:compat" . "<meta httpEquiv=\"X-UA-Compatible\" content=\"IE=7\" />")
+                    ("meta:utf" . "<meta httpEquiv=\"Content-Type\" content=\"text/html;charset=UTF-8\" />")))
+      (should (equal (expand (car pair) "className") (cdr pair))))
+    (should (string-match-p "<meta charSet=\"UTF-8\" />" (expand "doc" "className")))
+    ;; Solid keeps HTML attribute names.
+    (should (equal (expand "img:s" "class") "<img src=\"\" alt=\"\" srcset=\"\" />"))
+    (dolist (attribute '("className" "class"))
+      (should (equal (emmet2-engine-markup-expand "div>c" :preset 'jsx :jsx (list :classAttribute attribute))
+                     '(:text "<div>{/*  */}</div>" :fields ((9 9 1 "")) :cursor 9)))))
+  (should (equal (plist-get (emmet2-engine-markup-expand "c") :text) "<!--  -->")))
+
 (ert-deftest emmet2-markup-fields-have-token-scope-and-character-offsets ()
   (should (equal (emmet2-engine-markup-expand "div{${1:a\nb}}")
                  '(:text "<div>a\nb</div>" :fields ((5 8 1 "a\nb")) :cursor 5)))

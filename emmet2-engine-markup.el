@@ -36,6 +36,8 @@
                (dolist (name (split-string names "|")) (puthash name value table)))
              (emmet2-markup--read-data "html.json"))
     table))
+(defconst emmet2-markup--jsx-snippets '(("c" . "{\\{/* ${0} */\\}}"))
+  "Snippets replacing those whose HTML text is invalid JSX.")
 (defconst emmet2-markup--variables (emmet2-markup--read-data "variables.json"))
 (defconst emmet2-markup--vocabularies
   (mapcar (lambda (entry) (cons (car entry) (emmet2-markup--read-data (cdr entry))))
@@ -478,12 +480,14 @@ An empty field yields an unclosed ${N, as Emmet 2.4.11 does."
   "Expand snippet names in call-owned NODES, caching parsed snippets in PARSED.
 STACK holds the snippets being expanded, to stop cycles.  Only snippet syntax
 trees are shared within this call; conversion creates fresh nodes before
-resolution or transformation can change them.  JSX enables JSX syntax while
-parsing snippets."
+resolution or transformation can change them.  JSX selects JSX snippets and
+enables JSX syntax while parsing them."
   (mapcan
    (lambda (node)
      (emmet2-engine--check-deadline)
-     (let ((snippet (gethash (emmet2-markup--node-name node) emmet2-markup--snippets)))
+     (let* ((name (emmet2-markup--node-name node))
+            (snippet (or (and jsx (cdr (assoc name emmet2-markup--jsx-snippets)))
+                         (gethash name emmet2-markup--snippets))))
        (if (and snippet (not (member snippet stack)))
            (let* ((syntax (or (gethash snippet parsed)
                               (puthash snippet (emmet2-markup--parse snippet jsx) parsed)))
@@ -882,7 +886,10 @@ Conflicting defaults of one field index become separate groups."
 
 (defconst emmet2-markup--profiles
   '((html :jsx nil :attributes nil)
-    (react :jsx t :attributes (("class" . "className") ("for" . "htmlFor")))
+    ;; React also renames the other attributes that built-in snippets write.
+    (react :jsx t :attributes (("class" . "className") ("for" . "htmlFor") ("charset" . "charSet")
+                               ("datetime" . "dateTime") ("frameborder" . "frameBorder")
+                               ("http-equiv" . "httpEquiv") ("srcset" . "srcSet")))
     (solid :jsx t :attributes nil))
   "Attribute renames and JSX serialization for each markup dialect.
 Never mutate these.")
