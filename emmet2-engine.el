@@ -158,46 +158,5 @@ Each result keeps its own groups, numbered after those of earlier RESULTS."
       (cl-incf groups (emmet2-result--group-count result)))
     (emmet2-result-create (apply #'concat (nreverse texts)) (nreverse fields))))
 
-(defun emmet2-result-splice (result beg end replacement)
-  "Replace RESULT's half-open range BEG..END with canonical REPLACEMENT.
-Remove fields fully covered by the range and reject partial overlaps.  Empty
-fields at END survive and shift; for insertion, fields at BEG follow the new
-text.  New groups precede the first replaced group, or the next field's group
-when no group is replaced; surviving source groups keep their relative order.
-Return a new canonical result.  Signal `emmet2-result-error' for a range
-outside RESULT or a partial field overlap."
-  (let* ((text (plist-get result :text))
-         (inserted (plist-get replacement :text))
-         (groups (emmet2-result--group-count replacement))
-         delta before after removed next fields)
-    (unless (and (integerp beg) (integerp end) (<= 0 beg end (length text)))
-      (signal 'emmet2-result-error '("Splice is outside the result")))
-    (setq delta (- (length inserted) (- end beg)))
-    (dolist (field (plist-get result :fields))
-      (pcase-let ((`(,start ,finish ,index ,placeholder) field))
-        (cond
-         ((if (= start finish) (< start beg) (<= finish beg)) (push field before))
-         ((>= start end)
-          (unless next (setq next index))
-          (push (list (+ start delta) (+ finish delta) index placeholder) after))
-         ((and (>= start beg) (<= finish end))
-          (setq removed (min (or removed index) index)))
-         (t (signal 'emmet2-result-error '("Splice partially overlaps a field"))))))
-    (let ((first (or removed next (1+ (emmet2-result--group-count result)))))
-      (cl-labels ((source-field (field)
-                    (pcase-let ((`(,start ,finish ,index ,placeholder) field))
-                      (list start finish (if (>= index first) (+ index groups) index)
-                            placeholder))))
-        (setq fields (mapcar #'source-field (nreverse before)))
-        (setq fields
-              (nconc fields
-                     (mapcar (lambda (field)
-                               (pcase-let ((`(,start ,finish ,index ,placeholder) field))
-                                 (list (+ beg start) (+ beg finish) (+ first index -1) placeholder)))
-                             (plist-get replacement :fields))
-                     (mapcar #'source-field (nreverse after))))))
-    (emmet2-result-create
-     (concat (substring text 0 beg) inserted (substring text end)) fields)))
-
 (provide 'emmet2-engine)
 ;;; emmet2-engine.el ends here

@@ -15,7 +15,6 @@
 ;;; Code:
 
 (require 'cl-lib)
-(require 'json)
 (require 'subr-x)
 (require 'seq)
 (require 'emmet2-engine)

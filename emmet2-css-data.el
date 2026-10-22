@@ -17,7 +17,6 @@
 ;;; Code:
 
 (require 'cl-lib)
-(require 'json)
 (require 'subr-x)
 (require 'emmet2-fuzzy)
 (require 'emmet2-css-search)

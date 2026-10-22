@@ -22,7 +22,6 @@
 ;;; Code:
 
 (require 'cl-lib)
-(require 'json)
 (require 'subr-x)
 (require 'emmet2-engine)
 
