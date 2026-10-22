@@ -272,6 +272,13 @@ syntax; the extractor still decides the exact bounds."
   (let ((left (max start (line-beginning-position)))
         (right (min end (line-end-position)))
         (position (point)))
+    (unless (eq language 'typescript)
+      (save-excursion
+        (let ((floor left))
+          (while (search-backward "<" floor t)
+            (when-let* ((tag-end (emmet2-extract--tag-end)))
+              (when (<= tag-end position)
+                (setq left (max left tag-end))))))))
     (dolist (node (treesit-query-capture
                    parser (nth 1 (assq language emmet2-context-js--queries))
                    left right t))
@@ -291,9 +298,9 @@ syntax; the extractor still decides the exact bounds."
                  (setq left (max left (treesit-node-start value)))))))
           ("object"
            (let ((begin (treesit-node-start node)))
-             ;; Broken JSX such as a{Link $} can recover as an object under ERROR; keep the attached text.
+             ;; Attached Emmet text can recover as an object under ERROR or a binary expression.
              (unless (and (not (eq language 'typescript))
-                          (equal (treesit-node-type (treesit-node-parent node)) "ERROR")
+                          (not (emmet2-context-js--css-owner-p node t))
                           (not (memq (char-before begin)
                                      '(nil ?> ?\s ?\t ?\n ?{ ?= ?\( ?\[ ?: ?,))))
                (setq left (max left (1+ begin))))))
