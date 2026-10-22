@@ -119,9 +119,9 @@ common properties even when a property shares their spelling."
         (source (emmet2-css--property-source property))
         (case-fold-search nil))
     (concat name
-            ;; A space keeps margin-top + -a from reading back as the name margin-top-a.
+            ;; Separate values that the tokenizer could consume as part of the property name.
             (when (and (not (emmet2-css--property-literal property))
-                       (string-search "-" name) (string-match-p "\\`\\(?:-[a-zA-Z]\\|[A-Z]\\)" source))
+                       (or (equal source "-") (string-match-p "\\`-?[a-zA-Z]" source)))
               " ")
             (if (emmet2-css--property-literal property) (concat "[" source "]") source)
             (if (emmet2-css--property-important property) "!" ""))))
@@ -411,7 +411,7 @@ program's error when none of its programs expands."
   (let ((offset 0) results
         (separator (emmet2-result-create (emmet2-css-property-separator css-in-js base-indent))))
     (dolist (token (emmet2-css--split abbreviation '(?+ ?,)))
-      (when (string-empty-p token) (signal 'emmet2-parse-error '("Empty CSS property" 0)))
+      (when (string-empty-p token) (signal 'emmet2-parse-error (list "Empty CSS property" offset)))
       ;; The top program, an alias or the best reading, is the same at any limit;
       ;; rank the rest only when it fails.
       (let ((programs (if-let* ((alias (emmet2-css--aliases token))) (list alias)
@@ -420,13 +420,18 @@ program's error when none of its programs expands."
         (unless programs
           (signal 'emmet2-parse-error (list (format "Unknown CSS property or value: %s" token) offset)))
         (while (and programs (not result))
-          (condition-case error
-              (setq result (emmet2-css--expand-properties (pop programs) css-in-js base-indent at-rule scale))
-            (emmet2-parse-error
-             (setq failure (or failure error))
-             (unless (or programs ranked)
-               (setq ranked t
-                     programs (cdr (emmet2-css--property-choices token emmet2-css-choice-limit at-rule)))))))
+          (let ((program (pop programs)))
+            (condition-case error
+                (setq result (emmet2-css--expand-properties program css-in-js base-indent at-rule scale))
+              (emmet2-parse-error
+               (let* ((reading (cl-find-if-not #'emmet2-css--property-literal program))
+                      (source (and reading (concat (emmet2-css--property-source reading)
+                                                  (when (emmet2-css--property-important reading) "!"))))
+                      (start (if (and source (string-suffix-p source token)) (- (length token) (length source)) 0)))
+                 (setq failure (or failure (list (car error) (cadr error) (+ offset start (or (caddr error) 0))))))
+               (unless (or programs ranked)
+                 (setq ranked t
+                       programs (cdr (emmet2-css--property-choices token emmet2-css-choice-limit at-rule))))))))
         (unless result (signal (car failure) (cdr failure)))
         (when results (push separator results))
         (push result results))
@@ -459,23 +464,24 @@ expands; the others follow in rank order.  Each expands on its own with the
 same CSS-IN-JS, SYNTAX, AT-RULE and SCALE-FUNCTIONS, so names, values and
 units outside the CSS data offer nothing.  CSS-IN-JS allows properties only;
 SYNTAX selects at-rules and, as in `emmet2-extensions-css', whether
-SCALE-FUNCTIONS apply."
+SCALE-FUNCTIONS apply.  Inputs ending in , or + return nil."
   (emmet2-engine-with-expansion
-    (let ((case-fold-search nil) (scale (emmet2-css--scale scale-functions syntax css-in-js)))
-      (cl-flet ((expandable-p (expand)
-                  (condition-case nil (progn (funcall expand) t) (emmet2-parse-error nil))))
-        (pcase (emmet2-extensions-css-kind abbreviation css-in-js)
-          ('at-rule (seq-take (emmet2-css--rank abbreviation (emmet2-css--at-rule-names syntax)
-                                                "atRuleAliases")
-                              limit))
-          ('selector (cl-remove-if-not (lambda (choice) (expandable-p (lambda () (emmet2-css--selector choice))))
-                                       (emmet2-css--selector-choices abbreviation limit)))
-          (_ (delete-dups
-              (mapcar #'emmet2-css--program-token
-                      (cl-remove-if-not
-                       (lambda (program)
-                         (expandable-p (lambda () (emmet2-css--expand-properties program css-in-js "" at-rule scale))))
-                       (emmet2-css--property-choices abbreviation limit at-rule))))))))))
+    (unless (string-match-p "[,+]\\'" abbreviation)
+      (let ((case-fold-search nil) (scale (emmet2-css--scale scale-functions syntax css-in-js)))
+        (cl-flet ((expandable-p (expand)
+                    (condition-case nil (progn (funcall expand) t) (emmet2-parse-error nil))))
+          (pcase (emmet2-extensions-css-kind abbreviation css-in-js)
+            ('at-rule (seq-take (emmet2-css--rank abbreviation (emmet2-css--at-rule-names syntax)
+                                                  "atRuleAliases")
+                                limit))
+            ('selector (cl-remove-if-not (lambda (choice) (expandable-p (lambda () (emmet2-css--selector choice))))
+                                         (emmet2-css--selector-choices abbreviation limit)))
+            (_ (delete-dups
+                (mapcar #'emmet2-css--program-token
+                        (cl-remove-if-not
+                         (lambda (program)
+                           (expandable-p (lambda () (emmet2-css--expand-properties program css-in-js "" at-rule scale))))
+                         (emmet2-css--property-choices abbreviation limit at-rule)))))))))))
 
 (defun emmet2-css--completion-input (abbreviation css-in-js declaration-start)
   "Return (WHOLE CONFIRMED INPUT) for ABBREVIATION's final active fragment.

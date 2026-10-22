@@ -8,6 +8,19 @@
 (require 'emmet2-css-data)
 (require 'emmet2-engine-markup)
 
+(ert-deftest emmet2-css-data-nil-query-means-all-names ()
+  (dolist (kind '(property value at-rule pseudo))
+    (should (equal (emmet2-css-data-query kind :property "gap")
+                   (emmet2-css-data-query kind :property "gap" :query nil)))))
+
+(ert-deftest emmet2-css-data-eval-buffer-uses-library-data-directory ()
+  (let ((expected emmet2-css-data--data)
+        (emmet2-css-data--data nil))
+    (with-temp-buffer
+      (insert-file-contents (expand-file-name "emmet2-css-data.el" emmet2-test-root))
+      (let ((load-file-name nil) (buffer-file-name nil)) (eval-buffer)))
+    (should (equal expected emmet2-css-data--data))))
+
 (ert-deftest emmet2-css-data-packaged-json-ignores-language-coding ()
   (let ((language current-language-environment)
         (expected emmet2-css-data--data)
@@ -17,7 +30,7 @@
           (set-language-environment "Korean")
           (load "emmet2-css-data" nil t)
           (should (equal emmet2-css-data--data expected))
-          (should (equal (json-encode (emmet2-css-search--read "data/css-index.json"))
+          (should (equal (json-encode (emmet2-css-search-read-data "data/css-index.json"))
                          (let ((coding-system-for-read 'utf-8-unix))
                            (with-temp-buffer
                              (insert-file-contents (expand-file-name "data/css-index.json" emmet2-test-root))

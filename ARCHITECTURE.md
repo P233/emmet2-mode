@@ -511,6 +511,9 @@ the libraries reads no data: sessions that only display files never pay the
 parse. `emmet2-css-search-value-names` exposes that membership without scores,
 and `emmet2-css-search-property-p` optionally admits descriptors for an at-rule.
 Consumers do not read private search entries.
+Descriptor identity comes from the internal `emmet2-css-search-descriptor-p`;
+packaged metadata uses the internal `emmet2-css-search-read-data` for the same
+directory, UTF-8 decoding and per-read string sharing as the index.
 
 `emmet2-completion-capf` owns the shared table protocol, spelling-aware matching
 and initial function cursor placement. It creates no snippet fields; later

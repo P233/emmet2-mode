@@ -158,24 +158,6 @@ lengths."
                              (+ (* 0.49 (/ (float matched) count)) (* 0.001 tier)))
                     :positions positions)))))))))
 
-(defun emmet2-fuzzy-score (query candidate &optional partial)
-  "Return QUERY's score against CANDIDATE, or zero; see `emmet2-fuzzy-match'.
-PARTIAL permits a nonempty matched query prefix."
-  (or (plist-get (emmet2-fuzzy-match query candidate partial) :score) 0.0))
-
-(defun emmet2-fuzzy-find (query candidates &optional min-score partial key)
-  "Find the best CANDIDATES item for QUERY, or nil.
-MIN-SCORE defaults to zero.  PARTIAL allows an unmatched query suffix.
-KEY extracts the candidate text.  Exact hits return immediately; ties keep
-the first item so callers can supply a stable, deliberate source order."
-  (let ((maximum 0.0) best)
-    (catch 'exact
-      (dolist (candidate candidates)
-        (let ((score (emmet2-fuzzy-score query (if key (funcall key candidate) candidate) partial)))
-          (when (= score 1.0) (throw 'exact candidate))
-          (when (> score maximum) (setq maximum score best candidate))))
-      (and (>= maximum (or min-score 0)) best))))
-
 (defun emmet2-fuzzy-filter (query candidates &optional key)
   "Return CANDIDATES matching all of QUERY, in descending score order.
 KEY extracts a candidate string.  Equal scores retain the input order.

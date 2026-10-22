@@ -91,10 +91,12 @@ tables are copied.  The shared strings must stay read-only."
       copy))
    (t object)))
 
-(defun emmet2-css-search--read (name)
-  "Read packaged JSON data NAME, sharing its equal strings."
+(defun emmet2-css-search-read-data (name &optional object-type)
+  "Read packaged JSON NAME as OBJECT-TYPE, sharing equal read-only strings.
+NAME is relative to the library directory; OBJECT-TYPE defaults to hash-table."
   (emmet2-css-search--share
-   (emmet2-engine-read-json (expand-file-name name emmet2-css-search--directory) :array-type 'list)
+   (emmet2-engine-read-json (expand-file-name name emmet2-css-search--directory)
+                            :object-type (or object-type 'hash-table) :array-type 'list)
    (make-hash-table :test #'equal)))
 
 (cl-defstruct (emmet2-css-search--property (:constructor emmet2-css-search--property) (:copier nil))
@@ -198,8 +200,8 @@ sessions that only read stylesheets never need it."
 
 (defun emmet2-css-search--load ()
   "Read the packaged data and build every search table from it."
-  (let* ((index (emmet2-css-search--read "data/css-index.json"))
-         (overrides (emmet2-css-search--read "data/css-overrides.json"))
+  (let* ((index (emmet2-css-search-read-data "data/css-index.json"))
+         (overrides (emmet2-css-search-read-data "data/css-overrides.json"))
          (word-aliases (let (aliases)
                          (maphash (lambda (key word) (push (cons key word) aliases))
                                   (gethash "wordAliases" overrides))
@@ -599,6 +601,11 @@ Type names are shared read-only strings derived by the data generator."
   "Whether NAME is a CSS property or a descriptor admitted by AT-RULE.
 Without AT-RULE, accept only ordinary properties, including obsolete ones."
   (and (emmet2-css-search--entry name at-rule) t))
+
+(defun emmet2-css-search-descriptor-p (name at-rule)
+  "Whether NAME is a descriptor in AT-RULE instead of a property."
+  (when-let* ((entry (emmet2-css-search--entry name at-rule)))
+    (and (emmet2-css-search--property-descriptor entry) t)))
 
 (defun emmet2-css-search-property-names (&optional descriptors)
   "Return ordinary CSS property names; DESCRIPTORS includes descriptors.

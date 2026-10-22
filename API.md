@@ -19,8 +19,8 @@ other name is internal and may change, including names containing `--`, the
 engine and result helpers (`emmet2-engine-*`, `emmet2-result-*`),
 `emmet2-css-completions`, `emmet2-expand-choices`, the `emmet2-context-css-*`,
 `emmet2-context-js-*` and `emmet2-context-web-*` adapters, and helpers such as
-`emmet2-extensions-css-kind`, `emmet2-css-search-value-names` and
-`emmet2-fuzzy-find`.
+`emmet2-extensions-css-kind`, `emmet2-css-search-value-names`,
+`emmet2-css-search-descriptor-p` and `emmet2-css-search-read-data`.
 
 | Function | Arguments |
 | --- | --- |
@@ -132,6 +132,9 @@ descriptors and their values. Each search, expansion or choice request must
 finish within one second; otherwise it signals `emmet2-backend-error`.
 
 ## Expand strings and consume results
+
+`emmet2-extensions-css-choices` returns nil for inputs ending in `,` or `+`.
+Other returned choices expand independently with the same options.
 
 ```elisp
 (require 'emmet2-extensions)

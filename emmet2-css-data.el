@@ -23,11 +23,7 @@
 (require 'emmet2-css-search)
 
 (defconst emmet2-css-data--data
-  (emmet2-css-search--share
-   (emmet2-engine-read-json
-    (expand-file-name "data/css-data.json" (file-name-directory (or load-file-name buffer-file-name)))
-    :object-type 'alist :array-type 'list)
-   (make-hash-table :test #'equal))
+  (emmet2-css-search-read-data "data/css-data.json" 'alist)
   "Immutable CSS completion metadata loaded once with this library.
 test/update-web-data.mjs writes only the fields completion reads, with
 string documentation.  Equal strings are shared and read-only.")
@@ -51,8 +47,7 @@ string documentation.  Equal strings are shared and read-only.")
                         (emmet2-css-data--property-available-p item at-rule)))
                  (alist-get 'properties emmet2-css-data--data)))
          (restrictions (alist-get 'restrictions entry))
-         (index-entry (and at-rule (emmet2-css-search--entry property at-rule)))
-         (descriptor (and index-entry (emmet2-css-search--property-descriptor index-entry)))
+         (descriptor (emmet2-css-search-descriptor-p property at-rule))
          (extra (emmet2-css-search-value-names (and entry property) at-rule))
          (values (mapcar #'emmet2-css-data--entry (alist-get 'values entry))))
     ;; A record that also documents an ordinary property lists that property's values.
@@ -105,7 +100,7 @@ are shared, read-only metadata.  No query results are retained."
                    (or vendor (not (string-match-p "\\`[:@]*-" name))))
           (puthash name t seen)
           (push entry unique))))
-    (emmet2-fuzzy-filter query (sort unique (lambda (a b) (string< (car a) (car b)))) #'car)))
+    (emmet2-fuzzy-filter (or query "") (sort unique (lambda (a b) (string< (car a) (car b)))) #'car)))
 
 (provide 'emmet2-css-data)
 ;;; emmet2-css-data.el ends here

@@ -23,19 +23,15 @@
 
 (ert-deftest emmet2-fuzzy-ranking-and-stable-ties ()
   (let ((query "is") (ordered '("is" "isolation" "inline-size" "border-island" "inset")))
-    (cl-loop for (a b) on ordered while b
-             do (should (> (emmet2-fuzzy-score query a) (emmet2-fuzzy-score query b)))))
-  (should (= (emmet2-fuzzy-score "AB" "ab") 1.0))
-  (should (equal (emmet2-fuzzy-find "ab" '("abc" "abd")) "abc"))
-  (should (equal (emmet2-fuzzy-find "ab" '("AB" "ab")) "AB"))
-  (should-not (emmet2-fuzzy-find "ab" '("abc") 0.99))
-  (should (equal (emmet2-fuzzy-find "is" '(("inset" . 1) ("inline-size" . 2)) nil nil #'car)
-                 '("inline-size" . 2))))
+    (should (equal (emmet2-fuzzy-filter query (reverse ordered)) ordered)))
+  (should (= (plist-get (emmet2-fuzzy-match "AB" "ab") :score) 1.0))
+  (should (equal (emmet2-fuzzy-filter "ab" '("abc" "abd")) '("abc" "abd")))
+  (should (equal (emmet2-fuzzy-filter "ab" '("AB" "ab")) '("AB" "ab"))))
 
 (ert-deftest emmet2-fuzzy-partial-is-explicit-and-never-reuses-characters ()
   (should-not (emmet2-fuzzy-match "ovh" "ov"))
   (should (equal (plist-get (emmet2-fuzzy-match "ovh" "ov" t) :positions) '(0 1)))
-  (should (< 0 (emmet2-fuzzy-score "ovh" "ov" t) 1))
+  (should (< 0 (plist-get (emmet2-fuzzy-match "ovh" "ov" t) :score) 1))
   (should (equal (plist-get (emmet2-fuzzy-match "abb" "abc" t) :positions) '(0 1))))
 
 (ert-deftest emmet2-fuzzy-filter-keeps-input-and-requires-complete-query ()
@@ -51,13 +47,11 @@
 (ert-deftest emmet2-fuzzy-long-literal-match-keeps-only-viable-columns ()
   (let* ((tail (make-string 4095 ?A))
          (query (concat "m" tail)) (candidate (concat "m: " tail ";"))
-         (allocate (symbol-function 'make-vector)))
-    (cl-letf (((symbol-function 'make-vector)
-               (lambda (length initial)
-                 (should (<= length 4))
-                 (funcall allocate length initial))))
-      (should (equal (plist-get (emmet2-fuzzy-match query candidate) :positions)
-                     (cons 0 (number-sequence 3 (+ 2 (length tail)))))))))
+         (before (nth 2 (memory-use-counts)))
+         (positions (plist-get (emmet2-fuzzy-match query candidate) :positions)))
+    (should (equal positions (cons 0 (number-sequence 3 (+ 2 (length tail))))))
+    ;; About 20,000 vector cells; a full query-by-candidate matrix would take 16.8 million.
+    (should (< (- (nth 2 (memory-use-counts)) before) 200000))))
 
 (ert-deftest emmet2-fuzzy-positions-index-candidates-that-lowercase-longer ()
   ;; String downcasing turns İ into two characters.
