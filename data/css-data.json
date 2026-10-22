@@ -1763,7 +1763,7 @@
           "description": "The attr(n) function returns as a string the value of attribute n for the subject of the selector."
         },
         {
-          "name": "counter(name)",
+          "name": "counter()",
           "description": "Counters are denoted by identifiers (see the 'counter-increment' and 'counter-reset' properties)."
         },
         {
@@ -6079,15 +6079,15 @@
           "description": "Specifies a clockwise 3D rotation by the angle specified in last parameter about the [x,y,z] direction vector described by the first 3 parameters."
         },
         {
-          "name": "rotateX('angle')",
+          "name": "rotateX()",
           "description": "Specifies a clockwise rotation by the given angle about the X axis."
         },
         {
-          "name": "rotateY('angle')",
+          "name": "rotateY()",
           "description": "Specifies a clockwise rotation by the given angle about the Y axis."
         },
         {
-          "name": "rotateZ('angle')",
+          "name": "rotateZ()",
           "description": "Specifies a clockwise rotation by the given angle about the Z axis."
         },
         {
@@ -7624,15 +7624,15 @@
           "description": "Specifies a clockwise 3D rotation by the angle specified in last parameter about the [x,y,z] direction vector described by the first 3 parameters."
         },
         {
-          "name": "rotateX('angle')",
+          "name": "rotateX()",
           "description": "Specifies a clockwise rotation by the given angle about the X axis."
         },
         {
-          "name": "rotateY('angle')",
+          "name": "rotateY()",
           "description": "Specifies a clockwise rotation by the given angle about the Y axis."
         },
         {
-          "name": "rotateZ('angle')",
+          "name": "rotateZ()",
           "description": "Specifies a clockwise rotation by the given angle about the Z axis."
         },
         {
@@ -8379,15 +8379,15 @@
           "description": "Specifies a clockwise 3D rotation by the angle specified in last parameter about the [x,y,z] direction vector described by the first 3 parameters."
         },
         {
-          "name": "rotateX('angle')",
+          "name": "rotateX()",
           "description": "Specifies a clockwise rotation by the given angle about the X axis."
         },
         {
-          "name": "rotateY('angle')",
+          "name": "rotateY()",
           "description": "Specifies a clockwise rotation by the given angle about the Y axis."
         },
         {
-          "name": "rotateZ('angle')",
+          "name": "rotateZ()",
           "description": "Specifies a clockwise rotation by the given angle about the Z axis."
         },
         {
@@ -9204,7 +9204,7 @@
       ],
       "values": [
         {
-          "name": "attr(x)",
+          "name": "attr()",
           "description": "The value of attribute 'x' is a string value. The string value is evaluated as a <number> to determine the number of ruby base elements to be spanned by the annotation element."
         },
         {
@@ -10114,15 +10114,15 @@
           "description": "Specifies a clockwise 3D rotation by the angle specified in last parameter about the [x,y,z] direction vector described by the first 3 parameters."
         },
         {
-          "name": "rotateX('angle')",
+          "name": "rotateX()",
           "description": "Specifies a clockwise rotation by the given angle about the X axis."
         },
         {
-          "name": "rotateY('angle')",
+          "name": "rotateY()",
           "description": "Specifies a clockwise rotation by the given angle about the Y axis."
         },
         {
-          "name": "rotateZ('angle')",
+          "name": "rotateZ()",
           "description": "Specifies a clockwise rotation by the given angle about the Z axis."
         },
         {
@@ -12110,15 +12110,15 @@
           "description": "Specifies a clockwise 3D rotation by the angle specified in last parameter about the [x,y,z] direction vector described by the first 3 parameters."
         },
         {
-          "name": "rotateX('angle')",
+          "name": "rotateX()",
           "description": "Specifies a clockwise rotation by the given angle about the X axis."
         },
         {
-          "name": "rotateY('angle')",
+          "name": "rotateY()",
           "description": "Specifies a clockwise rotation by the given angle about the Y axis."
         },
         {
-          "name": "rotateZ('angle')",
+          "name": "rotateZ()",
           "description": "Specifies a clockwise rotation by the given angle about the Z axis."
         },
         {

@@ -1668,7 +1668,7 @@
       "relevance": 90,
       "values": [
         "attr()",
-        "counter(name)",
+        "counter()",
         "icon",
         "none",
         "normal",
@@ -4826,7 +4826,7 @@
       "name": "ruby-span",
       "relevance": 50,
       "values": [
-        "attr(x)",
+        "attr()",
         "none"
       ],
       "sets": []
@@ -5959,9 +5959,9 @@
         "perspective()",
         "rotate()",
         "rotate3d()",
-        "rotateX('angle')",
-        "rotateY('angle')",
-        "rotateZ('angle')",
+        "rotateX()",
+        "rotateY()",
+        "rotateZ()",
         "scale()",
         "scale3d()",
         "scaleX()",

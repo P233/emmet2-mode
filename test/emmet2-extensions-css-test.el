@@ -7,6 +7,13 @@
 (require 'emmet2-css)
 (require 'emmet2-expand)
 
+(ert-deftest emmet2-css-documentation-functions-have-empty-fields ()
+  (should (member "content[counter()]" (emmet2-extensions-css-choices "ctc")))
+  (dolist (case '(("trfrx" "transform: rotateX();") ("content[counter()]" "content: counter();")))
+    (let ((result (emmet2-extensions-css (car case))))
+      (should (equal (plist-get result :text) (cadr case)))
+      (should (plist-get result :fields)))))
+
 ;; The legacy baseline expects rhythm-sass functions for parenthesized values.
 (defconst emmet2-css-test--scale '(("font-size" . "ms") (t . "rhythm")))
 

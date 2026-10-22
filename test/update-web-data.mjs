@@ -6,6 +6,19 @@ import { readFile, writeFile } from "node:fs/promises";
 // Every property also accepts the CSS-wide keywords.
 const cssWide = ["inherit", "initial", "unset", "revert", "revert-layer"];
 
+export const normalizeValue = (name) => name.replace(/^([A-Za-z][-A-Za-z0-9]*)\(.+\)$/, "$1()");
+
+/** Normalize function placeholders in the committed snapshot offline. */
+export function normalizeCommittedValues(metadata, index) {
+  for (const entry of metadata.properties) {
+    for (const value of entry.values ?? []) value.name = normalizeValue(value.name);
+  }
+  for (const entry of [...index.properties, ...index.descriptors]) {
+    entry.values = [...new Set(entry.values.map(normalizeValue))];
+  }
+  for (const [key, values] of Object.entries(index.sets)) index.sets[key] = [...new Set(values.map(normalizeValue))];
+}
+
 // atRule is an association, not an exclusive role. A property reference
 // identifies entries such as font-style that are also ordinary properties.
 const documentsProperty = (item) => !item.atRule ||
@@ -59,7 +72,7 @@ export function cssMetadata(data, source) {
 /** Keep only the metadata fields that emmet2-css-data reads, with descriptions as strings. */
 export function cssCompletionData(data, source) {
   const text = (description) => (typeof description === "string" ? description : description?.value);
-  const entry = ({ name, description }) => ({ name, description: text(description) });
+  const entry = ({ name, description }) => ({ name: normalizeValue(name), description: text(description) });
   const property = ({ name, atRule, description, restrictions, values }) =>
     ({ name, atRule, description: text(description), restrictions, values: values?.map(entry) });
   return {
@@ -117,8 +130,8 @@ export function scanSyntax(syntax) {
     if (angle !== undefined) {
       if (depth > 0) continue;
       const property = /^'([a-z][-a-z]*)'$/.exec(angle);
-      const functional = /^([a-z][-a-z0-9]*)\(\)$/.exec(angle);
-      const type = /^([a-z][-a-z0-9]*)(?: \[[^\]]*\])?$/.exec(angle);
+      const functional = /^([A-Za-z][-A-Za-z0-9]*)\(\)$/.exec(angle);
+      const type = /^([A-Za-z][-A-Za-z0-9]*)(?: \[[^\]]*\])?$/.exec(angle);
       if (property) references.push(`property:${property[1]}`);
       else if (functional) keywords.push(`${functional[1]}()`);
       else if (type) references.push(`type:${type[1]}`);
@@ -177,7 +190,7 @@ export function cssIndex(data, syntaxes, atRules, html, source) {
     }
     const keys = [...reached].filter((key) => scan(key).keywords.length).sort();
     for (const key of keys) sets.set(key, scan(key).keywords);
-    const values = [...new Set([...(entry.values ?? []).map((value) => value.name), ...scan(start).keywords])]
+    const values = [...new Set([...(entry.values ?? []).map((value) => normalizeValue(value.name)), ...scan(start).keywords])]
       .filter((value) => !value.startsWith("-"));
     const relevance = entry.relevance ?? entries.get(name)?.find((item) => item.relevance !== undefined)?.relevance ?? 50;
     return { name, relevance, ...(entry.status === "obsolete" ? { obsolete: true } : {}), values, sets: keys };
@@ -213,6 +226,16 @@ async function download(base, files) {
 }
 
 if (import.meta.main) {
+  if (process.argv[2] === "--normalize-values" && process.argv.length === 3) {
+    const read = async (name) => JSON.parse(await readFile(new URL(`../data/${name}.json`, import.meta.url), "utf8"));
+    const metadata = await read("css-data");
+    const index = await read("css-index");
+    normalizeCommittedValues(metadata, index);
+    for (const [name, value] of [["css-data", metadata], ["css-index", index]]) {
+      await writeFile(new URL(`../data/${name}.json`, import.meta.url), JSON.stringify(value, null, 2) + "\n");
+    }
+    process.exit(0);
+  }
   if (process.argv.length !== 2) throw new Error("Usage: node test/update-web-data.mjs");
   const source = JSON.parse(await readFile(new URL("../data/css-source.json", import.meta.url), "utf8"));
   const vscode = await download(`https://raw.githubusercontent.com/microsoft/vscode-custom-data/${source.commit}`, source.files);

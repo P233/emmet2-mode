@@ -103,6 +103,8 @@ test("written metadata keeps only completion fields, with string documentation",
 });
 
 test("value syntax scanning keeps top-level keywords and references only", () => {
+  assert.deepEqual(scanSyntax("<translateX()> | <rotateY()>"),
+    { keywords: ["translateX()", "rotateY()"], references: [] });
   assert.deepEqual(scanSyntax("<line-width> || <line-style> || <color>"),
     { keywords: [], references: ["type:line-width", "type:line-style", "type:color"] });
   assert.deepEqual(scanSyntax("normal | pre | <'white-space-collapse'> || <'text-wrap-mode'>"),
@@ -112,6 +114,15 @@ test("value syntax scanning keeps top-level keywords and references only", () =>
     { keywords: ["none", "repeat()", "anchor()"], references: [] });
   assert.deepEqual(scanSyntax("auto | -webkit-box | <length [0,∞]>"),
     { keywords: ["auto"], references: ["type:length"] });
+});
+
+test("indexed values are complete CSS tokens or empty function templates", async () => {
+  const index = JSON.parse(await readFile(new URL("../data/css-index.json", import.meta.url), "utf8"));
+  const token = /^(?:[-A-Za-z][-A-Za-z0-9]*(?:\(\))?|"[^"]*"|'[^']*'|[+-]?(?:\d+(?:\.\d*)?|\.\d+)|U\+[0-9A-Fa-f?]+(?:-[0-9A-Fa-f]+)?|(?:first|last) baseline)$/;
+  for (const value of [...index.properties, ...index.descriptors].flatMap((entry) => entry.values)
+    .concat(Object.values(index.sets).flat(), index.wide)) {
+    assert.match(value, token);
+  }
 });
 
 test("the index shares value sets and skips deprecated types", () => {

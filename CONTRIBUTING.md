@@ -158,6 +158,11 @@ used by search, and pseudo and at-rule aliases, pseudo functions and SCSS
 at-rule templates used by `emmet2-css`. The generator never writes it.
 Review upstream names and local targets together.
 
+`node test/update-web-data.mjs --normalize-values` repairs function placeholders
+in the committed metadata and index offline. The networked generator also
+normalizes placeholders and scans camelCase function types, such as
+`translateX()`, from the pinned sources.
+
 ## Actual installation
 
 After a reviewed commit, install that exact HEAD in a new directory:
