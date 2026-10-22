@@ -195,13 +195,13 @@ As above, a native-compiling Emacs needs the trampoline setting before
 The runner uses pinned straight.el and README's `:files (:defaults "data")`
 recipe. Only the fetch source differs: it clones reviewed local HEAD. It removes
 source fallback before compilation, verifies revision, all runtime/data/license
-resources and installed bytecode, and rejects development JS or test
+resources and installed compiled code, and rejects development JS or test
 payloads. The runtime phase has an empty executable path and rejects processes.
 Its `acceptance.json` records the precise SHA, versions, resource/test counts
 and runtime isolation. Existing destinations are rejected and successful
 artifacts remain for inspection. The second command reruns all contracts against
-installed bytecode. No daily user configuration is loaded or changed. Node used
-to build test dependencies or verify the oracle is not a runtime package
+installed compiled code. No daily user configuration is loaded or changed. Node
+used to build test dependencies or verify the oracle is not a runtime package
 dependency.
 
 ## Performance

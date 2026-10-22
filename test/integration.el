@@ -59,8 +59,9 @@
                              emmet2-expand-analysis emmet2-capf emmet2-corfu--rows emmet2-insert emmet2-preview
                              emmet2-engine-markup-expand emmet2-engine-stylesheet-expand))
             (unless (and (file-in-directory-p (symbol-file symbol) package)
-                         (byte-code-function-p (symbol-function symbol)))
-              (error "Integration did not load installed bytecode: %s" symbol))))
+                         ;; A native-compiling Emacs may swap in native code while the suites run.
+                         (compiled-function-p (symbol-function symbol)))
+              (error "Integration did not load the installed compiled code: %s" symbol))))
         (message "Verified complete native integration (%d core calls)" calls))
     (when (fboundp 'emmet2-preview-clear) (emmet2-preview-clear))))
 

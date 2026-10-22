@@ -81,7 +81,7 @@
     (when (seq-some #'executable-find '("node" "deno" "npm" "git"))
       (error "Runtime PATH isolation failed"))
     (require 'emmet2-mode)
-    (unless (byte-code-function-p (symbol-function 'emmet2-expand-analysis))
+    (unless (compiled-function-p (symbol-function 'emmet2-expand-analysis))
       (error "The actual package installation must be byte-compiled"))
     (emmet2-test-without-processes "Installed runtime must not use a process"
       (load (expand-file-name "test/emmet2-insert-test.el" source) nil t)
