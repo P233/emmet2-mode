@@ -29,11 +29,12 @@ straight.el and use-package:
 ```elisp
 (use-package emmet2-mode
   :straight (emmet2-mode :type git :host github :repo "P233/emmet2-mode"
-                         :files (:defaults "data"))
+                         :files (:defaults "data" "NOTICE"))
   :hook ((web-mode css-base-mode js-base-mode typescript-ts-base-mode) . emmet2-mode))
 ```
 
-The `data` directory must be installed next to the Lisp files. From a plain
+The `data` directory must be installed next to the Lisp files; `NOTICE` lists
+the third-party data and its licenses. From a plain
 checkout:
 
 ```elisp
@@ -254,7 +255,7 @@ the same way; see [API.md](API.md).
 - Remove the Deno, `deno-bridge` and `websocket` configuration, including
   `:after deno-bridge` in the emmet2-mode declaration, and restart Emacs.
 - Replace `:files (:defaults "*.ts" "src" "data")` with
-  `:files (:defaults "data")`.
+  `:files (:defaults "data" "NOTICE")`.
 - `emmet2-expand` and its `C-j` binding are gone. Bind `emmet2-expand-at-point`
   or `emmet2-complete` yourself.
 - The default CSS Modules object is now `styles`; set

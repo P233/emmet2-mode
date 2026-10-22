@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 import assert from "node:assert/strict";
 import test from "node:test";
 import upstream from "../vendor/emmet-2.4.11.mjs";

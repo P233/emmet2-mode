@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 // Explicit isolated build used by CI. No system installation or build cache.
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";

@@ -30,7 +30,7 @@
        (resources
         (seq-filter
          (lambda (name) (or (string-match-p "\\`[^/]+\\.el\\'" name)
-                            (string-prefix-p "data/" name)))
+                            (string-prefix-p "data/" name) (equal name "NOTICE")))
          (split-string (emmet2-install--git source "ls-files" "-z") "\0" t))))
   (unless (and (file-name-absolute-p destination) (not (file-exists-p destination)))
     (error "Installation destination must be new and absolute: %s" destination))
@@ -59,7 +59,7 @@
     ;; commit instead of GitHub.  The file recipe is exact.
     (straight-use-package
      `(emmet2-mode :type git :repo ,source :local-repo "emmet2-mode"
-                   :files (:defaults "data")))
+                   :files (:defaults "data" "NOTICE")))
     (unless (and (equal revision (emmet2-install--git source "rev-parse" "HEAD"))
                  (equal revision (emmet2-install--git repository "rev-parse" "HEAD")))
       (error "Installation source revision changed"))
