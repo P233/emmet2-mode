@@ -281,7 +281,6 @@ EXPLICIT selects the manual request, including unsupported automatic hosts."
             (dolist (fixture live-fixtures)
               (when (or (not filter) (string-match-p filter (car fixture)))
                 (push (apply #'emmet2-flow--live-fixture fixture) live-reports)))))
-        (when (featurep 'emmet2-engine-node) (error "Measured flow loaded Node"))
         (unless (or reports live-reports) (error "No matching fixture"))
         (unless (equal sources (emmet2-flow--sources)) (error "Measured sources changed"))
         (with-temp-file output

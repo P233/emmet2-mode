@@ -70,10 +70,9 @@
       (let ((library (locate-library (file-name-sans-extension name))))
         (unless (and library (file-in-directory-p library package-directory))
           (error "Runtime library escaped the installed package: %s" library))))
-    (when (or (directory-files-recursively package-directory "\\.\\(?:mjs\\|ts\\)\\'")
-              (file-exists-p (expand-file-name "emmet2-engine-node.el" package-directory))
+    (when (or (directory-files-recursively package-directory "\\.mjs\\'")
               (file-exists-p (expand-file-name "test" package-directory)))
-      (error "Installed package contains development or retired runtime files"))
+      (error "Installed package contains development files"))
     ;; Git is needed to build the package, never to expand an abbreviation.
     ;; Runtime checks have an empty executable path and reject process creation.
     (make-directory binary-directory)
@@ -84,8 +83,7 @@
     (require 'emmet2-mode)
     (unless (byte-code-function-p (symbol-function 'emmet2-expand-analysis))
       (error "The actual package installation must be byte-compiled"))
-    (cl-letf (((symbol-function 'make-process) (lambda (&rest _) (error "Installed runtime must not start a process")))
-              ((symbol-function 'call-process) (lambda (&rest _) (error "Installed runtime must not call a process"))))
+    (emmet2-test-without-processes "Installed runtime must not use a process"
       (load (expand-file-name "test/emmet2-insert-test.el" source) nil t)
       (load (expand-file-name "test/emmet2-capf-test.el" source) nil t)
       (require 'emmet2-value-test)
@@ -94,7 +92,6 @@
       (let ((stats (ert-run-tests-batch t)))
         (when (> (ert-stats-completed-unexpected stats) 0)
           (error "Installed editor/completion checks failed"))
-        (when (featurep 'emmet2-engine-node) (error "Installed runtime loaded Node"))
         (dolist (entry load-history)
           (when (and (stringp (car entry))
                      (string-match-p "/emmet2-[^/]+\\.elc?\\'" (car entry))

@@ -475,7 +475,6 @@
     (emmet2-mode-unload-function)
     (should-not emmet2-mode)
     (should-not (emmet2-context-js--owner)))
-  (should-not (featurep 'deno-bridge))
   ;; Direct expansion is an explicit command; the mode binds no key to it.
   (should-not (lookup-key emmet2-mode-map (kbd "C-j")))
   (should-not (fboundp 'emmet2-expand)))

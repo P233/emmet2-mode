@@ -2,6 +2,7 @@
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
+(require 'cl-lib)
 (require 'json)
 (require 'treesit)
 
@@ -42,6 +43,18 @@
         (error "Missing isolated test grammar: %s; rerun test/setup.mjs" language))
       (unless (treesit-language-available-p language)
         (error "Missing test grammar: %s; rerun test/setup.mjs" language)))))
+
+(defmacro emmet2-test-without-processes (message &rest body)
+  "Run BODY with an empty `exec-path', failing any process creation with MESSAGE."
+  (declare (indent 1) (debug t))
+  `(let ((exec-path nil))
+     (cl-letf ,(mapcar (lambda (function)
+                         `((symbol-function ',function)
+                           (lambda (&rest _) (error "%s: %s" ,message ',function))))
+                       ;; call-process-region reaches call-process in C, so it needs its own stub.
+                       '(make-process call-process call-process-region make-pipe-process
+                         make-network-process make-serial-process))
+       ,@body)))
 
 (add-to-list 'load-path emmet2-test-root)
 (add-to-list 'load-path (expand-file-name "test" emmet2-test-root))

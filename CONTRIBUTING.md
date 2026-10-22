@@ -72,11 +72,13 @@ emacs --batch -Q -L . -L test -l test/bootstrap.el -l test/emmet2-fuzzy-test.el 
   -f ert-run-tests-batch-and-exit
 ```
 
-`test/integration.el` runs all of these suites, compares the full
-canonical core results and rejects synchronous/asynchronous process creation
-with an empty `exec-path`. The bytecode runner exercises real compiled editor
-and optional dependencies; a copied payload is not a package-manager
-installation.
+`test/integration.el` runs every `test/emmet2-*-test.el` suite it finds, so a
+new suite cannot be left out, and `npm test` runs every `test/**/*.test.mjs`
+file. Integration also compares the full canonical core results. It and the
+bytecode and installation runners run with an empty `exec-path` and fail any
+process, pipe, network or serial connection the code starts. The bytecode
+runner exercises real compiled editor and optional dependencies; a copied
+payload is not a package-manager installation.
 
 Compilation treats project warnings as errors. Fixed third-party warnings remain
 visible. `package-quality.el` checks every runtime library with package-lint and
@@ -193,7 +195,7 @@ As above, a native-compiling Emacs needs the trampoline setting before
 The runner uses pinned straight.el and README's `:files (:defaults "data")`
 recipe. Only the fetch source differs: it clones reviewed local HEAD. It removes
 source fallback before compilation, verifies revision, all runtime/data/license
-resources and installed bytecode, and rejects development JS/TS or test
+resources and installed bytecode, and rejects development JS or test
 payloads. The runtime phase has an empty executable path and rejects processes.
 Its `acceptance.json` records the precise SHA, versions, resource/test counts
 and runtime isolation. Existing destinations are rejected and successful

@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix --max-warnings=0",
-    "test": "node --test test/oracle/adapter.test.mjs test/oracle/gen.test.mjs test/css-data.test.mjs test/jsx.test.mjs",
+    "test": "node --test \"test/**/*.test.mjs\"",
     "oracle:check": "node test/oracle/gen.mjs --check"
   },
   "devDependencies": {

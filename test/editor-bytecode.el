@@ -60,13 +60,10 @@
         (load (expand-file-name "test/emmet2-engine-stylesheet-test.el" emmet2-test-root) nil t)
         (require 'emmet2-stylesheet-integration-test)
         (require 'emmet2-engine-native-test)
-        (let ((exec-path nil))
-          (cl-letf (((symbol-function 'make-process) (lambda (&rest _) (error "Native editor must not start a process")))
-                    ((symbol-function 'call-process) (lambda (&rest _) (error "Native editor must not call a process"))))
-            (let ((stats (ert-run-tests-batch t)))
-              (when (> (ert-stats-completed-unexpected stats) 0)
-                (error "Unexpected editor test result")))))
-        (when (featurep 'emmet2-engine-node) (error "Native editor loaded Node")))
+        (emmet2-test-without-processes "Native editor must not use a process"
+          (let ((stats (ert-run-tests-batch t)))
+            (when (> (ert-stats-completed-unexpected stats) 0)
+              (error "Unexpected editor test result")))))
     (delete-directory directory t)))
 
 ;;; editor-bytecode.el ends here

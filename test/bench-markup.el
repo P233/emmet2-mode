@@ -82,7 +82,6 @@ reference for all later complete-result comparisons."
                          (file-in-directory-p (symbol-file function) directory))
               (error "Measured function is not isolated bytecode: %s" function)))
           (load (expand-file-name "test/emmet2-engine-markup-test.el" emmet2-test-root) nil t)
-          (when (featurep 'emmet2-engine-node) (error "Node loaded into native benchmark"))
           (let* ((ids '("html-contract-01" "html-contract-02" "html-contract-03" "html-snippet:!"
                         "html-contract-04" "jsx-contract-03" "jsx-contract-04" "html-contract-14" "html-contract-10"
                         "jsx-project-007" "jsx-project-038" "jsx-project-084"))
