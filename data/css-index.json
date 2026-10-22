@@ -2706,6 +2706,9 @@
         "type:font-variant-css2",
         "type:font-weight-absolute",
         "type:font-width-css3",
+        "type:generic-complete",
+        "type:generic-family",
+        "type:generic-incomplete",
         "type:relative-size",
         "type:system-family-name"
       ]
@@ -2721,7 +2724,11 @@
         "sans-serif",
         "serif"
       ],
-      "sets": []
+      "sets": [
+        "type:generic-complete",
+        "type:generic-family",
+        "type:generic-incomplete"
+      ]
     },
     {
       "name": "font-feature-settings",
@@ -8918,6 +8925,25 @@
       "expanded",
       "extra-expanded",
       "ultra-expanded"
+    ],
+    "type:generic-complete": [
+      "serif",
+      "sans-serif",
+      "system-ui",
+      "cursive",
+      "fantasy",
+      "math",
+      "monospace"
+    ],
+    "type:generic-family": [
+      "emoji",
+      "fangsong"
+    ],
+    "type:generic-incomplete": [
+      "ui-serif",
+      "ui-sans-serif",
+      "ui-monospace",
+      "ui-rounded"
     ],
     "type:geometry-box": [
       "fill-box",

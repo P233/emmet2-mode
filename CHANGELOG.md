@@ -83,6 +83,9 @@
   every five seconds.
 - A parse error that the caller handles no longer stops in the debugger under
   `debug-on-error`.
+- `font-family` values include the generic families `system-ui`, `ui-*`,
+  `math`, `emoji` and `fangsong`: `ffsu` gives `font-family: system-ui;`, and
+  `ffm` still gives `monospace`.
 
 ## v2.0.0 (2026-10-09)
 

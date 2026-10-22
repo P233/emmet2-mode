@@ -245,7 +245,8 @@ test("written metadata and the compact index have the same pinned source", async
     return [...entry.values, ...entry.sets.flatMap((key) => index.sets[key])];
   };
   for (const [name, value] of [["border", "none"], ["border", "solid"], ["border", "thin"], ["border", "currentColor"],
-    ["white-space", "nowrap"], ["justify-content", "space-between"]]) {
+    ["white-space", "nowrap"], ["justify-content", "space-between"], ["font-family", "system-ui"],
+    ["font-family", "ui-monospace"], ["font", "system-ui"]]) {
     assert.ok(values(name).includes(value), `${name}: ${value}`);
   }
   assert.ok(!values("grid-template-columns").includes("auto-fill"));

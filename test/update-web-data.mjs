@@ -13,6 +13,9 @@ export const normalizeValue = (name) => name.replace(/^([A-Za-z][-A-Za-z0-9]*)\(
 const documentsProperty = (item) => !item.atRule ||
   item.references?.some((reference) => reference.url.endsWith(`/Web/CSS/Reference/Properties/${item.name}`));
 
+// The only font-family record is the @font-palette-values descriptor; generic families such as system-ui need MDN's property syntax.
+const propertySyntaxes = { "font-family": "[ <family-name> | <generic-family> ]#" };
+
 export function cssNames(data, source) {
   if (data?.version !== source.schemaVersion) throw new Error("Unexpected CSS data schema");
   for (const [key, count] of Object.entries(source.counts)) {
@@ -141,7 +144,8 @@ export function cssTypeResolver(data, syntaxes, atRules, source) {
     .map(([name, entry]) => [`type:${name}`, entry.syntax]));
   for (const entry of [...data.properties].reverse()) {
     // Old vendor and obsolete records sometimes provide restrictions but no syntax.
-    const syntax = entry.syntax ?? (entry.restrictions ?? []).map((type) => `<${type.replace(/\(.*/, "")}>`).join(" | ");
+    const syntax = propertySyntaxes[entry.name] ?? entry.syntax ??
+      (entry.restrictions ?? []).map((type) => `<${type.replace(/\(.*/, "")}>`).join(" | ");
     if (!entry.atRule || !definitions.has(`property:${entry.name}`)) definitions.set(`property:${entry.name}`, syntax);
   }
   for (const { atRule, name, syntax } of cssDescriptors(atRules, source)) definitions.set(`${atRule}:${name}`, syntax);
@@ -183,7 +187,10 @@ export async function readPinnedInputs() {
 function valueDefinitions(properties, syntaxes, descriptors, source) {
   const definitions = new Map(Object.entries(cssSyntaxes(syntaxes, source))
     .map(([name, entry]) => [`type:${name}`, entry.syntax]));
-  for (const { name, syntax } of properties) if (syntax !== undefined) definitions.set(`property:${name}`, syntax);
+  for (const { name, syntax } of properties) {
+    const own = propertySyntaxes[name] ?? syntax;
+    if (own !== undefined) definitions.set(`property:${name}`, own);
+  }
   for (const { atRule, name, syntax } of descriptors) definitions.set(`${atRule}:${name}`, syntax);
   return definitions;
 }

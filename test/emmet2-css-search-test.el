@@ -78,12 +78,14 @@
 (ert-deftest emmet2-css-search-values-include-inherited-sets ()
   (dolist (case '(("border" "s" "solid") ("top" "a" "auto") ("border" "t" "thin")
                   ("white-space" "nw" "nowrap") ("justify-content" "sb" "space-between")
-                  ("color" "tr" "transparent") ("margin" "i" "inherit")))
+                  ("color" "tr" "transparent") ("margin" "i" "inherit")
+                  ("font-family" "su" "system-ui") ("font-family" "m" "monospace")))
     (ert-info ((format "%S" case))
       (should (equal (car (emmet2-css-search-values (car case) (nth 1 case) 1)) (nth 2 case)))))
   ;; Rarely written sets, such as system colors, stay reachable below others.
   (should (equal (car (emmet2-css-search "cCanvas")) '("color" . "Canvas")))
   (should-not (member '("color" . "LinkText") (emmet2-css-search "cl" 3)))
+  (should (member "math" (emmet2-css-search-values "font-family" "m" 2)))
   ;; Deprecated types and function arguments are not values of the property.
   (should-not (member "InfoText" (emmet2-css-search-values "color" "inf" 30)))
   (should-not (member "auto-fill" (emmet2-css-search-values "grid-template-columns" "af" 30)))

@@ -54,12 +54,15 @@ Two letters are often two initials or a property initial and a value.")
 (defconst emmet2-css-search--set-scale 3.0 "A shared keyword's prior is at most this over its set size.")
 (defconst emmet2-css-search--exact 5000 "Score bonus for a complete property name or property alias.")
 
-(defconst emmet2-css-search--common '("transparent" "currentColor" "white" "black")
+(defconst emmet2-css-search--common '("transparent" "currentColor" "white" "black" "system-ui")
   "Shared keywords used far more often than the rest of their value sets.")
 
-(defconst emmet2-css-search--rare '("type:system-color" "type:system-family-name")
+(defconst emmet2-css-search--rare
+  '("type:system-color" "type:system-family-name"
+    "type:generic-complete" "type:generic-family" "type:generic-incomplete")
   "Small shared value sets that are valid but rarely written, such as LinkText.
-Their size alone would give each keyword a high prior.")
+Their size alone would give each keyword a high prior.  A property's own
+keywords, such as font-family's serif, keep the own prior.")
 
 (defun emmet2-css-search--weight (name)
   "Return the score of likelihood NAME from `emmet2-css-search--weights'."
