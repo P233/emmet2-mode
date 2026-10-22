@@ -88,7 +88,7 @@
                 (funcall mode)
                 (goto-char position)
                 (let* ((original (buffer-string))
-                       (result (progn (emmet2-context-js-prepare)
+                       (result (progn (emmet2-context-js-prepare t)
                                (emmet2-context-analyze (not (memq 'manual options))))))
                   (should (equal (plist-get result :lang) language))
                   (should (equal (plist-get result :abbr) abbreviation))
@@ -113,7 +113,7 @@
           (funcall mode)
           (goto-char (point-min))
           (search-forward (if (equal abbreviation "p[1px 2px]") "1px" abbreviation))
-          (let ((result (progn (emmet2-context-js-prepare) (emmet2-context-analyze t))))
+          (let ((result (progn (emmet2-context-js-prepare t) (emmet2-context-analyze t))))
             (if (equal call "ordinary")
                 (should-not result)
               (should (eq (plist-get result :lang) 'css-in-js))
@@ -159,10 +159,12 @@
           (dolist (character (string-to-list "ul>li>a{Item 1"))
             (let ((last-command-event character)) (self-insert-command 1))
             (when (eq character ?{) (setq text-started t) (should (eq (char-after) ?})))
-            (when text-started
-              (should (equal (plist-get (emmet2-context-analyze t) :abbr)
-                             (buffer-substring-no-properties
-                              (save-excursion (back-to-indentation) (point)) (line-end-position)))))))
+            ;; Completion analyzes every keystroke, as Corfu's automatic mode does.
+            (let ((result (emmet2-context-analyze t)))
+              (when text-started
+                (should (equal (plist-get result :abbr)
+                               (buffer-substring-no-properties
+                                (save-excursion (back-to-indentation) (point)) (line-end-position))))))))
         (should (equal (plist-get (emmet2-context-analyze) :abbr) "ul>li>a{Item 1}"))
         (emmet2-context-stop)))))
 

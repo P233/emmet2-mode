@@ -118,13 +118,23 @@ abbreviations must remain entirely visible. web-mode does not mark Astro
 `{expression}` regions, so they are analyzed as markup (see the `astro {expr}`
 case in `test/emmet2-context-lexical-test.el`).
 
-JS, TS and JSX require the matching Tree-sitter grammar; HTML and CSS
-paths need no additional grammar. Automatic requests use only an already warmed
+JS, TS and JSX require the matching Tree-sitter grammar; HTML and CSS paths
+need no additional grammar. Automatic requests use only an already warmed
 parser and never create one, so cold JSX initialization needs an explicit
 request. A missing grammar makes the CAPF return nil and explicit completion
 report it. JS warmup consumes the same region discovery as ordinary analysis.
-TSX error recovery must retain complete attached Emmet text while keeping
-ordinary object and expression exclusions.
+Under a Tree-sitter major mode, warmup only creates the parsers and compiles
+the queries: the mode's own tree already covers the buffer, and each of
+emmet2's two parsers would otherwise hold another copy of it. The first
+automatic request then parses the closed unit around point that the mode's tree
+reports, up to 8,192 characters. Without such a unit, as when a typed `>`
+leaves JSX text with an error or point sits in a large function, the request
+offers nothing and schedules a warmup that parses the unit or, failing that,
+the whole region. Typing an abbreviation in JSX text or a style object finds
+its unit at the first character; typing elsewhere in a large component reaches
+that warmup after a pause, as before, so only buffers that are just read keep
+no copy. TSX error recovery must retain complete attached Emmet text while
+keeping ordinary object and expression exclusions.
 
 CSS classification starts at the extracted abbreviation, including when point
 is inside a balanced raw value. Comments and strings are forbidden. Automatic

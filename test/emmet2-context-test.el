@@ -46,13 +46,64 @@
           (should (equal (plist-get (emmet2-context-analyze t) :abbr) "ul>li"))
           (should (equal (emmet2-context-js--parsers) parsers)))))))
 
+(ert-deftest emmet2-context-major-mode-tree-supplies-units-on-demand ()
+  (with-temp-buffer
+    (insert "const before = 1;\nconst A = (\n  <main>\n    <section></section>\n  </main>\n);\n")
+    (tsx-ts-mode) (setq-local emmet2-mode t)
+    (goto-char (point-min)) (search-forward "<section>")
+    (emmet2-context-js-prepare)
+    (let ((owner (emmet2-context-js--owner)))
+      ;; A plain warmup parses nothing; the first request parses only the element around point.
+      (should-not (emmet2-context-js--state-units owner))
+      (insert "u")
+      (should (equal (plist-get (emmet2-context-analyze t) :abbr) "u"))
+      (let ((unit (assq 'tsx (emmet2-context-js--state-units owner))))
+        (should (equal (buffer-substring-no-properties (cadr unit) (caddr unit))
+                       "<section>u</section>")))
+      (insert "l>li")
+      (should (equal (plist-get (emmet2-context-analyze t) :abbr) "ul>li"))
+      ;; Without a unit where the major mode's tree has errors, only a waiting warmup parses the region.
+      (emmet2-context-stop)
+      (emmet2-context-js-prepare)
+      (should-not (emmet2-context-analyze t))
+      (should (emmet2-context-js--state-timer (emmet2-context-js--owner)))
+      (emmet2-context-js-prepare t)
+      (should (equal (plist-get (emmet2-context-analyze t) :abbr) "ul>li"))
+      ;; The failed request replaces a pending plain warmup with one that parses.
+      (emmet2-context-stop)
+      (emmet2-context-start)
+      (let ((plain (emmet2-context-js--state-timer (emmet2-context-js--owner))))
+        (should-not (emmet2-context-analyze t))
+        (let ((waiting (emmet2-context-js--state-timer (emmet2-context-js--owner))))
+          (should-not (eq waiting plain))
+          (should-not (memq plain timer-idle-list))
+          (cancel-timer waiting)
+          (apply (timer--function waiting) (timer--args waiting))))
+      (should (equal (plist-get (emmet2-context-analyze t) :abbr) "ul>li"))
+      (emmet2-context-stop))))
+
+(ert-deftest emmet2-context-large-units-wait-for-idle-warmup ()
+  (with-temp-buffer
+    (insert "const A = (<main>" (make-string 9000 ?a) "</main>);\n")
+    (tsx-ts-mode) (setq-local emmet2-mode t)
+    (goto-char (point-min)) (search-forward "<main>")
+    (emmet2-context-js-prepare)
+    (insert "u") (save-excursion (insert " "))
+    (should-not (emmet2-context-analyze t))
+    (should-not (emmet2-context-js--state-units (emmet2-context-js--owner)))
+    (emmet2-context-js-prepare t)
+    (should (equal (plist-get (emmet2-context-analyze t) :abbr) "u"))
+    (let ((unit (assq 'tsx (emmet2-context-js--state-units (emmet2-context-js--owner)))))
+      (should (string-prefix-p "<main>u " (buffer-substring-no-properties (cadr unit) (caddr unit)))))
+    (emmet2-context-stop)))
+
 (ert-deftest emmet2-context-warmup-stop-and-stale-callback ()
   (emmet2-test-with-js-context
     (let ((mode-parsers (treesit-parser-list)))
       (emmet2-context-start)
       (let* ((owner (emmet2-context-js--owner)) (timer (emmet2-context-js--state-timer owner)))
         (cancel-timer timer)
-        (emmet2-context-js--warm (current-buffer) owner)
+        (emmet2-context-js--warm (current-buffer) owner t)
         (should-not (emmet2-context-js--state-timer owner))
         (should (emmet2-context-analyze t))
         (emmet2-context-start)
@@ -160,7 +211,7 @@
 
 (ert-deftest emmet2-context-incremental-source-and-web-part-switches ()
   (emmet2-test-with-js-context
-    (emmet2-context-js-prepare)
+    (emmet2-context-js-prepare t)
     (let ((parser (car (emmet2-context-js--parsers))))
       (should (equal (plist-get (emmet2-context-analyze t) :abbr) "ul>li"))
       (insert "*3")
@@ -225,7 +276,7 @@
 
 (ert-deftest emmet2-context-source-and-projection-stay-independent ()
   (emmet2-test-with-js-context
-    (emmet2-context-js-prepare)
+    (emmet2-context-js-prepare t)
     (let ((source (emmet2-context-js--parser 'tsx nil))
           (projection (emmet2-context-js--parser 'tsx nil t)))
       (should-not (eq source projection))
@@ -331,7 +382,7 @@
       (goto-char (point-max)) (search-backward "after")
       (should-not (emmet2-context-analyze t))
       (should-not (marker-buffer (cadr old)))
-      (emmet2-context-js-prepare)
+      (emmet2-context-js-prepare t)
       (should-not (emmet2-context-analyze t))
       (should (= (length (emmet2-context-js--state-units (emmet2-context-js--owner))) 1)))))
 

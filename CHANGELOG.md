@@ -31,6 +31,13 @@
   popups keep `corfu-popupinfo-margin-width`. The Emmet popup sits at the
   abbreviation start, like other completion popups, instead of where the
   cursor was when it first appeared.
+- In `tsx-ts-mode`, `typescript-ts-mode` and `js-ts-mode`, emmet2 no longer
+  copies a buffer's whole syntax tree into its own two parsers when the buffer
+  opens; it parses the JSX element or style object being edited. A 150 KB TSX
+  buffer that is only read holds about 6 MB less. Typing elsewhere in a large
+  component still parses the surrounding code after a short pause, as before,
+  and an abbreviation that appears all at once, as by yanking, offers
+  automatic choices after that pause.
 - Package recipes should include `NOTICE`: `:files (:defaults "data" "NOTICE")`.
 
 ### Fixed

@@ -90,7 +90,7 @@
         (search-backward "│") (delete-char 1)
         (let ((position (point)))
           (funcall (car case)) (goto-char position)
-          (emmet2-context-js-prepare)
+          (emmet2-context-js-prepare t)
           (should (eq (not (null (emmet2-capf))) (nth 2 case))))))))
 
 (ert-deftest emmet2-capf-lazy-results-and-expansion-display ()

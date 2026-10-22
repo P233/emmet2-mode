@@ -13,7 +13,10 @@
 ;; character, so the surrounding syntax can be checked without it.  Markers
 ;; remember the unit, the smallest closed statement or JSX element around
 ;; point, which limits later parsing.  An idle timer warms the parsers for
-;; automatic completion.  web-mode supplies the bounds of script parts.
+;; automatic completion.  Under a Tree-sitter major mode, its tree supplies
+;; the unit at the first request instead, so warming parses nothing and a
+;; buffer that is only read never copies its tree.  web-mode supplies the
+;; bounds of script parts.
 
 ;;; Code:
 
@@ -165,9 +168,11 @@ the second tree; keeping each input view stable avoids full reparses."
                                 ((derived-mode-p 'js-mode 'js-ts-mode) 'javascript))))
       (list language (point-min) (point-max)))))
 
-(defun emmet2-context-js-prepare ()
+(defun emmet2-context-js-prepare (&optional waiting)
   "Create and parse this buffer's JS parsers for the region at point.
 Also compile the queries, so automatic analysis finds everything ready.
+Under a Tree-sitter major mode, whose tree supplies units on demand, parse
+only when WAITING, which an automatic request that found no unit passes.
 Return the source parser, or nil without a JS region or grammar.
 `emmet2-context-js-start' runs this from an idle timer."
   (save-restriction
@@ -177,11 +182,13 @@ Return the source parser, or nil without a JS region or grammar.
         (when (and (treesit-available-p) (treesit-language-available-p language))
           (dolist (query (cdr (assq language emmet2-context-js--queries)))
             (when query (treesit-query-compile language query t)))
-          (let* ((parser (emmet2-context-js--parser language t))
-                 (unit (emmet2-context-js--unit language beg end parser t))
-                 (projection (emmet2-context-js--parser language t t)))
-            (treesit-parser-set-included-ranges projection (list (cons (car unit) (cdr unit))))
-            (treesit-parser-root-node projection))
+          (let ((parser (emmet2-context-js--parser language t))
+                (projection (emmet2-context-js--parser language t t)))
+            ;; Parsing ahead under a Tree-sitter major mode would only copy its tree.
+            (when (or waiting (not (emmet2-context-js--host-parser language)))
+              (let ((unit (emmet2-context-js--unit language beg end parser t)))
+                (treesit-parser-set-included-ranges projection (list unit))
+                (treesit-parser-root-node projection))))
           (emmet2-context-js--parser language nil))))))
 
 (defun emmet2-context-js--closed-unit-p (node start end)
@@ -224,10 +231,29 @@ no syntax errors."
                (emmet2-context-js--closed-unit-p node (treesit-node-start node) (treesit-node-end node)))
       (cons (treesit-node-start node) (treesit-node-end node)))))
 
+(defconst emmet2-context-js--automatic-unit-limit 8192
+  "Largest unit in characters that an automatic request parses at once.
+About a millisecond of parsing; a larger unit waits for an idle warmup.")
+
+(defun emmet2-context-js--host-parser (language)
+  "Return the major mode's LANGUAGE parser when it covers the whole buffer."
+  (let ((parser (car (treesit-parser-list nil language))))
+    (and parser (null (treesit-parser-included-ranges parser)) parser)))
+
+(defun emmet2-context-js--host-unit (language start end)
+  "Return the closed unit around point in the major mode's LANGUAGE tree, or nil.
+The unit must lie within START..END."
+  (when-let* ((parser (emmet2-context-js--host-parser language))
+              (unit (emmet2-context-js--tree-unit parser (point))))
+    (and (<= start (car unit)) (<= (cdr unit) end) unit)))
+
 (defun emmet2-context-js--unit (language start end parser initialize)
   "Return the remembered LANGUAGE unit around point within START..END.
-Restrict PARSER to that unit.  Without one, non-nil INITIALIZE uses all of
-START..END; only a valid projection later narrows it."
+Restrict PARSER to that unit.  Without one, use the major mode's unit around
+point, parsed alone; with nil INITIALIZE, as for an automatic request, only
+up to `emmet2-context-js--automatic-unit-limit' characters.  Non-nil
+INITIALIZE falls back to all of START..END.  A projection that does not
+confirm the unit falls back to START..END, and a valid one narrows it."
   (let* ((owner (emmet2-context-js--owner t)) entry bounds)
     (emmet2-context-js--check-tick owner)
     (setq entry (assq language (emmet2-context-js--state-units owner)))
@@ -238,32 +264,44 @@ START..END; only a valid projection later narrows it."
         (setq bounds nil)))
     (when bounds
       (treesit-parser-set-included-ranges parser (list bounds)))
-    (when (and (not bounds) initialize)
-      (treesit-parser-set-included-ranges parser (list (cons start end)))
-      (setq bounds (cons start end))
-      (emmet2-context-js--remember-unit owner language bounds)
-      (treesit-parser-root-node parser))
+    (unless bounds
+      (let ((host (emmet2-context-js--host-unit language start end)))
+        (unless (or initialize
+                    (and host (<= (- (cdr host) (car host)) emmet2-context-js--automatic-unit-limit)))
+          (setq host nil))
+        (when (or host initialize)
+          (setq bounds (or host (cons start end)))
+          (treesit-parser-set-included-ranges parser (list bounds))
+          (emmet2-context-js--remember-unit owner language bounds)
+          (treesit-parser-root-node parser))))
     bounds))
 
-(defun emmet2-context-js--warm (buffer owner)
-  "Warm BUFFER only while OWNER still belongs to an enabled mode."
+(defun emmet2-context-js--warm (buffer owner &optional waiting)
+  "Warm BUFFER only while OWNER still belongs to an enabled mode.
+WAITING passes through to `emmet2-context-js-prepare'."
   (when (buffer-live-p buffer)
     (with-current-buffer buffer
       (when (eq (emmet2-context-js--owner) owner)
         (setf (emmet2-context-js--state-timer owner) nil)
         (when (and (bound-and-true-p emmet2-mode) (not emmet2-context-provider))
-          (emmet2-context-js-prepare))))))
+          (emmet2-context-js-prepare waiting))))))
 
-(defun emmet2-context-js-start ()
+(defun emmet2-context-js-start (&optional waiting)
   "Schedule one buffer-owned idle warmup.
-Repeated invocations do not add timers.  External and lexical-only hosts
-need no JS owner, edit hooks or idle work."
+Repeated invocations do not add timers.  Non-nil WAITING, for an automatic
+request that found no unit, replaces a pending plain warmup with one that
+parses.  External and lexical-only hosts need no JS owner, edit hooks or
+idle work."
   (when (and (not emmet2-context-provider)
              (derived-mode-p 'web-mode 'js-mode 'js-ts-mode 'tsx-ts-mode 'typescript-ts-mode))
-    (let ((owner (emmet2-context-js--owner t)))
-      (unless (emmet2-context-js--state-timer owner)
+    (let* ((owner (emmet2-context-js--owner t))
+           (timer (emmet2-context-js--state-timer owner)))
+      (when (and timer waiting)
+        (cancel-timer timer)
+        (setq timer nil))
+      (unless timer
         (setf (emmet2-context-js--state-timer owner)
-              (run-with-idle-timer 0.1 nil #'emmet2-context-js--warm (current-buffer) owner))))))
+              (run-with-idle-timer 0.1 nil #'emmet2-context-js--warm (current-buffer) owner waiting))))))
 
 (defun emmet2-context-js--host-region (parser start end language)
   "Return (LEFT . RIGHT), the part of this line where an abbreviation may lie.
@@ -425,15 +463,16 @@ Emmet; automatic completion must leave it alone."
 REGION is (LANGUAGE START END).  Return nil when the position does not
 allow expansion.  Non-nil AUTOMATIC uses only parsers that are already
 warm, scheduling warmup otherwise, and skips text that could be a JSX
-expression.  With nil AUTOMATIC, missing parsers are created, and a missing
-grammar signals `emmet2-error'."
+expression; under a Tree-sitter major mode, warm parsers first parse the
+unit around point that its tree reports.  With nil AUTOMATIC, missing
+parsers are created, and a missing grammar signals `emmet2-error'."
   (pcase-let* ((`(,language ,start ,end) region)
                (parser (emmet2-context-js--parser language (not automatic)))
                (projection (emmet2-context-js--parser language (not automatic) t))
                (unit (when parser (emmet2-context-js--unit language start end parser (not automatic)))))
     (if (not (and unit projection))
         (progn
-          (when (bound-and-true-p emmet2-mode) (emmet2-context-js-start))
+          (when (bound-and-true-p emmet2-mode) (emmet2-context-js-start t))
           nil)
       (let ((bounded (not (equal unit (cons start end)))))
         (setq start (car unit) end (cdr unit))
