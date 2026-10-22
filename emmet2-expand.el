@@ -19,6 +19,20 @@
 
 (defgroup emmet2 nil "Emmet abbreviation expansion." :group 'convenience)
 
+(defun emmet2--js-member-path-p (value)
+  "Whether VALUE is an ASCII JavaScript identifier or dotted member path."
+  (and (stringp value)
+       (let ((case-fold-search nil))
+         (save-match-data
+           (string-match-p "\\`[A-Za-z_$][A-Za-z0-9_$]*\\(?:\\.[A-Za-z_$][A-Za-z0-9_$]*\\)*\\'" value)))))
+
+(defun emmet2--sass-function-p (value)
+  "Whether VALUE is an ASCII Sass function name, optionally module-qualified."
+  (and (stringp value)
+       (let ((case-fold-search nil))
+         (save-match-data
+           (string-match-p "\\`\\(?:[A-Za-z_][A-Za-z0-9_-]*\\.\\)?[A-Za-z_-][A-Za-z0-9_-]*\\'" value)))))
+
 (defcustom emmet2-markup-variant nil
   "Markup dialect, or nil to follow the context.
 With nil, HTML contexts get HTML and JSX contexts get React JSX.  The string
@@ -42,14 +56,14 @@ as in _div.card, keeps that expansion's classes as a string."
 Used when `emmet2-jsx-class-style' is `css-modules'.  Use the name imported
 in the source file, such as styles or cardStyles; emmet2-mode does not
 add the import."
-  :type 'string :safe #'stringp :group 'emmet2)
+  :type 'string :safe #'emmet2--js-member-path-p :group 'emmet2)
 
 (defcustom emmet2-class-names-constructor "clsx"
   "JavaScript function reference for joining multiple JSX class names.
 Used when `emmet2-jsx-class-style' is `css-modules'.  Use the function
 imported in the source file, such as clsx or cx.  A single class uses the
 CSS Modules reference directly."
-  :type 'string :safe #'stringp :group 'emmet2)
+  :type 'string :safe #'emmet2--js-member-path-p :group 'emmet2)
 
 (defcustom emmet2-css-scale-functions nil
   "Sass functions for parenthesized SCSS values, such as p(1)(2).
@@ -65,7 +79,7 @@ nil, the default, such values are invalid and offer no choice."
           (and (proper-list-p value)
                (seq-every-p (lambda (entry)
                               (and (consp entry) (or (eq (car entry) t) (stringp (car entry)))
-                                   (stringp (cdr entry))))
+                                   (emmet2--sass-function-p (cdr entry))))
                             value)))
   :group 'emmet2)
 

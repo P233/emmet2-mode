@@ -204,8 +204,11 @@ marks where point ends; results with several declarations insert one per line.
 | `emmet2-css-scale-functions` | `nil` | SCSS functions for `(N)` values; see below |
 | `emmet2-css-auto-newline` | `t` | In CSS and SCSS modes, continue on a new line after a standalone declaration |
 
-All options are safe as directory-local variables. For example, in
-`.dir-locals.el`:
+Options support directory-local variables. CSS Modules object and class
+constructor strings are safe without confirmation only as JavaScript member
+paths, such as `styles`, `$styles` or `project.cx`, and scale functions only as
+Sass function names, such as `rhythm` or `space.step`. Other values require
+confirmation. For example, in `.dir-locals.el`:
 
 ```elisp
 ((tsx-ts-mode . ((emmet2-markup-variant . "solid")
