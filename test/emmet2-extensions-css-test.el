@@ -259,6 +259,13 @@ implicit ampersand.")
       (should (equal (plist-get (emmet2-extensions-css input :css-in-js t) :text)
                      (concat "padding: \"" value "\""))))))
 
+(ert-deftest emmet2-css-js-keeps-pixels-as-strings-where-numbers-differ ()
+  ;; React reads lineHeight: 10 as ten times the font size, not 10px.
+  (dolist (pair '(("lh10px" . "lineHeight: \"10px\"") ("fx10px" . "flex: \"10px\"")
+                  ("sw2px" . "strokeWidth: \"2px\"") ("lh1.5" . "lineHeight: 1.5")
+                  ("lh10" . "lineHeight: 10") ("w10px" . "width: 10")))
+    (should (equal (plist-get (emmet2-extensions-css (car pair) :css-in-js t) :text) (cdr pair)))))
+
 (ert-deftest emmet2-css-pseudo-functions-aliases-and-fallback ()
   (dolist (pair '((":h(+p)" . ":has(+ p)") (":dis" . ":disabled")
                    (":fo" . ":first-of-type") ("_:fo" . ":first-of-type") (".c:fo" . ".c:first-of-type")

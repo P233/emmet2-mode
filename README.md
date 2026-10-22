@@ -194,6 +194,8 @@ marks where point ends; results with several declarations insert one per line.
   for `!important`. Unknown names, values and units offer no choice; put project
   values in brackets. A colon starts a pseudo-class, so write `dn`, not `d:n`.
 - In style objects, unitless and pixel values become numbers, others strings.
+  Pixel values stay strings where a bare number means something else, as in
+  `lineHeight: "10px"` from `lh10px`.
   A trailing comma ends the member, so `m10,` offers nothing; join with `+`.
 
 ## Options

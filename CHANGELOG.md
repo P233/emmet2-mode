@@ -83,6 +83,9 @@
   every five seconds.
 - A parse error that the caller handles no longer stops in the debugger under
   `debug-on-error`.
+- In style objects, pixel values stay strings where a bare number means
+  something else: `lh10px` gives `lineHeight: "10px"` instead of
+  `lineHeight: 10`, which React reads as ten times the font size.
 - `font-family` values include the generic families `system-ui`, `ui-*`,
   `math`, `emoji` and `fangsong`: `ffsu` gives `font-family: system-ui;`, and
   `ffm` still gives `monospace`.

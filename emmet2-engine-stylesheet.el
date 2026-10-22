@@ -449,7 +449,10 @@ When LINES is non-nil, follow each newline with OUT's base indentation."
                 ('raw (aref token 1)))))
     ;; Raw leading-zero spellings must remain strings, avoiding JS octal.
     (when (and raw (not (emmet2-stylesheet--node-important node))
-               (string-match-p "\\`-?\\(?:0\\|[1-9][0-9]*\\)\\(?:\\.[0-9]*\\)?\\(?:px\\)?\\'" raw))
+               (string-match-p "\\`-?\\(?:0\\|[1-9][0-9]*\\)\\(?:\\.[0-9]*\\)?\\(?:px\\)?\\'" raw)
+               ;; React and CSS-in-JS libraries add px only where a bare number has no meaning of its own.
+               (not (and (string-suffix-p "px" raw)
+                         (member "number" (emmet2-css-search-value-types (emmet2-stylesheet--node-name node))))))
       (string-remove-suffix "px" raw))))
 
 (defun emmet2-stylesheet--value-text-p (node)

@@ -218,8 +218,8 @@ handled while rendering. Bracketed raw values and `--name` variables are
 emitted verbatim. Parenthesized steps such as `p(1)(2)` become function calls
 only in SCSS with `:scale-functions`; otherwise they are parse errors.
 CSS-in-JS chooses numbers, quoted values and keys from the declaration
-structure, and emits escaping and field offsets together, without inspecting
-CSS output.
+structure and the property's value types, and emits escaping and field offsets
+together, without inspecting CSS output.
 
 The tokenizer recognizes a complete property name as the longest name in a set
 that ends at a value boundary, as `margin-top` in `margin-top-10`. A regexp
