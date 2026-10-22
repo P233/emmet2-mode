@@ -33,6 +33,7 @@ engine and result helpers (`emmet2-engine-*`, `emmet2-result-*`),
 | `emmet2-extensions-css-choices` | `(ABBREVIATION &key css-in-js (syntax 'scss) (limit 10) at-rule scale-functions)` |
 | `emmet2-extensions-markup` | `(ABBREVIATION &key jsx variant (class-style 'css-modules) (css-modules-object "styles") (class-names-constructor "clsx") (indent "\t") (base-indent ""))` |
 | `emmet2-extract` | `(REGION-BEG REGION-END &optional SYNTAX)`; SYNTAX is nil, `css` or `css-selector` |
+| `emmet2-capf-discard` | `()`; discard the current buffer's last choice batch and automatic error history. |
 | `emmet2-context-analyze` | `(&optional AUTOMATIC)` |
 | `emmet2-expand-analysis` | `(ANALYSIS)` |
 | `emmet2-insert-render-options` | `(ANALYSIS)`, returning `(:indent STRING :base-indent STRING)` |
@@ -233,8 +234,14 @@ a table and from the buffer's last completed choice batch. Reuse also requires
 the same provider identity and automatic/explicit request policy; declined
 analyses are not cached.
 
-Direct context APIs signal invalid contracts. Automatic CAPF errors invalidate
-that table and offer no match; `emmet2-complete` and acceptance report the
+Direct context APIs signal invalid contracts. An abbreviation that does not
+parse offers no match until typing completes it, without a diagnostic. Other
+automatic CAPF errors invalidate that table and offer no match. Distinct error
+messages are reported with a bounded, buffer-local rate history: at most
+sixteen messages and one report every five seconds. No abbreviation is a normal
+decline with no diagnostic. `emmet2-capf-discard`, mode disable, major-mode
+change and unload clear the history and last choice batch; existing tables
+still validate their own snapshots. `emmet2-complete` and acceptance report the
 error. Cancellation propagates, and `debug-on-error` retains the original
 debugger.
 

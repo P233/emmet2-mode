@@ -211,5 +211,11 @@ calc() moves point inside its parentheses; no snippet fields are created."
                 (when (string-suffix-p "()" candidate)
                   (backward-char))))))))
 
+(defun emmet2-completion-unload-function ()
+  "Remove the name completion style and category registered by this module."
+  (setq completion-styles-alist (assq-delete-all 'emmet2-name completion-styles-alist)
+        completion-category-defaults (assq-delete-all 'emmet2-value completion-category-defaults))
+  nil)
+
 (provide 'emmet2-completion)
 ;;; emmet2-completion.el ends here

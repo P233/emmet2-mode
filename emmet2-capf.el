@@ -29,6 +29,11 @@
 (defvar emmet2-capf--explicit nil
   "Non-nil when the user explicitly requests completion.")
 
+(defvar-local emmet2-capf--diagnostics nil
+  "Last automatic error report time and up to sixteen distinct messages.
+Only emitted messages are retained; new reports are at least five seconds
+apart.  Discard, major-mode change and unload clear this buffer-owned record.")
+
 (defvar-local emmet2-capf--batch nil
   "Last choice batch, with the analysis and revision it was built for.
 The value is (:revision R :settings S :provider P :request K :analysis A
@@ -38,6 +43,25 @@ came from `emmet2-expand-choices' for analysis A when
 but copies its choices, so tables never share candidates.  Each expansion
 replaces the entry, or leaves it nil when the source changed meanwhile;
 disabling the minor mode, changing the major mode or unloading discards it.")
+
+(defun emmet2-capf-discard ()
+  "Discard this buffer's last choice batch and automatic error history.
+Existing tables still validate their own snapshots and choice identities."
+  (kill-local-variable 'emmet2-capf--batch)
+  (kill-local-variable 'emmet2-capf--diagnostics))
+
+(defun emmet2-capf--report-error (error-data)
+  "Report ERROR-DATA once per distinct message, with bounded rate history.
+A parse error is incomplete input while typing, not a failure."
+  (let ((text (error-message-string error-data))
+        (now (float-time)))
+    (unless (or (eq (car error-data) 'emmet2-parse-error)
+                (member text (cdr emmet2-capf--diagnostics))
+                (and emmet2-capf--diagnostics
+                     (< (- now (car emmet2-capf--diagnostics)) 5)))
+      (setq emmet2-capf--diagnostics
+            (cons now (seq-take (cons text (cdr emmet2-capf--diagnostics)) 16)))
+      (message "Emmet completion: %s" text))))
 
 (defun emmet2-capf--analyze (automatic)
   "Analyze AUTOMATIC's request, reusing the last batch's unchanged context.
@@ -172,21 +196,23 @@ derived only when the frontend requests labels or a preview."
 (defun emmet2-capf--display (text abbreviation)
   "Return TEXT as one menu row, highlighting ABBREVIATION.
 Normalize line breaks and surrounding indentation.  Use the same ordered
-matcher as candidate search; aliases without a literal correspondence remain
-unhighlighted.  Return a fresh string; preview and insertion still use the
-full result."
+matcher as candidate search, limited to the first 256 label characters; aliases
+without a literal correspondence remain unhighlighted.  Return a fresh
+string; preview and insertion still use the full result."
   (let ((text (if (string-search "\n" text)
                   (replace-regexp-in-string "[ \t]*\n[ \t\n]*" " " text)
                 (copy-sequence text)))
         (needle (if (string-match-p "[^[:alnum:]_-]" abbreviation)
                     (replace-regexp-in-string "[^[:alnum:]_-]" "" abbreviation)
                   abbreviation)))
-    (emmet2-fuzzy--highlight (plist-get (emmet2-fuzzy-match needle text) :positions) text)))
+    (emmet2-fuzzy--highlight
+     (plist-get (emmet2-fuzzy-match needle (if (> (length text) 256) (substring text 0 256) text)) :positions)
+     text)))
 
 (defmacro emmet2-capf--guard (quiet cleanup &rest body)
   "Run BODY and evaluate CLEANUP if BODY fails or quits.
-When QUIET is non-nil, errors make the form return nil; otherwise they
-signal `user-error' with the cause.  Quitting propagates, and
+When QUIET is non-nil, errors are rate-limited diagnostics and return nil;
+otherwise they signal `user-error' with the cause.  Quitting propagates, and
 `debug-on-error' still enters the debugger.  New input via `throw-on-input'
 propagates without CLEANUP, so an interrupted query can be retried."
   (declare (indent 2) (debug (form form body)))
@@ -200,10 +226,12 @@ propagates without CLEANUP, so an interrupted query can be retried."
                  (if ,completed ,result
                    (setq ,completed t)
                    (throw ,input-tag ,result)))
-             (error (unless ,quiet
+             (error (if ,quiet
+                        (emmet2-capf--report-error ,error-data)
                       (if (eq (car ,error-data) 'user-error)
                           (signal 'user-error (cdr ,error-data))
-                        (user-error "Emmet: %s" (error-message-string ,error-data))))))
+                        (user-error "Emmet: %s" (error-message-string ,error-data))))
+                    nil))
          (unless ,completed ,cleanup)))))
 
 (defun emmet2-capf--admit (explicit)
@@ -229,8 +257,9 @@ its prefix threshold first, but a bare CSS word such as ta is expanded at
 once and offered only when it has a choice.  Choices follow typing in the
 same context.  Every candidate string is the abbreviation itself and a text
 property tells alternative expansions apart, so frontends that drop text
-properties still accept the first choice.  Errors make automatic requests
-offer nothing; explicit requests and acceptance signal `user-error'.
+properties still accept the first choice.  An abbreviation that does not
+parse offers nothing until typing completes it.  Other errors make automatic
+requests offer nothing; explicit requests and acceptance signal `user-error'.
 Offering choices also installs the Corfu advice of emmet2-corfu.el, which
 affects only tables that emmet2-mode builds."
   (emmet2-capf--guard (not emmet2-capf--explicit) nil
@@ -251,7 +280,8 @@ affects only tables that emmet2-mode builds."
                ;; STATE is (ANALYSIS SNAPSHOT VALIDATED CHOICES), or nil if invalid.
                (state (list analysis (emmet2-insert-snapshot analysis)
                             (emmet2-context-revision)
-                            (if (eq first 'unexpanded) first (plist-get first :choices)))))
+                            (if (eq first 'unexpanded) first (plist-get first :choices))))
+               (refreshed nil))
           (cl-labels
               ((invalidate () (setq state nil))
                (abbreviation () (plist-get (car state) :abbr))
@@ -277,7 +307,8 @@ affects only tables that emmet2-mode builds."
                                   (or (not automatic) (emmet2-capf--confident-p next)))
                              (progn
                                (setq state (list next (emmet2-insert-snapshot next)
-                                                 (emmet2-context-revision) 'unexpanded))
+                                                 (emmet2-context-revision) 'unexpanded)
+                                     refreshed t)
                                t)
                            (invalidate))))))
                (expanded ()
@@ -285,7 +316,11 @@ affects only tables that emmet2-mode builds."
                    (when (eq (nth 3 state) 'unexpanded)
                      ;; Publish only complete choices.  The guard still invalidates
                      ;; real failures, but new input leaves this query retryable.
-                     (let ((next (emmet2-capf--choices (car state) automatic)))
+                     (let ((next (condition-case error-data
+                                     (emmet2-capf--choices (car state) automatic)
+                                   ;; Typing on may complete the input; only the requested input reports why.
+                                   (emmet2-parse-error
+                                    (unless (or quiet refreshed) (signal (car error-data) (cdr error-data)))))))
                        (if (current-p)
                            (setcar (nthcdr 3 state) (plist-get next :choices))
                          (invalidate))))
@@ -386,6 +421,12 @@ choice, with the same initial cursor, fields and single undo step.  Signal
                          (user-error "There is no Emmet abbreviation at point")))
            (snapshot (emmet2-insert-snapshot analysis)))
       (emmet2-insert snapshot (emmet2-expand-analysis analysis)))))
+
+(defun emmet2-capf-unload-function ()
+  "Discard buffer-owned completion bookkeeping before unloading CAPF."
+  (dolist (buffer (buffer-list))
+    (with-current-buffer buffer (emmet2-capf-discard)))
+  nil)
 
 (provide 'emmet2-capf)
 ;;; emmet2-capf.el ends here

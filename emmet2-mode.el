@@ -40,6 +40,7 @@
 (require 'emmet2-expand)
 (declare-function emmet2-preview-clear "emmet2-preview" ())
 (declare-function emmet2-corfu-unload-function "emmet2-corfu" ())
+(declare-function emmet2-capf-discard "emmet2-capf" ())
 (autoload 'emmet2-capf "emmet2-capf" nil nil)
 (autoload 'emmet2-css-value-capf "emmet2-css-value" nil nil)
 (autoload 'emmet2-complete "emmet2-capf" nil t)
@@ -63,7 +64,7 @@ complete property values with `emmet2-css-value-capf'.  The keymap
         (emmet2-context-start))
     (remove-hook 'completion-at-point-functions #'emmet2-capf t)
     (remove-hook 'completion-at-point-functions #'emmet2-css-value-capf t)
-    (kill-local-variable 'emmet2-capf--batch)
+    (when (fboundp 'emmet2-capf-discard) (emmet2-capf-discard))
     (emmet2-context-stop)))
 
 (defun emmet2-mode-unload-function ()
@@ -71,7 +72,7 @@ complete property values with `emmet2-css-value-capf'.  The keymap
   (dolist (buffer (buffer-list))
     (with-current-buffer buffer
       (if (bound-and-true-p emmet2-mode) (emmet2-mode -1)
-        (kill-local-variable 'emmet2-capf--batch)
+        (when (fboundp 'emmet2-capf-discard) (emmet2-capf-discard))
         (emmet2-context-stop))))
   (when (fboundp 'emmet2-preview-clear) (emmet2-preview-clear))
   (when (fboundp 'emmet2-corfu-unload-function) (emmet2-corfu-unload-function))

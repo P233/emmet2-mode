@@ -354,8 +354,9 @@ sentinel.
 
 Enabling the mode adds `emmet2-capf` locally at depth -50 and, in CSS Base
 modes without a provider, `emmet2-css-value-capf` at -60; disabling removes
-both and discards the last choice batch; unloading discards it in every
-buffer. `emmet2-complete` temporarily selects a self-contained explicit CAPF
+both and calls `emmet2-capf-discard` to release the last choice batch and
+automatic diagnostic history; unloading discards them in every buffer.
+`emmet2-complete` temporarily selects a self-contained explicit CAPF
 entry, which binds the request policy on every frontend recheck, and calls
 `completion-at-point`, as Cape's interactive CAPFs do; it neither selects a
 candidate nor changes frontend settings, and it delegates analysis and grammar
@@ -378,7 +379,8 @@ candidate itself.
 Each menu label renders the current fragment, folding line breaks and
 indentation into spaces. It applies `completions-common-part` to the positions
 returned by the same project matcher for the abbreviation's word characters in
-the label. An alias with no literal correspondence remains unhighlighted. Only
+the first 256 label characters. The displayed label itself remains complete.
+An alias with no literal correspondence remains unhighlighted. Only
 the display copy hides the typed candidate; acceptance keeps its original text
 and choice identity. There is no provider label or expansion annotation. Only
 multiline complete results supply documentation to `corfu-popupinfo-mode`, even
@@ -486,6 +488,10 @@ frame placement or rendering.
 
 ## Semantic completion
 
+Unloading `emmet2-completion` removes its `emmet2-name` completion style and
+`emmet2-value` category default, so future completion does not call unloaded
+style functions. Other style and category registrations remain intact.
+
 Semantic completion is a different request. `emmet2-css-data-query` returns
 property and value names with documentation for a host to combine with Sass
 symbols, without a buffer; it owns no mode, parser, completion frontend,
@@ -589,10 +595,19 @@ can load independently of the minor mode. String expansion stays
 buffer-independent through `emmet2-extensions` and the language engines.
 
 The Emmet entries `emmet2-capf`, `emmet2-complete` and `emmet2-expand-at-point`
-and their lazy table callbacks share one failure policy. Automatic failures
-return no choice and invalidate the table. Explicit requests and acceptance
-report the cause. An explicit quit propagates and invalidates the table, while
-an interruption by new input leaves it retryable; `debug-on-error` still reaches
-the original error. Name tables from `emmet2-completion-capf` have no such
-boundary: an error from their entries, including host discovery, reaches the
-completion frontend. Pure APIs signal typed failures.
+and their lazy table callbacks share one failure policy. An abbreviation that
+does not parse is incomplete input: the table offers no choice for that
+revision and stays valid, so typing on can complete it, and no diagnostic is
+reported. Only the input an explicit request analyzed reports the parse error.
+Other automatic failures return no choice and invalidate the table. They report
+distinct error messages with `message`, retaining only the last sixteen
+reported messages in the current buffer and emitting at most one report every
+five seconds. A suppressed new message can be reported by a later failure after
+that interval. Normal no-abbreviation declines produce no diagnostic. Discard,
+mode disable, major-mode change and unload clear the record. Explicit requests
+and acceptance report the cause. An explicit quit propagates and invalidates
+the table, while an interruption by new input leaves it retryable;
+`debug-on-error` still reaches the original error. Name tables from
+`emmet2-completion-capf` have no such boundary: an error from their entries,
+including host discovery, reaches the completion frontend. Pure APIs signal
+typed failures.

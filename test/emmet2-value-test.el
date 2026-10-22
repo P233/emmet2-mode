@@ -5,6 +5,25 @@
 (require 'emmet2-css-value)
 (require 'emmet2-completion)
 
+(ert-deftest emmet2-value-unload-removes-completion-registrations ()
+  (let ((completion-styles-alist (copy-tree completion-styles-alist))
+        (completion-category-defaults (copy-tree completion-category-defaults)))
+    (unwind-protect
+        (progn
+          (add-to-list 'completion-category-defaults '(other-category (styles basic)))
+          (should (assq 'emmet2-name completion-styles-alist))
+          (should (assq 'emmet2-value completion-category-defaults))
+          (unload-feature 'emmet2-completion t)
+          (should-not (assq 'emmet2-name completion-styles-alist))
+          (should-not (assq 'emmet2-value completion-category-defaults))
+          (should (equal (assq 'other-category completion-category-defaults)
+                         '(other-category (styles basic))))
+          (let ((table (lambda (string predicate action)
+                         (if (eq action 'metadata) '(metadata (category . emmet2-value))
+                           (complete-with-action action '("red") string predicate)))))
+            (should (completion-all-completions "r" table nil 1))))
+      (require 'emmet2-completion))))
+
 (ert-deftest emmet2-value-name-identities-belong-to-one-table ()
   (with-temp-buffer
     (insert "token")
