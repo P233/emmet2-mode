@@ -183,5 +183,22 @@
           (emmet2-extract (point-min) (point-max) syntax)
           (should (equal (match-data) before)))))))
 
+(ert-deftest emmet2-extract-explicit-leading-text-is-whole-and-balanced ()
+  (dolist (abbreviation '("{Hello $}*3" "{x}" "{one {two} three}"))
+    (with-temp-buffer
+      (insert abbreviation)
+      (cl-loop for position from (point-min) to (point-max) do
+               (goto-char position)
+               (should (equal (plist-get (emmet2-extract (point-min) (point-max) 'markup-text) :abbr)
+                              abbreviation)))))
+  (dolist (text '("{unfinished" "<p>{{ msg }}" "{% endif %}" "{#each items}" "{$var}" "{/if}" "<p>{name}"))
+    (with-temp-buffer
+      (insert text)
+      (should-not (emmet2-extract (point-min) (point-max) 'markup-text))))
+  (dolist (text '("{{ a }}ul>li" "<p>{{ a }}ul>li"))
+    (with-temp-buffer
+      (insert text)
+      (should (equal (plist-get (emmet2-extract (point-min) (point-max) 'markup-text) :abbr) "ul>li")))))
+
 (provide 'emmet2-extract-test)
 ;;; emmet2-extract-test.el ends here

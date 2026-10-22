@@ -31,8 +31,8 @@ engine and result helpers (`emmet2-engine-*`, `emmet2-result-*`),
 | `emmet2-fuzzy-filter` | `(QUERY CANDIDATES &optional KEY)` |
 | `emmet2-extensions-css` | `(ABBREVIATION &key css-in-js (syntax 'scss) (indent "\t") (base-indent "") at-rule scale-functions)` |
 | `emmet2-extensions-css-choices` | `(ABBREVIATION &key css-in-js (syntax 'scss) (limit 10) at-rule scale-functions)` |
-| `emmet2-extensions-markup` | `(ABBREVIATION &key jsx variant (class-style 'css-modules) (css-modules-object "styles") (class-names-constructor "clsx") (indent "\t") (base-indent ""))` |
-| `emmet2-extract` | `(REGION-BEG REGION-END &optional SYNTAX)`; SYNTAX is nil, `css` or `css-selector` |
+| `emmet2-extensions-markup` | `(ABBREVIATION &key jsx variant (class-style 'css-modules) (css-modules-object "styles") (class-names-constructor "clsx") (indent "\t") (base-indent "") (seed 0))` |
+| `emmet2-extract` | `(REGION-BEG REGION-END &optional SYNTAX)`; SYNTAX is nil, `css`, `css-selector` or `markup-text` |
 | `emmet2-capf-discard` | `()`; discard the current buffer's last choice batch and automatic error history. |
 | `emmet2-context-analyze` | `(&optional AUTOMATIC)` |
 | `emmet2-expand-analysis` | `(ANALYSIS)` |
@@ -43,7 +43,9 @@ engine and result helpers (`emmet2-engine-*`, `emmet2-result-*`),
 | `emmet2-completion-capf` | `(BEGIN END ENTRIES &key (category 'emmet2-value) (identity #'identity) (fuzzy t) annotation prefix)` |
 
 `emmet2-extract` scans at most 8192 characters on each side of point on the
-current line and declines tokens clipped by that window.
+current line and declines tokens clipped by that window. Use `markup-text`
+only after the host excludes its own leading brace syntax, as explicit HTML
+requests do; JSX expressions must keep the default extraction policy.
 
 ## Query names and property-specific values
 

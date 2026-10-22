@@ -148,12 +148,13 @@ signals `emmet2-error'."
                    ((not automatic) (list 'markup (point-min) (point-max))))))
              (pcase (car region)
                ('css (emmet2-context-css-analyze region automatic))
-               ('markup (emmet2-context--markup region))
+               ('markup (emmet2-context--markup region automatic))
                ((or 'javascript 'typescript 'tsx) (emmet2-context-js-analyze region automatic))))))))))
 
-(defun emmet2-context--markup (region)
-  "Extract an HTML abbreviation inside markup REGION."
-  (when-let* ((candidate (emmet2-extract (nth 1 region) (nth 2 region))))
+(defun emmet2-context--markup (region &optional automatic)
+  "Extract an HTML abbreviation inside markup REGION under AUTOMATIC policy."
+  (when-let* ((candidate (emmet2-extract (nth 1 region) (nth 2 region)
+                                       (unless automatic 'markup-text))))
     (unless (equal (plist-get candidate :abbr) "()")
       (append candidate '(:lang markup :syntax html :position markup)))))
 

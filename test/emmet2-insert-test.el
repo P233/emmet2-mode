@@ -385,6 +385,40 @@
   (should (funcall (get 'emmet2-markup-variant 'safe-local-variable) "solid"))
   (should-not (funcall (get 'emmet2-markup-variant 'safe-local-variable) "arbitrary")))
 
+(ert-deftest emmet2-complete-explicit-leading-text-and-jsx-exclusion ()
+  (dolist (mode '(text-mode web-mode))
+    (dolist (case '(("{x}" . "x") ("{Hello $}*3" . "Hello 1\nHello 2\nHello 3")))
+      (with-temp-buffer
+        (setq buffer-file-name "/tmp/emmet2-text.html")
+        (insert (car case)) (funcall mode)
+        (goto-char (point-max))
+        (should (equal (plist-get (emmet2-context-analyze) :abbr) (car case)))
+        (emmet2-expand-at-point)
+        (should (equal (buffer-string) (cdr case))))))
+  (dolist (text '("<p>{{ msg }}" "{% endif %}"))
+    (with-temp-buffer
+      (setq buffer-file-name "/tmp/emmet2-text.html")
+      (insert text) (web-mode)
+      (should-not (emmet2-context-analyze))
+      (should-error (emmet2-expand-at-point) :type 'user-error)
+      (should (equal (buffer-string) text))))
+  (with-temp-buffer
+    (insert "const A=(<main>{x}</main>);") (tsx-ts-mode)
+    (search-backward "{x}") (forward-char 3)
+    (should-not (emmet2-context-analyze))))
+
+(ert-deftest emmet2-expand-lorem-seed-follows-abbreviation-and-position ()
+  (with-temp-buffer
+    (insert "lorem80")
+    (let* ((analysis (emmet2-context-analyze))
+           (preview (plist-get (car (plist-get (emmet2-expand-choices analysis 1) :choices)) :result))
+           (snapshot (emmet2-insert-snapshot analysis)))
+      (should (equal preview (emmet2-expand-analysis analysis)))
+      (should-not (equal preview (emmet2-expand-analysis (plist-put (copy-sequence analysis) :beg 2))))
+      (should-not (equal preview (emmet2-expand-analysis (plist-put (copy-sequence analysis) :abbr "lorem81"))))
+      (emmet2-insert snapshot (emmet2-expand-analysis analysis))
+      (should (equal (buffer-string) (plist-get preview :text))))))
+
 (ert-deftest emmet2-complete-without-choices-preserves-source ()
   ;; A failed expansion offers no choice; completion reports nothing to insert.
   (with-temp-buffer

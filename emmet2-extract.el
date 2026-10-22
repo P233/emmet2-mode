@@ -70,7 +70,10 @@ nil outside a token.  SYNTAX nil scans markup; `css' treats comments and
 top-level or unmatched closing braces as host boundaries and retains
 property-separating commas, including a pending one; balanced raw groups
 retain their contents.  `css-selector' also retains spaces between selector
-compounds, excluding trailing whitespace."
+compounds, excluding trailing whitespace.  `markup-text' additionally allows
+a balanced leading {text} group for explicit requests in confirmed HTML,
+when it starts a line or follows whitespace and its brace does not open
+template syntax such as {{, {% or {#."
   (save-match-data
     (let* ((position (point))
            (line-beg (max region-beg (line-beginning-position)))
@@ -91,7 +94,9 @@ compounds, excluding trailing whitespace."
                                            (point))))
                                 (when (and (<= token position end)
                                            (or (= begin line-beg) (> token begin))
-                                           (or (= limit line-end) (< end limit)))
+                                           (or (= limit line-end) (< end limit))
+                                           (not (and (eq syntax 'markup-text)
+                                                     (eq (char-after token) ?{) stack)))
                                   (setq result (list :beg token :end end
                                                      :abbr (buffer-substring-no-properties token end))))))
                             (setq token nil stack nil quote nil escaped nil)))
@@ -113,8 +118,13 @@ compounds, excluding trailing whitespace."
                       ;; Inside Emmet {text}, only braces nest; quotes and brackets are literal.
                       (when (eq character ?{) (push ?} stack)))
                      ((memq character '(?\[ ?\( ?{))
-                      ;; A leading { is host syntax; Emmet {text} follows a token, while [ and ( may start one.
-                      (if (and (eq character ?{) (not token))
+                      ;; Hosts opt into leading text only after excluding their own brace syntax.
+                      (if (and (eq character ?{) (not token)
+                               (not (and (eq syntax 'markup-text)
+                                         ;; Host regions can start at a tag's end, so read the buffer's own character.
+                                         (memq (save-restriction (widen) (char-before)) '(nil ?\s ?\t ?\n))
+                                         ;; Template languages open {{ }}, {% %}, {# }, {$x}, {/if} and similar.
+                                         (not (memq (char-after (1+ (point))) '(?{ ?% ?# ?@ ?$ ?/ ?: ?!))))))
                           nil
                         (unless token (setq token (point)))
                         (push (pcase character (?\[ ?\]) (?\( ?\)) (_ ?})) stack)))

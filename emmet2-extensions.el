@@ -22,7 +22,7 @@
 (cl-defun emmet2-extensions-markup (abbreviation &key jsx variant (class-style 'css-modules)
                                                 (css-modules-object "styles")
                                                 (class-names-constructor "clsx")
-                                                (indent "\t") (base-indent ""))
+                                                (indent "\t") (base-indent "") (seed 0))
   "Expand markup ABBREVIATION and return a canonical result.
 Non-nil JSX writes JSX instead of HTML; VARIANT and the class options apply
 only then.  VARIANT \"solid\" writes class instead of className.
@@ -30,7 +30,8 @@ CLASS-STYLE `css-modules', the default, writes class names as members of
 CSS-MODULES-OBJECT, default \"styles\", joined by CLASS-NAMES-CONSTRUCTOR,
 default \"clsx\"; `plain' writes a string.  A leading _ in ABBREVIATION, as
 in _div.card, selects `plain' for this expansion.  INDENT, a tab by default,
-and BASE-INDENT, empty by default, are literal layout strings.  Signal
+and BASE-INDENT, empty by default, are literal layout strings.  SEED, zero
+by default, is an integer for call-local lorem generation.  Signal
 `emmet2-parse-error' for an invalid abbreviation and `emmet2-error' for an
 invalid CLASS-STYLE."
   (unless (memq class-style '(plain css-modules))
@@ -41,7 +42,7 @@ invalid CLASS-STYLE."
   ;; JSX options act on the AST because rendered attributes lose quoting.
   (emmet2-engine-with-expansion
     (emmet2-engine-expand
-     abbreviation :preset (if jsx 'jsx 'html) :indent indent :base-indent base-indent
+     abbreviation :preset (if jsx 'jsx 'html) :indent indent :base-indent base-indent :seed seed
      :jsx (and jsx (append (list :classAttribute (if (equal variant "solid") "class" "className"))
                            (when (eq class-style 'css-modules)
                              (list :cssModulesObject css-modules-object

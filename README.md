@@ -106,6 +106,20 @@ undo restores the abbreviation.
   properties and JavaScript values.
 - Comments and strings are skipped.
 
+Explicit requests in HTML and fallback markup modes also accept balanced text
+abbreviations such as `{Hello $}*3` or `{x}` at the start of a line or after a
+space. A brace followed by `{`, `%`, `#`, `@`, `$`, `/`, `:` or `!`, as template
+languages write, never starts one; put such text in an element, as in
+`p{$ item}*3`. An explicit request at the end of a template expression on its
+own line, such as Svelte's `{name}`, still expands it as text. In JSX, a
+leading `{` remains a JavaScript expression; attach text to an element instead,
+as in `p{Hello}`.
+
+Lorem text is deterministic for the abbreviation and its buffer beginning
+position. Preview and insertion use the same seed; changing the abbreviation
+or moving it can produce different text. Pure markup expansion defaults to seed
+zero and accepts an explicit `:seed`.
+
 CSS offers up to ten choices: `ta` offers `text-align: ;`, its keywords, then
 alternatives such as `top: auto;`. For `ovh,ta`, the menu shows the property
 being typed, and accepting also inserts `overflow: hidden;`.

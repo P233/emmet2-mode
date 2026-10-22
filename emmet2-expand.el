@@ -95,7 +95,8 @@ checks the context again before inserting."
               :jsx (eq (emmet2--output-syntax analysis) 'jsx)
               :variant emmet2-markup-variant :class-style emmet2-jsx-class-style
               :css-modules-object emmet2-css-modules-object
-              :class-names-constructor emmet2-class-names-constructor options))
+              :class-names-constructor emmet2-class-names-constructor
+              :seed (sxhash-equal (cons abbreviation (plist-get analysis :beg))) options))
       (lang
        ;; One deadline covers the choices and, without a first choice, the expansion reporting why.
        (emmet2-engine-with-expansion
