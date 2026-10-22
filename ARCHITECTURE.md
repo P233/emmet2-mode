@@ -169,6 +169,9 @@ seed types fail for every preset, and global random state is never read or
 modified. `emmet2-engine-with-expansion` gives nested calls one shared
 one-second deadline, including lazy loading and transforms. Extensions wrap the
 whole operation, so several CSS properties do not each receive a new budget.
+Markup rejects explicit multipliers above 1000 before unrolling. Recursion
+limits become parse errors at the abbreviation origin. Extraction scans at most
+8192 characters either side of point and declines window-truncated tokens.
 Parse errors keep their message and character position; other failures use
 `emmet2-error` subtypes. Failures and cancellation leave the source unchanged.
 

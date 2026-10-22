@@ -97,7 +97,8 @@ Type an abbreviation, with point anywhere inside it, and accept a choice. One
 undo restores the abbreviation.
 
 - In HTML and JSX, type in markup content. Automatic completion offers a bare
-  word only when it is a known element alone on its line, such as `div`.
+  word only when it is a known element alone on its line, such as `div`. A
+  repeat count above 1000, as in `li*1001`, offers no choice.
 - In CSS and SCSS, type at the start of a declaration inside braces.
   Pseudo-classes, pseudo-elements and at-rules also work at the stylesheet root.
 - `<style>` and `style=""` produce CSS. JSX `style={{...}}` and objects passed

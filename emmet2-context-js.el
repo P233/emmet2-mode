@@ -269,14 +269,15 @@ need no JS owner, edit hooks or idle work."
   "Return (LEFT . RIGHT), the part of this line where an abbreviation may lie.
 PARSER's tree of START..END and LANGUAGE's queries move LEFT past enclosing
 syntax; the extractor still decides the exact bounds."
-  (let ((left (max start (line-beginning-position)))
+  (let ((left (max start (line-beginning-position) (- (point) emmet2-extract--scan-limit)))
         (right (min end (line-end-position)))
         (position (point)))
     (unless (eq language 'typescript)
       (save-excursion
         (let ((floor left))
           (while (search-backward "<" floor t)
-            (when-let* ((tag-end (emmet2-extract--tag-end)))
+            (when-let* ((tag-end (emmet2-extract--tag-end
+                                 (min right (+ position emmet2-extract--scan-limit)))))
               (when (<= tag-end position)
                 (setq left (max left tag-end))))))))
     (dolist (node (treesit-query-capture

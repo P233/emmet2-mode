@@ -112,10 +112,9 @@
     (should (equal (plist-get (emmet2-engine-stylesheet-expand (car case)) :text) (cdr case)))))
 
 (ert-deftest emmet2-stylesheet-errors-retain-reference-boundary ()
-  ;; These tokenizer failures lack a position and are not parse-error goldens.
   (dolist (input '(":" "-" "," ":-" "+:"))
-    (should (equal (should-error (emmet2-engine-stylesheet-expand input) :type 'emmet2-backend-error)
-                   '(emmet2-backend-error "Unexpected token"))))
+    (should (equal (should-error (emmet2-engine-stylesheet-expand input) :type 'emmet2-parse-error)
+                   (list 'emmet2-parse-error "Unexpected token" (length input)))))
   (should (equal (emmet2-engine-stylesheet-expand ":+") '(:text "" :fields nil :cursor 0)))
   (dolist (case '(("ct\"😀\"+m)" "Unexpected bracket" 7)
                   ("ct\"😀\"+m[" "Unexpected character" 7)

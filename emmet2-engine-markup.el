@@ -23,6 +23,9 @@
 (defconst emmet2-markup--data-directory
   (expand-file-name "data/emmet" (file-name-directory (or load-file-name buffer-file-name))))
 
+(defconst emmet2-markup--repeat-limit 1000
+  "Maximum explicit multiplier accepted before unrolling markup.")
+
 (defun emmet2-markup--read-data (name)
   "Read packaged JSON NAME during module initialization."
   (with-temp-buffer
@@ -172,6 +175,9 @@ fields, repeaters and whitespace have precedence at every token boundary."
             (pcase ch (?\[ (cl-incf attribute)) (?\] (cl-decf attribute))
                    (?\{ (cl-incf expression)) (?\} (cl-decf expression))))
            (t (signal 'emmet2-parse-error (list "Unexpected character" pos))))
+          (when (and (eq type 'repeat)
+                     (> (emmet2-markup--repeat-count value) emmet2-markup--repeat-limit))
+            (signal 'emmet2-parse-error (list "Repeat count exceeds 1000" start)))
           (push (vector type value start) tokens))))
     (nreverse tokens)))
 

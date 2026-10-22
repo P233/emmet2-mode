@@ -42,6 +42,9 @@ engine and result helpers (`emmet2-engine-*`, `emmet2-result-*`),
 | `emmet2-preview` | `(TEXT SYNTAX)` |
 | `emmet2-completion-capf` | `(BEGIN END ENTRIES &key (category 'emmet2-value) (identity #'identity) (fuzzy t) annotation prefix)` |
 
+`emmet2-extract` scans at most 8192 characters on each side of point on the
+current line and declines tokens clipped by that window.
+
 ## Query names and property-specific values
 
 Query CSS metadata without a buffer or minor mode:

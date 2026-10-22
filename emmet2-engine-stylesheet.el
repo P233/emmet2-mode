@@ -246,9 +246,8 @@ When PROPERTY is supplied, TEXT contains only its authored value."
            (when (and (eq (kind) type) (or (null value) (eql (aref (car tokens) 1) value)))
              (pop tokens) t))
          (fail ()
-           ;; Parse errors carry a position; an exhausted token stream has none.
-           (if tokens (signal 'emmet2-parse-error (list "Unexpected token" (aref (car tokens) 2)))
-             (signal 'emmet2-backend-error '("Unexpected token"))))
+           (signal 'emmet2-parse-error
+                   (list "Unexpected token" (if tokens (aref (car tokens) 2) (length text)))))
          (arguments ()
            (let (args done)
              (while (and tokens (not done))

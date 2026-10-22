@@ -148,5 +148,40 @@
     (goto-char 3)
     (should-not (emmet2-extract (point-min) (point-max)))))
 
+(ert-deftest emmet2-extract-tag-regexp-does-not-backtrack-over-spaces ()
+  (with-temp-buffer
+    (insert "<a" (make-string 20000 ?\s))
+    (goto-char (point-min))
+    (let ((start (float-time)))
+      (should-not (emmet2-extract--tag-end))
+      (should (< (- (float-time) start) 0.5)))))
+
+(ert-deftest emmet2-extract-bounds-work-on-minified-lines ()
+  (dolist (syntax '(nil css css-selector))
+    (with-temp-buffer
+      (insert (make-string 100000 ?x) "; ul>li")
+      (let ((position (point)))
+        (insert "; " (make-string 100000 ?x))
+        (goto-char position)
+        (let ((start (float-time)))
+          (should (equal (plist-get (emmet2-extract (point-min) (point-max) syntax) :abbr) "ul>li"))
+          (should (< (- (float-time) start) 0.25)))))
+    (with-temp-buffer
+      (insert (make-string 100000 ?x))
+      (should-not (emmet2-extract (point-min) (point-max) syntax))
+      (goto-char (point-min))
+      (should-not (emmet2-extract (point-min) (point-max) syntax)))))
+
+(ert-deftest emmet2-extract-preserves-match-data ()
+  (dolist (syntax '(nil css css-selector))
+    (dolist (source '("<p>ul>li" ".a{/* comment */m10}" ".a{m10/* comment */}"))
+      (with-temp-buffer
+        (insert source)
+        (search-backward (if (string-prefix-p "<" source) "li" "m10"))
+        (string-match "\\(keep\\)" "keep")
+        (let ((before (match-data)))
+          (emmet2-extract (point-min) (point-max) syntax)
+          (should (equal (match-data) before)))))))
+
 (provide 'emmet2-extract-test)
 ;;; emmet2-extract-test.el ends here

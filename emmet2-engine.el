@@ -40,7 +40,16 @@ on entry, on exit or at a check inside BODY."
   `(let ((emmet2-engine--deadline
           (or emmet2-engine--deadline (+ (float-time) emmet2-engine--timeout))))
      (emmet2-engine--check-deadline)
-     (prog1 (progn ,@body) (emmet2-engine--check-deadline))))
+     (save-match-data
+       ;; Not -unless-debug: errors a caller handles must not stop in the debugger here.
+       (condition-case failure
+           (prog1 (progn ,@body) (emmet2-engine--check-deadline))
+         (error
+          ;; Bytecode reports nesting overflow as a plain error with this message.
+          (if (or (eq (car failure) 'excessive-lisp-nesting)
+                  (equal (cdr failure) '("Lisp nesting exceeds ‘max-lisp-eval-depth’")))
+              (signal 'emmet2-parse-error '("Abbreviation nesting is too deep" 0))
+            (signal (car failure) (cdr failure))))))))
 
 (autoload 'emmet2-engine-markup-expand "emmet2-engine-markup")
 (autoload 'emmet2-engine-stylesheet-expand "emmet2-engine-stylesheet")
