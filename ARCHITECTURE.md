@@ -57,7 +57,7 @@ load paths and package recipes discover every library. Public contracts are in
 | Semantic completion | `emmet2-completion.el`, `emmet2-css-value.el` | Shared name tables, fuzzy styles and function acceptance; adapt CSS Base value context to that shared path. |
 | Editor requests | `emmet2-expand.el` | Own the expansion options and translate host analysis plus buffer layout into language requests. |
 | Editor | `emmet2-mode.el`, `emmet2-capf.el`, `emmet2-preview.el`, `emmet2-insert.el` | Compose the package, own completion revisions, show previews, and accept results atomically. |
-| Optional Corfu adapter | `emmet2-corfu.el` | For the `emmet2` category, advise Corfu's row formatting, popup anchor and exactness check; for every table emmet2 builds, spare row strings Corfu's line-break copy. Installed when an Emmet or semantic completion table is first built and removed on unload. |
+| Optional Corfu adapter | `emmet2-corfu.el` | For the `emmet2` category, adapt Corfu's row formatting, popup anchor, exactness check and preview margins. Installed when an Emmet expansion table is first built and removed on unload. |
 
 ## CSS entry paths
 
@@ -447,51 +447,42 @@ values belong to the host or to the value.
 
 Corfu keeps candidates that differ only in text properties, as for overloaded
 LSP methods. Other frontends may merge these choices or strip identity
-properties; they can still accept the default result. `emmet2-corfu` advises
-three private Corfu functions, installed idempotently when CAPF offers an Emmet
-table or `emmet2-completion-capf` builds a name table, without loading or
-enabling Corfu. Each advice applies only to tables emmet2-mode builds, so a
-Corfu upgrade can break the adapter. For the `emmet2` category:
+properties; they can still accept the default result. `emmet2-corfu` installs
+four private Corfu overrides idempotently when CAPF offers an Emmet expansion
+table, without loading or enabling Corfu. Semantic name tables need no adapter.
 
-- Row formatting moves the label from the affix to the main display column; the
-  unchanged candidate still owns acceptance.
-- The popup anchor lives only in the completion session's properties.
-- The exactness check never reports Emmet input as complete.
+| Override | Without it in a Corfu session | Public mechanism considered | Decision and upgrade risk |
+| --- | --- | --- | --- |
+| `--rows` around `corfu--format-candidates` | Affix labels become a 22-column prefix in a 12-column menu and clip without an ellipsis. | Affixation preserves choice identity but uses the prefix column; `corfu-margin-formatters` can replace that prefix with an icon. | Keep the label in the main column. Private row layout remains a compatibility risk. |
+| `--anchor` around `corfu--candidates-popup` | The popup uses the abbreviation start rather than the session's first cursor position. | Completion metadata and Corfu options expose no table-specific popup position. | Keep the anchor as a buffer position in session properties, discarded on exit, and recompute its screen position on each display. Private position arguments remain a risk. |
+| `--try-completion` around `corfu--try-completion` | With `partial-completion` and an exact-match policy other than `show`, a sole choice can skip the menu or expand immediately. | `corfu-on-exact-match` set to `show` works but a buffer-local setting also changes other tables; metadata has no table-specific policy. | Keep Emmet input non-exact. Matching arguments remain a compatibility risk. |
+| Former `--format` around `corfu--format-candidates` | Rows and acceptance are unchanged; Corfu copies strings without line breaks. | Use Corfu's normal formatter. | Delete the interim global function rebinding: the measured 24 us per ten-row refresh, 2-3% of a keystroke, does not justify the coupling. |
+| `--popupinfo` around `corfu-popupinfo--show` | Multiline Emmet previews inherit the user's side margins. | The public margin option is not table-specific; setting it in the preview buffer cannot affect frame sizing in the source buffer. | Keep one narrow exception: bind `corfu-popupinfo-margin-width` to zero only while showing a candidate from the current Emmet table. Private show arguments remain a risk. |
 
-Completion styles report the unchanged abbreviation as exact when text follows
-point, as with auto-paired quotes, or when `partial-completion` comes first, is
-alone, or is selected by an `emmet2` category override. Corfu would then skip
-the popup or expand directly unless `corfu-on-exact-match` is `show`. The
-adapter turns Corfu's exact result for an Emmet table into the unchanged input,
-so every policy shows Emmet choices, as with `show`. A sole Emmet choice
-therefore stays in the popup.
+Completion styles can report the unchanged abbreviation as exact when text
+follows point, as with auto-paired quotes, or when `partial-completion` comes
+first, is alone or is selected by an `emmet2` category override. The exactness
+adapter turns that result into the unchanged input and point, so every policy
+shows Emmet choices as with `show`. Acceptance still uses the original
+candidate and its identity.
 
-On every refresh, Corfu 2.16 folds line breaks in each row's candidate, prefix
-and suffix with `replace-regexp-in-string`, which copies the string even when it
-has no line break. Rows of every emmet2-mode table skip that copy. An
-emmet2-mode table has the `emmet2` category or metadata carrying
-`emmet2-identity`, as every `emmet2-completion-capf` table does, including
-scss2-mode's. While Corfu formats such a table, the adapter rebinds
-`replace-regexp-in-string` for that call only: Corfu's exact replacement (its
-pattern, a single space and no further arguments) returns a string without a
-line break unchanged, and every other call reaches the original function, so
-rows, faces and widths stay identical. Corfu keeps its own layout code: a copy
-of `corfu--format-candidates` would drift from Corfu's width and truncation
-rules on upgrade, and permanent advice on `replace-regexp-in-string` would tax
-every caller in Emacs. The guard is interim: once Corfu skips strings without
-line breaks itself, remove `emmet2-corfu--format`, the install in
-`emmet2-completion-capf` (its `declare-function` and docstring sentence), the
-semantic-table block in `emmet2-corfu-installation-and-unload`, and the semantic
-install wording here and in the module table. The test that expects foreign
-tables to keep every copy fails on the first pinned Corfu that does.
+Every override passes additional arguments through with `&rest` and falls back
+to the original call when adapter work fails; those that read Corfu's table
+metadata check `corfu--metadata-get` with `fboundp`. Tests simulate extra
+optional arguments, a missing metadata helper and adapter errors. These
+protections limit damage from Corfu HEAD changes; they do not establish
+compatibility with a future version.
 
-Timing, prefix thresholds, triggers and width remain user settings, and other
-categories keep the user's policy; the package changes none of them. With
-`corfu-preselect` set to `prompt`, select the candidate before accepting it;
-accepting the prompt does not expand. Valid edits refresh the table in place;
-leaving the context ends it. Adapter or package unload removes the advice. The
-presentation tests exercise the pinned Corfu's matching, affixation, acceptance
-and adapter cleanup.
+Timing, prefix thresholds, triggers, width and other categories retain the
+user's settings. The preview margin binding is the sole setting exception: both
+popup-buffer side margins and frame sizing use zero for the displayed Emmet
+candidate, then the user's option is restored. Other popupinfo tables retain
+that option. With `corfu-preselect` set to `prompt`, select the candidate before
+accepting it; accepting the prompt does not expand. Valid edits refresh the
+table in place; leaving the context ends it. Adapter or package unload removes
+the advice. Tests exercise Corfu matching, affixation, acceptance, preview
+margin calculations and cleanup with drawing replaced; they do not prove GUI
+frame placement or rendering.
 
 ## Semantic completion
 

@@ -59,8 +59,9 @@ Tested revisions are in [test/dependencies.json](test/dependencies.json).
 ### Completion frontend
 
 [Corfu](https://github.com/minad/corfu) is the supported completion frontend.
-emmet2-mode needs no Corfu setting and changes none of yours.
-`corfu-popupinfo-mode` previews multi-line expansions in full:
+emmet2-mode needs no Corfu setting and keeps yours, except that an Emmet
+preview has no side margins. `corfu-popupinfo-mode` previews multi-line
+expansions in full:
 
 ```elisp
 (use-package corfu

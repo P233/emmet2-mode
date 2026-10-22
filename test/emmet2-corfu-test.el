@@ -12,7 +12,7 @@
     (dolist (value '("margin: 0;" "界😀" ""))
       (let* ((label (propertize value 'face 'completions-common-part))
              (rows (list (list "abbr" label "")))
-             (text (caar (car (emmet2-corfu--rows (list rows))))))
+             (text (caar (emmet2-corfu--rows #'identity rows))))
         (should (equal-including-properties label text))
         (when (> (length text) 0)
           (put-text-property 0 1 'face 'error text)
@@ -56,20 +56,22 @@
 
 (ert-deftest emmet2-corfu-anchor-refresh-and-new-session ()
   (emmet2-test--with-css-completion "ta"
-    (let ((start (point)) shown)
+    ;; SCROLL stands for the window offset that a real posn would carry.
+    (let ((start (point)) (scroll 0) shown)
       (cl-letf (((symbol-function 'posn-at-point)
-                 (lambda (&optional position _window) (list (or position (point)))))
+                 (lambda (&optional position _window) (list (or position (point)) scroll)))
                 ((symbol-function 'corfu--popup-show)
                  (lambda (&rest arguments) (setq shown arguments))))
         (corfu-auto--complete-deferred)
-        (should (equal (car shown) (list start)))
+        (should (equal (car shown) (list start 0)))
         (insert "c")
+        (setq scroll 5)
         (let ((this-command 'self-insert-command)) (corfu--post-command))
         (should completion-in-region-mode)
-        (should (equal (car shown) (list start)))
+        (should (equal (car shown) (list start 5)))
         (corfu-quit)
         (corfu-auto--complete-deferred)
-        (should (equal (car shown) (list (1+ start))))))))
+        (should (equal (car shown) (list (1+ start) 5)))))))
 
 (ert-deftest emmet2-corfu-display-honors-frame-width-and-unicode ()
   (let* ((label (propertize "界😀long-label" 'face 'completions-common-part))
@@ -79,7 +81,7 @@
          (completion-in-region--data '(nil nil nil nil nil))
          (corfu-max-width 100))
     (cl-letf (((symbol-function 'frame-width) (lambda (&optional _) 10)))
-      (let ((text (caar (car (emmet2-corfu--rows (list rows))))))
+      (let ((text (caar (emmet2-corfu--rows #'identity rows))))
         (should (<= (string-width text) 6))
         (should (string-suffix-p "…" text))
         (should (eq (get-text-property 0 'face text) 'completions-common-part))
@@ -91,7 +93,7 @@
          (corfu--metadata '(metadata (category . eglot)))
          (completion-in-region--data '(nil nil nil nil (:other-property t)))
          (properties (nth 4 completion-in-region--data)))
-    (should (eq (emmet2-corfu--rows arguments) arguments))
+    (should (eq (emmet2-corfu--rows (lambda (&rest _) arguments) (car arguments)) arguments))
     (cl-letf (((symbol-function 'posn-at-point)
                (lambda (&rest _) (ert-fail "Foreign completion must keep its position"))))
       (should (eq (emmet2-corfu--anchor #'identity 'original-position) 'original-position)))
@@ -100,102 +102,6 @@
     ;; A foreign sole exact match keeps the user's `corfu-on-exact-match' policy.
     (emmet2-corfu--enable)
     (should (eq (corfu--try-completion "foo" '("foo") nil 3) t))))
-
-(defun emmet2-corfu-test--replacements (unguarded function)
-  "Return FUNCTION's value and the number of line-break replacements it ran.
-Only Corfu's replacements that reach the replacement function count.
-Non-nil UNGUARDED runs FUNCTION as if no table were emmet2's."
-  (let* ((calls 0)
-         (count (lambda (regexp &rest _)
-                  (when (equal regexp "[ \t]*\n[ \t]*") (cl-incf calls)))))
-    (advice-add 'replace-regexp-in-string :before count)
-    (unwind-protect
-        (cl-letf (((symbol-function 'emmet2-corfu--own-table-p)
-                   (if unguarded #'ignore (symbol-function 'emmet2-corfu--own-table-p))))
-          (list (funcall function) calls))
-      (advice-remove 'replace-regexp-in-string count))))
-
-(defun emmet2-corfu-test--format (metadata rows &optional unguarded)
-  "Return (RESULT CALLS) after Corfu formats ROWS of a METADATA table in place.
-CALLS and UNGUARDED are as in `emmet2-corfu-test--replacements'."
-  (let ((corfu--metadata metadata) (corfu--width 0) (corfu-min-width 15) (corfu-max-width 100)
-        (completion-in-region--data '(nil nil nil nil nil)))
-    (emmet2-corfu-test--replacements unguarded (lambda () (corfu--format-candidates rows)))))
-
-(defun emmet2-corfu-test--rows ()
-  "Return fresh rows with and without line breaks, as a frontend affixes them."
-  (list (list (propertize "red" 'face 'completions-common-part) ""
-              (propertize "  color" 'face 'corfu-annotations))
-        (list (propertize "wide\n  label" 'face 'bold) "" (propertize " a\tb\n" 'face 'italic))
-        (list "" "" "")))
-
-(ert-deftest emmet2-corfu-own-rows-skip-copies-and-keep-output ()
-  (emmet2-corfu--enable)
-  (dolist (metadata '((metadata (category . scss2) (emmet2-identity . identity))
-                      (metadata (category . emmet2-value) (emmet2-identity . identity))))
-    (let* ((rows (emmet2-corfu-test--rows))
-           (strings (copy-sequence (car rows))))
-      (pcase-let ((`(,result ,calls) (emmet2-corfu-test--format metadata rows))
-                  (`(,expected ,all) (emmet2-corfu-test--format
-                                      metadata (emmet2-corfu-test--rows) t)))
-        (should (= all 9))
-        ;; Only the strings with a line break reach the replacement.
-        (should (= calls 2))
-        (should (eq (car (nth 0 rows)) (car strings)))
-        (should (eq (nth 2 (nth 0 rows)) (nth 2 strings)))
-        (should (equal (car (nth 1 rows)) "wide label"))
-        (should (equal-including-properties result expected)))))
-  (let ((metadata '(metadata (category . emmet2)))
-        (rows (list (list (propertize "ta" 'emmet2--label (propertize "text-align: center;" 'face 'bold))
-                          "" "  annotation"))))
-    (pcase-let ((`(,result ,calls) (emmet2-corfu-test--format metadata rows))
-                (`(,expected ,all) (emmet2-corfu-test--format metadata rows t)))
-      (should (= all 3))
-      (should (= calls 0))
-      (should (equal-including-properties result expected)))))
-
-(ert-deftest emmet2-corfu-guard-leaves-other-replacements-and-tables ()
-  (emmet2-corfu--enable)
-  (let* ((seen nil)
-         (probe (lambda (&rest _)
-                  (push (list (replace-regexp-in-string "o" "0" "foo")
-                              (replace-regexp-in-string "[ \t]*\n[ \t]*" "-" "a b")
-                              (replace-regexp-in-string "[ \t]*\n[ \t]*" " " "ab" nil nil nil 1))
-                        seen))))
-    (advice-add 'corfu--format-candidates :before probe '((depth . 100)))
-    (unwind-protect
-        (pcase-let ((`(,_ ,calls) (emmet2-corfu-test--format
-                                   '(metadata (category . scss2) (emmet2-identity . identity))
-                                   (emmet2-corfu-test--rows))))
-          ;; Two row strings with line breaks, then the probe's own two calls.
-          (should (= calls 4))
-          (should (equal (car seen) '("f00" "a b" "b"))))
-      (advice-remove 'corfu--format-candidates probe)))
-  ;; Foreign tables keep every copy; once Corfu skips them itself, remove the INTERIM guard.
-  (dolist (metadata '((metadata (category . eglot)) (metadata)))
-    (let* ((rows (emmet2-corfu-test--rows))
-           (strings (copy-sequence (car rows))))
-      (pcase-let ((`(,_ ,calls) (emmet2-corfu-test--format metadata rows)))
-        (should (= calls 9))
-        (should-not (eq (car (nth 0 rows)) (car strings)))))))
-
-(ert-deftest emmet2-corfu-popup-rows-are-unchanged-by-the-guard ()
-  ;; An Emmet table and a value table built by `emmet2-completion-capf'.
-  (dolist (input '("ta" "color: r"))
-    (let (results)
-      (dolist (unguarded '(nil t))
-        (emmet2-test--with-css-completion input
-          (let ((corfu-max-width 40) shown)
-            (cl-letf (((symbol-function 'corfu--popup-show)
-                       (lambda (&rest arguments) (setq shown arguments))))
-              (pcase-let ((`(,_ ,calls) (emmet2-corfu-test--replacements
-                                         unguarded #'corfu-auto--complete-deferred)))
-                (push (list (nth 3 shown) calls) results))))))
-      (pcase-let ((`((,plain ,all) (,rows ,calls)) results))
-        (should (> (length rows) 1))
-        (should (> all 0))
-        (should (= calls 0))
-        (should (equal-including-properties rows plain))))))
 
 (ert-deftest emmet2-corfu-emmet-input-is-never-complete ()
   ;; Text after point makes even `basic' report the sole choice as exact.
@@ -213,9 +119,9 @@ CALLS and UNGUARDED are as in `emmet2-corfu-test--replacements'."
         (progn
           (dotimes (_ 3) (emmet2-corfu--enable))
           (dolist (entry '((corfu--format-candidates . emmet2-corfu--rows)
-                           (corfu--format-candidates . emmet2-corfu--format)
                            (corfu--candidates-popup . emmet2-corfu--anchor)
-                           (corfu--try-completion . emmet2-corfu--try-completion)))
+                           (corfu--try-completion . emmet2-corfu--try-completion)
+                           (corfu-popupinfo--show . emmet2-corfu--popupinfo)))
             (let ((count 0))
               (advice-mapc (lambda (function _properties)
                              (when (eq function (cdr entry)) (cl-incf count))) (car entry))
@@ -231,17 +137,14 @@ CALLS and UNGUARDED are as in `emmet2-corfu-test--replacements'."
             (advice-remove 'corfu--format-candidates outer))
           (emmet2-mode-unload-function)
           (should-not (advice-member-p #'emmet2-corfu--rows 'corfu--format-candidates))
-          (should-not (advice-member-p #'emmet2-corfu--format 'corfu--format-candidates))
           (should-not (advice-member-p #'emmet2-corfu--anchor 'corfu--candidates-popup))
           (should-not (advice-member-p #'emmet2-corfu--try-completion 'corfu--try-completion))
-          ;; Semantic tables install the adapter only for the interim line-break guard.
+          (should-not (advice-member-p #'emmet2-corfu--popupinfo 'corfu-popupinfo--show))
+          ;; Semantic tables no longer install the expansion adapter.
           (with-temp-buffer
             (insert "r")
             (should (emmet2-completion-capf 1 2 '(("red")))))
-          (should (advice-member-p #'emmet2-corfu--format 'corfu--format-candidates))
-          (should (advice-member-p #'emmet2-corfu--rows 'corfu--format-candidates))
-          (emmet2-corfu-unload-function)
-          (should-not (advice-member-p #'emmet2-corfu--format 'corfu--format-candidates))
+          (should-not (advice-member-p #'emmet2-corfu--rows 'corfu--format-candidates))
           ;; Independent hosts may keep using CAPF after the minor mode unloads.
           (with-temp-buffer
             (css-mode) (insert ".a{ta}") (backward-char)
@@ -249,17 +152,97 @@ CALLS and UNGUARDED are as in `emmet2-corfu-test--replacements'."
           (should (advice-member-p #'emmet2-corfu--rows 'corfu--format-candidates))
           (unload-feature 'emmet2-corfu t)
           (should-not (advice-member-p 'emmet2-corfu--rows 'corfu--format-candidates))
-          (should-not (advice-member-p 'emmet2-corfu--format 'corfu--format-candidates))
           (should-not (advice-member-p 'emmet2-corfu--anchor 'corfu--candidates-popup))
           (should-not (advice-member-p 'emmet2-corfu--try-completion 'corfu--try-completion))
+          (should-not (advice-member-p 'emmet2-corfu--popupinfo 'corfu-popupinfo--show))
           (with-temp-buffer
             (css-mode) (insert ".a{ta}") (backward-char)
             (should (emmet2-capf)))
           (should (advice-member-p #'emmet2-corfu--rows 'corfu--format-candidates))
-          (should (advice-member-p #'emmet2-corfu--format 'corfu--format-candidates))
           (should (eq compiled (byte-code-function-p (symbol-function 'emmet2-corfu--rows)))))
       (require 'emmet2-corfu)
       (emmet2-corfu--enable))))
+
+(ert-deftest emmet2-corfu-advice-preserves-added-arguments-and-falls-back ()
+  (dolist (category '(emmet2 eglot))
+    (dolist (getter '(present missing error))
+      (let* ((corfu--metadata `(metadata (category . ,category)))
+             (completion-in-region--data (list nil nil nil nil nil))
+             (candidate (propertize "abbr" 'emmet2--choice 'choice))
+             (corfu--candidates (list candidate))
+             (rows (list (list candidate "label" "")))
+             (corfu-popupinfo-margin-width 3)
+             (corfu-max-width 40)
+             (metadata (symbol-function 'corfu--metadata-get))
+             (active (and (eq category 'emmet2) (eq getter 'present)))
+             seen)
+        (cl-letf (((symbol-function 'corfu--metadata-get)
+                   (pcase getter ('missing nil) ('error (lambda (_) (error "Metadata changed")))
+                          (_ metadata)))
+                  ((symbol-function 'posn-at-point) (lambda (&rest _) 'anchor)))
+          (let ((result (emmet2-corfu--rows #'list rows 'added)))
+            (should (eq (cadr result) 'added))
+            (should (equal (caar result) (if active '("label" "" "") (car rows)))))
+          (should (equal (emmet2-corfu--anchor #'list 'position 'added)
+                         (list (if active 'anchor 'position) 'added)))
+          (should (equal (emmet2-corfu--try-completion
+                          (lambda (&rest args) (setq seen args) t)
+                          "abbr" '("abbr") nil 4 corfu--metadata 'added)
+                         (if (eq category 'emmet2) '("abbr" . 4) t)))
+          (should (eq (car (last seen)) 'added))
+          (should (equal (emmet2-corfu--popupinfo
+                          (lambda (&rest args) (cons corfu-popupinfo-margin-width args))
+                          candidate 'added)
+                         (list (if active 0 3) candidate 'added)))
+          (should (= (emmet2-corfu--popupinfo
+                      (lambda (&rest _) corfu-popupinfo-margin-width)
+                      (copy-sequence candidate)) 3))
+          (should (= corfu-popupinfo-margin-width 3)))))))
+
+(ert-deftest emmet2-corfu-adapter-errors-retry-the-original-arguments ()
+  (let* ((corfu--metadata '(metadata (category . emmet2)))
+         (completion-in-region--data (list nil nil nil nil nil))
+         (candidate (propertize "abbr" 'emmet2--choice 'choice))
+         (corfu--candidates (list candidate))
+         (corfu-popupinfo-margin-width 3)
+         (corfu-max-width 40)
+         (rows '(("abbr" "label" ""))))
+    (should (eq (emmet2-corfu--rows
+                 (lambda (value &optional _) (if (eq value rows) 'original (error "Layout changed")))
+                 rows 'added) 'original))
+    (cl-letf (((symbol-function 'posn-at-point) (lambda (&rest _) 'anchor)))
+      (should (eq (emmet2-corfu--anchor
+                   (lambda (value &optional _) (if (eq value 'position) 'original (error "Position changed")))
+                   'position 'added) 'original)))
+    (should (eq (emmet2-corfu--try-completion (lambda (&rest _) t) nil nil nil nil) t))
+    (should (eq (emmet2-corfu--popupinfo
+                 (lambda (&rest _) (if (= corfu-popupinfo-margin-width 3) 'original (error "Margins changed")))
+                 candidate 'added) 'original))))
+
+(ert-deftest emmet2-corfu-popupinfo-margins-cover-buffer-and-frame-size ()
+  (dolist (input '("m10+p20" "color: r"))
+    (emmet2-test--with-css-completion input
+      (corfu-auto--complete-deferred)
+      (should completion-in-region-mode)
+      (let* ((emmet (equal input "m10+p20"))
+             (corfu-popupinfo-margin-width 3)
+             (corfu-popupinfo-resize nil)
+             (corfu-popupinfo--frame (selected-frame))
+             (corfu-popupinfo--candidate nil)
+             (corfu-popupinfo--function (if emmet #'corfu-popupinfo--get-documentation
+                                         (lambda (_) "Other documentation")))
+             size)
+        (cl-letf (((symbol-function 'corfu-popupinfo--visible-p) (lambda (&rest _) t))
+                  ((symbol-function 'corfu-popupinfo--area)
+                   (lambda (value) (setq size value) '(0 0 100 100 right)))
+                  ((symbol-function 'corfu--make-frame) (lambda (&rest _) (selected-frame))))
+          (corfu-popupinfo--show (car corfu--candidates)))
+        (should (= (car size) (* (default-font-width)
+                                (+ corfu-popupinfo-max-width (if emmet 0 6)))))
+        (with-current-buffer corfu-popupinfo--buffer
+          (should (= left-margin-width (if emmet 0 3)))
+          (should (= right-margin-width (if emmet 0 3))))
+        (should (= corfu-popupinfo-margin-width 3))))))
 
 (provide 'emmet2-corfu-test)
 ;;; emmet2-corfu-test.el ends here
