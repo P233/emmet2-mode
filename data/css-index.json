@@ -3,6 +3,9 @@
     {
       "name": "accent-color",
       "relevance": 51,
+      "types": [
+        "color"
+      ],
       "values": [
         "auto"
       ],
@@ -17,6 +20,7 @@
     {
       "name": "align-content",
       "relevance": 68,
+      "types": [],
       "values": [
         "center",
         "flex-end",
@@ -44,6 +48,7 @@
     {
       "name": "align-items",
       "relevance": 90,
+      "types": [],
       "values": [
         "baseline",
         "center",
@@ -70,6 +75,7 @@
     {
       "name": "align-self",
       "relevance": 76,
+      "types": [],
       "values": [
         "auto",
         "normal",
@@ -95,6 +101,7 @@
     {
       "name": "align-tracks",
       "relevance": 0,
+      "types": [],
       "values": [
         "normal"
       ],
@@ -108,6 +115,7 @@
     {
       "name": "alignment-baseline",
       "relevance": 50,
+      "types": [],
       "values": [
         "baseline",
         "alphabetic",
@@ -123,6 +131,7 @@
     {
       "name": "all",
       "relevance": 56,
+      "types": [],
       "values": [
         "initial",
         "inherit",
@@ -135,12 +144,14 @@
     {
       "name": "alt",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": []
     },
     {
       "name": "anchor-name",
       "relevance": 50,
+      "types": [],
       "values": [
         "none"
       ],
@@ -149,6 +160,7 @@
     {
       "name": "anchor-scope",
       "relevance": 50,
+      "types": [],
       "values": [
         "none",
         "all"
@@ -158,6 +170,10 @@
     {
       "name": "animation",
       "relevance": 84,
+      "types": [
+        "number",
+        "time"
+      ],
       "values": [
         "alternate",
         "alternate-reverse",
@@ -185,6 +201,7 @@
     {
       "name": "animation-composition",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:single-animation-composition"
@@ -193,12 +210,16 @@
     {
       "name": "animation-delay",
       "relevance": 67,
+      "types": [
+        "time"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "animation-direction",
       "relevance": 56,
+      "types": [],
       "values": [
         "alternate",
         "alternate-reverse",
@@ -212,6 +233,9 @@
     {
       "name": "animation-duration",
       "relevance": 72,
+      "types": [
+        "time"
+      ],
       "values": [
         "auto"
       ],
@@ -220,6 +244,7 @@
     {
       "name": "animation-fill-mode",
       "relevance": 63,
+      "types": [],
       "values": [
         "backwards",
         "both",
@@ -233,6 +258,9 @@
     {
       "name": "animation-iteration-count",
       "relevance": 63,
+      "types": [
+        "number"
+      ],
       "values": [
         "infinite"
       ],
@@ -243,6 +271,7 @@
     {
       "name": "animation-name",
       "relevance": 71,
+      "types": [],
       "values": [
         "none"
       ],
@@ -251,6 +280,7 @@
     {
       "name": "animation-play-state",
       "relevance": 57,
+      "types": [],
       "values": [
         "paused",
         "running"
@@ -262,6 +292,10 @@
     {
       "name": "animation-range",
       "relevance": 51,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "property:animation-range-end",
@@ -272,6 +306,10 @@
     {
       "name": "animation-range-end",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "normal"
       ],
@@ -282,6 +320,10 @@
     {
       "name": "animation-range-start",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "normal"
       ],
@@ -292,6 +334,7 @@
     {
       "name": "animation-timeline",
       "relevance": 51,
+      "types": [],
       "values": [],
       "sets": [
         "type:single-animation-timeline"
@@ -300,6 +343,7 @@
     {
       "name": "animation-timing-function",
       "relevance": 73,
+      "types": [],
       "values": [],
       "sets": [
         "type:cubic-bezier-easing-function",
@@ -310,6 +354,7 @@
     {
       "name": "animation-trigger",
       "relevance": 50,
+      "types": [],
       "values": [
         "none"
       ],
@@ -320,6 +365,7 @@
     {
       "name": "appearance",
       "relevance": 73,
+      "types": [],
       "values": [
         "none",
         "auto"
@@ -332,6 +378,9 @@
     {
       "name": "aspect-ratio",
       "relevance": 67,
+      "types": [
+        "number"
+      ],
       "values": [
         "auto"
       ],
@@ -340,6 +389,9 @@
     {
       "name": "backdrop-filter",
       "relevance": 66,
+      "types": [
+        "url"
+      ],
       "values": [
         "none"
       ],
@@ -350,6 +402,7 @@
     {
       "name": "backface-visibility",
       "relevance": 60,
+      "types": [],
       "values": [
         "hidden",
         "visible"
@@ -359,6 +412,13 @@
     {
       "name": "background",
       "relevance": 93,
+      "types": [
+        "length",
+        "percentage",
+        "color",
+        "image",
+        "url"
+      ],
       "values": [
         "fixed",
         "local",
@@ -384,6 +444,7 @@
     {
       "name": "background-attachment",
       "relevance": 54,
+      "types": [],
       "values": [
         "fixed",
         "local",
@@ -396,6 +457,7 @@
     {
       "name": "background-blend-mode",
       "relevance": 51,
+      "types": [],
       "values": [
         "normal",
         "multiply",
@@ -421,6 +483,7 @@
     {
       "name": "background-clip",
       "relevance": 70,
+      "types": [],
       "values": [],
       "sets": [
         "type:bg-clip",
@@ -430,6 +493,9 @@
     {
       "name": "background-color",
       "relevance": 94,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -442,6 +508,10 @@
     {
       "name": "background-image",
       "relevance": 88,
+      "types": [
+        "image",
+        "url"
+      ],
       "values": [
         "none"
       ],
@@ -454,6 +524,7 @@
     {
       "name": "background-origin",
       "relevance": 54,
+      "types": [],
       "values": [],
       "sets": [
         "type:visual-box"
@@ -462,6 +533,10 @@
     {
       "name": "background-position",
       "relevance": 87,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "type:bg-position"
@@ -470,6 +545,10 @@
     {
       "name": "background-position-x",
       "relevance": 57,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "center",
         "left",
@@ -482,6 +561,10 @@
     {
       "name": "background-position-y",
       "relevance": 54,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "bottom",
         "center",
@@ -494,6 +577,7 @@
     {
       "name": "background-repeat",
       "relevance": 86,
+      "types": [],
       "values": [],
       "sets": [
         "type:repeat-style"
@@ -502,6 +586,10 @@
     {
       "name": "background-size",
       "relevance": 86,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto",
         "contain",
@@ -514,6 +602,10 @@
     {
       "name": "baseline-shift",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "sub",
         "super",
@@ -524,6 +616,7 @@
     {
       "name": "baseline-source",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "first",
@@ -534,12 +627,19 @@
     {
       "name": "behavior",
       "relevance": 50,
+      "types": [
+        "url"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "block-size",
       "relevance": 55,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -550,6 +650,10 @@
     {
       "name": "border",
       "relevance": 95,
+      "types": [
+        "length",
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -564,6 +668,10 @@
     {
       "name": "border-block",
       "relevance": 50,
+      "types": [
+        "length",
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -578,6 +686,9 @@
     {
       "name": "border-block-color",
       "relevance": 50,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -590,6 +701,10 @@
     {
       "name": "border-block-end",
       "relevance": 53,
+      "types": [
+        "length",
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -604,6 +719,9 @@
     {
       "name": "border-block-end-color",
       "relevance": 50,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -616,6 +734,7 @@
     {
       "name": "border-block-end-style",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:line-style"
@@ -624,6 +743,9 @@
     {
       "name": "border-block-end-width",
       "relevance": 51,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": [
         "type:line-width"
@@ -632,6 +754,10 @@
     {
       "name": "border-block-start",
       "relevance": 53,
+      "types": [
+        "length",
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -646,6 +772,9 @@
     {
       "name": "border-block-start-color",
       "relevance": 50,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -658,6 +787,7 @@
     {
       "name": "border-block-start-style",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:line-style"
@@ -666,6 +796,9 @@
     {
       "name": "border-block-start-width",
       "relevance": 51,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": [
         "type:line-width"
@@ -674,6 +807,7 @@
     {
       "name": "border-block-style",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:line-style"
@@ -682,6 +816,9 @@
     {
       "name": "border-block-width",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": [
         "type:line-width"
@@ -690,6 +827,10 @@
     {
       "name": "border-bottom",
       "relevance": 87,
+      "types": [
+        "length",
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -704,6 +845,9 @@
     {
       "name": "border-bottom-color",
       "relevance": 70,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -716,18 +860,27 @@
     {
       "name": "border-bottom-left-radius",
       "relevance": 75,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "border-bottom-right-radius",
       "relevance": 75,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "border-bottom-style",
       "relevance": 59,
+      "types": [],
       "values": [],
       "sets": [
         "type:line-style"
@@ -736,6 +889,9 @@
     {
       "name": "border-bottom-width",
       "relevance": 67,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": [
         "type:line-width"
@@ -744,6 +900,7 @@
     {
       "name": "border-collapse",
       "relevance": 73,
+      "types": [],
       "values": [
         "collapse",
         "separate"
@@ -753,6 +910,9 @@
     {
       "name": "border-color",
       "relevance": 88,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -765,18 +925,33 @@
     {
       "name": "border-end-end-radius",
       "relevance": 56,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "border-end-start-radius",
       "relevance": 56,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "border-image",
       "relevance": 52,
+      "types": [
+        "number",
+        "length",
+        "percentage",
+        "image",
+        "url"
+      ],
       "values": [
         "auto",
         "fill",
@@ -799,12 +974,17 @@
     {
       "name": "border-image-outset",
       "relevance": 50,
+      "types": [
+        "number",
+        "length"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "border-image-repeat",
       "relevance": 50,
+      "types": [],
       "values": [
         "repeat",
         "round",
@@ -816,6 +996,10 @@
     {
       "name": "border-image-slice",
       "relevance": 50,
+      "types": [
+        "number",
+        "percentage"
+      ],
       "values": [
         "fill"
       ],
@@ -824,6 +1008,10 @@
     {
       "name": "border-image-source",
       "relevance": 50,
+      "types": [
+        "image",
+        "url"
+      ],
       "values": [
         "none"
       ],
@@ -835,6 +1023,11 @@
     {
       "name": "border-image-width",
       "relevance": 50,
+      "types": [
+        "number",
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -843,6 +1036,10 @@
     {
       "name": "border-inline",
       "relevance": 50,
+      "types": [
+        "length",
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -857,6 +1054,9 @@
     {
       "name": "border-inline-color",
       "relevance": 50,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -869,6 +1069,10 @@
     {
       "name": "border-inline-end",
       "relevance": 53,
+      "types": [
+        "length",
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -883,6 +1087,9 @@
     {
       "name": "border-inline-end-color",
       "relevance": 51,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -895,6 +1102,7 @@
     {
       "name": "border-inline-end-style",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:line-style"
@@ -903,6 +1111,9 @@
     {
       "name": "border-inline-end-width",
       "relevance": 52,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": [
         "type:line-width"
@@ -911,6 +1122,10 @@
     {
       "name": "border-inline-start",
       "relevance": 54,
+      "types": [
+        "length",
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -925,6 +1140,9 @@
     {
       "name": "border-inline-start-color",
       "relevance": 51,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -937,6 +1155,7 @@
     {
       "name": "border-inline-start-style",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:line-style"
@@ -945,6 +1164,9 @@
     {
       "name": "border-inline-start-width",
       "relevance": 52,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": [
         "type:line-width"
@@ -953,6 +1175,7 @@
     {
       "name": "border-inline-style",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:line-style"
@@ -961,6 +1184,9 @@
     {
       "name": "border-inline-width",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": [
         "type:line-width"
@@ -969,6 +1195,10 @@
     {
       "name": "border-left",
       "relevance": 80,
+      "types": [
+        "length",
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -983,6 +1213,9 @@
     {
       "name": "border-left-color",
       "relevance": 67,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -995,6 +1228,7 @@
     {
       "name": "border-left-style",
       "relevance": 54,
+      "types": [],
       "values": [],
       "sets": [
         "type:line-style"
@@ -1003,6 +1237,9 @@
     {
       "name": "border-left-width",
       "relevance": 64,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": [
         "type:line-width"
@@ -1011,12 +1248,20 @@
     {
       "name": "border-radius",
       "relevance": 93,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "border-right",
       "relevance": 79,
+      "types": [
+        "length",
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -1031,6 +1276,9 @@
     {
       "name": "border-right-color",
       "relevance": 65,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -1043,6 +1291,7 @@
     {
       "name": "border-right-style",
       "relevance": 54,
+      "types": [],
       "values": [],
       "sets": [
         "type:line-style"
@@ -1051,6 +1300,9 @@
     {
       "name": "border-right-width",
       "relevance": 63,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": [
         "type:line-width"
@@ -1059,24 +1311,36 @@
     {
       "name": "border-spacing",
       "relevance": 65,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "border-start-end-radius",
       "relevance": 56,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "border-start-start-radius",
       "relevance": 56,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "border-style",
       "relevance": 80,
+      "types": [],
       "values": [],
       "sets": [
         "type:line-style"
@@ -1085,6 +1349,10 @@
     {
       "name": "border-top",
       "relevance": 86,
+      "types": [
+        "length",
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -1099,6 +1367,9 @@
     {
       "name": "border-top-color",
       "relevance": 70,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -1111,18 +1382,27 @@
     {
       "name": "border-top-left-radius",
       "relevance": 76,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "border-top-right-radius",
       "relevance": 76,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "border-top-style",
       "relevance": 56,
+      "types": [],
       "values": [],
       "sets": [
         "type:line-style"
@@ -1131,6 +1411,9 @@
     {
       "name": "border-top-width",
       "relevance": 66,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": [
         "type:line-width"
@@ -1139,6 +1422,9 @@
     {
       "name": "border-width",
       "relevance": 82,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": [
         "type:line-width"
@@ -1147,6 +1433,10 @@
     {
       "name": "bottom",
       "relevance": 90,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto",
         "anchor()",
@@ -1158,6 +1448,7 @@
       "name": "box-align",
       "relevance": 0,
       "obsolete": true,
+      "types": [],
       "values": [
         "start",
         "center",
@@ -1170,6 +1461,7 @@
     {
       "name": "box-decoration-break",
       "relevance": 51,
+      "types": [],
       "values": [
         "clone",
         "slice"
@@ -1180,6 +1472,7 @@
       "name": "box-direction",
       "relevance": 0,
       "obsolete": true,
+      "types": [],
       "values": [
         "normal",
         "reverse",
@@ -1191,6 +1484,9 @@
       "name": "box-flex",
       "relevance": 0,
       "obsolete": true,
+      "types": [
+        "number"
+      ],
       "values": [],
       "sets": []
     },
@@ -1198,6 +1494,9 @@
       "name": "box-flex-group",
       "relevance": 0,
       "obsolete": true,
+      "types": [
+        "number"
+      ],
       "values": [],
       "sets": []
     },
@@ -1205,6 +1504,7 @@
       "name": "box-lines",
       "relevance": 0,
       "obsolete": true,
+      "types": [],
       "values": [
         "single",
         "multiple"
@@ -1215,6 +1515,9 @@
       "name": "box-ordinal-group",
       "relevance": 0,
       "obsolete": true,
+      "types": [
+        "number"
+      ],
       "values": [],
       "sets": []
     },
@@ -1222,6 +1525,7 @@
       "name": "box-orient",
       "relevance": 0,
       "obsolete": true,
+      "types": [],
       "values": [
         "horizontal",
         "vertical",
@@ -1235,6 +1539,7 @@
       "name": "box-pack",
       "relevance": 0,
       "obsolete": true,
+      "types": [],
       "values": [
         "start",
         "center",
@@ -1246,6 +1551,10 @@
     {
       "name": "box-shadow",
       "relevance": 91,
+      "types": [
+        "length",
+        "color"
+      ],
       "values": [
         "inset",
         "none"
@@ -1262,6 +1571,7 @@
     {
       "name": "box-sizing",
       "relevance": 92,
+      "types": [],
       "values": [
         "border-box",
         "content-box"
@@ -1271,6 +1581,7 @@
     {
       "name": "break-after",
       "relevance": 50,
+      "types": [],
       "values": [
         "always",
         "auto",
@@ -1292,6 +1603,7 @@
     {
       "name": "break-before",
       "relevance": 50,
+      "types": [],
       "values": [
         "always",
         "auto",
@@ -1313,6 +1625,7 @@
     {
       "name": "break-inside",
       "relevance": 51,
+      "types": [],
       "values": [
         "auto",
         "avoid",
@@ -1325,6 +1638,7 @@
     {
       "name": "caption-side",
       "relevance": 53,
+      "types": [],
       "values": [
         "bottom",
         "top"
@@ -1334,6 +1648,9 @@
     {
       "name": "caret",
       "relevance": 50,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "property:caret-animation",
@@ -1349,6 +1666,7 @@
     {
       "name": "caret-animation",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "manual"
@@ -1358,6 +1676,9 @@
     {
       "name": "caret-color",
       "relevance": 56,
+      "types": [
+        "color"
+      ],
       "values": [
         "auto"
       ],
@@ -1372,6 +1693,7 @@
     {
       "name": "caret-shape",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "bar",
@@ -1383,6 +1705,7 @@
     {
       "name": "clear",
       "relevance": 81,
+      "types": [],
       "values": [
         "both",
         "left",
@@ -1397,6 +1720,7 @@
       "name": "clip",
       "relevance": 25,
       "obsolete": true,
+      "types": [],
       "values": [
         "auto",
         "rect()"
@@ -1408,6 +1732,9 @@
     {
       "name": "clip-path",
       "relevance": 70,
+      "types": [
+        "url"
+      ],
       "values": [
         "none",
         "url()"
@@ -1422,6 +1749,7 @@
     {
       "name": "clip-rule",
       "relevance": 50,
+      "types": [],
       "values": [
         "evenodd",
         "nonzero"
@@ -1431,6 +1759,9 @@
     {
       "name": "color",
       "relevance": 95,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -1443,6 +1774,7 @@
     {
       "name": "color-interpolation-filters",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "linearRGB",
@@ -1453,6 +1785,7 @@
     {
       "name": "color-scheme",
       "relevance": 58,
+      "types": [],
       "values": [
         "normal",
         "light",
@@ -1464,6 +1797,9 @@
     {
       "name": "column-count",
       "relevance": 53,
+      "types": [
+        "number"
+      ],
       "values": [
         "auto"
       ],
@@ -1472,6 +1808,7 @@
     {
       "name": "column-fill",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "balance"
@@ -1481,6 +1818,10 @@
     {
       "name": "column-gap",
       "relevance": 67,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "normal"
       ],
@@ -1489,6 +1830,9 @@
     {
       "name": "column-height",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [
         "auto"
       ],
@@ -1497,6 +1841,10 @@
     {
       "name": "column-rule",
       "relevance": 51,
+      "types": [
+        "length",
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -1511,6 +1859,9 @@
     {
       "name": "column-rule-color",
       "relevance": 50,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -1523,6 +1874,7 @@
     {
       "name": "column-rule-style",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:line-style"
@@ -1531,6 +1883,9 @@
     {
       "name": "column-rule-width",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": [
         "type:line-width"
@@ -1539,6 +1894,7 @@
     {
       "name": "column-span",
       "relevance": 50,
+      "types": [],
       "values": [
         "all",
         "none"
@@ -1548,6 +1904,9 @@
     {
       "name": "column-width",
       "relevance": 51,
+      "types": [
+        "length"
+      ],
       "values": [
         "auto"
       ],
@@ -1556,6 +1915,7 @@
     {
       "name": "column-wrap",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "nowrap",
@@ -1566,6 +1926,10 @@
     {
       "name": "columns",
       "relevance": 51,
+      "types": [
+        "number",
+        "length"
+      ],
       "values": [
         "auto"
       ],
@@ -1578,6 +1942,7 @@
     {
       "name": "contain",
       "relevance": 59,
+      "types": [],
       "values": [
         "none",
         "strict",
@@ -1593,6 +1958,9 @@
     {
       "name": "contain-intrinsic-block-size",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [
         "auto",
         "none"
@@ -1602,6 +1970,9 @@
     {
       "name": "contain-intrinsic-height",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [
         "auto",
         "none"
@@ -1611,6 +1982,9 @@
     {
       "name": "contain-intrinsic-inline-size",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [
         "auto",
         "none"
@@ -1620,6 +1994,9 @@
     {
       "name": "contain-intrinsic-size",
       "relevance": 54,
+      "types": [
+        "length"
+      ],
       "values": [
         "auto",
         "none"
@@ -1629,6 +2006,9 @@
     {
       "name": "contain-intrinsic-width",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [
         "auto",
         "none"
@@ -1638,6 +2018,7 @@
     {
       "name": "container",
       "relevance": 54,
+      "types": [],
       "values": [],
       "sets": [
         "property:container-name",
@@ -1647,6 +2028,7 @@
     {
       "name": "container-name",
       "relevance": 51,
+      "types": [],
       "values": [
         "none"
       ],
@@ -1655,6 +2037,7 @@
     {
       "name": "container-type",
       "relevance": 56,
+      "types": [],
       "values": [
         "normal",
         "size",
@@ -1666,6 +2049,10 @@
     {
       "name": "content",
       "relevance": 90,
+      "types": [
+        "image",
+        "url"
+      ],
       "values": [
         "attr()",
         "counter()",
@@ -1685,6 +2072,7 @@
     {
       "name": "content-visibility",
       "relevance": 54,
+      "types": [],
       "values": [
         "visible",
         "auto",
@@ -1695,6 +2083,7 @@
     {
       "name": "corner-block-end-shape",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:corner-shape-value"
@@ -1703,6 +2092,7 @@
     {
       "name": "corner-block-start-shape",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:corner-shape-value"
@@ -1711,6 +2101,7 @@
     {
       "name": "corner-bottom-left-shape",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:corner-shape-value"
@@ -1719,6 +2110,7 @@
     {
       "name": "corner-bottom-right-shape",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:corner-shape-value"
@@ -1727,6 +2119,7 @@
     {
       "name": "corner-bottom-shape",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:corner-shape-value"
@@ -1735,6 +2128,7 @@
     {
       "name": "corner-end-end-shape",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:corner-shape-value"
@@ -1743,6 +2137,7 @@
     {
       "name": "corner-end-start-shape",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:corner-shape-value"
@@ -1751,6 +2146,7 @@
     {
       "name": "corner-inline-end-shape",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:corner-shape-value"
@@ -1759,6 +2155,7 @@
     {
       "name": "corner-inline-start-shape",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:corner-shape-value"
@@ -1767,6 +2164,7 @@
     {
       "name": "corner-left-shape",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:corner-shape-value"
@@ -1775,6 +2173,7 @@
     {
       "name": "corner-right-shape",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:corner-shape-value"
@@ -1783,6 +2182,7 @@
     {
       "name": "corner-shape",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:corner-shape-value"
@@ -1791,6 +2191,7 @@
     {
       "name": "corner-start-end-shape",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:corner-shape-value"
@@ -1799,6 +2200,7 @@
     {
       "name": "corner-start-start-shape",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:corner-shape-value"
@@ -1807,6 +2209,7 @@
     {
       "name": "corner-top-left-shape",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:corner-shape-value"
@@ -1815,6 +2218,7 @@
     {
       "name": "corner-top-right-shape",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:corner-shape-value"
@@ -1823,6 +2227,7 @@
     {
       "name": "corner-top-shape",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:corner-shape-value"
@@ -1831,6 +2236,9 @@
     {
       "name": "counter-increment",
       "relevance": 55,
+      "types": [
+        "number"
+      ],
       "values": [
         "none"
       ],
@@ -1839,6 +2247,9 @@
     {
       "name": "counter-reset",
       "relevance": 54,
+      "types": [
+        "number"
+      ],
       "values": [
         "none"
       ],
@@ -1849,6 +2260,9 @@
     {
       "name": "counter-set",
       "relevance": 50,
+      "types": [
+        "number"
+      ],
       "values": [
         "none"
       ],
@@ -1857,6 +2271,9 @@
     {
       "name": "cursor",
       "relevance": 92,
+      "types": [
+        "url"
+      ],
       "values": [
         "alias",
         "all-scroll",
@@ -1902,18 +2319,27 @@
     {
       "name": "cx",
       "relevance": 52,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "cy",
       "relevance": 52,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "d",
       "relevance": 50,
+      "types": [],
       "values": [
         "none",
         "path()"
@@ -1923,6 +2349,7 @@
     {
       "name": "direction",
       "relevance": 72,
+      "types": [],
       "values": [
         "ltr",
         "rtl"
@@ -1932,6 +2359,7 @@
     {
       "name": "display",
       "relevance": 96,
+      "types": [],
       "values": [
         "block",
         "contents",
@@ -1974,6 +2402,7 @@
     {
       "name": "dominant-baseline",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "text-bottom",
@@ -1990,6 +2419,7 @@
     {
       "name": "dynamic-range-limit",
       "relevance": 50,
+      "types": [],
       "values": [
         "standard",
         "no-limit",
@@ -2001,6 +2431,7 @@
     {
       "name": "empty-cells",
       "relevance": 51,
+      "types": [],
       "values": [
         "hide",
         "show"
@@ -2010,6 +2441,11 @@
     {
       "name": "enable-background",
       "relevance": 50,
+      "types": [
+        "number",
+        "length",
+        "percentage"
+      ],
       "values": [
         "accumulate",
         "new"
@@ -2019,6 +2455,7 @@
     {
       "name": "field-sizing",
       "relevance": 50,
+      "types": [],
       "values": [
         "content",
         "fixed"
@@ -2028,6 +2465,10 @@
     {
       "name": "fill",
       "relevance": 81,
+      "types": [
+        "color",
+        "url"
+      ],
       "values": [
         "url()",
         "none"
@@ -2044,12 +2485,17 @@
     {
       "name": "fill-opacity",
       "relevance": 56,
+      "types": [
+        "number",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "fill-rule",
       "relevance": 51,
+      "types": [],
       "values": [
         "evenodd",
         "nonzero"
@@ -2059,6 +2505,9 @@
     {
       "name": "filter",
       "relevance": 74,
+      "types": [
+        "url"
+      ],
       "values": [
         "none",
         "blur()",
@@ -2080,6 +2529,11 @@
     {
       "name": "flex",
       "relevance": 84,
+      "types": [
+        "number",
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto",
         "content",
@@ -2093,6 +2547,10 @@
     {
       "name": "flex-basis",
       "relevance": 71,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto",
         "content"
@@ -2104,6 +2562,7 @@
     {
       "name": "flex-direction",
       "relevance": 87,
+      "types": [],
       "values": [
         "column",
         "column-reverse",
@@ -2115,6 +2574,7 @@
     {
       "name": "flex-flow",
       "relevance": 65,
+      "types": [],
       "values": [
         "column",
         "column-reverse",
@@ -2132,18 +2592,25 @@
     {
       "name": "flex-grow",
       "relevance": 79,
+      "types": [
+        "number"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "flex-shrink",
       "relevance": 80,
+      "types": [
+        "number"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "flex-wrap",
       "relevance": 85,
+      "types": [],
       "values": [
         "nowrap",
         "wrap",
@@ -2154,6 +2621,7 @@
     {
       "name": "float",
       "relevance": 87,
+      "types": [],
       "values": [
         "inline-end",
         "inline-start",
@@ -2166,6 +2634,9 @@
     {
       "name": "flood-color",
       "relevance": 50,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -2178,12 +2649,22 @@
     {
       "name": "flood-opacity",
       "relevance": 51,
+      "types": [
+        "number",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "font",
       "relevance": 82,
+      "types": [
+        "number",
+        "length",
+        "percentage",
+        "angle"
+      ],
       "values": [
         "100",
         "200",
@@ -2232,6 +2713,7 @@
     {
       "name": "font-family",
       "relevance": 94,
+      "types": [],
       "values": [
         "cursive",
         "fantasy",
@@ -2244,6 +2726,9 @@
     {
       "name": "font-feature-settings",
       "relevance": 59,
+      "types": [
+        "number"
+      ],
       "values": [
         "\"aalt\"",
         "\"abvf\"",
@@ -2373,6 +2858,7 @@
     {
       "name": "font-kerning",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "none",
@@ -2383,6 +2869,7 @@
     {
       "name": "font-language-override",
       "relevance": 50,
+      "types": [],
       "values": [
         "normal"
       ],
@@ -2391,6 +2878,7 @@
     {
       "name": "font-optical-sizing",
       "relevance": 51,
+      "types": [],
       "values": [
         "auto",
         "none"
@@ -2400,6 +2888,7 @@
     {
       "name": "font-palette",
       "relevance": 50,
+      "types": [],
       "values": [
         "normal",
         "light",
@@ -2411,6 +2900,10 @@
     {
       "name": "font-size",
       "relevance": 94,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "large",
         "larger",
@@ -2431,6 +2924,9 @@
     {
       "name": "font-size-adjust",
       "relevance": 50,
+      "types": [
+        "number"
+      ],
       "values": [
         "none",
         "ex-height",
@@ -2445,6 +2941,9 @@
     {
       "name": "font-smooth",
       "relevance": 0,
+      "types": [
+        "length"
+      ],
       "values": [
         "auto",
         "never",
@@ -2458,6 +2957,9 @@
       "name": "font-stretch",
       "relevance": 13,
       "obsolete": true,
+      "types": [
+        "percentage"
+      ],
       "values": [
         "condensed",
         "expanded",
@@ -2478,6 +2980,9 @@
     {
       "name": "font-style",
       "relevance": 89,
+      "types": [
+        "angle"
+      ],
       "values": [
         "italic",
         "normal",
@@ -2488,6 +2993,7 @@
     {
       "name": "font-synthesis",
       "relevance": 50,
+      "types": [],
       "values": [
         "none",
         "style",
@@ -2500,6 +3006,7 @@
     {
       "name": "font-synthesis-position",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "none"
@@ -2509,6 +3016,7 @@
     {
       "name": "font-synthesis-small-caps",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "none"
@@ -2518,6 +3026,7 @@
     {
       "name": "font-synthesis-style",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "none"
@@ -2527,6 +3036,7 @@
     {
       "name": "font-synthesis-weight",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "none"
@@ -2536,6 +3046,7 @@
     {
       "name": "font-variant",
       "relevance": 64,
+      "types": [],
       "values": [
         "normal",
         "small-caps",
@@ -2571,6 +3082,7 @@
     {
       "name": "font-variant-alternates",
       "relevance": 50,
+      "types": [],
       "values": [
         "annotation()",
         "character-variant()",
@@ -2586,6 +3098,7 @@
     {
       "name": "font-variant-caps",
       "relevance": 50,
+      "types": [],
       "values": [
         "all-petite-caps",
         "all-small-caps",
@@ -2600,6 +3113,7 @@
     {
       "name": "font-variant-east-asian",
       "relevance": 50,
+      "types": [],
       "values": [
         "full-width",
         "jis04",
@@ -2620,6 +3134,7 @@
     {
       "name": "font-variant-emoji",
       "relevance": 50,
+      "types": [],
       "values": [
         "normal",
         "text",
@@ -2631,6 +3146,7 @@
     {
       "name": "font-variant-ligatures",
       "relevance": 52,
+      "types": [],
       "values": [
         "additional-ligatures",
         "common-ligatures",
@@ -2655,6 +3171,7 @@
     {
       "name": "font-variant-numeric",
       "relevance": 52,
+      "types": [],
       "values": [
         "diagonal-fractions",
         "lining-nums",
@@ -2675,6 +3192,7 @@
     {
       "name": "font-variant-position",
       "relevance": 50,
+      "types": [],
       "values": [
         "normal",
         "sub",
@@ -2685,6 +3203,9 @@
     {
       "name": "font-variation-settings",
       "relevance": 59,
+      "types": [
+        "number"
+      ],
       "values": [
         "normal"
       ],
@@ -2693,6 +3214,9 @@
     {
       "name": "font-weight",
       "relevance": 93,
+      "types": [
+        "number"
+      ],
       "values": [
         "100",
         "200",
@@ -2715,6 +3239,9 @@
     {
       "name": "font-width",
       "relevance": 50,
+      "types": [
+        "percentage"
+      ],
       "values": [
         "normal",
         "ultra-condensed",
@@ -2731,6 +3258,7 @@
     {
       "name": "forced-color-adjust",
       "relevance": 59,
+      "types": [],
       "values": [
         "auto",
         "none",
@@ -2741,6 +3269,10 @@
     {
       "name": "gap",
       "relevance": 80,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "property:column-gap",
@@ -2750,12 +3282,20 @@
     {
       "name": "glyph-orientation-horizontal",
       "relevance": 50,
+      "types": [
+        "number",
+        "angle"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "glyph-orientation-vertical",
       "relevance": 50,
+      "types": [
+        "number",
+        "angle"
+      ],
       "values": [
         "auto"
       ],
@@ -2764,6 +3304,10 @@
     {
       "name": "grid",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto-flow",
         "dense"
@@ -2784,6 +3328,9 @@
     {
       "name": "grid-area",
       "relevance": 61,
+      "types": [
+        "number"
+      ],
       "values": [
         "auto",
         "span"
@@ -2795,6 +3342,10 @@
     {
       "name": "grid-auto-columns",
       "relevance": 54,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "min-content",
         "max-content",
@@ -2809,6 +3360,7 @@
     {
       "name": "grid-auto-flow",
       "relevance": 57,
+      "types": [],
       "values": [
         "row",
         "column",
@@ -2819,6 +3371,10 @@
     {
       "name": "grid-auto-rows",
       "relevance": 55,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "min-content",
         "max-content",
@@ -2833,6 +3389,9 @@
     {
       "name": "grid-column",
       "relevance": 62,
+      "types": [
+        "number"
+      ],
       "values": [
         "auto",
         "span"
@@ -2844,6 +3403,9 @@
     {
       "name": "grid-column-end",
       "relevance": 52,
+      "types": [
+        "number"
+      ],
       "values": [
         "auto",
         "span"
@@ -2856,12 +3418,19 @@
       "name": "grid-column-gap",
       "relevance": 0,
       "obsolete": true,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "grid-column-start",
       "relevance": 53,
+      "types": [
+        "number"
+      ],
       "values": [
         "auto",
         "span"
@@ -2874,12 +3443,19 @@
       "name": "grid-gap",
       "relevance": 0,
       "obsolete": true,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "grid-row",
       "relevance": 57,
+      "types": [
+        "number"
+      ],
       "values": [
         "auto",
         "span"
@@ -2891,6 +3467,9 @@
     {
       "name": "grid-row-end",
       "relevance": 52,
+      "types": [
+        "number"
+      ],
       "values": [
         "auto",
         "span"
@@ -2903,12 +3482,19 @@
       "name": "grid-row-gap",
       "relevance": 0,
       "obsolete": true,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "grid-row-start",
       "relevance": 55,
+      "types": [
+        "number"
+      ],
       "values": [
         "auto",
         "span"
@@ -2920,6 +3506,10 @@
     {
       "name": "grid-template",
       "relevance": 51,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "none",
         "min-content",
@@ -2944,6 +3534,7 @@
     {
       "name": "grid-template-areas",
       "relevance": 58,
+      "types": [],
       "values": [
         "none"
       ],
@@ -2952,6 +3543,10 @@
     {
       "name": "grid-template-columns",
       "relevance": 72,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "none",
         "min-content",
@@ -2974,6 +3569,10 @@
     {
       "name": "grid-template-rows",
       "relevance": 63,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "none",
         "min-content",
@@ -2996,6 +3595,7 @@
     {
       "name": "hanging-punctuation",
       "relevance": 50,
+      "types": [],
       "values": [
         "none",
         "first",
@@ -3008,6 +3608,10 @@
     {
       "name": "height",
       "relevance": 96,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto",
         "fit-content",
@@ -3022,6 +3626,7 @@
     {
       "name": "hyphenate-character",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto"
       ],
@@ -3030,6 +3635,9 @@
     {
       "name": "hyphenate-limit-chars",
       "relevance": 50,
+      "types": [
+        "number"
+      ],
       "values": [
         "auto"
       ],
@@ -3038,6 +3646,7 @@
     {
       "name": "hyphens",
       "relevance": 55,
+      "types": [],
       "values": [
         "auto",
         "manual",
@@ -3048,6 +3657,9 @@
     {
       "name": "image-orientation",
       "relevance": 50,
+      "types": [
+        "angle"
+      ],
       "values": [
         "flip",
         "from-image"
@@ -3057,6 +3669,7 @@
     {
       "name": "image-rendering",
       "relevance": 53,
+      "types": [],
       "values": [
         "auto",
         "crisp-edges",
@@ -3070,6 +3683,7 @@
     {
       "name": "image-resolution",
       "relevance": 50,
+      "types": [],
       "values": [
         "from-image",
         "snap"
@@ -3080,6 +3694,7 @@
       "name": "ime-mode",
       "relevance": 0,
       "obsolete": true,
+      "types": [],
       "values": [
         "active",
         "auto",
@@ -3092,6 +3707,9 @@
     {
       "name": "initial-letter",
       "relevance": 50,
+      "types": [
+        "number"
+      ],
       "values": [
         "normal"
       ],
@@ -3100,6 +3718,7 @@
     {
       "name": "initial-letter-align",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "alphabetic",
@@ -3111,6 +3730,10 @@
     {
       "name": "inline-size",
       "relevance": 55,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -3121,6 +3744,10 @@
     {
       "name": "inset",
       "relevance": 69,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "property:top"
@@ -3129,6 +3756,10 @@
     {
       "name": "inset-block",
       "relevance": 54,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "property:top"
@@ -3137,6 +3768,10 @@
     {
       "name": "inset-block-end",
       "relevance": 53,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "property:top"
@@ -3145,6 +3780,10 @@
     {
       "name": "inset-block-start",
       "relevance": 55,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "property:top"
@@ -3153,6 +3792,10 @@
     {
       "name": "inset-inline",
       "relevance": 55,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "property:top"
@@ -3161,6 +3804,10 @@
     {
       "name": "inset-inline-end",
       "relevance": 57,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "property:top"
@@ -3169,6 +3816,10 @@
     {
       "name": "inset-inline-start",
       "relevance": 58,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "property:top"
@@ -3177,6 +3828,7 @@
     {
       "name": "interactivity",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "inert"
@@ -3186,6 +3838,9 @@
     {
       "name": "interest-delay",
       "relevance": 50,
+      "types": [
+        "time"
+      ],
       "values": [],
       "sets": [
         "property:interest-delay-start"
@@ -3194,6 +3849,9 @@
     {
       "name": "interest-delay-end",
       "relevance": 50,
+      "types": [
+        "time"
+      ],
       "values": [
         "normal"
       ],
@@ -3202,6 +3860,9 @@
     {
       "name": "interest-delay-start",
       "relevance": 50,
+      "types": [
+        "time"
+      ],
       "values": [
         "normal"
       ],
@@ -3210,6 +3871,7 @@
     {
       "name": "interpolate-size",
       "relevance": 51,
+      "types": [],
       "values": [
         "numeric-only",
         "allow-keywords"
@@ -3219,6 +3881,7 @@
     {
       "name": "isolation",
       "relevance": 57,
+      "types": [],
       "values": [
         "auto",
         "isolate"
@@ -3228,6 +3891,7 @@
     {
       "name": "justify-content",
       "relevance": 90,
+      "types": [],
       "values": [
         "center",
         "start",
@@ -3256,6 +3920,7 @@
     {
       "name": "justify-items",
       "relevance": 58,
+      "types": [],
       "values": [
         "auto",
         "normal",
@@ -3286,6 +3951,7 @@
     {
       "name": "justify-self",
       "relevance": 59,
+      "types": [],
       "values": [
         "auto",
         "normal",
@@ -3315,6 +3981,7 @@
     {
       "name": "justify-tracks",
       "relevance": 0,
+      "types": [],
       "values": [
         "normal",
         "left",
@@ -3329,6 +3996,9 @@
     {
       "name": "kerning",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [
         "auto"
       ],
@@ -3337,6 +4007,10 @@
     {
       "name": "left",
       "relevance": 94,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto",
         "anchor()",
@@ -3347,6 +4021,9 @@
     {
       "name": "letter-spacing",
       "relevance": 83,
+      "types": [
+        "length"
+      ],
       "values": [
         "normal"
       ],
@@ -3355,6 +4032,9 @@
     {
       "name": "lighting-color",
       "relevance": 50,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -3367,6 +4047,7 @@
     {
       "name": "line-break",
       "relevance": 52,
+      "types": [],
       "values": [
         "auto",
         "loose",
@@ -3379,6 +4060,9 @@
     {
       "name": "line-clamp",
       "relevance": 50,
+      "types": [
+        "number"
+      ],
       "values": [
         "none"
       ],
@@ -3387,6 +4071,11 @@
     {
       "name": "line-height",
       "relevance": 93,
+      "types": [
+        "number",
+        "length",
+        "percentage"
+      ],
       "values": [
         "normal"
       ],
@@ -3395,12 +4084,19 @@
     {
       "name": "line-height-step",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "list-style",
       "relevance": 83,
+      "types": [
+        "image",
+        "url"
+      ],
       "values": [
         "armenian",
         "circle",
@@ -3434,6 +4130,10 @@
     {
       "name": "list-style-image",
       "relevance": 52,
+      "types": [
+        "image",
+        "url"
+      ],
       "values": [
         "none"
       ],
@@ -3445,6 +4145,7 @@
     {
       "name": "list-style-position",
       "relevance": 56,
+      "types": [],
       "values": [
         "inside",
         "outside"
@@ -3454,6 +4155,7 @@
     {
       "name": "list-style-type",
       "relevance": 73,
+      "types": [],
       "values": [
         "armenian",
         "circle",
@@ -3479,6 +4181,10 @@
     {
       "name": "margin",
       "relevance": 95,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -3489,6 +4195,10 @@
     {
       "name": "margin-block",
       "relevance": 57,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "property:margin-top"
@@ -3497,6 +4207,10 @@
     {
       "name": "margin-block-end",
       "relevance": 56,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -3507,6 +4221,10 @@
     {
       "name": "margin-block-start",
       "relevance": 58,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -3517,6 +4235,10 @@
     {
       "name": "margin-bottom",
       "relevance": 91,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto",
         "anchor-size()"
@@ -3526,6 +4248,10 @@
     {
       "name": "margin-inline",
       "relevance": 58,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "property:margin-top"
@@ -3534,6 +4260,10 @@
     {
       "name": "margin-inline-end",
       "relevance": 61,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -3544,6 +4274,10 @@
     {
       "name": "margin-inline-start",
       "relevance": 62,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -3554,6 +4288,10 @@
     {
       "name": "margin-left",
       "relevance": 91,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto",
         "anchor-size()"
@@ -3563,6 +4301,10 @@
     {
       "name": "margin-right",
       "relevance": 91,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto",
         "anchor-size()"
@@ -3572,6 +4314,10 @@
     {
       "name": "margin-top",
       "relevance": 94,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto",
         "anchor-size()"
@@ -3581,6 +4327,7 @@
     {
       "name": "margin-trim",
       "relevance": 50,
+      "types": [],
       "values": [
         "none",
         "in-flow",
@@ -3591,6 +4338,9 @@
     {
       "name": "marker",
       "relevance": 50,
+      "types": [
+        "url"
+      ],
       "values": [
         "none",
         "url()"
@@ -3600,6 +4350,9 @@
     {
       "name": "marker-end",
       "relevance": 50,
+      "types": [
+        "url"
+      ],
       "values": [
         "none",
         "url()"
@@ -3609,6 +4362,9 @@
     {
       "name": "marker-mid",
       "relevance": 50,
+      "types": [
+        "url"
+      ],
       "values": [
         "none",
         "url()"
@@ -3618,6 +4374,9 @@
     {
       "name": "marker-start",
       "relevance": 50,
+      "types": [
+        "url"
+      ],
       "values": [
         "none",
         "url()"
@@ -3627,6 +4386,12 @@
     {
       "name": "mask",
       "relevance": 60,
+      "types": [
+        "length",
+        "percentage",
+        "image",
+        "url"
+      ],
       "values": [],
       "sets": [
         "type:bg-size",
@@ -3646,6 +4411,13 @@
     {
       "name": "mask-border",
       "relevance": 50,
+      "types": [
+        "number",
+        "length",
+        "percentage",
+        "image",
+        "url"
+      ],
       "values": [],
       "sets": [
         "property:mask-border-mode",
@@ -3660,6 +4432,7 @@
     {
       "name": "mask-border-mode",
       "relevance": 50,
+      "types": [],
       "values": [
         "luminance",
         "alpha"
@@ -3669,12 +4442,17 @@
     {
       "name": "mask-border-outset",
       "relevance": 50,
+      "types": [
+        "number",
+        "length"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "mask-border-repeat",
       "relevance": 50,
+      "types": [],
       "values": [
         "stretch",
         "repeat",
@@ -3686,6 +4464,10 @@
     {
       "name": "mask-border-slice",
       "relevance": 50,
+      "types": [
+        "number",
+        "percentage"
+      ],
       "values": [
         "fill"
       ],
@@ -3694,6 +4476,10 @@
     {
       "name": "mask-border-source",
       "relevance": 50,
+      "types": [
+        "image",
+        "url"
+      ],
       "values": [
         "none"
       ],
@@ -3705,6 +4491,11 @@
     {
       "name": "mask-border-width",
       "relevance": 50,
+      "types": [
+        "number",
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -3713,6 +4504,7 @@
     {
       "name": "mask-clip",
       "relevance": 50,
+      "types": [],
       "values": [
         "no-clip"
       ],
@@ -3725,6 +4517,7 @@
     {
       "name": "mask-composite",
       "relevance": 55,
+      "types": [],
       "values": [],
       "sets": [
         "type:compositing-operator"
@@ -3733,6 +4526,10 @@
     {
       "name": "mask-image",
       "relevance": 61,
+      "types": [
+        "image",
+        "url"
+      ],
       "values": [
         "none",
         "url()"
@@ -3746,6 +4543,7 @@
     {
       "name": "mask-mode",
       "relevance": 51,
+      "types": [],
       "values": [
         "alpha",
         "auto",
@@ -3758,6 +4556,7 @@
     {
       "name": "mask-origin",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:coord-box",
@@ -3768,6 +4567,10 @@
     {
       "name": "mask-position",
       "relevance": 55,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "type:position"
@@ -3776,6 +4579,7 @@
     {
       "name": "mask-repeat",
       "relevance": 54,
+      "types": [],
       "values": [],
       "sets": [
         "type:repeat-style"
@@ -3784,6 +4588,10 @@
     {
       "name": "mask-size",
       "relevance": 54,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto",
         "contain",
@@ -3796,6 +4604,7 @@
     {
       "name": "mask-type",
       "relevance": 50,
+      "types": [],
       "values": [
         "alpha",
         "luminance"
@@ -3805,6 +4614,7 @@
     {
       "name": "masonry-auto-flow",
       "relevance": 0,
+      "types": [],
       "values": [
         "pack",
         "next",
@@ -3816,6 +4626,9 @@
     {
       "name": "math-depth",
       "relevance": 50,
+      "types": [
+        "number"
+      ],
       "values": [
         "auto-add",
         "add()"
@@ -3825,6 +4638,7 @@
     {
       "name": "math-shift",
       "relevance": 50,
+      "types": [],
       "values": [
         "normal",
         "compact"
@@ -3834,6 +4648,7 @@
     {
       "name": "math-style",
       "relevance": 50,
+      "types": [],
       "values": [
         "normal",
         "compact"
@@ -3843,6 +4658,10 @@
     {
       "name": "max-block-size",
       "relevance": 55,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "none"
       ],
@@ -3853,6 +4672,10 @@
     {
       "name": "max-height",
       "relevance": 86,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "none",
         "fit-content",
@@ -3867,6 +4690,10 @@
     {
       "name": "max-inline-size",
       "relevance": 55,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "none"
       ],
@@ -3877,6 +4704,9 @@
     {
       "name": "max-lines",
       "relevance": 50,
+      "types": [
+        "number"
+      ],
       "values": [
         "none"
       ],
@@ -3885,6 +4715,10 @@
     {
       "name": "max-width",
       "relevance": 91,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "none",
         "fit-content",
@@ -3899,6 +4733,10 @@
     {
       "name": "min-block-size",
       "relevance": 55,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "property:min-width"
@@ -3907,6 +4745,10 @@
     {
       "name": "min-height",
       "relevance": 90,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto",
         "fit-content",
@@ -3921,6 +4763,10 @@
     {
       "name": "min-inline-size",
       "relevance": 55,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "property:min-width"
@@ -3929,6 +4775,10 @@
     {
       "name": "min-width",
       "relevance": 88,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto",
         "fit-content",
@@ -3943,6 +4793,7 @@
     {
       "name": "mix-blend-mode",
       "relevance": 55,
+      "types": [],
       "values": [
         "normal",
         "multiply",
@@ -3970,6 +4821,12 @@
     {
       "name": "motion",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage",
+        "angle",
+        "url"
+      ],
       "values": [
         "none",
         "path()",
@@ -3981,12 +4838,19 @@
     {
       "name": "motion-offset",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "motion-path",
       "relevance": 50,
+      "types": [
+        "url"
+      ],
       "values": [
         "none",
         "path()"
@@ -3996,6 +4860,9 @@
     {
       "name": "motion-rotation",
       "relevance": 50,
+      "types": [
+        "angle"
+      ],
       "values": [
         "auto",
         "reverse"
@@ -4005,6 +4872,7 @@
     {
       "name": "nav-down",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "current",
@@ -4015,6 +4883,9 @@
     {
       "name": "nav-index",
       "relevance": 50,
+      "types": [
+        "number"
+      ],
       "values": [
         "auto"
       ],
@@ -4023,6 +4894,7 @@
     {
       "name": "nav-left",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "current",
@@ -4033,6 +4905,7 @@
     {
       "name": "nav-right",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "current",
@@ -4043,6 +4916,7 @@
     {
       "name": "nav-up",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "current",
@@ -4053,6 +4927,7 @@
     {
       "name": "object-fit",
       "relevance": 76,
+      "types": [],
       "values": [
         "contain",
         "cover",
@@ -4065,6 +4940,10 @@
     {
       "name": "object-position",
       "relevance": 59,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "type:position"
@@ -4073,6 +4952,7 @@
     {
       "name": "object-view-box",
       "relevance": 50,
+      "types": [],
       "values": [
         "none"
       ],
@@ -4083,6 +4963,12 @@
     {
       "name": "offset",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage",
+        "angle",
+        "url"
+      ],
       "values": [],
       "sets": [
         "property:offset-anchor",
@@ -4100,6 +4986,10 @@
     {
       "name": "offset-anchor",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -4110,6 +5000,10 @@
     {
       "name": "offset-block-end",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -4118,6 +5012,10 @@
     {
       "name": "offset-block-start",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -4126,12 +5024,20 @@
     {
       "name": "offset-distance",
       "relevance": 51,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "offset-inline-end",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -4140,6 +5046,10 @@
     {
       "name": "offset-inline-start",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -4148,6 +5058,9 @@
     {
       "name": "offset-path",
       "relevance": 50,
+      "types": [
+        "url"
+      ],
       "values": [
         "none"
       ],
@@ -4162,6 +5075,10 @@
     {
       "name": "offset-position",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "normal",
         "auto"
@@ -4173,6 +5090,9 @@
     {
       "name": "offset-rotate",
       "relevance": 50,
+      "types": [
+        "angle"
+      ],
       "values": [
         "auto",
         "reverse"
@@ -4182,24 +5102,38 @@
     {
       "name": "opacity",
       "relevance": 93,
+      "types": [
+        "number",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "order",
       "relevance": 70,
+      "types": [
+        "number"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "orphans",
       "relevance": 51,
+      "types": [
+        "number"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "outline",
       "relevance": 88,
+      "types": [
+        "length",
+        "color"
+      ],
       "values": [
         "auto",
         "invert"
@@ -4219,6 +5153,9 @@
     {
       "name": "outline-color",
       "relevance": 63,
+      "types": [
+        "color"
+      ],
       "values": [
         "invert",
         "auto"
@@ -4234,12 +5171,16 @@
     {
       "name": "outline-offset",
       "relevance": 71,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "outline-style",
       "relevance": 61,
+      "types": [],
       "values": [
         "auto"
       ],
@@ -4250,6 +5191,9 @@
     {
       "name": "outline-width",
       "relevance": 64,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": [
         "type:line-width"
@@ -4258,6 +5202,7 @@
     {
       "name": "overflow",
       "relevance": 93,
+      "types": [],
       "values": [
         "auto",
         "hidden",
@@ -4270,6 +5215,7 @@
     {
       "name": "overflow-anchor",
       "relevance": 54,
+      "types": [],
       "values": [
         "auto",
         "none"
@@ -4279,6 +5225,7 @@
     {
       "name": "overflow-block",
       "relevance": 50,
+      "types": [],
       "values": [
         "visible",
         "hidden",
@@ -4291,6 +5238,7 @@
     {
       "name": "overflow-clip-box",
       "relevance": 0,
+      "types": [],
       "values": [
         "padding-box",
         "content-box"
@@ -4300,6 +5248,9 @@
     {
       "name": "overflow-clip-margin",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": [
         "type:visual-box"
@@ -4308,6 +5259,7 @@
     {
       "name": "overflow-inline",
       "relevance": 50,
+      "types": [],
       "values": [
         "visible",
         "hidden",
@@ -4320,6 +5272,7 @@
     {
       "name": "overflow-wrap",
       "relevance": 69,
+      "types": [],
       "values": [
         "break-word",
         "normal",
@@ -4330,6 +5283,7 @@
     {
       "name": "overflow-x",
       "relevance": 82,
+      "types": [],
       "values": [
         "auto",
         "hidden",
@@ -4342,6 +5296,7 @@
     {
       "name": "overflow-y",
       "relevance": 83,
+      "types": [],
       "values": [
         "auto",
         "hidden",
@@ -4354,6 +5309,7 @@
     {
       "name": "overlay",
       "relevance": 50,
+      "types": [],
       "values": [
         "none",
         "auto"
@@ -4363,6 +5319,7 @@
     {
       "name": "overscroll-behavior",
       "relevance": 58,
+      "types": [],
       "values": [
         "contain",
         "none",
@@ -4373,6 +5330,7 @@
     {
       "name": "overscroll-behavior-block",
       "relevance": 50,
+      "types": [],
       "values": [
         "contain",
         "none",
@@ -4383,6 +5341,7 @@
     {
       "name": "overscroll-behavior-inline",
       "relevance": 50,
+      "types": [],
       "values": [
         "contain",
         "none",
@@ -4393,6 +5352,7 @@
     {
       "name": "overscroll-behavior-x",
       "relevance": 54,
+      "types": [],
       "values": [
         "contain",
         "none",
@@ -4403,6 +5363,7 @@
     {
       "name": "overscroll-behavior-y",
       "relevance": 55,
+      "types": [],
       "values": [
         "contain",
         "none",
@@ -4413,72 +5374,117 @@
     {
       "name": "padding",
       "relevance": 95,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "padding-block",
       "relevance": 59,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "padding-block-end",
       "relevance": 55,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "padding-block-start",
       "relevance": 55,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "padding-bottom",
       "relevance": 89,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "padding-inline",
       "relevance": 61,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "padding-inline-end",
       "relevance": 59,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "padding-inline-start",
       "relevance": 61,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "padding-left",
       "relevance": 89,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "padding-right",
       "relevance": 89,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "padding-top",
       "relevance": 89,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "page",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto"
       ],
@@ -4488,6 +5494,7 @@
       "name": "page-break-after",
       "relevance": 1,
       "obsolete": true,
+      "types": [],
       "values": [
         "always",
         "auto",
@@ -4503,6 +5510,7 @@
       "name": "page-break-before",
       "relevance": 0,
       "obsolete": true,
+      "types": [],
       "values": [
         "always",
         "auto",
@@ -4518,6 +5526,7 @@
       "name": "page-break-inside",
       "relevance": 2,
       "obsolete": true,
+      "types": [],
       "values": [
         "auto",
         "avoid"
@@ -4527,6 +5536,7 @@
     {
       "name": "paint-order",
       "relevance": 50,
+      "types": [],
       "values": [
         "fill",
         "markers",
@@ -4538,6 +5548,9 @@
     {
       "name": "perspective",
       "relevance": 55,
+      "types": [
+        "length"
+      ],
       "values": [
         "none"
       ],
@@ -4546,6 +5559,10 @@
     {
       "name": "perspective-origin",
       "relevance": 51,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "type:position"
@@ -4554,6 +5571,7 @@
     {
       "name": "place-content",
       "relevance": 57,
+      "types": [],
       "values": [],
       "sets": [
         "property:align-content",
@@ -4567,6 +5585,7 @@
     {
       "name": "place-items",
       "relevance": 58,
+      "types": [],
       "values": [],
       "sets": [
         "property:align-items",
@@ -4579,6 +5598,7 @@
     {
       "name": "place-self",
       "relevance": 51,
+      "types": [],
       "values": [],
       "sets": [
         "property:align-self",
@@ -4591,6 +5611,7 @@
     {
       "name": "pointer-events",
       "relevance": 84,
+      "types": [],
       "values": [
         "all",
         "fill",
@@ -4609,6 +5630,7 @@
     {
       "name": "position",
       "relevance": 95,
+      "types": [],
       "values": [
         "absolute",
         "fixed",
@@ -4621,6 +5643,7 @@
     {
       "name": "position-anchor",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "none"
@@ -4630,6 +5653,7 @@
     {
       "name": "position-area",
       "relevance": 50,
+      "types": [],
       "values": [
         "none"
       ],
@@ -4640,6 +5664,7 @@
     {
       "name": "position-try",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "property:position-area",
@@ -4653,6 +5678,7 @@
     {
       "name": "position-try-fallbacks",
       "relevance": 50,
+      "types": [],
       "values": [
         "none"
       ],
@@ -4665,6 +5691,7 @@
     {
       "name": "position-try-order",
       "relevance": 50,
+      "types": [],
       "values": [
         "normal"
       ],
@@ -4675,6 +5702,7 @@
     {
       "name": "position-visibility",
       "relevance": 50,
+      "types": [],
       "values": [
         "always",
         "anchors-valid",
@@ -4686,6 +5714,7 @@
     {
       "name": "print-color-adjust",
       "relevance": 51,
+      "types": [],
       "values": [
         "economy",
         "exact"
@@ -4695,6 +5724,7 @@
     {
       "name": "quotes",
       "relevance": 54,
+      "types": [],
       "values": [
         "none",
         "auto"
@@ -4704,12 +5734,17 @@
     {
       "name": "r",
       "relevance": 52,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "reading-flow",
       "relevance": 50,
+      "types": [],
       "values": [
         "normal",
         "source-order",
@@ -4724,12 +5759,16 @@
     {
       "name": "reading-order",
       "relevance": 50,
+      "types": [
+        "number"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "resize",
       "relevance": 66,
+      "types": [],
       "values": [
         "both",
         "horizontal",
@@ -4743,6 +5782,10 @@
     {
       "name": "right",
       "relevance": 91,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto",
         "anchor()",
@@ -4753,6 +5796,10 @@
     {
       "name": "rotate",
       "relevance": 54,
+      "types": [
+        "number",
+        "angle"
+      ],
       "values": [
         "none",
         "x",
@@ -4764,6 +5811,10 @@
     {
       "name": "row-gap",
       "relevance": 63,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "normal"
       ],
@@ -4772,6 +5823,7 @@
     {
       "name": "ruby-align",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "center",
@@ -4789,6 +5841,7 @@
     {
       "name": "ruby-merge",
       "relevance": 50,
+      "types": [],
       "values": [
         "separate",
         "collapse",
@@ -4799,6 +5852,7 @@
     {
       "name": "ruby-overhang",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "end",
@@ -4810,6 +5864,7 @@
     {
       "name": "ruby-position",
       "relevance": 50,
+      "types": [],
       "values": [
         "after",
         "before",
@@ -4825,6 +5880,7 @@
     {
       "name": "ruby-span",
       "relevance": 50,
+      "types": [],
       "values": [
         "attr()",
         "none"
@@ -4834,18 +5890,30 @@
     {
       "name": "rx",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "ry",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "scale",
       "relevance": 57,
+      "types": [
+        "number",
+        "percentage"
+      ],
       "values": [
         "none"
       ],
@@ -4854,6 +5922,7 @@
     {
       "name": "scroll-behavior",
       "relevance": 60,
+      "types": [],
       "values": [
         "auto",
         "smooth"
@@ -4863,6 +5932,7 @@
     {
       "name": "scroll-initial-target",
       "relevance": 50,
+      "types": [],
       "values": [
         "none",
         "nearest"
@@ -4872,72 +5942,106 @@
     {
       "name": "scroll-margin",
       "relevance": 51,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "scroll-margin-block",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "scroll-margin-block-end",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "scroll-margin-block-start",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "scroll-margin-bottom",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "scroll-margin-inline",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "scroll-margin-inline-end",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "scroll-margin-inline-start",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "scroll-margin-left",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "scroll-margin-right",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "scroll-margin-top",
       "relevance": 52,
+      "types": [
+        "length"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "scroll-marker-group",
       "relevance": 50,
+      "types": [],
       "values": [
         "none",
         "before",
@@ -4948,6 +6052,10 @@
     {
       "name": "scroll-padding",
       "relevance": 53,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -4956,6 +6064,10 @@
     {
       "name": "scroll-padding-block",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -4964,6 +6076,10 @@
     {
       "name": "scroll-padding-block-end",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -4972,6 +6088,10 @@
     {
       "name": "scroll-padding-block-start",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -4980,6 +6100,10 @@
     {
       "name": "scroll-padding-bottom",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -4988,6 +6112,10 @@
     {
       "name": "scroll-padding-inline",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -4996,6 +6124,10 @@
     {
       "name": "scroll-padding-inline-end",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -5004,6 +6136,10 @@
     {
       "name": "scroll-padding-inline-start",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -5012,6 +6148,10 @@
     {
       "name": "scroll-padding-left",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -5020,6 +6160,10 @@
     {
       "name": "scroll-padding-right",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -5028,6 +6172,10 @@
     {
       "name": "scroll-padding-top",
       "relevance": 51,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -5036,6 +6184,7 @@
     {
       "name": "scroll-snap-align",
       "relevance": 56,
+      "types": [],
       "values": [
         "none",
         "start",
@@ -5048,6 +6197,10 @@
       "name": "scroll-snap-coordinate",
       "relevance": 0,
       "obsolete": true,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "none"
       ],
@@ -5059,6 +6212,10 @@
       "name": "scroll-snap-destination",
       "relevance": 0,
       "obsolete": true,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "type:position"
@@ -5068,6 +6225,7 @@
       "name": "scroll-snap-points-x",
       "relevance": 0,
       "obsolete": true,
+      "types": [],
       "values": [
         "none",
         "repeat()"
@@ -5078,6 +6236,7 @@
       "name": "scroll-snap-points-y",
       "relevance": 0,
       "obsolete": true,
+      "types": [],
       "values": [
         "none",
         "repeat()"
@@ -5087,6 +6246,7 @@
     {
       "name": "scroll-snap-stop",
       "relevance": 52,
+      "types": [],
       "values": [
         "normal",
         "always"
@@ -5096,6 +6256,7 @@
     {
       "name": "scroll-snap-type",
       "relevance": 58,
+      "types": [],
       "values": [
         "none",
         "mandatory",
@@ -5112,6 +6273,7 @@
       "name": "scroll-snap-type-x",
       "relevance": 0,
       "obsolete": true,
+      "types": [],
       "values": [
         "none",
         "mandatory",
@@ -5123,6 +6285,7 @@
       "name": "scroll-snap-type-y",
       "relevance": 0,
       "obsolete": true,
+      "types": [],
       "values": [
         "none",
         "mandatory",
@@ -5133,6 +6296,7 @@
     {
       "name": "scroll-target-group",
       "relevance": 50,
+      "types": [],
       "values": [
         "none",
         "auto"
@@ -5142,6 +6306,7 @@
     {
       "name": "scroll-timeline",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "property:scroll-timeline-axis",
@@ -5151,6 +6316,7 @@
     {
       "name": "scroll-timeline-axis",
       "relevance": 50,
+      "types": [],
       "values": [
         "block",
         "inline",
@@ -5162,6 +6328,7 @@
     {
       "name": "scroll-timeline-name",
       "relevance": 50,
+      "types": [],
       "values": [
         "none"
       ],
@@ -5170,24 +6337,36 @@
     {
       "name": "scrollbar-3dlight-color",
       "relevance": 50,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "scrollbar-arrow-color",
       "relevance": 50,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "scrollbar-base-color",
       "relevance": 50,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "scrollbar-color",
       "relevance": 57,
+      "types": [
+        "color"
+      ],
       "values": [
         "auto"
       ],
@@ -5202,18 +6381,25 @@
     {
       "name": "scrollbar-darkshadow-color",
       "relevance": 50,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "scrollbar-face-color",
       "relevance": 50,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "scrollbar-gutter",
       "relevance": 56,
+      "types": [],
       "values": [
         "auto",
         "stable",
@@ -5224,24 +6410,34 @@
     {
       "name": "scrollbar-highlight-color",
       "relevance": 50,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "scrollbar-shadow-color",
       "relevance": 50,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "scrollbar-track-color",
       "relevance": 50,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "scrollbar-width",
       "relevance": 70,
+      "types": [],
       "values": [
         "auto",
         "thin",
@@ -5252,18 +6448,30 @@
     {
       "name": "shape-image-threshold",
       "relevance": 50,
+      "types": [
+        "number",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "shape-margin",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "shape-outside",
       "relevance": 50,
+      "types": [
+        "image",
+        "url"
+      ],
       "values": [
         "margin-box",
         "none"
@@ -5279,6 +6487,7 @@
     {
       "name": "shape-rendering",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "crispEdges",
@@ -5290,6 +6499,7 @@
     {
       "name": "speak-as",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "bullets",
@@ -5302,6 +6512,9 @@
     {
       "name": "stop-color",
       "relevance": 51,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -5314,12 +6527,20 @@
     {
       "name": "stop-opacity",
       "relevance": 52,
+      "types": [
+        "number",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "stroke",
       "relevance": 69,
+      "types": [
+        "color",
+        "url"
+      ],
       "values": [
         "url()",
         "none"
@@ -5336,6 +6557,9 @@
     {
       "name": "stroke-color",
       "relevance": 50,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -5348,6 +6572,11 @@
     {
       "name": "stroke-dasharray",
       "relevance": 63,
+      "types": [
+        "number",
+        "length",
+        "percentage"
+      ],
       "values": [
         "none"
       ],
@@ -5356,12 +6585,18 @@
     {
       "name": "stroke-dashoffset",
       "relevance": 64,
+      "types": [
+        "number",
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "stroke-linecap",
       "relevance": 55,
+      "types": [],
       "values": [
         "butt",
         "round",
@@ -5372,6 +6607,7 @@
     {
       "name": "stroke-linejoin",
       "relevance": 52,
+      "types": [],
       "values": [
         "bevel",
         "miter",
@@ -5384,30 +6620,47 @@
     {
       "name": "stroke-miterlimit",
       "relevance": 54,
+      "types": [
+        "number"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "stroke-opacity",
       "relevance": 53,
+      "types": [
+        "number",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "stroke-width",
       "relevance": 71,
+      "types": [
+        "number",
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "tab-size",
       "relevance": 56,
+      "types": [
+        "number",
+        "length"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "table-layout",
       "relevance": 59,
+      "types": [],
       "values": [
         "auto",
         "fixed"
@@ -5417,6 +6670,7 @@
     {
       "name": "text-align",
       "relevance": 93,
+      "types": [],
       "values": [
         "center",
         "end",
@@ -5431,6 +6685,7 @@
     {
       "name": "text-align-last",
       "relevance": 51,
+      "types": [],
       "values": [
         "auto",
         "center",
@@ -5445,6 +6700,7 @@
     {
       "name": "text-anchor",
       "relevance": 50,
+      "types": [],
       "values": [
         "end",
         "middle",
@@ -5455,6 +6711,7 @@
     {
       "name": "text-autospace",
       "relevance": 50,
+      "types": [],
       "values": [
         "normal",
         "auto"
@@ -5464,6 +6721,7 @@
     {
       "name": "text-box",
       "relevance": 50,
+      "types": [],
       "values": [
         "normal"
       ],
@@ -5476,6 +6734,7 @@
     {
       "name": "text-box-edge",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto"
       ],
@@ -5486,6 +6745,7 @@
     {
       "name": "text-box-trim",
       "relevance": 50,
+      "types": [],
       "values": [
         "none",
         "trim-start",
@@ -5497,6 +6757,9 @@
     {
       "name": "text-combine-upright",
       "relevance": 50,
+      "types": [
+        "number"
+      ],
       "values": [
         "none",
         "all",
@@ -5507,6 +6770,11 @@
     {
       "name": "text-decoration",
       "relevance": 92,
+      "types": [
+        "length",
+        "percentage",
+        "color"
+      ],
       "values": [
         "dashed",
         "dotted",
@@ -5532,6 +6800,9 @@
     {
       "name": "text-decoration-color",
       "relevance": 58,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -5544,6 +6815,9 @@
     {
       "name": "text-decoration-inset",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [
         "auto"
       ],
@@ -5552,6 +6826,7 @@
     {
       "name": "text-decoration-line",
       "relevance": 61,
+      "types": [],
       "values": [
         "line-through",
         "none",
@@ -5566,6 +6841,7 @@
     {
       "name": "text-decoration-skip",
       "relevance": 50,
+      "types": [],
       "values": [
         "none",
         "objects",
@@ -5580,6 +6856,7 @@
     {
       "name": "text-decoration-skip-ink",
       "relevance": 53,
+      "types": [],
       "values": [
         "auto",
         "all",
@@ -5590,6 +6867,7 @@
     {
       "name": "text-decoration-style",
       "relevance": 56,
+      "types": [],
       "values": [
         "dashed",
         "dotted",
@@ -5603,6 +6881,10 @@
     {
       "name": "text-decoration-thickness",
       "relevance": 56,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto",
         "from-font"
@@ -5612,6 +6894,9 @@
     {
       "name": "text-emphasis",
       "relevance": 50,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "property:text-emphasis-style",
@@ -5625,6 +6910,9 @@
     {
       "name": "text-emphasis-color",
       "relevance": 50,
+      "types": [
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -5637,6 +6925,7 @@
     {
       "name": "text-emphasis-position",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "over",
@@ -5649,6 +6938,7 @@
     {
       "name": "text-emphasis-style",
       "relevance": 50,
+      "types": [],
       "values": [
         "none",
         "filled",
@@ -5664,6 +6954,10 @@
     {
       "name": "text-indent",
       "relevance": 69,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "hanging",
         "each-line"
@@ -5673,6 +6967,7 @@
     {
       "name": "text-justify",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "distribute",
@@ -5690,6 +6985,7 @@
     {
       "name": "text-orientation",
       "relevance": 50,
+      "types": [],
       "values": [
         "sideways",
         "sideways-right",
@@ -5701,6 +6997,7 @@
     {
       "name": "text-overflow",
       "relevance": 82,
+      "types": [],
       "values": [
         "clip",
         "ellipsis"
@@ -5710,6 +7007,7 @@
     {
       "name": "text-rendering",
       "relevance": 66,
+      "types": [],
       "values": [
         "auto",
         "geometricPrecision",
@@ -5721,6 +7019,10 @@
     {
       "name": "text-shadow",
       "relevance": 72,
+      "types": [
+        "length",
+        "color"
+      ],
       "values": [
         "none"
       ],
@@ -5735,6 +7037,9 @@
     {
       "name": "text-size-adjust",
       "relevance": 61,
+      "types": [
+        "percentage"
+      ],
       "values": [
         "none",
         "auto"
@@ -5744,6 +7049,7 @@
     {
       "name": "text-spacing-trim",
       "relevance": 50,
+      "types": [],
       "values": [
         "space-all",
         "normal",
@@ -5755,6 +7061,7 @@
     {
       "name": "text-transform",
       "relevance": 86,
+      "types": [],
       "values": [
         "capitalize",
         "lowercase",
@@ -5769,6 +7076,10 @@
     {
       "name": "text-underline-offset",
       "relevance": 58,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -5777,6 +7088,7 @@
     {
       "name": "text-underline-position",
       "relevance": 52,
+      "types": [],
       "values": [
         "above",
         "auto",
@@ -5791,6 +7103,7 @@
     {
       "name": "text-wrap",
       "relevance": 60,
+      "types": [],
       "values": [],
       "sets": [
         "property:text-wrap-mode",
@@ -5800,6 +7113,7 @@
     {
       "name": "text-wrap-mode",
       "relevance": 51,
+      "types": [],
       "values": [
         "wrap",
         "nowrap"
@@ -5809,6 +7123,7 @@
     {
       "name": "text-wrap-style",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "balance",
@@ -5820,6 +7135,7 @@
     {
       "name": "timeline-scope",
       "relevance": 51,
+      "types": [],
       "values": [
         "none"
       ],
@@ -5828,6 +7144,10 @@
     {
       "name": "timeline-trigger",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "none"
       ],
@@ -5844,6 +7164,10 @@
     {
       "name": "timeline-trigger-exit-range",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "property:timeline-trigger-exit-range-end",
@@ -5854,6 +7178,10 @@
     {
       "name": "timeline-trigger-exit-range-end",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto",
         "normal"
@@ -5865,6 +7193,10 @@
     {
       "name": "timeline-trigger-exit-range-start",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto",
         "normal"
@@ -5876,6 +7208,7 @@
     {
       "name": "timeline-trigger-name",
       "relevance": 50,
+      "types": [],
       "values": [
         "none"
       ],
@@ -5884,6 +7217,10 @@
     {
       "name": "timeline-trigger-range",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "property:timeline-trigger-range-end",
@@ -5894,6 +7231,10 @@
     {
       "name": "timeline-trigger-range-end",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "normal"
       ],
@@ -5904,6 +7245,10 @@
     {
       "name": "timeline-trigger-range-start",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "normal"
       ],
@@ -5914,6 +7259,7 @@
     {
       "name": "timeline-trigger-source",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:single-animation-timeline"
@@ -5922,6 +7268,10 @@
     {
       "name": "top",
       "relevance": 95,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto",
         "anchor()",
@@ -5932,6 +7282,7 @@
     {
       "name": "touch-action",
       "relevance": 71,
+      "types": [],
       "values": [
         "auto",
         "cross-slide-x",
@@ -5952,6 +7303,7 @@
     {
       "name": "transform",
       "relevance": 92,
+      "types": [],
       "values": [
         "matrix()",
         "matrix3d()",
@@ -5983,6 +7335,7 @@
     {
       "name": "transform-box",
       "relevance": 51,
+      "types": [],
       "values": [
         "content-box",
         "border-box",
@@ -5995,6 +7348,10 @@
     {
       "name": "transform-origin",
       "relevance": 77,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "left",
         "center",
@@ -6007,6 +7364,7 @@
     {
       "name": "transform-style",
       "relevance": 56,
+      "types": [],
       "values": [
         "flat",
         "preserve-3d"
@@ -6016,6 +7374,9 @@
     {
       "name": "transition",
       "relevance": 90,
+      "types": [
+        "time"
+      ],
       "values": [
         "all",
         "none"
@@ -6032,6 +7393,7 @@
     {
       "name": "transition-behavior",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": [
         "type:transition-behavior-value"
@@ -6040,18 +7402,25 @@
     {
       "name": "transition-delay",
       "relevance": 64,
+      "types": [
+        "time"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "transition-duration",
       "relevance": 71,
+      "types": [
+        "time"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "transition-property",
       "relevance": 71,
+      "types": [],
       "values": [
         "all",
         "none"
@@ -6063,6 +7432,7 @@
     {
       "name": "transition-timing-function",
       "relevance": 69,
+      "types": [],
       "values": [],
       "sets": [
         "type:cubic-bezier-easing-function",
@@ -6073,6 +7443,10 @@
     {
       "name": "translate",
       "relevance": 54,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "none"
       ],
@@ -6081,6 +7455,7 @@
     {
       "name": "trigger-scope",
       "relevance": 50,
+      "types": [],
       "values": [
         "none",
         "all"
@@ -6090,6 +7465,7 @@
     {
       "name": "unicode-bidi",
       "relevance": 56,
+      "types": [],
       "values": [
         "bidi-override",
         "embed",
@@ -6103,6 +7479,7 @@
     {
       "name": "user-select",
       "relevance": 83,
+      "types": [],
       "values": [
         "all",
         "auto",
@@ -6115,6 +7492,7 @@
     {
       "name": "vector-effect",
       "relevance": 50,
+      "types": [],
       "values": [
         "none",
         "non-scaling-stroke",
@@ -6127,6 +7505,10 @@
     {
       "name": "vertical-align",
       "relevance": 90,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto",
         "baseline",
@@ -6143,6 +7525,10 @@
     {
       "name": "view-timeline",
       "relevance": 51,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "property:view-timeline-axis",
@@ -6153,6 +7539,7 @@
     {
       "name": "view-timeline-axis",
       "relevance": 50,
+      "types": [],
       "values": [
         "block",
         "inline",
@@ -6164,6 +7551,10 @@
     {
       "name": "view-timeline-inset",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto"
       ],
@@ -6172,6 +7563,7 @@
     {
       "name": "view-timeline-name",
       "relevance": 50,
+      "types": [],
       "values": [
         "none"
       ],
@@ -6180,6 +7572,7 @@
     {
       "name": "view-transition-class",
       "relevance": 50,
+      "types": [],
       "values": [
         "none"
       ],
@@ -6188,6 +7581,7 @@
     {
       "name": "view-transition-name",
       "relevance": 56,
+      "types": [],
       "values": [
         "none",
         "match-element"
@@ -6197,6 +7591,7 @@
     {
       "name": "visibility",
       "relevance": 87,
+      "types": [],
       "values": [
         "collapse",
         "hidden",
@@ -6207,6 +7602,7 @@
     {
       "name": "white-space",
       "relevance": 90,
+      "types": [],
       "values": [
         "normal",
         "pre",
@@ -6221,6 +7617,7 @@
     {
       "name": "white-space-collapse",
       "relevance": 50,
+      "types": [],
       "values": [
         "collapse",
         "preserve",
@@ -6233,12 +7630,19 @@
     {
       "name": "widows",
       "relevance": 51,
+      "types": [
+        "number"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "width",
       "relevance": 96,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [
         "auto",
         "fit-content",
@@ -6253,6 +7657,7 @@
     {
       "name": "will-change",
       "relevance": 68,
+      "types": [],
       "values": [
         "auto",
         "contents",
@@ -6265,6 +7670,7 @@
     {
       "name": "word-break",
       "relevance": 78,
+      "types": [],
       "values": [
         "break-all",
         "keep-all",
@@ -6277,6 +7683,9 @@
     {
       "name": "word-spacing",
       "relevance": 55,
+      "types": [
+        "length"
+      ],
       "values": [
         "normal"
       ],
@@ -6285,6 +7694,7 @@
     {
       "name": "word-wrap",
       "relevance": 50,
+      "types": [],
       "values": [
         "break-word",
         "normal"
@@ -6294,6 +7704,7 @@
     {
       "name": "writing-mode",
       "relevance": 53,
+      "types": [],
       "values": [
         "horizontal-tb",
         "sideways-lr",
@@ -6306,18 +7717,29 @@
     {
       "name": "x",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "y",
       "relevance": 50,
+      "types": [
+        "length",
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
     {
       "name": "z-index",
       "relevance": 92,
+      "types": [
+        "number"
+      ],
       "values": [
         "auto"
       ],
@@ -6326,6 +7748,10 @@
     {
       "name": "zoom",
       "relevance": 63,
+      "types": [
+        "number",
+        "percentage"
+      ],
       "values": [
         "normal",
         "reset"
@@ -6338,6 +7764,11 @@
       "atRule": "@counter-style",
       "name": "additive-symbols",
       "relevance": 50,
+      "types": [
+        "number",
+        "image",
+        "url"
+      ],
       "values": [],
       "sets": [
         "type:gradient",
@@ -6348,6 +7779,7 @@
       "atRule": "@counter-style",
       "name": "fallback",
       "relevance": 50,
+      "types": [],
       "values": [],
       "sets": []
     },
@@ -6355,6 +7787,10 @@
       "atRule": "@counter-style",
       "name": "negative",
       "relevance": 50,
+      "types": [
+        "image",
+        "url"
+      ],
       "values": [],
       "sets": [
         "type:gradient",
@@ -6365,6 +7801,11 @@
       "atRule": "@counter-style",
       "name": "pad",
       "relevance": 50,
+      "types": [
+        "number",
+        "image",
+        "url"
+      ],
       "values": [],
       "sets": [
         "type:gradient",
@@ -6375,6 +7816,10 @@
       "atRule": "@counter-style",
       "name": "prefix",
       "relevance": 50,
+      "types": [
+        "image",
+        "url"
+      ],
       "values": [],
       "sets": [
         "type:gradient",
@@ -6385,6 +7830,9 @@
       "atRule": "@counter-style",
       "name": "range",
       "relevance": 50,
+      "types": [
+        "number"
+      ],
       "values": [
         "auto",
         "infinite"
@@ -6395,6 +7843,7 @@
       "atRule": "@counter-style",
       "name": "speak-as",
       "relevance": 50,
+      "types": [],
       "values": [
         "auto",
         "bullets",
@@ -6408,6 +7857,10 @@
       "atRule": "@counter-style",
       "name": "suffix",
       "relevance": 50,
+      "types": [
+        "image",
+        "url"
+      ],
       "values": [],
       "sets": [
         "type:gradient",
@@ -6418,6 +7871,10 @@
       "atRule": "@counter-style",
       "name": "symbols",
       "relevance": 50,
+      "types": [
+        "image",
+        "url"
+      ],
       "values": [],
       "sets": [
         "type:gradient",
@@ -6428,6 +7885,9 @@
       "atRule": "@counter-style",
       "name": "system",
       "relevance": 50,
+      "types": [
+        "number"
+      ],
       "values": [
         "additive",
         "alphabetic",
@@ -6443,6 +7903,9 @@
       "atRule": "@font-face",
       "name": "ascent-override",
       "relevance": 51,
+      "types": [
+        "percentage"
+      ],
       "values": [
         "normal"
       ],
@@ -6452,6 +7915,9 @@
       "atRule": "@font-face",
       "name": "descent-override",
       "relevance": 51,
+      "types": [
+        "percentage"
+      ],
       "values": [
         "normal"
       ],
@@ -6461,6 +7927,7 @@
       "atRule": "@font-face",
       "name": "font-display",
       "relevance": 77,
+      "types": [],
       "values": [
         "auto",
         "block",
@@ -6474,6 +7941,7 @@
       "atRule": "@font-face",
       "name": "font-family",
       "relevance": 94,
+      "types": [],
       "values": [],
       "sets": []
     },
@@ -6481,6 +7949,9 @@
       "atRule": "@font-face",
       "name": "font-feature-settings",
       "relevance": 59,
+      "types": [
+        "number"
+      ],
       "values": [
         "normal"
       ],
@@ -6493,6 +7964,9 @@
       "name": "font-stretch",
       "relevance": 13,
       "obsolete": true,
+      "types": [
+        "percentage"
+      ],
       "values": [],
       "sets": [
         "type:font-stretch-absolute"
@@ -6502,6 +7976,9 @@
       "atRule": "@font-face",
       "name": "font-style",
       "relevance": 89,
+      "types": [
+        "angle"
+      ],
       "values": [
         "normal",
         "italic",
@@ -6513,6 +7990,9 @@
       "atRule": "@font-face",
       "name": "font-variation-settings",
       "relevance": 59,
+      "types": [
+        "number"
+      ],
       "values": [
         "normal"
       ],
@@ -6522,6 +8002,9 @@
       "atRule": "@font-face",
       "name": "font-weight",
       "relevance": 93,
+      "types": [
+        "number"
+      ],
       "values": [],
       "sets": [
         "type:font-weight-absolute"
@@ -6531,6 +8014,9 @@
       "atRule": "@font-face",
       "name": "line-gap-override",
       "relevance": 51,
+      "types": [
+        "percentage"
+      ],
       "values": [
         "normal"
       ],
@@ -6540,6 +8026,9 @@
       "atRule": "@font-face",
       "name": "size-adjust",
       "relevance": 51,
+      "types": [
+        "percentage"
+      ],
       "values": [],
       "sets": []
     },
@@ -6547,6 +8036,9 @@
       "atRule": "@font-face",
       "name": "src",
       "relevance": 85,
+      "types": [
+        "url"
+      ],
       "values": [
         "url()",
         "format()",
@@ -6558,6 +8050,7 @@
       "atRule": "@font-face",
       "name": "unicode-range",
       "relevance": 72,
+      "types": [],
       "values": [
         "U+26",
         "U+00-7F",
@@ -6637,6 +8130,9 @@
       "atRule": "@font-palette-values",
       "name": "base-palette",
       "relevance": 50,
+      "types": [
+        "number"
+      ],
       "values": [
         "light",
         "dark"
@@ -6647,6 +8143,7 @@
       "atRule": "@font-palette-values",
       "name": "font-family",
       "relevance": 94,
+      "types": [],
       "values": [],
       "sets": []
     },
@@ -6654,6 +8151,10 @@
       "atRule": "@font-palette-values",
       "name": "override-colors",
       "relevance": 50,
+      "types": [
+        "number",
+        "color"
+      ],
       "values": [],
       "sets": [
         "type:color",
@@ -6667,6 +8168,9 @@
       "atRule": "@page",
       "name": "bleed",
       "relevance": 50,
+      "types": [
+        "length"
+      ],
       "values": [
         "auto"
       ],
@@ -6676,6 +8180,7 @@
       "atRule": "@page",
       "name": "marks",
       "relevance": 50,
+      "types": [],
       "values": [
         "none",
         "crop",
@@ -6687,6 +8192,7 @@
       "atRule": "@page",
       "name": "page-orientation",
       "relevance": 50,
+      "types": [],
       "values": [
         "upright",
         "rotate-left",
@@ -6698,6 +8204,9 @@
       "atRule": "@page",
       "name": "size",
       "relevance": 53,
+      "types": [
+        "length"
+      ],
       "values": [
         "auto",
         "portrait",
@@ -6711,6 +8220,7 @@
       "atRule": "@property",
       "name": "inherits",
       "relevance": 53,
+      "types": [],
       "values": [
         "true",
         "false"
@@ -6721,6 +8231,7 @@
       "atRule": "@property",
       "name": "initial-value",
       "relevance": 53,
+      "types": [],
       "values": [],
       "sets": []
     },
@@ -6728,6 +8239,7 @@
       "atRule": "@property",
       "name": "syntax",
       "relevance": 53,
+      "types": [],
       "values": [],
       "sets": []
     },
@@ -6735,6 +8247,7 @@
       "atRule": "@view-transition",
       "name": "navigation",
       "relevance": 55,
+      "types": [],
       "values": [
         "auto",
         "none"
@@ -6745,6 +8258,7 @@
       "atRule": "@view-transition",
       "name": "types",
       "relevance": 50,
+      "types": [],
       "values": [
         "none"
       ],
@@ -7871,13 +9385,24 @@
     "type:transform-function": [
       "matrix()",
       "translate()",
+      "translateX()",
+      "translateY()",
       "scale()",
+      "scaleX()",
+      "scaleY()",
       "rotate()",
       "skew()",
+      "skewX()",
+      "skewY()",
       "matrix3d()",
       "translate3d()",
+      "translateZ()",
       "scale3d()",
+      "scaleZ()",
       "rotate3d()",
+      "rotateX()",
+      "rotateY()",
+      "rotateZ()",
       "perspective()"
     ],
     "type:transition-behavior-value": [

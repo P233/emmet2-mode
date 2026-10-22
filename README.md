@@ -183,10 +183,14 @@ marks where point ends; results with several declarations insert one per line.
   the imports yourself. Hyphenated names use brackets, as in
   `styles["btn-primary"]`. A leading `_` keeps the classes a plain string.
 - In CSS, properties are found by initials and word fragments; an uppercase
-  letter starts the value explicitly, as in `mA`. Integers get `px` and decimals
-  `rem`; zero and numeric properties such as `line-height` and `order` stay
-  unitless. Suffix `r`, `e` or `p` for `rem`, `em` or `%`, and `!` for
-  `!important`. Unknown names, values and units offer no choice; put project
+  letter starts the value explicitly, as in `mA`. Time values use `ms` for
+  integers and `s` for decimals or zero. Angle values use `deg` when length and
+  percentage are unavailable, and percentages use `%` where neither lengths nor
+  numbers are accepted. Properties accepting a number but no length, such as
+  `opacity` and `order`, keep bare numbers unitless, as do `flex`, `line-height`
+  and `tab-size`. Other integers get `px` and decimals `rem`; zero lengths stay
+  unitless. Suffix `r`, `e`, `x` or `p` for `rem`, `em`, `ex` or `%`, and `!`
+  for `!important`. Unknown names, values and units offer no choice; put project
   values in brackets. A colon starts a pseudo-class, so write `dn`, not `d:n`.
 - In style objects, unitless and pixel values become numbers, others strings.
   A trailing comma ends the member, so `m10,` offers nothing; join with `+`.

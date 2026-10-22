@@ -99,7 +99,7 @@ tables are copied.  The shared strings must stay read-only."
                               (make-hash-table :test #'equal))))
 
 (cl-defstruct (emmet2-css-search--property (:constructor emmet2-css-search--property) (:copier nil))
-  name words prior keywords own sets descriptor letters)
+  name words prior keywords own sets types descriptor letters)
 (cl-defstruct (emmet2-css-search--value (:constructor emmet2-css-search--value) (:copier nil))
   name words prior)
 
@@ -150,6 +150,7 @@ Equal keyword entries and words are shared through POOL."
      :keywords keywords
      :own (emmet2-css-search--bucket keywords (emmet2-css-search--weight 'own) pool)
      :sets (gethash "sets" entry)
+     :types (gethash "types" entry)
      :descriptor (and (gethash "atRule" entry) t)
      :letters (emmet2-css-search--letters name))))
 
@@ -587,6 +588,12 @@ AT-RULE selects descriptor values, as in ranked search."
   (when-let* ((entry (emmet2-css-search--entry property at-rule)))
     (cl-remove-if (lambda (keyword) (string-suffix-p "()" keyword))
                   (emmet2-css-search--property-keywords entry))))
+
+(defun emmet2-css-search-value-types (name &optional at-rule)
+  "Return a fresh list of NAME's primitive value types in AT-RULE.
+Type names are shared read-only strings derived by the data generator."
+  (when-let* ((entry (emmet2-css-search--entry name at-rule)))
+    (copy-sequence (emmet2-css-search--property-types entry))))
 
 (defun emmet2-css-search-property-p (name &optional at-rule)
   "Whether NAME is a CSS property or a descriptor admitted by AT-RULE.

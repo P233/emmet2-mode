@@ -48,20 +48,8 @@
     (cl-loop for name being the hash-keys of (emmet2-stylesheet--property-names)
              maximize (length name))))
 
-(defconst emmet2-stylesheet--unitless-properties
-  '("additive-symbols" "animation-iteration-count" "aspect-ratio" "base-palette"
-    "border-image-slice" "box-flex" "box-flex-group" "box-ordinal-group" "column-count"
-    "counter-increment" "counter-reset" "counter-set" "fill-opacity" "flex"
-    "flex-grow" "flex-shrink" "flood-opacity" "font-feature-settings" "font-size-adjust"
-    "font-variation-settings" "font-weight" "grid-area" "grid-column" "grid-column-end"
-    "grid-column-start" "grid-row" "grid-row-end" "grid-row-start" "hyphenate-limit-chars"
-    "initial-letter" "line-clamp" "line-height" "mask-border-slice" "math-depth"
-    "max-lines" "nav-index" "opacity" "order" "orphans" "override-colors" "pad" "range"
-    "reading-order" "scale" "shape-image-threshold" "stop-opacity" "stroke-miterlimit"
-    "stroke-opacity" "system" "text-combine-upright" "widows" "z-index" "zoom")
-  "Properties whose bare numbers take no unit.
-Other bare nonzero numbers take px, or rem when written with a decimal
-point; an explicit unit always wins.")
+(defconst emmet2-stylesheet--unitless-length-properties '("flex" "line-height" "tab-size")
+  "Properties accepting lengths whose bare numbers conventionally stay unitless.")
 
 (defconst emmet2-stylesheet--units
   '("%" "px" "cm" "mm" "q" "in" "pc" "pt" "em" "rem" "ex" "rex" "cap" "rcap" "ch" "rch"
@@ -349,14 +337,22 @@ is no keyword of the property or a unit outside `emmet2-stylesheet--units'."
         (when (eq (aref token 0) 'number)
           (let* ((value (aref token 1))
                  (unit (or (cdr (assoc (aref value 1) '(("e" . "em") ("p" . "%") ("x" . "ex") ("r" . "rem"))))
-                           (aref value 1))))
+                           (aref value 1)))
+                 (types (and (equal unit "") (emmet2-css-search-value-types name at-rule)))
+                 (decimal (string-search "." (aref value 2))))
             (when (and strict (not (equal unit "")) (not (member (downcase unit) emmet2-stylesheet--units)))
               (signal 'emmet2-parse-error (list (format "Unknown CSS unit: %s" unit) (or (aref token 2) 0))))
             (aset value 1
                   (cond ((not (equal unit "")) unit)
+                        ((member "time" types) (if (or (= (aref value 0) 0) decimal) "s" "ms"))
+                        ((and (member "angle" types)
+                              (not (cl-intersection types '("length" "percentage") :test #'equal))) "deg")
+                        ((and (member "percentage" types)
+                              (not (cl-intersection types '("length" "number") :test #'equal))) "%")
                         ((or (= (aref value 0) 0)
-                             (member name emmet2-stylesheet--unitless-properties)) "")
-                        ((string-search "." (aref value 2)) "rem") (t "px"))))))))
+                             (and (member "number" types) (not (member "length" types)))
+                             (member name emmet2-stylesheet--unitless-length-properties)) "")
+                        (decimal "rem") (t "px"))))))))
   node)
 
 (defun emmet2-stylesheet--push (out text &optional lines)

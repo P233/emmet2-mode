@@ -27,6 +27,7 @@ engine and result helpers (`emmet2-engine-*`, `emmet2-result-*`),
 | `emmet2-css-data-query` | `(KIND &key query property at-rule vendor)` |
 | `emmet2-css-search` | `(QUERY &optional LIMIT BARE AT-RULE)` |
 | `emmet2-css-search-values` | `(PROPERTY QUERY &optional LIMIT AT-RULE)` |
+| `emmet2-css-search-value-types` | `(PROPERTY &optional AT-RULE)` |
 | `emmet2-fuzzy-match` | `(QUERY CANDIDATE &optional PARTIAL)` |
 | `emmet2-fuzzy-filter` | `(QUERY CANDIDATES &optional KEY)` |
 | `emmet2-extensions-css` | `(ABBREVIATION &key css-in-js (syntax 'scss) (indent "\t") (base-indent "") at-rule scale-functions)` |
@@ -118,6 +119,10 @@ a matched query prefix at a lower score; completion does not use it.
 (emmet2-css-search-values "display" "ib" 3)
 ;; => ("inline-block")
 ```
+
+`emmet2-css-search-value-types` returns a fresh list of primitive type names
+derived from the property's syntax. Descriptors use their own syntax in
+AT-RULE. Strings are shared read-only; unknown properties return nil.
 
 `emmet2-css-search` returns `(PROPERTY . KEYWORD)` pairs, with nil for a bare
 property and a default limit of ten. Use the extension API for complete syntax,

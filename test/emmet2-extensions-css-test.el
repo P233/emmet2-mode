@@ -7,6 +7,7 @@
 (require 'emmet2-css)
 (require 'emmet2-expand)
 
+
 (ert-deftest emmet2-css-documentation-functions-have-empty-fields ()
   (should (member "content[counter()]" (emmet2-extensions-css-choices "ctc")))
   (dolist (case '(("trfrx" "transform: rotateX();") ("content[counter()]" "content: counter();")))
@@ -517,6 +518,24 @@ implicit ampersand.")
         (should (equal (plist-get (emmet2-extensions-css input :at-rule rule) :text) expected))
         (should (equal (emmet2-extensions-css choice :at-rule rule)
                        (emmet2-extensions-css input :at-rule rule)))))))
+
+(ert-deftest emmet2-css-default-units-follow-property-types ()
+  (dolist (case '(("trd0" . "transition-duration: 0s;")
+                  ("trd1" . "transition-duration: 1ms;")
+                  ("trd.3" . "transition-duration: 0.3s;")
+                  ("trd-.3" . "transition-duration: -0.3s;")
+                  ("rotate45" . "rotate: 45deg;") ("rotate0" . "rotate: 0deg;")
+                  ("opacity.5" . "opacity: 0.5;") ("tab-size4" . "tab-size: 4;")
+                  ("lh1.5" . "line-height: 1.5;") ("flex2" . "flex: 2;") ("scale2" . "scale: 2;")
+                  ;; Other properties accepting numbers and lengths keep the length default.
+                  ("columns2" . "columns: 2px;") ("stroke-width2" . "stroke-width: 2px;")
+                  ("font12" . "font: 12px;") ("m2x" . "margin: 2ex;")
+                  ("font-stretch50" . "font-stretch: 50%;") ("font-stretch0" . "font-stretch: 0%;")
+                  ("gap4" . "gap: 4px;") ("gap.5" . "gap: 0.5rem;")
+                  ("m0" . "margin: 0;") ("image-rendering4" . "image-rendering: 4px;")
+                  ("trd2s" . "transition-duration: 2s;") ("rotate.5turn" . "rotate: 0.5turn;")))
+    (ert-info ((car case))
+      (should (equal (plist-get (emmet2-extensions-css (car case)) :text) (cdr case))))))
 
 (provide 'emmet2-extensions-css-test)
 ;;; emmet2-extensions-css-test.el ends here

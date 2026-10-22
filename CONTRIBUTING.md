@@ -153,15 +153,27 @@ syntax. The shared query library uses this same membership. This snapshot
 remains pinned and offline at runtime; updating data does not automatically add
 grammar support.
 
+Each property and descriptor also records primitive value types resolved from
+its syntax, including references to other properties and MDN types. Function
+arguments do not contribute types. Only records without syntax use their
+primitive restrictions as fallback evidence for legacy compatibility. Expansion
+uses these flags for default units; only `flex`, `line-height` and `tab-size`
+are named, as length properties whose bare numbers stay unitless.
+
+`node test/update-web-data.mjs --offline` regenerates both data files without
+network access. It keeps the committed value names, normalizing function
+placeholders, and derives value sets and type flags from the pinned inputs in
+`test/fixtures/css-types/`: the MDN `css/syntaxes.json` and `css/at-rules.json`,
+checked against their pinned hashes, and `properties.json`, the names, scope,
+syntax and restrictions of the VS Code records in the pre-compaction
+`42d305a^:data/css-data.json`. A Node test checks that the committed data
+equals this regeneration. These fixtures are development inputs; runtime needs
+only `data/`.
+
 `css-overrides.json` holds the data-driven overrides: word and property aliases
 used by search, and pseudo and at-rule aliases, pseudo functions and SCSS
 at-rule templates used by `emmet2-css`. The generator never writes it.
 Review upstream names and local targets together.
-
-`node test/update-web-data.mjs --normalize-values` repairs function placeholders
-in the committed metadata and index offline. The networked generator also
-normalizes placeholders and scans camelCase function types, such as
-`translateX()`, from the pinned sources.
 
 ## Actual installation
 

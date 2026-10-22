@@ -82,11 +82,11 @@
                   ("counter-increment:chapter-2" . "counter-increment: chapter -2;")
                   ("font-feature-settings\"liga\"1" . "font-feature-settings: \"liga\" 1;")
                   ("font-variation-settings\"wght\"400" . "font-variation-settings: \"wght\" 400;")
-                  ;; Authored units and properties admitting lengths keep their policy.
+                  ;; Explicit units override generated defaults.
                   ("fill-opacity50p" . "fill-opacity: 50%;")
                   ("line-height1.5e" . "line-height: 1.5em;")
                   ("border-image-width2" . "border-image-width: 2px;")
-                  ("tab-size4" . "tab-size: 4px;")))
+                  ("tab-size4" . "tab-size: 4;")))
     (ert-info ((car case))
       (should (equal (plist-get (emmet2-engine-stylesheet-expand (car case)) :text) (cdr case))))))
 

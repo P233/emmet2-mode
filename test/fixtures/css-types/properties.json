@@ -1,0 +1,5513 @@
+{
+  "properties": [
+    {
+      "name": "additive-symbols",
+      "atRule": "@counter-style",
+      "syntax": "[ <integer [0,\u221e]> && <symbol> ]#",
+      "restrictions": [
+        "integer",
+        "string",
+        "image",
+        "identifier"
+      ]
+    },
+    {
+      "name": "align-content",
+      "syntax": "normal | <baseline-position> | <content-distribution> | <overflow-position>? <content-position>",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "align-items",
+      "syntax": "normal | stretch | <baseline-position> | [ <overflow-position>? <self-position> ] | anchor-center",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "justify-items",
+      "syntax": "normal | stretch | <baseline-position> | <overflow-position>? [ <self-position> | left | right ] | legacy | legacy && [ left | right | center ] | anchor-center",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "justify-self",
+      "syntax": "auto | normal | stretch | <baseline-position> | <overflow-position>? [ <self-position> | left | right ] | anchor-center",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "align-self",
+      "syntax": "auto | normal | stretch | <baseline-position> | <overflow-position>? <self-position> | anchor-center",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "all",
+      "syntax": "initial | inherit | unset | revert | revert-layer",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "alt",
+      "restrictions": [
+        "string",
+        "enum"
+      ]
+    },
+    {
+      "name": "animation",
+      "syntax": "<single-animation>#",
+      "restrictions": [
+        "time",
+        "timing-function",
+        "enum",
+        "identifier",
+        "number"
+      ]
+    },
+    {
+      "name": "animation-delay",
+      "syntax": "<time>#",
+      "restrictions": [
+        "time"
+      ]
+    },
+    {
+      "name": "animation-direction",
+      "syntax": "<single-animation-direction>#",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "animation-duration",
+      "syntax": "[ auto | <time [0s,\u221e]> ]#",
+      "restrictions": [
+        "time"
+      ]
+    },
+    {
+      "name": "animation-fill-mode",
+      "syntax": "<single-animation-fill-mode>#",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "animation-iteration-count",
+      "syntax": "<single-animation-iteration-count>#",
+      "restrictions": [
+        "number",
+        "enum"
+      ]
+    },
+    {
+      "name": "animation-name",
+      "syntax": "[ none | <keyframes-name> ]#",
+      "restrictions": [
+        "identifier",
+        "enum"
+      ]
+    },
+    {
+      "name": "animation-play-state",
+      "syntax": "<single-animation-play-state>#",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "animation-timing-function",
+      "syntax": "<easing-function>#",
+      "restrictions": [
+        "timing-function"
+      ]
+    },
+    {
+      "name": "backface-visibility",
+      "syntax": "visible | hidden",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "background",
+      "syntax": "<bg-layer>#? , <final-bg-layer>",
+      "restrictions": [
+        "enum",
+        "image",
+        "color",
+        "position",
+        "length",
+        "repeat",
+        "percentage",
+        "box"
+      ]
+    },
+    {
+      "name": "background-attachment",
+      "syntax": "<attachment>#",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "background-blend-mode",
+      "syntax": "<blend-mode>#",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "background-clip",
+      "syntax": "<bg-clip>#",
+      "restrictions": [
+        "box"
+      ]
+    },
+    {
+      "name": "background-color",
+      "syntax": "<color>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "background-image",
+      "syntax": "<bg-image>#",
+      "restrictions": [
+        "image",
+        "enum"
+      ]
+    },
+    {
+      "name": "background-origin",
+      "syntax": "<visual-box>#",
+      "restrictions": [
+        "box"
+      ]
+    },
+    {
+      "name": "background-position",
+      "syntax": "<bg-position>#",
+      "restrictions": [
+        "position",
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "background-position-x",
+      "syntax": "[ center | [ [ left | right | x-start | x-end ]? <length-percentage>? ]! ]#",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "background-position-y",
+      "syntax": "[ center | [ [ top | bottom | y-start | y-end ]? <length-percentage>? ]! ]#",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "background-repeat",
+      "syntax": "<repeat-style>#",
+      "restrictions": [
+        "repeat"
+      ]
+    },
+    {
+      "name": "background-size",
+      "syntax": "<bg-size>#",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "behavior",
+      "restrictions": [
+        "url"
+      ]
+    },
+    {
+      "name": "block-size",
+      "syntax": "<'width'>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "border",
+      "syntax": "<line-width> || <line-style> || <color>",
+      "restrictions": [
+        "length",
+        "line-width",
+        "line-style",
+        "color"
+      ]
+    },
+    {
+      "name": "border-block-end",
+      "syntax": "<'border-top-width'> || <'border-top-style'> || <color>",
+      "restrictions": [
+        "length",
+        "line-width",
+        "line-style",
+        "color"
+      ]
+    },
+    {
+      "name": "border-block-start",
+      "syntax": "<'border-top-width'> || <'border-top-style'> || <color>",
+      "restrictions": [
+        "length",
+        "line-width",
+        "line-style",
+        "color"
+      ]
+    },
+    {
+      "name": "border-block-end-color",
+      "syntax": "<'border-top-color'>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "border-block-start-color",
+      "syntax": "<'border-top-color'>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "border-block-end-style",
+      "syntax": "<'border-top-style'>",
+      "restrictions": [
+        "line-style"
+      ]
+    },
+    {
+      "name": "border-block-start-style",
+      "syntax": "<'border-top-style'>",
+      "restrictions": [
+        "line-style"
+      ]
+    },
+    {
+      "name": "border-block-end-width",
+      "syntax": "<'border-top-width'>",
+      "restrictions": [
+        "length",
+        "line-width"
+      ]
+    },
+    {
+      "name": "border-block-start-width",
+      "syntax": "<'border-top-width'>",
+      "restrictions": [
+        "length",
+        "line-width"
+      ]
+    },
+    {
+      "name": "border-bottom",
+      "syntax": "<line-width> || <line-style> || <color>",
+      "restrictions": [
+        "length",
+        "line-width",
+        "line-style",
+        "color"
+      ]
+    },
+    {
+      "name": "border-bottom-color",
+      "syntax": "<'border-top-color'>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "border-bottom-left-radius",
+      "syntax": "<length-percentage [0,\u221e]>{1,2}",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "border-bottom-right-radius",
+      "syntax": "<length-percentage [0,\u221e]>{1,2}",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "border-bottom-style",
+      "syntax": "<line-style>",
+      "restrictions": [
+        "line-style"
+      ]
+    },
+    {
+      "name": "border-bottom-width",
+      "syntax": "<line-width>",
+      "restrictions": [
+        "length",
+        "line-width"
+      ]
+    },
+    {
+      "name": "border-collapse",
+      "syntax": "separate | collapse",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "border-color",
+      "syntax": "<color>{1,4}",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "border-image",
+      "syntax": "<'border-image-source'> || <'border-image-slice'> [ / <'border-image-width'> | / <'border-image-width'>? / <'border-image-outset'> ]? || <'border-image-repeat'>",
+      "restrictions": [
+        "length",
+        "percentage",
+        "number",
+        "url",
+        "enum"
+      ]
+    },
+    {
+      "name": "border-image-outset",
+      "syntax": "[ <length [0,\u221e]> | <number [0,\u221e]> ]{1,4}",
+      "restrictions": [
+        "length",
+        "number"
+      ]
+    },
+    {
+      "name": "border-image-repeat",
+      "syntax": "[ stretch | repeat | round | space ]{1,2}",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "border-image-slice",
+      "syntax": "[ <number [0,\u221e]> | <percentage [0,\u221e]> ]{1,4} && fill?",
+      "restrictions": [
+        "number",
+        "percentage"
+      ]
+    },
+    {
+      "name": "border-image-source",
+      "syntax": "none | <image>",
+      "restrictions": [
+        "image"
+      ]
+    },
+    {
+      "name": "border-image-width",
+      "syntax": "[ <length-percentage [0,\u221e]> | <number [0,\u221e]> | auto ]{1,4}",
+      "restrictions": [
+        "length",
+        "percentage",
+        "number"
+      ]
+    },
+    {
+      "name": "border-inline-end",
+      "syntax": "<'border-top-width'> || <'border-top-style'> || <color>",
+      "restrictions": [
+        "length",
+        "line-width",
+        "line-style",
+        "color"
+      ]
+    },
+    {
+      "name": "border-inline-start",
+      "syntax": "<'border-top-width'> || <'border-top-style'> || <color>",
+      "restrictions": [
+        "length",
+        "line-width",
+        "line-style",
+        "color"
+      ]
+    },
+    {
+      "name": "border-inline-end-color",
+      "syntax": "<'border-top-color'>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "border-inline-start-color",
+      "syntax": "<'border-top-color'>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "border-inline-end-style",
+      "syntax": "<'border-top-style'>",
+      "restrictions": [
+        "line-style"
+      ]
+    },
+    {
+      "name": "border-inline-start-style",
+      "syntax": "<'border-top-style'>",
+      "restrictions": [
+        "line-style"
+      ]
+    },
+    {
+      "name": "border-inline-end-width",
+      "syntax": "<'border-top-width'>",
+      "restrictions": [
+        "length",
+        "line-width"
+      ]
+    },
+    {
+      "name": "border-inline-start-width",
+      "syntax": "<'border-top-width'>",
+      "restrictions": [
+        "length",
+        "line-width"
+      ]
+    },
+    {
+      "name": "border-left",
+      "syntax": "<line-width> || <line-style> || <color>",
+      "restrictions": [
+        "length",
+        "line-width",
+        "line-style",
+        "color"
+      ]
+    },
+    {
+      "name": "border-left-color",
+      "syntax": "<color>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "border-left-style",
+      "syntax": "<line-style>",
+      "restrictions": [
+        "line-style"
+      ]
+    },
+    {
+      "name": "border-left-width",
+      "syntax": "<line-width>",
+      "restrictions": [
+        "length",
+        "line-width"
+      ]
+    },
+    {
+      "name": "border-radius",
+      "syntax": "<length-percentage [0,\u221e]>{1,4} [ / <length-percentage [0,\u221e]>{1,4} ]?",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "border-right",
+      "syntax": "<line-width> || <line-style> || <color>",
+      "restrictions": [
+        "length",
+        "line-width",
+        "line-style",
+        "color"
+      ]
+    },
+    {
+      "name": "border-right-color",
+      "syntax": "<color>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "border-right-style",
+      "syntax": "<line-style>",
+      "restrictions": [
+        "line-style"
+      ]
+    },
+    {
+      "name": "border-right-width",
+      "syntax": "<line-width>",
+      "restrictions": [
+        "length",
+        "line-width"
+      ]
+    },
+    {
+      "name": "border-spacing",
+      "syntax": "<length>{1,2}",
+      "restrictions": [
+        "length"
+      ]
+    },
+    {
+      "name": "border-style",
+      "syntax": "<line-style>{1,4}",
+      "restrictions": [
+        "line-style"
+      ]
+    },
+    {
+      "name": "border-top",
+      "syntax": "<line-width> || <line-style> || <color>",
+      "restrictions": [
+        "length",
+        "line-width",
+        "line-style",
+        "color"
+      ]
+    },
+    {
+      "name": "border-top-color",
+      "syntax": "<color>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "border-top-left-radius",
+      "syntax": "<length-percentage [0,\u221e]>{1,2}",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "border-top-right-radius",
+      "syntax": "<length-percentage [0,\u221e]>{1,2}",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "border-top-style",
+      "syntax": "<line-style>",
+      "restrictions": [
+        "line-style"
+      ]
+    },
+    {
+      "name": "border-top-width",
+      "syntax": "<line-width>",
+      "restrictions": [
+        "length",
+        "line-width"
+      ]
+    },
+    {
+      "name": "border-width",
+      "syntax": "<line-width>{1,4}",
+      "restrictions": [
+        "length",
+        "line-width"
+      ]
+    },
+    {
+      "name": "bottom",
+      "syntax": "auto | <length-percentage> | <anchor()> | <anchor-size()>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "box-decoration-break",
+      "syntax": "slice | clone",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "box-shadow",
+      "syntax": "none | <shadow>#",
+      "restrictions": [
+        "length",
+        "color",
+        "enum"
+      ]
+    },
+    {
+      "name": "box-sizing",
+      "syntax": "content-box | border-box",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "break-after",
+      "syntax": "auto | avoid | always | all | avoid-page | page | left | right | recto | verso | avoid-column | column | avoid-region | region",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "break-before",
+      "syntax": "auto | avoid | always | all | avoid-page | page | left | right | recto | verso | avoid-column | column | avoid-region | region",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "break-inside",
+      "syntax": "auto | avoid | avoid-page | avoid-column | avoid-region",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "caption-side",
+      "syntax": "top | bottom",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "caret-color",
+      "syntax": "auto | <color>",
+      "restrictions": [
+        "color",
+        "enum"
+      ]
+    },
+    {
+      "name": "clear",
+      "syntax": "none | left | right | both | inline-start | inline-end",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "clip",
+      "syntax": "<shape> | auto",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "clip-path",
+      "syntax": "<clip-source> | [ <basic-shape> || <geometry-box> ] | none",
+      "restrictions": [
+        "url",
+        "shape",
+        "geometry-box",
+        "enum"
+      ]
+    },
+    {
+      "name": "clip-rule",
+      "syntax": "nonzero | evenodd",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "color",
+      "syntax": "<color>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "color-interpolation-filters",
+      "syntax": "auto | sRGB | linearRGB",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "column-count",
+      "syntax": "<integer> | auto",
+      "restrictions": [
+        "integer",
+        "enum"
+      ]
+    },
+    {
+      "name": "column-fill",
+      "syntax": "auto | balance",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "column-gap",
+      "syntax": "normal | <length-percentage>",
+      "restrictions": [
+        "length",
+        "enum"
+      ]
+    },
+    {
+      "name": "column-rule",
+      "syntax": "<'column-rule-width'> || <'column-rule-style'> || <'column-rule-color'>",
+      "restrictions": [
+        "length",
+        "line-width",
+        "line-style",
+        "color"
+      ]
+    },
+    {
+      "name": "column-rule-color",
+      "syntax": "<color>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "column-rule-style",
+      "syntax": "<'border-style'>",
+      "restrictions": [
+        "line-style"
+      ]
+    },
+    {
+      "name": "column-rule-width",
+      "syntax": "<'border-width'>",
+      "restrictions": [
+        "length",
+        "line-width"
+      ]
+    },
+    {
+      "name": "columns",
+      "syntax": "[ <'column-width'> || <'column-count'> ] [ / <'column-height'> ]?",
+      "restrictions": [
+        "length",
+        "integer",
+        "enum"
+      ]
+    },
+    {
+      "name": "column-span",
+      "syntax": "none | all",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "column-width",
+      "syntax": "auto | <length [0,\u221e]>",
+      "restrictions": [
+        "length",
+        "enum"
+      ]
+    },
+    {
+      "name": "contain",
+      "syntax": "none | strict | content | [ [ size || inline-size ] || layout || style || paint ]",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "content",
+      "syntax": "normal | none | [ <content-replacement> | <content-list> ] [ / [ <string> | <counter> | <attr()> ]+ ]?",
+      "restrictions": [
+        "string",
+        "url"
+      ]
+    },
+    {
+      "name": "counter-increment",
+      "syntax": "[ <counter-name> <integer>? ]+ | none",
+      "restrictions": [
+        "identifier",
+        "integer"
+      ]
+    },
+    {
+      "name": "counter-reset",
+      "syntax": "[ <counter-name> <integer>? | <reversed-counter-name> <integer>? ]+ | none",
+      "restrictions": [
+        "identifier",
+        "integer"
+      ]
+    },
+    {
+      "name": "cursor",
+      "syntax": "[ [ <url> [ <x> <y> ]? , ]* <cursor-predefined> ]",
+      "restrictions": [
+        "url",
+        "number",
+        "enum"
+      ]
+    },
+    {
+      "name": "direction",
+      "syntax": "ltr | rtl",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "display",
+      "syntax": "[ <display-outside> || <display-inside> ] | <display-listitem> | <display-internal> | <display-box> | <display-legacy>",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "empty-cells",
+      "syntax": "show | hide",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "enable-background",
+      "restrictions": [
+        "integer",
+        "length",
+        "percentage",
+        "enum"
+      ]
+    },
+    {
+      "name": "fallback",
+      "atRule": "@counter-style",
+      "syntax": "<counter-style-name>",
+      "restrictions": [
+        "identifier"
+      ]
+    },
+    {
+      "name": "fill",
+      "syntax": "<paint>",
+      "restrictions": [
+        "color",
+        "enum",
+        "url"
+      ]
+    },
+    {
+      "name": "fill-opacity",
+      "syntax": "<'opacity'>",
+      "restrictions": [
+        "number(0-1)"
+      ]
+    },
+    {
+      "name": "fill-rule",
+      "syntax": "nonzero | evenodd",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "filter",
+      "syntax": "none | <filter-value-list>",
+      "restrictions": [
+        "enum",
+        "url"
+      ]
+    },
+    {
+      "name": "flex",
+      "syntax": "none | [ <'flex-grow'> <'flex-shrink'>? || <'flex-basis'> ]",
+      "restrictions": [
+        "length",
+        "number",
+        "percentage"
+      ]
+    },
+    {
+      "name": "flex-basis",
+      "syntax": "content | <'width'>",
+      "restrictions": [
+        "length",
+        "number",
+        "percentage"
+      ]
+    },
+    {
+      "name": "flex-direction",
+      "syntax": "row | row-reverse | column | column-reverse",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "flex-flow",
+      "syntax": "<'flex-direction'> || <'flex-wrap'>",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "flex-grow",
+      "syntax": "<number>",
+      "restrictions": [
+        "number"
+      ]
+    },
+    {
+      "name": "flex-shrink",
+      "syntax": "<number>",
+      "restrictions": [
+        "number"
+      ]
+    },
+    {
+      "name": "flex-wrap",
+      "syntax": "nowrap | wrap | wrap-reverse",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "float",
+      "syntax": "left | right | none | inline-start | inline-end",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "flood-color",
+      "syntax": "<color>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "flood-opacity",
+      "syntax": "<'opacity'>",
+      "restrictions": [
+        "number(0-1)",
+        "percentage"
+      ]
+    },
+    {
+      "name": "font",
+      "syntax": "[ [ <'font-style'> || <font-variant-css2> || <'font-weight'> || <font-width-css3> ]? <'font-size'> [ / <'line-height'> ]? <'font-family'># ] | <system-family-name>",
+      "restrictions": [
+        "font"
+      ]
+    },
+    {
+      "name": "font-family",
+      "atRule": "@font-palette-values",
+      "syntax": "<family-name>#",
+      "restrictions": [
+        "font"
+      ]
+    },
+    {
+      "name": "font-feature-settings",
+      "atRule": "@font-face",
+      "syntax": "normal | <feature-tag-value>#",
+      "restrictions": [
+        "string",
+        "integer"
+      ]
+    },
+    {
+      "name": "font-kerning",
+      "syntax": "auto | normal | none",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "font-language-override",
+      "syntax": "normal | <string>",
+      "restrictions": [
+        "string"
+      ]
+    },
+    {
+      "name": "font-size",
+      "syntax": "<absolute-size> | <relative-size> | <length-percentage [0,\u221e]> | math",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "font-size-adjust",
+      "syntax": "none | [ ex-height | cap-height | ch-width | ic-width | ic-height ]? [ from-font | <number> ]",
+      "restrictions": [
+        "number"
+      ]
+    },
+    {
+      "name": "font-stretch",
+      "atRule": "@font-face",
+      "syntax": "<font-stretch-absolute>{1,2}",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "font-style",
+      "atRule": "@font-face",
+      "syntax": "normal | italic | oblique <angle>{0,2}",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "font-synthesis",
+      "syntax": "none | [ weight || style || small-caps || position]",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "font-variant",
+      "syntax": "normal | none | [ <common-lig-values> || <discretionary-lig-values> || <historical-lig-values> || <contextual-alt-values> || stylistic( <feature-value-name> ) || historical-forms || styleset( <feature-value-name># ) || character-variant( <feature-value-name># ) || swash( <feature-value-name> ) || ornaments( <feature-value-name> ) || annotation( <feature-value-name> ) || [ small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps ] || <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero || <east-asian-variant-values> || <east-asian-width-values> || ruby ]",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "font-variant-alternates",
+      "syntax": "normal | [ stylistic( <feature-value-name> ) || historical-forms || styleset( <feature-value-name># ) || character-variant( <feature-value-name># ) || swash( <feature-value-name> ) || ornaments( <feature-value-name> ) || annotation( <feature-value-name> ) ]",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "font-variant-caps",
+      "syntax": "normal | small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "font-variant-east-asian",
+      "syntax": "normal | [ <east-asian-variant-values> || <east-asian-width-values> || ruby ]",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "font-variant-ligatures",
+      "syntax": "normal | none | [ <common-lig-values> || <discretionary-lig-values> || <historical-lig-values> || <contextual-alt-values> ]",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "font-variant-numeric",
+      "syntax": "normal | [ <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero ]",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "font-variant-position",
+      "syntax": "normal | sub | super",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "font-weight",
+      "atRule": "@font-face",
+      "syntax": "<font-weight-absolute>{1,2}",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "glyph-orientation-horizontal",
+      "restrictions": [
+        "angle",
+        "number"
+      ]
+    },
+    {
+      "name": "glyph-orientation-vertical",
+      "restrictions": [
+        "angle",
+        "number",
+        "enum"
+      ]
+    },
+    {
+      "name": "grid-area",
+      "syntax": "<grid-line> [ / <grid-line> ]{0,3}",
+      "restrictions": [
+        "identifier",
+        "integer"
+      ]
+    },
+    {
+      "name": "grid",
+      "syntax": "<'grid-template'> | <'grid-template-rows'> / [ auto-flow && dense? ] <'grid-auto-columns'>? | [ auto-flow && dense? ] <'grid-auto-rows'>? / <'grid-template-columns'>",
+      "restrictions": [
+        "identifier",
+        "length",
+        "percentage",
+        "string",
+        "enum"
+      ]
+    },
+    {
+      "name": "grid-auto-columns",
+      "syntax": "<track-size>+",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "grid-auto-flow",
+      "syntax": "[ row | column ] || dense",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "grid-auto-rows",
+      "syntax": "<track-size>+",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "grid-column",
+      "syntax": "<grid-line> [ / <grid-line> ]?",
+      "restrictions": [
+        "identifier",
+        "integer",
+        "enum"
+      ]
+    },
+    {
+      "name": "grid-column-end",
+      "syntax": "<grid-line>",
+      "restrictions": [
+        "identifier",
+        "integer",
+        "enum"
+      ]
+    },
+    {
+      "name": "grid-column-gap",
+      "syntax": "<length-percentage>",
+      "restrictions": [
+        "length"
+      ]
+    },
+    {
+      "name": "grid-column-start",
+      "syntax": "<grid-line>",
+      "restrictions": [
+        "identifier",
+        "integer",
+        "enum"
+      ]
+    },
+    {
+      "name": "grid-gap",
+      "syntax": "<'grid-row-gap'> <'grid-column-gap'>?",
+      "restrictions": [
+        "length"
+      ]
+    },
+    {
+      "name": "grid-row",
+      "syntax": "<grid-line> [ / <grid-line> ]?",
+      "restrictions": [
+        "identifier",
+        "integer",
+        "enum"
+      ]
+    },
+    {
+      "name": "grid-row-end",
+      "syntax": "<grid-line>",
+      "restrictions": [
+        "identifier",
+        "integer",
+        "enum"
+      ]
+    },
+    {
+      "name": "grid-row-gap",
+      "syntax": "<length-percentage>",
+      "restrictions": [
+        "length"
+      ]
+    },
+    {
+      "name": "grid-row-start",
+      "syntax": "<grid-line>",
+      "restrictions": [
+        "identifier",
+        "integer",
+        "enum"
+      ]
+    },
+    {
+      "name": "grid-template",
+      "syntax": "none | [ <'grid-template-rows'> / <'grid-template-columns'> ] | [ <line-names>? <string> <track-size>? <line-names>? ]+ [ / <explicit-track-list> ]?",
+      "restrictions": [
+        "identifier",
+        "length",
+        "percentage",
+        "string",
+        "enum"
+      ]
+    },
+    {
+      "name": "grid-template-areas",
+      "syntax": "none | <string>+",
+      "restrictions": [
+        "string"
+      ]
+    },
+    {
+      "name": "grid-template-columns",
+      "syntax": "none | <track-list> | <auto-track-list> | subgrid <line-name-list>?",
+      "restrictions": [
+        "identifier",
+        "length",
+        "percentage",
+        "enum"
+      ]
+    },
+    {
+      "name": "grid-template-rows",
+      "syntax": "none | <track-list> | <auto-track-list> | subgrid <line-name-list>?",
+      "restrictions": [
+        "identifier",
+        "length",
+        "percentage",
+        "string",
+        "enum"
+      ]
+    },
+    {
+      "name": "height",
+      "syntax": "auto | <length-percentage [0,\u221e]> | min-content | max-content | fit-content | fit-content(<length-percentage [0,\u221e]>) | <calc-size()> | <anchor-size()>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "hyphens",
+      "syntax": "none | manual | auto",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "image-orientation",
+      "syntax": "from-image | <angle> | [ <angle>? flip ]",
+      "restrictions": [
+        "angle"
+      ]
+    },
+    {
+      "name": "image-rendering",
+      "syntax": "auto | crisp-edges | pixelated | smooth",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "ime-mode",
+      "syntax": "auto | normal | active | inactive | disabled",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "inline-size",
+      "syntax": "<'width'>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "isolation",
+      "syntax": "auto | isolate",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "justify-content",
+      "syntax": "normal | <content-distribution> | <overflow-position>? [ <content-position> | left | right ]",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "kerning",
+      "restrictions": [
+        "length",
+        "enum"
+      ]
+    },
+    {
+      "name": "left",
+      "syntax": "auto | <length-percentage> | <anchor()> | <anchor-size()>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "letter-spacing",
+      "syntax": "normal | <length>",
+      "restrictions": [
+        "length"
+      ]
+    },
+    {
+      "name": "lighting-color",
+      "syntax": "<color>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "line-break",
+      "syntax": "auto | loose | normal | strict | anywhere",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "line-height",
+      "syntax": "normal | <number> | <length> | <percentage>",
+      "restrictions": [
+        "number",
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "list-style",
+      "syntax": "<'list-style-type'> || <'list-style-position'> || <'list-style-image'>",
+      "restrictions": [
+        "image",
+        "enum",
+        "url"
+      ]
+    },
+    {
+      "name": "list-style-image",
+      "syntax": "<image> | none",
+      "restrictions": [
+        "image"
+      ]
+    },
+    {
+      "name": "list-style-position",
+      "syntax": "inside | outside",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "list-style-type",
+      "syntax": "<counter-style> | <string> | none",
+      "restrictions": [
+        "enum",
+        "string"
+      ]
+    },
+    {
+      "name": "margin",
+      "syntax": "<'margin-top'>{1,4}",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "margin-block-end",
+      "syntax": "<'margin-top'>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "margin-block-start",
+      "syntax": "<'margin-top'>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "margin-bottom",
+      "syntax": "<length-percentage> | auto | <anchor-size()>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "margin-inline-end",
+      "syntax": "<'margin-top'>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "margin-inline-start",
+      "syntax": "<'margin-top'>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "margin-left",
+      "syntax": "<length-percentage> | auto | <anchor-size()>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "margin-right",
+      "syntax": "<length-percentage> | auto | <anchor-size()>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "margin-top",
+      "syntax": "<length-percentage> | auto | <anchor-size()>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "marker",
+      "syntax": "none | <url>",
+      "restrictions": [
+        "url"
+      ]
+    },
+    {
+      "name": "marker-end",
+      "syntax": "none | <url>",
+      "restrictions": [
+        "url"
+      ]
+    },
+    {
+      "name": "marker-mid",
+      "syntax": "none | <url>",
+      "restrictions": [
+        "url"
+      ]
+    },
+    {
+      "name": "marker-start",
+      "syntax": "none | <url>",
+      "restrictions": [
+        "url"
+      ]
+    },
+    {
+      "name": "mask-image",
+      "syntax": "<mask-reference>#",
+      "restrictions": [
+        "url",
+        "image",
+        "enum"
+      ]
+    },
+    {
+      "name": "mask-mode",
+      "syntax": "<masking-mode>#",
+      "restrictions": [
+        "url",
+        "image",
+        "enum"
+      ]
+    },
+    {
+      "name": "mask-origin",
+      "syntax": "<coord-box>#",
+      "restrictions": [
+        "geometry-box",
+        "enum"
+      ]
+    },
+    {
+      "name": "mask-position",
+      "syntax": "<position>#",
+      "restrictions": [
+        "position",
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "mask-repeat",
+      "syntax": "<repeat-style>#",
+      "restrictions": [
+        "repeat"
+      ]
+    },
+    {
+      "name": "mask-size",
+      "syntax": "<bg-size>#",
+      "restrictions": [
+        "length",
+        "percentage",
+        "enum"
+      ]
+    },
+    {
+      "name": "mask-type",
+      "syntax": "luminance | alpha",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "max-block-size",
+      "syntax": "<'max-width'>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "max-height",
+      "syntax": "none | <length-percentage [0,\u221e]> | min-content | max-content | fit-content | fit-content(<length-percentage [0,\u221e]>) | <calc-size()> | <anchor-size()>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "max-inline-size",
+      "syntax": "<'max-width'>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "max-width",
+      "syntax": "none | <length-percentage [0,\u221e]> | min-content | max-content | fit-content | fit-content(<length-percentage [0,\u221e]>) | <calc-size()> | <anchor-size()>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "min-block-size",
+      "syntax": "<'min-width'>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "min-height",
+      "syntax": "auto | <length-percentage [0,\u221e]> | min-content | max-content | fit-content | fit-content(<length-percentage [0,\u221e]>) | <calc-size()> | <anchor-size()>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "min-inline-size",
+      "syntax": "<'min-width'>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "min-width",
+      "syntax": "auto | <length-percentage [0,\u221e]> | min-content | max-content | fit-content | fit-content(<length-percentage [0,\u221e]>) | <calc-size()> | <anchor-size()>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "mix-blend-mode",
+      "syntax": "<blend-mode> | plus-darker | plus-lighter",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "motion",
+      "restrictions": [
+        "url",
+        "length",
+        "percentage",
+        "angle",
+        "shape",
+        "geometry-box",
+        "enum"
+      ]
+    },
+    {
+      "name": "motion-offset",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "motion-path",
+      "restrictions": [
+        "url",
+        "shape",
+        "geometry-box",
+        "enum"
+      ]
+    },
+    {
+      "name": "motion-rotation",
+      "restrictions": [
+        "angle"
+      ]
+    },
+    {
+      "name": "-moz-animation",
+      "restrictions": [
+        "time",
+        "enum",
+        "timing-function",
+        "identifier",
+        "number"
+      ]
+    },
+    {
+      "name": "-moz-animation-delay",
+      "restrictions": [
+        "time"
+      ]
+    },
+    {
+      "name": "-moz-animation-direction",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-moz-animation-duration",
+      "restrictions": [
+        "time"
+      ]
+    },
+    {
+      "name": "-moz-animation-iteration-count",
+      "restrictions": [
+        "number",
+        "enum"
+      ]
+    },
+    {
+      "name": "-moz-animation-name",
+      "restrictions": [
+        "identifier",
+        "enum"
+      ]
+    },
+    {
+      "name": "-moz-animation-play-state",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-moz-animation-timing-function",
+      "restrictions": [
+        "timing-function"
+      ]
+    },
+    {
+      "name": "-moz-appearance",
+      "syntax": "none | button | button-arrow-down | button-arrow-next | button-arrow-previous | button-arrow-up | button-bevel | button-focus | caret | checkbox | checkbox-container | checkbox-label | checkmenuitem | dualbutton | groupbox | listbox | listitem | menuarrow | menubar | menucheckbox | menuimage | menuitem | menuitemtext | menulist | menulist-button | menulist-text | menulist-textfield | menupopup | menuradio | menuseparator | meterbar | meterchunk | progressbar | progressbar-vertical | progresschunk | progresschunk-vertical | radio | radio-container | radio-label | radiomenuitem | range | range-thumb | resizer | resizerpanel | scale-horizontal | scalethumbend | scalethumb-horizontal | scalethumbstart | scalethumbtick | scalethumb-vertical | scale-vertical | scrollbarbutton-down | scrollbarbutton-left | scrollbarbutton-right | scrollbarbutton-up | scrollbarthumb-horizontal | scrollbarthumb-vertical | scrollbartrack-horizontal | scrollbartrack-vertical | searchfield | separator | sheet | spinner | spinner-downbutton | spinner-textfield | spinner-upbutton | splitter | statusbar | statusbarpanel | tab | tabpanel | tabpanels | tab-scroll-arrow-back | tab-scroll-arrow-forward | textfield | textfield-multiline | toolbar | toolbarbutton | toolbarbutton-dropdown | toolbargripper | toolbox | tooltip | treeheader | treeheadercell | treeheadersortarrow | treeitem | treeline | treetwisty | treetwistyopen | treeview | -moz-mac-unified-toolbar | -moz-win-borderless-glass | -moz-win-browsertabbar-toolbox | -moz-win-communicationstext | -moz-win-communications-toolbox | -moz-win-exclude-glass | -moz-win-glass | -moz-win-mediatext | -moz-win-media-toolbox | -moz-window-button-box | -moz-window-button-box-maximized | -moz-window-button-close | -moz-window-button-maximize | -moz-window-button-minimize | -moz-window-button-restore | -moz-window-frame-bottom | -moz-window-frame-left | -moz-window-frame-right | -moz-window-titlebar | -moz-window-titlebar-maximized",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-moz-backface-visibility",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-moz-background-clip",
+      "restrictions": [
+        "box",
+        "enum"
+      ]
+    },
+    {
+      "name": "-moz-background-inline-policy",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-moz-background-origin",
+      "restrictions": [
+        "box"
+      ]
+    },
+    {
+      "name": "-moz-border-bottom-colors",
+      "syntax": "<color>+ | none",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "-moz-border-image",
+      "restrictions": [
+        "length",
+        "percentage",
+        "number",
+        "url",
+        "enum"
+      ]
+    },
+    {
+      "name": "-moz-border-left-colors",
+      "syntax": "<color>+ | none",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "-moz-border-right-colors",
+      "syntax": "<color>+ | none",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "-moz-border-top-colors",
+      "syntax": "<color>+ | none",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "-moz-box-align",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-moz-box-direction",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-moz-box-flex",
+      "restrictions": [
+        "number"
+      ]
+    },
+    {
+      "name": "-moz-box-flexgroup",
+      "restrictions": [
+        "integer"
+      ]
+    },
+    {
+      "name": "-moz-box-ordinal-group",
+      "restrictions": [
+        "integer"
+      ]
+    },
+    {
+      "name": "-moz-box-orient",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-moz-box-pack",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-moz-box-sizing",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-moz-column-count",
+      "restrictions": [
+        "integer"
+      ]
+    },
+    {
+      "name": "-moz-column-gap",
+      "restrictions": [
+        "length"
+      ]
+    },
+    {
+      "name": "-moz-column-rule",
+      "restrictions": [
+        "length",
+        "line-width",
+        "line-style",
+        "color"
+      ]
+    },
+    {
+      "name": "-moz-column-rule-color",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "-moz-column-rule-style",
+      "restrictions": [
+        "line-style"
+      ]
+    },
+    {
+      "name": "-moz-column-rule-width",
+      "restrictions": [
+        "length",
+        "line-width"
+      ]
+    },
+    {
+      "name": "-moz-columns",
+      "restrictions": [
+        "length",
+        "integer"
+      ]
+    },
+    {
+      "name": "-moz-column-width",
+      "restrictions": [
+        "length"
+      ]
+    },
+    {
+      "name": "-moz-font-feature-settings",
+      "restrictions": [
+        "string",
+        "integer"
+      ]
+    },
+    {
+      "name": "-moz-hyphens",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-moz-perspective",
+      "restrictions": [
+        "length"
+      ]
+    },
+    {
+      "name": "-moz-perspective-origin",
+      "restrictions": [
+        "position",
+        "percentage",
+        "length"
+      ]
+    },
+    {
+      "name": "-moz-text-align-last",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-moz-text-decoration-color",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "-moz-text-decoration-line",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-moz-text-decoration-style",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-moz-text-size-adjust",
+      "restrictions": [
+        "enum",
+        "percentage"
+      ]
+    },
+    {
+      "name": "-moz-transform",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-moz-transform-origin",
+      "restrictions": [
+        "position",
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "-moz-transition",
+      "restrictions": [
+        "time",
+        "property",
+        "timing-function",
+        "enum"
+      ]
+    },
+    {
+      "name": "-moz-transition-delay",
+      "restrictions": [
+        "time"
+      ]
+    },
+    {
+      "name": "-moz-transition-duration",
+      "restrictions": [
+        "time"
+      ]
+    },
+    {
+      "name": "-moz-transition-property",
+      "restrictions": [
+        "property"
+      ]
+    },
+    {
+      "name": "-moz-transition-timing-function",
+      "restrictions": [
+        "timing-function"
+      ]
+    },
+    {
+      "name": "-moz-user-focus",
+      "syntax": "ignore | normal | select-after | select-before | select-menu | select-same | select-all | none"
+    },
+    {
+      "name": "-moz-user-select",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-accelerator",
+      "syntax": "false | true",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-behavior",
+      "restrictions": [
+        "url"
+      ]
+    },
+    {
+      "name": "-ms-block-progression",
+      "syntax": "tb | rl | bt | lr",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-content-zoom-chaining",
+      "syntax": "none | chained"
+    },
+    {
+      "name": "-ms-content-zooming",
+      "syntax": "none | zoom",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-content-zoom-limit",
+      "syntax": "<'-ms-content-zoom-limit-min'> <'-ms-content-zoom-limit-max'>",
+      "restrictions": [
+        "percentage"
+      ]
+    },
+    {
+      "name": "-ms-content-zoom-limit-max",
+      "syntax": "<percentage>",
+      "restrictions": [
+        "percentage"
+      ]
+    },
+    {
+      "name": "-ms-content-zoom-limit-min",
+      "syntax": "<percentage>",
+      "restrictions": [
+        "percentage"
+      ]
+    },
+    {
+      "name": "-ms-content-zoom-snap",
+      "syntax": "<'-ms-content-zoom-snap-type'> || <'-ms-content-zoom-snap-points'>"
+    },
+    {
+      "name": "-ms-content-zoom-snap-points",
+      "syntax": "snapInterval( <percentage>, <percentage> ) | snapList( <percentage># )"
+    },
+    {
+      "name": "-ms-content-zoom-snap-type",
+      "syntax": "none | proximity | mandatory",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-filter",
+      "syntax": "<string>",
+      "restrictions": [
+        "string"
+      ]
+    },
+    {
+      "name": "-ms-flex",
+      "restrictions": [
+        "length",
+        "number",
+        "percentage"
+      ]
+    },
+    {
+      "name": "-ms-flex-align",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-flex-direction",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-flex-flow",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-flex-item-align",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-flex-line-pack",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-flex-order",
+      "restrictions": [
+        "integer"
+      ]
+    },
+    {
+      "name": "-ms-flex-pack",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-flex-wrap",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-flow-from",
+      "syntax": "[ none | <custom-ident> ]#",
+      "restrictions": [
+        "identifier"
+      ]
+    },
+    {
+      "name": "-ms-flow-into",
+      "syntax": "[ none | <custom-ident> ]#",
+      "restrictions": [
+        "identifier"
+      ]
+    },
+    {
+      "name": "-ms-grid-column",
+      "restrictions": [
+        "integer",
+        "string",
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-grid-column-align",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-grid-columns",
+      "syntax": "none | <track-list> | <auto-track-list>"
+    },
+    {
+      "name": "-ms-grid-column-span",
+      "restrictions": [
+        "integer"
+      ]
+    },
+    {
+      "name": "-ms-grid-layer",
+      "restrictions": [
+        "integer"
+      ]
+    },
+    {
+      "name": "-ms-grid-row",
+      "restrictions": [
+        "integer",
+        "string",
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-grid-row-align",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-grid-rows",
+      "syntax": "none | <track-list> | <auto-track-list>"
+    },
+    {
+      "name": "-ms-grid-row-span",
+      "restrictions": [
+        "integer"
+      ]
+    },
+    {
+      "name": "-ms-high-contrast-adjust",
+      "syntax": "auto | none",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-hyphenate-limit-chars",
+      "syntax": "auto | <integer>{1,3}",
+      "restrictions": [
+        "integer"
+      ]
+    },
+    {
+      "name": "-ms-hyphenate-limit-lines",
+      "syntax": "no-limit | <integer>",
+      "restrictions": [
+        "integer"
+      ]
+    },
+    {
+      "name": "-ms-hyphenate-limit-zone",
+      "syntax": "<percentage> | <length>",
+      "restrictions": [
+        "percentage",
+        "length"
+      ]
+    },
+    {
+      "name": "-ms-hyphens",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-ime-mode",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-interpolation-mode",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-layout-grid"
+    },
+    {
+      "name": "-ms-layout-grid-char",
+      "restrictions": [
+        "enum",
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "-ms-layout-grid-line",
+      "restrictions": [
+        "length"
+      ]
+    },
+    {
+      "name": "-ms-layout-grid-mode",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-layout-grid-type",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-line-break",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-overflow-style",
+      "syntax": "auto | none | scrollbar | -ms-autohiding-scrollbar",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-perspective",
+      "restrictions": [
+        "length"
+      ]
+    },
+    {
+      "name": "-ms-perspective-origin",
+      "restrictions": [
+        "position",
+        "percentage",
+        "length"
+      ]
+    },
+    {
+      "name": "-ms-perspective-origin-x",
+      "restrictions": [
+        "position",
+        "percentage",
+        "length"
+      ]
+    },
+    {
+      "name": "-ms-perspective-origin-y",
+      "restrictions": [
+        "position",
+        "percentage",
+        "length"
+      ]
+    },
+    {
+      "name": "-ms-progress-appearance",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-scrollbar-3dlight-color",
+      "syntax": "<color>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "-ms-scrollbar-arrow-color",
+      "syntax": "<color>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "-ms-scrollbar-base-color",
+      "syntax": "<color>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "-ms-scrollbar-darkshadow-color",
+      "syntax": "<color>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "-ms-scrollbar-face-color",
+      "syntax": "<color>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "-ms-scrollbar-highlight-color",
+      "syntax": "<color>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "-ms-scrollbar-shadow-color",
+      "syntax": "<color>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "-ms-scrollbar-track-color",
+      "syntax": "<color>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "-ms-scroll-chaining",
+      "syntax": "chained | none",
+      "restrictions": [
+        "enum",
+        "length"
+      ]
+    },
+    {
+      "name": "-ms-scroll-limit",
+      "syntax": "<'-ms-scroll-limit-x-min'> <'-ms-scroll-limit-y-min'> <'-ms-scroll-limit-x-max'> <'-ms-scroll-limit-y-max'>",
+      "restrictions": [
+        "length"
+      ]
+    },
+    {
+      "name": "-ms-scroll-limit-x-max",
+      "syntax": "auto | <length>",
+      "restrictions": [
+        "length"
+      ]
+    },
+    {
+      "name": "-ms-scroll-limit-x-min",
+      "syntax": "<length>",
+      "restrictions": [
+        "length"
+      ]
+    },
+    {
+      "name": "-ms-scroll-limit-y-max",
+      "syntax": "auto | <length>",
+      "restrictions": [
+        "length"
+      ]
+    },
+    {
+      "name": "-ms-scroll-limit-y-min",
+      "syntax": "<length>",
+      "restrictions": [
+        "length"
+      ]
+    },
+    {
+      "name": "-ms-scroll-rails",
+      "syntax": "none | railed",
+      "restrictions": [
+        "enum",
+        "length"
+      ]
+    },
+    {
+      "name": "-ms-scroll-snap-points-x",
+      "syntax": "snapInterval( <length-percentage>, <length-percentage> ) | snapList( <length-percentage># )",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-scroll-snap-points-y",
+      "syntax": "snapInterval( <length-percentage>, <length-percentage> ) | snapList( <length-percentage># )",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-scroll-snap-type",
+      "syntax": "none | proximity | mandatory",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-scroll-snap-x",
+      "syntax": "<'-ms-scroll-snap-type'> <'-ms-scroll-snap-points-x'>",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-scroll-snap-y",
+      "syntax": "<'-ms-scroll-snap-type'> <'-ms-scroll-snap-points-y'>",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-scroll-translation",
+      "syntax": "none | vertical-to-horizontal",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-text-align-last",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-text-autospace",
+      "syntax": "none | ideograph-alpha | ideograph-numeric | ideograph-parenthesis | ideograph-space",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-text-combine-horizontal",
+      "restrictions": [
+        "enum",
+        "integer"
+      ]
+    },
+    {
+      "name": "-ms-text-justify",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-text-kashida-space",
+      "restrictions": [
+        "percentage"
+      ]
+    },
+    {
+      "name": "-ms-text-overflow",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-text-size-adjust",
+      "restrictions": [
+        "enum",
+        "percentage"
+      ]
+    },
+    {
+      "name": "-ms-text-underline-position",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-touch-action",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-touch-select",
+      "syntax": "grippers | none",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-transform",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-transform-origin",
+      "restrictions": [
+        "position",
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "-ms-transform-origin-x",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "-ms-transform-origin-y",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "-ms-transform-origin-z",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "-ms-user-select",
+      "syntax": "none | element | text",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-word-break",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-word-wrap",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-wrap-flow",
+      "syntax": "auto | both | start | end | maximum | clear",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-wrap-margin",
+      "syntax": "<length>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "-ms-wrap-through",
+      "syntax": "wrap | none",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-writing-mode",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-ms-zoom",
+      "restrictions": [
+        "enum",
+        "integer",
+        "number",
+        "percentage"
+      ]
+    },
+    {
+      "name": "-ms-zoom-animation",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "nav-down",
+      "restrictions": [
+        "enum",
+        "identifier",
+        "string"
+      ]
+    },
+    {
+      "name": "nav-index",
+      "restrictions": [
+        "number"
+      ]
+    },
+    {
+      "name": "nav-left",
+      "restrictions": [
+        "enum",
+        "identifier",
+        "string"
+      ]
+    },
+    {
+      "name": "nav-right",
+      "restrictions": [
+        "enum",
+        "identifier",
+        "string"
+      ]
+    },
+    {
+      "name": "nav-up",
+      "restrictions": [
+        "enum",
+        "identifier",
+        "string"
+      ]
+    },
+    {
+      "name": "negative",
+      "atRule": "@counter-style",
+      "syntax": "<symbol> <symbol>?",
+      "restrictions": [
+        "image",
+        "identifier",
+        "string"
+      ]
+    },
+    {
+      "name": "-o-animation",
+      "restrictions": [
+        "time",
+        "enum",
+        "timing-function",
+        "identifier",
+        "number"
+      ]
+    },
+    {
+      "name": "-o-animation-delay",
+      "restrictions": [
+        "time"
+      ]
+    },
+    {
+      "name": "-o-animation-direction",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-o-animation-duration",
+      "restrictions": [
+        "time"
+      ]
+    },
+    {
+      "name": "-o-animation-fill-mode",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-o-animation-iteration-count",
+      "restrictions": [
+        "number",
+        "enum"
+      ]
+    },
+    {
+      "name": "-o-animation-name",
+      "restrictions": [
+        "identifier",
+        "enum"
+      ]
+    },
+    {
+      "name": "-o-animation-play-state",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-o-animation-timing-function",
+      "restrictions": [
+        "timing-function"
+      ]
+    },
+    {
+      "name": "object-fit",
+      "syntax": "fill | contain | cover | none | scale-down",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "object-position",
+      "syntax": "<position>",
+      "restrictions": [
+        "position",
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "-o-border-image",
+      "restrictions": [
+        "length",
+        "percentage",
+        "number",
+        "image",
+        "enum"
+      ]
+    },
+    {
+      "name": "-o-object-fit",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-o-object-position",
+      "restrictions": [
+        "position",
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "opacity",
+      "syntax": "<opacity-value>",
+      "restrictions": [
+        "number(0-1)"
+      ]
+    },
+    {
+      "name": "order",
+      "syntax": "<integer>",
+      "restrictions": [
+        "integer"
+      ]
+    },
+    {
+      "name": "orphans",
+      "syntax": "<integer>",
+      "restrictions": [
+        "integer"
+      ]
+    },
+    {
+      "name": "-o-table-baseline",
+      "restrictions": [
+        "integer"
+      ]
+    },
+    {
+      "name": "-o-tab-size",
+      "restrictions": [
+        "integer",
+        "length"
+      ]
+    },
+    {
+      "name": "-o-text-overflow",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-o-transform",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-o-transform-origin",
+      "restrictions": [
+        "positon",
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "-o-transition",
+      "restrictions": [
+        "time",
+        "property",
+        "timing-function",
+        "enum"
+      ]
+    },
+    {
+      "name": "-o-transition-delay",
+      "restrictions": [
+        "time"
+      ]
+    },
+    {
+      "name": "-o-transition-duration",
+      "restrictions": [
+        "time"
+      ]
+    },
+    {
+      "name": "-o-transition-property",
+      "restrictions": [
+        "property"
+      ]
+    },
+    {
+      "name": "-o-transition-timing-function",
+      "restrictions": [
+        "timing-function"
+      ]
+    },
+    {
+      "name": "offset-block-end",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "offset-block-start",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "offset-inline-end",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "offset-inline-start",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "outline",
+      "syntax": "<'outline-width'> || <'outline-style'> || <'outline-color'>",
+      "restrictions": [
+        "length",
+        "line-width",
+        "line-style",
+        "color",
+        "enum"
+      ]
+    },
+    {
+      "name": "outline-color",
+      "syntax": "auto | <color>",
+      "restrictions": [
+        "enum",
+        "color"
+      ]
+    },
+    {
+      "name": "outline-offset",
+      "syntax": "<length>",
+      "restrictions": [
+        "length"
+      ]
+    },
+    {
+      "name": "outline-style",
+      "syntax": "auto | <outline-line-style>",
+      "restrictions": [
+        "line-style",
+        "enum"
+      ]
+    },
+    {
+      "name": "outline-width",
+      "syntax": "<line-width>",
+      "restrictions": [
+        "length",
+        "line-width"
+      ]
+    },
+    {
+      "name": "overflow",
+      "syntax": "[ visible | hidden | clip | scroll | auto ]{1,2}",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "overflow-wrap",
+      "syntax": "normal | break-word | anywhere",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "overflow-x",
+      "syntax": "visible | hidden | clip | scroll | auto",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "overflow-y",
+      "syntax": "visible | hidden | clip | scroll | auto",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "pad",
+      "atRule": "@counter-style",
+      "syntax": "<integer [0,\u221e]> && <symbol>",
+      "restrictions": [
+        "integer",
+        "image",
+        "string",
+        "identifier"
+      ]
+    },
+    {
+      "name": "padding",
+      "syntax": "<'padding-top'>{1,4}",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "padding-bottom",
+      "syntax": "<length-percentage [0,\u221e]>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "padding-block-end",
+      "syntax": "<'padding-top'>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "padding-block-start",
+      "syntax": "<'padding-top'>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "padding-inline-end",
+      "syntax": "<'padding-top'>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "padding-inline-start",
+      "syntax": "<'padding-top'>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "padding-left",
+      "syntax": "<length-percentage [0,\u221e]>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "padding-right",
+      "syntax": "<length-percentage [0,\u221e]>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "padding-top",
+      "syntax": "<length-percentage [0,\u221e]>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "page-break-after",
+      "syntax": "auto | always | avoid | left | right | recto | verso",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "page-break-before",
+      "syntax": "auto | always | avoid | left | right | recto | verso",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "page-break-inside",
+      "syntax": "auto | avoid",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "paint-order",
+      "syntax": "normal | [ fill || stroke || markers ]",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "perspective",
+      "syntax": "none | <length>",
+      "restrictions": [
+        "length",
+        "enum"
+      ]
+    },
+    {
+      "name": "perspective-origin",
+      "syntax": "<position>",
+      "restrictions": [
+        "position",
+        "percentage",
+        "length"
+      ]
+    },
+    {
+      "name": "pointer-events",
+      "syntax": "auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all | inherit",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "position",
+      "syntax": "static | relative | absolute | sticky | fixed",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "prefix",
+      "atRule": "@counter-style",
+      "syntax": "<symbol>",
+      "restrictions": [
+        "image",
+        "string",
+        "identifier"
+      ]
+    },
+    {
+      "name": "quotes",
+      "syntax": "none | auto | [ <string> <string> ]+",
+      "restrictions": [
+        "string"
+      ]
+    },
+    {
+      "name": "range",
+      "atRule": "@counter-style",
+      "syntax": "[ [ <integer> | infinite ]{2} ]# | auto",
+      "restrictions": [
+        "integer",
+        "enum"
+      ]
+    },
+    {
+      "name": "resize",
+      "syntax": "none | both | horizontal | vertical | block | inline",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "right",
+      "syntax": "auto | <length-percentage> | <anchor()> | <anchor-size()>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "ruby-align",
+      "syntax": "start | center | space-between | space-around",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "ruby-overhang",
+      "syntax": "auto | none",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "ruby-position",
+      "syntax": "[ alternate || [ over | under ] ] | inter-character",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "ruby-span",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "scrollbar-3dlight-color",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "scrollbar-arrow-color",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "scrollbar-base-color",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "scrollbar-darkshadow-color",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "scrollbar-face-color",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "scrollbar-highlight-color",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "scrollbar-shadow-color",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "scrollbar-track-color",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "scroll-behavior",
+      "syntax": "auto | smooth",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "scroll-snap-coordinate",
+      "syntax": "none | <position>#",
+      "restrictions": [
+        "position",
+        "length",
+        "percentage",
+        "enum"
+      ]
+    },
+    {
+      "name": "scroll-snap-destination",
+      "syntax": "<position>",
+      "restrictions": [
+        "position",
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "scroll-snap-points-x",
+      "syntax": "none | repeat( <length-percentage> )",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "scroll-snap-points-y",
+      "syntax": "none | repeat( <length-percentage> )",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "scroll-snap-type",
+      "syntax": "none | [ x | y | block | inline | both ] [ mandatory | proximity ]?",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "shape-image-threshold",
+      "syntax": "<opacity-value>",
+      "restrictions": [
+        "number"
+      ]
+    },
+    {
+      "name": "shape-margin",
+      "syntax": "<length-percentage>",
+      "restrictions": [
+        "url",
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "shape-outside",
+      "syntax": "none | [ <shape-box> || <basic-shape> ] | <image>",
+      "restrictions": [
+        "image",
+        "box",
+        "shape",
+        "enum"
+      ]
+    },
+    {
+      "name": "shape-rendering",
+      "syntax": "auto | optimizeSpeed | crispEdges | geometricPrecision",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "size",
+      "atRule": "@page",
+      "syntax": "<length [0,\u221e]>{1,2} | auto | [ <page-size> || [ portrait | landscape ] ]",
+      "restrictions": [
+        "length"
+      ]
+    },
+    {
+      "name": "src",
+      "atRule": "@font-face",
+      "syntax": "[ <url> [ format( <string># ) ]? | local( <family-name> ) ]#",
+      "restrictions": [
+        "enum",
+        "url",
+        "identifier"
+      ]
+    },
+    {
+      "name": "stop-color",
+      "syntax": "<'color'>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "stop-opacity",
+      "syntax": "<'opacity'>",
+      "restrictions": [
+        "number(0-1)"
+      ]
+    },
+    {
+      "name": "stroke",
+      "syntax": "<paint>",
+      "restrictions": [
+        "color",
+        "enum",
+        "url"
+      ]
+    },
+    {
+      "name": "stroke-dasharray",
+      "syntax": "none | <dasharray>",
+      "restrictions": [
+        "length",
+        "percentage",
+        "number",
+        "enum"
+      ]
+    },
+    {
+      "name": "stroke-dashoffset",
+      "syntax": "<length-percentage> | <number>",
+      "restrictions": [
+        "percentage",
+        "length"
+      ]
+    },
+    {
+      "name": "stroke-linecap",
+      "syntax": "butt | round | square",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "stroke-linejoin",
+      "syntax": "miter | miter-clip | round | bevel | arcs",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "stroke-miterlimit",
+      "syntax": "<number>",
+      "restrictions": [
+        "number"
+      ]
+    },
+    {
+      "name": "stroke-opacity",
+      "syntax": "<'opacity'>",
+      "restrictions": [
+        "number(0-1)"
+      ]
+    },
+    {
+      "name": "stroke-width",
+      "syntax": "<length-percentage> | <number>",
+      "restrictions": [
+        "percentage",
+        "length"
+      ]
+    },
+    {
+      "name": "suffix",
+      "atRule": "@counter-style",
+      "syntax": "<symbol>",
+      "restrictions": [
+        "image",
+        "string",
+        "identifier"
+      ]
+    },
+    {
+      "name": "system",
+      "atRule": "@counter-style",
+      "syntax": "cyclic | numeric | alphabetic | symbolic | additive | [ fixed <integer>? ] | [ extends <counter-style-name> ]",
+      "restrictions": [
+        "enum",
+        "integer"
+      ]
+    },
+    {
+      "name": "symbols",
+      "atRule": "@counter-style",
+      "syntax": "<symbol>+",
+      "restrictions": [
+        "image",
+        "string",
+        "identifier"
+      ]
+    },
+    {
+      "name": "table-layout",
+      "syntax": "auto | fixed",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "tab-size",
+      "syntax": "<integer> | <length>",
+      "restrictions": [
+        "integer",
+        "length"
+      ]
+    },
+    {
+      "name": "text-align",
+      "syntax": "start | end | left | right | center | justify | match-parent",
+      "restrictions": [
+        "string"
+      ]
+    },
+    {
+      "name": "text-align-last",
+      "syntax": "auto | start | end | left | right | center | justify",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "text-anchor",
+      "syntax": "start | middle | end",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "text-decoration",
+      "syntax": "<'text-decoration-line'> || <'text-decoration-style'> || <'text-decoration-color'> || <'text-decoration-thickness'>",
+      "restrictions": [
+        "enum",
+        "color"
+      ]
+    },
+    {
+      "name": "text-decoration-color",
+      "syntax": "<color>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "text-decoration-line",
+      "syntax": "none | [ underline || overline || line-through || blink ] | spelling-error | grammar-error",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "text-decoration-style",
+      "syntax": "solid | double | dotted | dashed | wavy",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "text-indent",
+      "syntax": "<length-percentage> && hanging? && each-line?",
+      "restrictions": [
+        "percentage",
+        "length"
+      ]
+    },
+    {
+      "name": "text-justify",
+      "syntax": "auto | inter-character | inter-word | none",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "text-orientation",
+      "syntax": "mixed | upright | sideways",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "text-overflow",
+      "syntax": "[ clip | ellipsis | <string> ]{1,2}",
+      "restrictions": [
+        "enum",
+        "string"
+      ]
+    },
+    {
+      "name": "text-rendering",
+      "syntax": "auto | optimizeSpeed | optimizeLegibility | geometricPrecision",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "text-shadow",
+      "syntax": "none | <shadow-t>#",
+      "restrictions": [
+        "length",
+        "color"
+      ]
+    },
+    {
+      "name": "text-transform",
+      "syntax": "none | [ capitalize | uppercase | lowercase ] || full-width || full-size-kana | math-auto",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "text-underline-position",
+      "syntax": "auto | from-font | [ under || [ left | right ] ]",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "top",
+      "syntax": "auto | <length-percentage> | <anchor()> | <anchor-size()>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "touch-action",
+      "syntax": "auto | none | [ [ pan-x | pan-left | pan-right ] || [ pan-y | pan-up | pan-down ] || pinch-zoom ] | manipulation",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "transform",
+      "syntax": "none | <transform-list>",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "transform-origin",
+      "syntax": "[ <length-percentage> | left | center | right | top | bottom ] | [ [ <length-percentage> | left | center | right ] && [ <length-percentage> | top | center | bottom ] ] <length>?",
+      "restrictions": [
+        "position",
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "transform-style",
+      "syntax": "flat | preserve-3d",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "transition",
+      "syntax": "<single-transition>#",
+      "restrictions": [
+        "time",
+        "property",
+        "timing-function",
+        "enum"
+      ]
+    },
+    {
+      "name": "transition-delay",
+      "syntax": "<time>#",
+      "restrictions": [
+        "time"
+      ]
+    },
+    {
+      "name": "transition-duration",
+      "syntax": "<time>#",
+      "restrictions": [
+        "time"
+      ]
+    },
+    {
+      "name": "transition-property",
+      "syntax": "none | <single-transition-property>#",
+      "restrictions": [
+        "property"
+      ]
+    },
+    {
+      "name": "transition-timing-function",
+      "syntax": "<easing-function>#",
+      "restrictions": [
+        "timing-function"
+      ]
+    },
+    {
+      "name": "unicode-bidi",
+      "syntax": "normal | embed | isolate | bidi-override | isolate-override | plaintext",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "unicode-range",
+      "atRule": "@font-face",
+      "syntax": "<unicode-range-token>#",
+      "restrictions": [
+        "unicode-range"
+      ]
+    },
+    {
+      "name": "user-select",
+      "syntax": "auto | text | none | all",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "vertical-align",
+      "syntax": "baseline | sub | super | text-top | text-bottom | middle | top | bottom | <percentage> | <length>",
+      "restrictions": [
+        "percentage",
+        "length"
+      ]
+    },
+    {
+      "name": "visibility",
+      "syntax": "visible | hidden | collapse",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-animation",
+      "restrictions": [
+        "time",
+        "enum",
+        "timing-function",
+        "identifier",
+        "number"
+      ]
+    },
+    {
+      "name": "-webkit-animation-delay",
+      "restrictions": [
+        "time"
+      ]
+    },
+    {
+      "name": "-webkit-animation-direction",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-animation-duration",
+      "restrictions": [
+        "time"
+      ]
+    },
+    {
+      "name": "-webkit-animation-fill-mode",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-animation-iteration-count",
+      "restrictions": [
+        "number",
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-animation-name",
+      "restrictions": [
+        "identifier",
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-animation-play-state",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-animation-timing-function",
+      "restrictions": [
+        "timing-function"
+      ]
+    },
+    {
+      "name": "-webkit-appearance",
+      "syntax": "none | button | button-bevel | caret | checkbox | default-button | inner-spin-button | listbox | listitem | media-controls-background | media-controls-fullscreen-background | media-current-time-display | media-enter-fullscreen-button | media-exit-fullscreen-button | media-fullscreen-button | media-mute-button | media-overlay-play-button | media-play-button | media-seek-back-button | media-seek-forward-button | media-slider | media-sliderthumb | media-time-remaining-display | media-toggle-closed-captions-button | media-volume-slider | media-volume-slider-container | media-volume-sliderthumb | menulist | menulist-button | menulist-text | menulist-textfield | meter | progress-bar | progress-bar-value | push-button | radio | searchfield | searchfield-cancel-button | searchfield-decoration | searchfield-results-button | searchfield-results-decoration | slider-horizontal | slider-vertical | sliderthumb-horizontal | sliderthumb-vertical | square-button | textarea | textfield | -apple-pay-button",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-backdrop-filter",
+      "restrictions": [
+        "enum",
+        "url"
+      ]
+    },
+    {
+      "name": "-webkit-backface-visibility",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-background-clip",
+      "restrictions": [
+        "box"
+      ]
+    },
+    {
+      "name": "-webkit-background-composite",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-background-origin",
+      "restrictions": [
+        "box"
+      ]
+    },
+    {
+      "name": "-webkit-border-image",
+      "restrictions": [
+        "length",
+        "percentage",
+        "number",
+        "url",
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-box-align",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-box-direction",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-box-flex",
+      "restrictions": [
+        "number"
+      ]
+    },
+    {
+      "name": "-webkit-box-flex-group",
+      "restrictions": [
+        "integer"
+      ]
+    },
+    {
+      "name": "-webkit-box-ordinal-group",
+      "restrictions": [
+        "integer"
+      ]
+    },
+    {
+      "name": "-webkit-box-orient",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-box-pack",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-box-reflect",
+      "syntax": "[ above | below | right | left ]? <length>? <image>?"
+    },
+    {
+      "name": "-webkit-box-sizing",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-break-after",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-break-before",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-break-inside",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-column-break-after",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-column-break-before",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-column-break-inside",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-column-count",
+      "restrictions": [
+        "integer"
+      ]
+    },
+    {
+      "name": "-webkit-column-gap",
+      "restrictions": [
+        "length"
+      ]
+    },
+    {
+      "name": "-webkit-column-rule",
+      "restrictions": [
+        "length",
+        "line-width",
+        "line-style",
+        "color"
+      ]
+    },
+    {
+      "name": "-webkit-column-rule-color",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "-webkit-column-rule-style",
+      "restrictions": [
+        "line-style"
+      ]
+    },
+    {
+      "name": "-webkit-column-rule-width",
+      "restrictions": [
+        "length",
+        "line-width"
+      ]
+    },
+    {
+      "name": "-webkit-columns",
+      "restrictions": [
+        "length",
+        "integer"
+      ]
+    },
+    {
+      "name": "-webkit-column-span",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-column-width",
+      "restrictions": [
+        "length"
+      ]
+    },
+    {
+      "name": "-webkit-filter",
+      "restrictions": [
+        "enum",
+        "url"
+      ]
+    },
+    {
+      "name": "-webkit-flow-from",
+      "restrictions": [
+        "identifier"
+      ]
+    },
+    {
+      "name": "-webkit-flow-into",
+      "restrictions": [
+        "identifier"
+      ]
+    },
+    {
+      "name": "-webkit-font-feature-settings",
+      "restrictions": [
+        "string",
+        "integer"
+      ]
+    },
+    {
+      "name": "-webkit-hyphens",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-line-break"
+    },
+    {
+      "name": "-webkit-margin-bottom-collapse",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-margin-collapse",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-margin-start",
+      "restrictions": [
+        "percentage",
+        "length"
+      ]
+    },
+    {
+      "name": "-webkit-margin-top-collapse",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-mask-clip",
+      "syntax": "[ <coord-box> | no-clip | border | padding | content | text ]#",
+      "restrictions": [
+        "box"
+      ]
+    },
+    {
+      "name": "-webkit-mask-image",
+      "syntax": "<mask-reference>#",
+      "restrictions": [
+        "url",
+        "image",
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-mask-origin",
+      "syntax": "[ <coord-box> | border | padding | content ]#",
+      "restrictions": [
+        "box"
+      ]
+    },
+    {
+      "name": "-webkit-mask-repeat",
+      "syntax": "<repeat-style>#",
+      "restrictions": [
+        "repeat"
+      ]
+    },
+    {
+      "name": "-webkit-mask-size",
+      "syntax": "<bg-size>#",
+      "restrictions": [
+        "length",
+        "percentage",
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-nbsp-mode"
+    },
+    {
+      "name": "-webkit-overflow-scrolling",
+      "syntax": "auto | touch"
+    },
+    {
+      "name": "-webkit-padding-start",
+      "restrictions": [
+        "percentage",
+        "length"
+      ]
+    },
+    {
+      "name": "-webkit-perspective",
+      "restrictions": [
+        "length"
+      ]
+    },
+    {
+      "name": "-webkit-perspective-origin",
+      "restrictions": [
+        "position",
+        "percentage",
+        "length"
+      ]
+    },
+    {
+      "name": "-webkit-region-fragment",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-tap-highlight-color",
+      "syntax": "<color>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "-webkit-text-fill-color",
+      "syntax": "<color>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "-webkit-text-size-adjust",
+      "restrictions": [
+        "percentage"
+      ]
+    },
+    {
+      "name": "-webkit-text-stroke",
+      "syntax": "<length> || <color>",
+      "restrictions": [
+        "length",
+        "line-width",
+        "color",
+        "percentage"
+      ]
+    },
+    {
+      "name": "-webkit-text-stroke-color",
+      "syntax": "<color>",
+      "restrictions": [
+        "color"
+      ]
+    },
+    {
+      "name": "-webkit-text-stroke-width",
+      "syntax": "<length>",
+      "restrictions": [
+        "length",
+        "line-width",
+        "percentage"
+      ]
+    },
+    {
+      "name": "-webkit-touch-callout",
+      "syntax": "default | none",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-transform",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-transform-origin",
+      "restrictions": [
+        "position",
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "-webkit-transform-origin-x",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "-webkit-transform-origin-y",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "-webkit-transform-origin-z",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "-webkit-transform-style",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-transition",
+      "restrictions": [
+        "time",
+        "property",
+        "timing-function",
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-transition-delay",
+      "restrictions": [
+        "time"
+      ]
+    },
+    {
+      "name": "-webkit-transition-duration",
+      "restrictions": [
+        "time"
+      ]
+    },
+    {
+      "name": "-webkit-transition-property",
+      "restrictions": [
+        "property"
+      ]
+    },
+    {
+      "name": "-webkit-transition-timing-function",
+      "restrictions": [
+        "timing-function"
+      ]
+    },
+    {
+      "name": "-webkit-user-drag",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-user-modify",
+      "syntax": "read-only | read-write | read-write-plaintext-only",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "-webkit-user-select",
+      "syntax": "auto | text | none | all",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "widows",
+      "syntax": "<integer>",
+      "restrictions": [
+        "integer"
+      ]
+    },
+    {
+      "name": "width",
+      "syntax": "auto | <length-percentage [0,\u221e]> | min-content | max-content | fit-content | fit-content(<length-percentage [0,\u221e]>) | <calc-size()> | <anchor-size()>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "will-change",
+      "syntax": "auto | <animateable-feature>#",
+      "restrictions": [
+        "enum",
+        "identifier"
+      ]
+    },
+    {
+      "name": "word-break",
+      "syntax": "normal | break-all | keep-all | break-word | auto-phrase",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "word-spacing",
+      "syntax": "normal | <length>",
+      "restrictions": [
+        "length",
+        "percentage"
+      ]
+    },
+    {
+      "name": "word-wrap",
+      "syntax": "normal | break-word",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "writing-mode",
+      "syntax": "horizontal-tb | vertical-rl | vertical-lr | sideways-rl | sideways-lr",
+      "restrictions": [
+        "enum"
+      ]
+    },
+    {
+      "name": "z-index",
+      "syntax": "auto | <integer>",
+      "restrictions": [
+        "integer"
+      ]
+    },
+    {
+      "name": "zoom",
+      "syntax": "normal | reset | <number [0,\u221e]> || <percentage [0,\u221e]>",
+      "restrictions": [
+        "enum",
+        "integer",
+        "number",
+        "percentage"
+      ]
+    },
+    {
+      "name": "-ms-ime-align",
+      "syntax": "auto | after"
+    },
+    {
+      "name": "-moz-binding",
+      "syntax": "<url> | none"
+    },
+    {
+      "name": "-moz-context-properties",
+      "syntax": "none | [ fill | fill-opacity | stroke | stroke-opacity ]#"
+    },
+    {
+      "name": "-moz-float-edge",
+      "syntax": "border-box | content-box | margin-box | padding-box"
+    },
+    {
+      "name": "-moz-force-broken-image-icon",
+      "syntax": "0 | 1"
+    },
+    {
+      "name": "-moz-orient",
+      "syntax": "inline | block | horizontal | vertical"
+    },
+    {
+      "name": "-moz-outline-radius",
+      "syntax": "<outline-radius>{1,4} [ / <outline-radius>{1,4} ]?"
+    },
+    {
+      "name": "-moz-outline-radius-bottomleft",
+      "syntax": "<outline-radius>"
+    },
+    {
+      "name": "-moz-outline-radius-bottomright",
+      "syntax": "<outline-radius>"
+    },
+    {
+      "name": "-moz-outline-radius-topleft",
+      "syntax": "<outline-radius>"
+    },
+    {
+      "name": "-moz-outline-radius-topright",
+      "syntax": "<outline-radius>"
+    },
+    {
+      "name": "-moz-stack-sizing",
+      "syntax": "ignore | stretch-to-fit"
+    },
+    {
+      "name": "-moz-text-blink",
+      "syntax": "none | blink"
+    },
+    {
+      "name": "-moz-user-input",
+      "syntax": "auto | none | enabled | disabled"
+    },
+    {
+      "name": "-moz-user-modify",
+      "syntax": "read-only | read-write | write-only"
+    },
+    {
+      "name": "-moz-window-dragging",
+      "syntax": "drag | no-drag"
+    },
+    {
+      "name": "-moz-window-shadow",
+      "syntax": "default | menu | tooltip | sheet | none"
+    },
+    {
+      "name": "-webkit-border-before",
+      "syntax": "<'border-width'> || <'border-style'> || <color>"
+    },
+    {
+      "name": "-webkit-border-before-color",
+      "syntax": "<color>"
+    },
+    {
+      "name": "-webkit-border-before-style",
+      "syntax": "<'border-style'>"
+    },
+    {
+      "name": "-webkit-border-before-width",
+      "syntax": "<'border-width'>"
+    },
+    {
+      "name": "-webkit-line-clamp",
+      "syntax": "none | <integer>"
+    },
+    {
+      "name": "-webkit-mask",
+      "syntax": "[ <mask-reference> || <position> [ / <bg-size> ]? || <repeat-style> || [ <visual-box> | border | padding | content | text ] || [ <visual-box> | border | padding | content ] ]#"
+    },
+    {
+      "name": "-webkit-mask-attachment",
+      "syntax": "<attachment>#"
+    },
+    {
+      "name": "-webkit-mask-composite",
+      "syntax": "<composite-style>#"
+    },
+    {
+      "name": "-webkit-mask-position",
+      "syntax": "<position>#"
+    },
+    {
+      "name": "-webkit-mask-position-x",
+      "syntax": "[ <length-percentage> | left | center | right ]#"
+    },
+    {
+      "name": "-webkit-mask-position-y",
+      "syntax": "[ <length-percentage> | top | center | bottom ]#"
+    },
+    {
+      "name": "-webkit-mask-repeat-x",
+      "syntax": "repeat | no-repeat | space | round"
+    },
+    {
+      "name": "-webkit-mask-repeat-y",
+      "syntax": "repeat | no-repeat | space | round"
+    },
+    {
+      "name": "accent-color",
+      "syntax": "auto | <color>"
+    },
+    {
+      "name": "align-tracks",
+      "syntax": "[ normal | <baseline-position> | <content-distribution> | <overflow-position>? <content-position> ]#"
+    },
+    {
+      "name": "alignment-baseline",
+      "syntax": "baseline | alphabetic | ideographic | middle | central | mathematical | text-before-edge | text-after-edge"
+    },
+    {
+      "name": "anchor-name",
+      "syntax": "none | <dashed-ident>#"
+    },
+    {
+      "name": "anchor-scope",
+      "syntax": "none | all | <dashed-ident>#"
+    },
+    {
+      "name": "animation-composition",
+      "syntax": "<single-animation-composition>#"
+    },
+    {
+      "name": "animation-range",
+      "syntax": "[ <'animation-range-start'> <'animation-range-end'>? ]#"
+    },
+    {
+      "name": "animation-range-end",
+      "syntax": "[ normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#"
+    },
+    {
+      "name": "animation-range-start",
+      "syntax": "[ normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#"
+    },
+    {
+      "name": "animation-timeline",
+      "syntax": "<single-animation-timeline>#"
+    },
+    {
+      "name": "animation-trigger",
+      "syntax": "[ none | [ <dashed-ident> <animation-action>+ ]+ ]#"
+    },
+    {
+      "name": "appearance",
+      "syntax": "none | auto | <compat-auto> | <compat-special>"
+    },
+    {
+      "name": "aspect-ratio",
+      "syntax": "auto || <ratio>"
+    },
+    {
+      "name": "backdrop-filter",
+      "syntax": "none | <filter-value-list>"
+    },
+    {
+      "name": "baseline-shift",
+      "syntax": "<length-percentage> | sub | super | baseline"
+    },
+    {
+      "name": "baseline-source",
+      "syntax": "auto | first | last"
+    },
+    {
+      "name": "border-block",
+      "syntax": "<'border-block-start'>"
+    },
+    {
+      "name": "border-block-color",
+      "syntax": "<'border-top-color'>{1,2}"
+    },
+    {
+      "name": "border-block-style",
+      "syntax": "<'border-top-style'>{1,2}"
+    },
+    {
+      "name": "border-block-width",
+      "syntax": "<'border-top-width'>{1,2}"
+    },
+    {
+      "name": "border-end-end-radius",
+      "syntax": "<'border-top-left-radius'>"
+    },
+    {
+      "name": "border-end-start-radius",
+      "syntax": "<'border-top-left-radius'>"
+    },
+    {
+      "name": "border-inline",
+      "syntax": "<'border-block-start'>"
+    },
+    {
+      "name": "border-inline-color",
+      "syntax": "<'border-top-color'>{1,2}"
+    },
+    {
+      "name": "border-inline-style",
+      "syntax": "<'border-top-style'>{1,2}"
+    },
+    {
+      "name": "border-inline-width",
+      "syntax": "<'border-top-width'>{1,2}"
+    },
+    {
+      "name": "border-start-end-radius",
+      "syntax": "<'border-top-left-radius'>"
+    },
+    {
+      "name": "border-start-start-radius",
+      "syntax": "<'border-top-left-radius'>"
+    },
+    {
+      "name": "box-align",
+      "syntax": "start | center | end | baseline | stretch"
+    },
+    {
+      "name": "box-direction",
+      "syntax": "normal | reverse | inherit"
+    },
+    {
+      "name": "box-flex",
+      "syntax": "<number>"
+    },
+    {
+      "name": "box-flex-group",
+      "syntax": "<integer>"
+    },
+    {
+      "name": "box-lines",
+      "syntax": "single | multiple"
+    },
+    {
+      "name": "box-ordinal-group",
+      "syntax": "<integer>"
+    },
+    {
+      "name": "box-orient",
+      "syntax": "horizontal | vertical | inline-axis | block-axis | inherit"
+    },
+    {
+      "name": "box-pack",
+      "syntax": "start | center | end | justify"
+    },
+    {
+      "name": "caret",
+      "syntax": "<'caret-color'> || <'caret-animation'> || <'caret-shape'>"
+    },
+    {
+      "name": "caret-animation",
+      "syntax": "auto | manual"
+    },
+    {
+      "name": "caret-shape",
+      "syntax": "auto | bar | block | underscore"
+    },
+    {
+      "name": "color-scheme",
+      "syntax": "normal | [ light | dark | <custom-ident> ]+ && only?"
+    },
+    {
+      "name": "column-height",
+      "syntax": "auto | <length [0,\u221e]>"
+    },
+    {
+      "name": "column-wrap",
+      "syntax": "auto | nowrap | wrap"
+    },
+    {
+      "name": "contain-intrinsic-block-size",
+      "syntax": "auto? [ none | <length> ]"
+    },
+    {
+      "name": "contain-intrinsic-height",
+      "syntax": "auto? [ none | <length> ]"
+    },
+    {
+      "name": "contain-intrinsic-inline-size",
+      "syntax": "auto? [ none | <length> ]"
+    },
+    {
+      "name": "contain-intrinsic-size",
+      "syntax": "[ auto? [ none | <length> ] ]{1,2}"
+    },
+    {
+      "name": "contain-intrinsic-width",
+      "syntax": "auto? [ none | <length> ]"
+    },
+    {
+      "name": "container",
+      "syntax": "<'container-name'> [ / <'container-type'> ]?"
+    },
+    {
+      "name": "container-name",
+      "syntax": "none | <custom-ident>+"
+    },
+    {
+      "name": "container-type",
+      "syntax": "normal | [ [ size | inline-size ] || scroll-state ]"
+    },
+    {
+      "name": "content-visibility",
+      "syntax": "visible | auto | hidden"
+    },
+    {
+      "name": "corner-block-end-shape",
+      "syntax": "<corner-shape-value>{1,2}"
+    },
+    {
+      "name": "corner-block-start-shape",
+      "syntax": "<corner-shape-value>{1,2}"
+    },
+    {
+      "name": "corner-bottom-shape",
+      "syntax": "<corner-shape-value>{1,2}"
+    },
+    {
+      "name": "corner-bottom-left-shape",
+      "syntax": "<corner-shape-value>"
+    },
+    {
+      "name": "corner-bottom-right-shape",
+      "syntax": "<corner-shape-value>"
+    },
+    {
+      "name": "corner-end-end-shape",
+      "syntax": "<corner-shape-value>"
+    },
+    {
+      "name": "corner-end-start-shape",
+      "syntax": "<corner-shape-value>"
+    },
+    {
+      "name": "corner-inline-end-shape",
+      "syntax": "<corner-shape-value>{1,2}"
+    },
+    {
+      "name": "corner-inline-start-shape",
+      "syntax": "<corner-shape-value>{1,2}"
+    },
+    {
+      "name": "corner-left-shape",
+      "syntax": "<corner-shape-value>{1,2}"
+    },
+    {
+      "name": "corner-right-shape",
+      "syntax": "<corner-shape-value>{1,2}"
+    },
+    {
+      "name": "corner-shape",
+      "syntax": "<corner-shape-value>{1,4}"
+    },
+    {
+      "name": "corner-start-start-shape",
+      "syntax": "<corner-shape-value>"
+    },
+    {
+      "name": "corner-start-end-shape",
+      "syntax": "<corner-shape-value>"
+    },
+    {
+      "name": "corner-top-shape",
+      "syntax": "<corner-shape-value>{1,2}"
+    },
+    {
+      "name": "corner-top-left-shape",
+      "syntax": "<corner-shape-value>"
+    },
+    {
+      "name": "corner-top-right-shape",
+      "syntax": "<corner-shape-value>"
+    },
+    {
+      "name": "counter-set",
+      "syntax": "[ <counter-name> <integer>? ]+ | none"
+    },
+    {
+      "name": "cx",
+      "syntax": "<length> | <percentage>"
+    },
+    {
+      "name": "cy",
+      "syntax": "<length> | <percentage>"
+    },
+    {
+      "name": "d",
+      "syntax": "none | path(<string>)"
+    },
+    {
+      "name": "dominant-baseline",
+      "syntax": "auto | text-bottom | alphabetic | ideographic | middle | central | mathematical | hanging | text-top"
+    },
+    {
+      "name": "dynamic-range-limit",
+      "syntax": "standard | no-limit | constrained | <dynamic-range-limit-mix()>"
+    },
+    {
+      "name": "field-sizing",
+      "syntax": "content | fixed"
+    },
+    {
+      "name": "font-optical-sizing",
+      "syntax": "auto | none"
+    },
+    {
+      "name": "font-palette",
+      "syntax": "normal | light | dark | <palette-identifier> | <palette-mix()>"
+    },
+    {
+      "name": "font-smooth",
+      "syntax": "auto | never | always | <absolute-size> | <length>"
+    },
+    {
+      "name": "font-synthesis-position",
+      "syntax": "auto | none"
+    },
+    {
+      "name": "font-synthesis-small-caps",
+      "syntax": "auto | none"
+    },
+    {
+      "name": "font-synthesis-style",
+      "syntax": "auto | none"
+    },
+    {
+      "name": "font-synthesis-weight",
+      "syntax": "auto | none"
+    },
+    {
+      "name": "font-variant-emoji",
+      "syntax": "normal | text | emoji | unicode"
+    },
+    {
+      "name": "font-variation-settings",
+      "atRule": "@font-face",
+      "syntax": "normal | [ <string> <number> ]#"
+    },
+    {
+      "name": "font-width",
+      "syntax": "normal | <percentage [0,\u221e]> | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded"
+    },
+    {
+      "name": "forced-color-adjust",
+      "syntax": "auto | none | preserve-parent-color"
+    },
+    {
+      "name": "gap",
+      "syntax": "<'row-gap'> <'column-gap'>?"
+    },
+    {
+      "name": "hanging-punctuation",
+      "syntax": "none | [ first || [ force-end | allow-end ] || last ]"
+    },
+    {
+      "name": "hyphenate-character",
+      "syntax": "auto | <string>"
+    },
+    {
+      "name": "hyphenate-limit-chars",
+      "syntax": "[ auto | <integer> ]{1,3}"
+    },
+    {
+      "name": "image-resolution",
+      "syntax": "[ from-image || <resolution> ] && snap?"
+    },
+    {
+      "name": "initial-letter",
+      "syntax": "normal | [ <number> <integer>? ]"
+    },
+    {
+      "name": "initial-letter-align",
+      "syntax": "[ auto | alphabetic | hanging | ideographic ]"
+    },
+    {
+      "name": "inset",
+      "syntax": "<'top'>{1,4}"
+    },
+    {
+      "name": "inset-block",
+      "syntax": "<'top'>{1,2}"
+    },
+    {
+      "name": "inset-block-end",
+      "syntax": "<'top'>"
+    },
+    {
+      "name": "inset-block-start",
+      "syntax": "<'top'>"
+    },
+    {
+      "name": "inset-inline",
+      "syntax": "<'top'>{1,2}"
+    },
+    {
+      "name": "inset-inline-end",
+      "syntax": "<'top'>"
+    },
+    {
+      "name": "inset-inline-start",
+      "syntax": "<'top'>"
+    },
+    {
+      "name": "interpolate-size",
+      "syntax": "numeric-only | allow-keywords"
+    },
+    {
+      "name": "interactivity",
+      "syntax": "auto | inert"
+    },
+    {
+      "name": "interest-delay",
+      "syntax": "<'interest-delay-start'>{1,2}"
+    },
+    {
+      "name": "interest-delay-end",
+      "syntax": "normal | <time>"
+    },
+    {
+      "name": "interest-delay-start",
+      "syntax": "normal | <time>"
+    },
+    {
+      "name": "justify-tracks",
+      "syntax": "[ normal | <content-distribution> | <overflow-position>? [ <content-position> | left | right ] ]#"
+    },
+    {
+      "name": "line-clamp",
+      "syntax": "none | <integer>"
+    },
+    {
+      "name": "line-height-step",
+      "syntax": "<length>"
+    },
+    {
+      "name": "margin-block",
+      "syntax": "<'margin-top'>{1,2}"
+    },
+    {
+      "name": "margin-inline",
+      "syntax": "<'margin-top'>{1,2}"
+    },
+    {
+      "name": "margin-trim",
+      "syntax": "none | in-flow | all"
+    },
+    {
+      "name": "mask",
+      "syntax": "<mask-layer>#"
+    },
+    {
+      "name": "mask-border",
+      "syntax": "<'mask-border-source'> || <'mask-border-slice'> [ / <'mask-border-width'>? [ / <'mask-border-outset'> ]? ]? || <'mask-border-repeat'> || <'mask-border-mode'>"
+    },
+    {
+      "name": "mask-border-mode",
+      "syntax": "luminance | alpha"
+    },
+    {
+      "name": "mask-border-outset",
+      "syntax": "[ <length> | <number> ]{1,4}"
+    },
+    {
+      "name": "mask-border-repeat",
+      "syntax": "[ stretch | repeat | round | space ]{1,2}"
+    },
+    {
+      "name": "mask-border-slice",
+      "syntax": "<number-percentage>{1,4} fill?"
+    },
+    {
+      "name": "mask-border-source",
+      "syntax": "none | <image>"
+    },
+    {
+      "name": "mask-border-width",
+      "syntax": "[ <length-percentage> | <number> | auto ]{1,4}"
+    },
+    {
+      "name": "mask-clip",
+      "syntax": "[ <coord-box> | no-clip ]#"
+    },
+    {
+      "name": "mask-composite",
+      "syntax": "<compositing-operator>#"
+    },
+    {
+      "name": "masonry-auto-flow",
+      "syntax": "[ pack | next ] || [ definite-first | ordered ]"
+    },
+    {
+      "name": "math-depth",
+      "syntax": "auto-add | add(<integer>) | <integer>"
+    },
+    {
+      "name": "math-shift",
+      "syntax": "normal | compact"
+    },
+    {
+      "name": "math-style",
+      "syntax": "normal | compact"
+    },
+    {
+      "name": "max-lines",
+      "syntax": "none | <integer>"
+    },
+    {
+      "name": "object-view-box",
+      "syntax": "none | <basic-shape-rect>"
+    },
+    {
+      "name": "offset",
+      "syntax": "[ <'offset-position'>? [ <'offset-path'> [ <'offset-distance'> || <'offset-rotate'> ]? ]? ]! [ / <'offset-anchor'> ]?"
+    },
+    {
+      "name": "offset-anchor",
+      "syntax": "auto | <position>"
+    },
+    {
+      "name": "offset-distance",
+      "syntax": "<length-percentage>"
+    },
+    {
+      "name": "offset-path",
+      "syntax": "none | <offset-path> || <coord-box>"
+    },
+    {
+      "name": "offset-position",
+      "syntax": "normal | auto | <position>"
+    },
+    {
+      "name": "offset-rotate",
+      "syntax": "[ auto | reverse ] || <angle>"
+    },
+    {
+      "name": "overflow-anchor",
+      "syntax": "auto | none"
+    },
+    {
+      "name": "overflow-block",
+      "syntax": "visible | hidden | clip | scroll | auto"
+    },
+    {
+      "name": "overflow-clip-box",
+      "syntax": "padding-box | content-box"
+    },
+    {
+      "name": "overflow-clip-margin",
+      "syntax": "<visual-box> || <length [0,\u221e]>"
+    },
+    {
+      "name": "overflow-inline",
+      "syntax": "visible | hidden | clip | scroll | auto"
+    },
+    {
+      "name": "overlay",
+      "syntax": "none | auto"
+    },
+    {
+      "name": "overscroll-behavior",
+      "syntax": "[ contain | none | auto ]{1,2}"
+    },
+    {
+      "name": "overscroll-behavior-block",
+      "syntax": "contain | none | auto"
+    },
+    {
+      "name": "overscroll-behavior-inline",
+      "syntax": "contain | none | auto"
+    },
+    {
+      "name": "overscroll-behavior-x",
+      "syntax": "contain | none | auto"
+    },
+    {
+      "name": "overscroll-behavior-y",
+      "syntax": "contain | none | auto"
+    },
+    {
+      "name": "padding-block",
+      "syntax": "<'padding-top'>{1,2}"
+    },
+    {
+      "name": "padding-inline",
+      "syntax": "<'padding-top'>{1,2}"
+    },
+    {
+      "name": "page",
+      "syntax": "auto | <custom-ident>"
+    },
+    {
+      "name": "place-content",
+      "syntax": "<'align-content'> <'justify-content'>?"
+    },
+    {
+      "name": "place-items",
+      "syntax": "<'align-items'> <'justify-items'>?"
+    },
+    {
+      "name": "place-self",
+      "syntax": "<'align-self'> <'justify-self'>?"
+    },
+    {
+      "name": "position-anchor",
+      "syntax": "auto | none | <anchor-name>"
+    },
+    {
+      "name": "position-area",
+      "syntax": "none | <position-area>"
+    },
+    {
+      "name": "position-try",
+      "syntax": "<'position-try-order'>? <'position-try-fallbacks'>"
+    },
+    {
+      "name": "position-try-fallbacks",
+      "syntax": "none | [ [<dashed-ident> || <try-tactic>] | <'position-area'> ]#"
+    },
+    {
+      "name": "position-try-order",
+      "syntax": "normal | <try-size>"
+    },
+    {
+      "name": "position-visibility",
+      "syntax": "always | [ anchors-valid || anchors-visible || no-overflow ]"
+    },
+    {
+      "name": "print-color-adjust",
+      "syntax": "economy | exact"
+    },
+    {
+      "name": "r",
+      "syntax": "<length> | <percentage>"
+    },
+    {
+      "name": "reading-flow",
+      "syntax": "normal | source-order | flex-visual | flex-flow | grid-rows | grid-columns | grid-order"
+    },
+    {
+      "name": "reading-order",
+      "syntax": "<integer>"
+    },
+    {
+      "name": "rotate",
+      "syntax": "none | <angle> | [ x | y | z | <number>{3} ] && <angle>"
+    },
+    {
+      "name": "row-gap",
+      "syntax": "normal | <length-percentage>"
+    },
+    {
+      "name": "ruby-merge",
+      "syntax": "separate | collapse | auto"
+    },
+    {
+      "name": "rx",
+      "syntax": "<length> | <percentage>"
+    },
+    {
+      "name": "ry",
+      "syntax": "<length> | <percentage>"
+    },
+    {
+      "name": "scale",
+      "syntax": "none | [ <number> | <percentage> ]{1,3}"
+    },
+    {
+      "name": "scroll-initial-target",
+      "syntax": "none | nearest"
+    },
+    {
+      "name": "scroll-margin",
+      "syntax": "<length>{1,4}"
+    },
+    {
+      "name": "scroll-margin-block",
+      "syntax": "<length>{1,2}"
+    },
+    {
+      "name": "scroll-margin-block-end",
+      "syntax": "<length>"
+    },
+    {
+      "name": "scroll-margin-block-start",
+      "syntax": "<length>"
+    },
+    {
+      "name": "scroll-margin-bottom",
+      "syntax": "<length>"
+    },
+    {
+      "name": "scroll-margin-inline",
+      "syntax": "<length>{1,2}"
+    },
+    {
+      "name": "scroll-margin-inline-end",
+      "syntax": "<length>"
+    },
+    {
+      "name": "scroll-margin-inline-start",
+      "syntax": "<length>"
+    },
+    {
+      "name": "scroll-margin-left",
+      "syntax": "<length>"
+    },
+    {
+      "name": "scroll-margin-right",
+      "syntax": "<length>"
+    },
+    {
+      "name": "scroll-margin-top",
+      "syntax": "<length>"
+    },
+    {
+      "name": "scroll-marker-group",
+      "syntax": "none | before | after"
+    },
+    {
+      "name": "scroll-padding",
+      "syntax": "[ auto | <length-percentage> ]{1,4}"
+    },
+    {
+      "name": "scroll-padding-block",
+      "syntax": "[ auto | <length-percentage> ]{1,2}"
+    },
+    {
+      "name": "scroll-padding-block-end",
+      "syntax": "auto | <length-percentage>"
+    },
+    {
+      "name": "scroll-padding-block-start",
+      "syntax": "auto | <length-percentage>"
+    },
+    {
+      "name": "scroll-padding-bottom",
+      "syntax": "auto | <length-percentage>"
+    },
+    {
+      "name": "scroll-padding-inline",
+      "syntax": "[ auto | <length-percentage> ]{1,2}"
+    },
+    {
+      "name": "scroll-padding-inline-end",
+      "syntax": "auto | <length-percentage>"
+    },
+    {
+      "name": "scroll-padding-inline-start",
+      "syntax": "auto | <length-percentage>"
+    },
+    {
+      "name": "scroll-padding-left",
+      "syntax": "auto | <length-percentage>"
+    },
+    {
+      "name": "scroll-padding-right",
+      "syntax": "auto | <length-percentage>"
+    },
+    {
+      "name": "scroll-padding-top",
+      "syntax": "auto | <length-percentage>"
+    },
+    {
+      "name": "scroll-snap-align",
+      "syntax": "[ none | start | end | center ]{1,2}"
+    },
+    {
+      "name": "scroll-snap-stop",
+      "syntax": "normal | always"
+    },
+    {
+      "name": "scroll-snap-type-x",
+      "syntax": "none | mandatory | proximity"
+    },
+    {
+      "name": "scroll-snap-type-y",
+      "syntax": "none | mandatory | proximity"
+    },
+    {
+      "name": "scroll-target-group",
+      "syntax": "none | auto"
+    },
+    {
+      "name": "scroll-timeline",
+      "syntax": "[ <'scroll-timeline-name'> <'scroll-timeline-axis'>? ]#"
+    },
+    {
+      "name": "scroll-timeline-axis",
+      "syntax": "[ block | inline | x | y ]#"
+    },
+    {
+      "name": "scroll-timeline-name",
+      "syntax": "[ none | <dashed-ident> ]#"
+    },
+    {
+      "name": "scrollbar-color",
+      "syntax": "auto | <color>{2}"
+    },
+    {
+      "name": "scrollbar-gutter",
+      "syntax": "auto | stable && both-edges?"
+    },
+    {
+      "name": "scrollbar-width",
+      "syntax": "auto | thin | none"
+    },
+    {
+      "name": "speak-as",
+      "atRule": "@counter-style",
+      "syntax": "auto | bullets | numbers | words | spell-out | <counter-style-name>"
+    },
+    {
+      "name": "stroke-color",
+      "syntax": "<color>"
+    },
+    {
+      "name": "text-autospace",
+      "syntax": "normal | <autospace> | auto"
+    },
+    {
+      "name": "text-box",
+      "syntax": "normal | <'text-box-trim'> || <'text-box-edge'>"
+    },
+    {
+      "name": "text-box-edge",
+      "syntax": "auto | <text-edge>"
+    },
+    {
+      "name": "text-box-trim",
+      "syntax": "none | trim-start | trim-end | trim-both"
+    },
+    {
+      "name": "text-combine-upright",
+      "syntax": "none | all | [ digits <integer>? ]"
+    },
+    {
+      "name": "text-decoration-inset",
+      "syntax": "<length>{1,2} | auto"
+    },
+    {
+      "name": "text-decoration-skip",
+      "syntax": "none | [ objects || [ spaces | [ leading-spaces || trailing-spaces ] ] || edges || box-decoration ]"
+    },
+    {
+      "name": "text-decoration-skip-ink",
+      "syntax": "auto | all | none"
+    },
+    {
+      "name": "text-decoration-thickness",
+      "syntax": "auto | from-font | <length> | <percentage>"
+    },
+    {
+      "name": "text-emphasis",
+      "syntax": "<'text-emphasis-style'> || <'text-emphasis-color'>"
+    },
+    {
+      "name": "text-emphasis-color",
+      "syntax": "<color>"
+    },
+    {
+      "name": "text-emphasis-position",
+      "syntax": "auto | [ over | under ] && [ right | left ]?"
+    },
+    {
+      "name": "text-emphasis-style",
+      "syntax": "none | [ [ filled | open ] || [ dot | circle | double-circle | triangle | sesame ] ] | <string>"
+    },
+    {
+      "name": "text-size-adjust",
+      "syntax": "none | auto | <percentage>"
+    },
+    {
+      "name": "text-spacing-trim",
+      "syntax": "space-all | normal | space-first | trim-start"
+    },
+    {
+      "name": "text-underline-offset",
+      "syntax": "auto | <length> | <percentage>"
+    },
+    {
+      "name": "text-wrap",
+      "syntax": "<'text-wrap-mode'> || <'text-wrap-style'>"
+    },
+    {
+      "name": "text-wrap-mode",
+      "syntax": "wrap | nowrap"
+    },
+    {
+      "name": "text-wrap-style",
+      "syntax": "auto | balance | stable | pretty"
+    },
+    {
+      "name": "timeline-scope",
+      "syntax": "none | <dashed-ident>#"
+    },
+    {
+      "name": "timeline-trigger",
+      "syntax": "none | [ <'timeline-trigger-name'> <'timeline-trigger-source'> <'timeline-trigger-range'> [ '/' <'timeline-trigger-exit-range'> ]? ]#"
+    },
+    {
+      "name": "timeline-trigger-name",
+      "syntax": "none | <dashed-ident>#"
+    },
+    {
+      "name": "timeline-trigger-exit-range",
+      "syntax": "[ <'timeline-trigger-exit-range-start'> <'timeline-trigger-exit-range-end'>? ]#"
+    },
+    {
+      "name": "timeline-trigger-exit-range-end",
+      "syntax": "[ auto | normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#"
+    },
+    {
+      "name": "timeline-trigger-exit-range-start",
+      "syntax": "[ auto | normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#"
+    },
+    {
+      "name": "timeline-trigger-range",
+      "syntax": "[ <'timeline-trigger-range-start'> <'timeline-trigger-range-end'>? ]#"
+    },
+    {
+      "name": "timeline-trigger-range-end",
+      "syntax": "[ normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#"
+    },
+    {
+      "name": "timeline-trigger-range-start",
+      "syntax": "[ normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#"
+    },
+    {
+      "name": "timeline-trigger-source",
+      "syntax": "<single-animation-timeline>#"
+    },
+    {
+      "name": "transform-box",
+      "syntax": "content-box | border-box | fill-box | stroke-box | view-box"
+    },
+    {
+      "name": "transition-behavior",
+      "syntax": "<transition-behavior-value>#"
+    },
+    {
+      "name": "translate",
+      "syntax": "none | <length-percentage> [ <length-percentage> <length>? ]?"
+    },
+    {
+      "name": "trigger-scope",
+      "syntax": "none | all | <dashed-ident>#"
+    },
+    {
+      "name": "vector-effect",
+      "syntax": "none | non-scaling-stroke | non-scaling-size | non-rotation | fixed-position"
+    },
+    {
+      "name": "view-timeline",
+      "syntax": "[ <'view-timeline-name'> [ <'view-timeline-axis'> || <'view-timeline-inset'> ]? ]#"
+    },
+    {
+      "name": "view-timeline-axis",
+      "syntax": "[ block | inline | x | y ]#"
+    },
+    {
+      "name": "view-timeline-inset",
+      "syntax": "[ [ auto | <length-percentage> ]{1,2} ]#"
+    },
+    {
+      "name": "view-timeline-name",
+      "syntax": "[ none | <dashed-ident> ]#"
+    },
+    {
+      "name": "view-transition-class",
+      "syntax": "none | <custom-ident>+"
+    },
+    {
+      "name": "view-transition-name",
+      "syntax": "none | <custom-ident> | match-element"
+    },
+    {
+      "name": "white-space",
+      "syntax": "normal | pre | pre-wrap | pre-line | <'white-space-collapse'> || <'text-wrap-mode'>"
+    },
+    {
+      "name": "white-space-collapse",
+      "syntax": "collapse | preserve | preserve-breaks | preserve-spaces | break-spaces"
+    },
+    {
+      "name": "x",
+      "syntax": "<length> | <percentage>"
+    },
+    {
+      "name": "y",
+      "syntax": "<length> | <percentage>"
+    },
+    {
+      "name": "ascent-override",
+      "atRule": "@font-face",
+      "syntax": "normal | <percentage>"
+    },
+    {
+      "name": "descent-override",
+      "atRule": "@font-face",
+      "syntax": "normal | <percentage>"
+    },
+    {
+      "name": "font-display",
+      "atRule": "@font-face",
+      "syntax": "auto | block | swap | fallback | optional"
+    },
+    {
+      "name": "line-gap-override",
+      "atRule": "@font-face",
+      "syntax": "normal | <percentage>"
+    },
+    {
+      "name": "size-adjust",
+      "atRule": "@font-face",
+      "syntax": "<percentage>"
+    },
+    {
+      "name": "base-palette",
+      "atRule": "@font-palette-values",
+      "syntax": "light | dark | <integer [0,\u221e]>"
+    },
+    {
+      "name": "override-colors",
+      "atRule": "@font-palette-values",
+      "syntax": "[ <integer [0,\u221e]> <color> ]#"
+    },
+    {
+      "name": "bleed",
+      "atRule": "@page",
+      "syntax": "auto | <length>"
+    },
+    {
+      "name": "marks",
+      "atRule": "@page",
+      "syntax": "none | [ crop || cross ]"
+    },
+    {
+      "name": "page-orientation",
+      "atRule": "@page",
+      "syntax": "upright | rotate-left | rotate-right"
+    },
+    {
+      "name": "inherits",
+      "atRule": "@property",
+      "syntax": "true | false"
+    },
+    {
+      "name": "initial-value",
+      "atRule": "@property",
+      "syntax": "<declaration-value>?"
+    },
+    {
+      "name": "syntax",
+      "atRule": "@property",
+      "syntax": "<string>"
+    },
+    {
+      "name": "navigation",
+      "atRule": "@view-transition",
+      "syntax": "auto | none"
+    },
+    {
+      "name": "types",
+      "atRule": "@view-transition",
+      "syntax": "none | <custom-ident>+"
+    }
+  ]
+}

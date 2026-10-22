@@ -2,7 +2,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFile } from "node:fs/promises";
-import { cssCompletionData, cssDescriptors, cssIndex, cssMetadata, cssNames, cssSyntaxes, htmlElements, scanSyntax }
+import { cssCompletionData, cssDescriptors, cssIndex, cssMetadata, cssNames, cssSyntaxes, cssTypeResolver,
+  htmlElements, readPinnedInputs, refreshPinnedData, scanSyntax }
   from "./update-web-data.mjs";
 
 const source = { schemaVersion: 1.1, counts: { properties: 7, atDirectives: 2, pseudoClasses: 3, pseudoElements: 1 } };
@@ -123,6 +124,40 @@ test("indexed values are complete CSS tokens or empty function templates", async
     .concat(Object.values(index.sets).flat(), index.wide)) {
     assert.match(value, token);
   }
+  assert.ok(index.sets["type:transform-function"].includes("translateX()"));
+});
+
+test("type flags follow syntax references, cycles and descriptor scope", () => {
+  const complete = structuredClone(data);
+  Object.assign(complete.properties[0], { syntax: "<'inset-block'> | <length> | fn(<time>)" });
+  Object.assign(complete.properties[1], { syntax: "<'inset'> | <number-percentage>" });
+  Object.assign(complete.properties[5], { syntax: "<angle>" });
+  Object.assign(complete.properties[4], { restrictions: ["number(0-1)", "color"] });
+  // A known syntax takes precedence over incorrect upstream restrictions.
+  Object.assign(complete.properties[3], { syntax: "auto", restrictions: ["image"] });
+  const expanded = { ...syntaxes, "number-percentage": { syntax: "<number> | <percentage>" } };
+  const types = cssTypeResolver(complete, expanded, atRules,
+    { ...pinned, mdn: { counts: { ...pinned.mdn.counts, syntaxes: 4 } } });
+  assert.deepEqual(types("property:inset"), ["number", "length", "percentage"]);
+  assert.deepEqual(types("property:-vendor"), []);
+  assert.deepEqual(types("property:font-display"), ["number", "color"]);
+  assert.deepEqual(types("@font-face:font-display"), []);
+  assert.deepEqual(types("property:font-style"), ["angle"]);
+  assert.deepEqual(types("@font-face:font-style"), []);
+  assert.deepEqual(types("@font-face:src"), ["url"]);
+});
+
+test("shipped data matches the offline refresh from the pinned inputs", async () => {
+  const inputs = await readPinnedInputs();
+  const read = (name) => readFile(new URL(`../data/${name}.json`, import.meta.url), "utf8");
+  const [metadataText, indexText] = [await read("css-data"), await read("css-index")];
+  const [metadata, index] = [JSON.parse(metadataText), JSON.parse(indexText)];
+  assert.deepEqual(metadata.properties.map(({ name, atRule }) => ({ name, atRule })),
+    inputs.data.properties.map(({ name, atRule }) => ({ name, atRule })));
+  const refreshed = refreshPinnedData(metadata, index, inputs);
+  for (const [key, values] of Object.entries(refreshed.index.sets)) assert.deepEqual(values, index.sets[key], key);
+  assert.equal(JSON.stringify(refreshed.index, null, 2) + "\n", indexText);
+  assert.equal(JSON.stringify(refreshed.metadata, null, 2) + "\n", metadataText);
 });
 
 test("the index shares value sets and skips deprecated types", () => {
@@ -131,9 +166,9 @@ test("the index shares value sets and skips deprecated types", () => {
   Object.assign(complete.properties[1], { syntax: "auto | <'inset'>", values: [{ name: "-vendor" }, { name: "auto" }] });
   const index = cssIndex(complete, syntaxes, atRules, html, pinned);
   assert.deepEqual(index.properties.find((entry) => entry.name === "inset"),
-    { name: "inset", relevance: 69, values: [], sets: ["type:color", "type:line-style"] });
+    { name: "inset", relevance: 69, types: ["color"], values: [], sets: ["type:color", "type:line-style"] });
   assert.deepEqual(index.properties.find((entry) => entry.name === "inset-block"),
-    { name: "inset-block", relevance: 50, values: ["auto"], sets: ["type:color", "type:line-style"] });
+    { name: "inset-block", relevance: 50, types: ["color"], values: ["auto"], sets: ["type:color", "type:line-style"] });
   assert.deepEqual(index.sets, { "type:color": ["currentColor"], "type:line-style": ["none", "solid"] });
   assert.deepEqual(index.elements, ["button", "div"]);
   assert.deepEqual(index.wide, ["inherit", "initial", "unset", "revert", "revert-layer"]);
@@ -161,7 +196,7 @@ test("descriptors take values from their own syntax, not from a property's recor
   assert.deepEqual(descriptor("font-display").values, ["fallback", "auto", "swap"]);
   assert.deepEqual(descriptor("font-style").values, ["normal", "italic"]);
   assert.deepEqual(descriptor("font-family"),
-    { atRule: "@font-face", name: "font-family", relevance: 50, obsolete: true, values: [], sets: [] });
+    { atRule: "@font-face", name: "font-family", relevance: 50, obsolete: true, types: [], values: [], sets: [] });
   assert.deepEqual(index.properties.find((entry) => entry.name === "font-style").values, ["italic", "bolder"]);
   // The metadata admits font-display only in @font-face.
   const elsewhere = { ...atRules, "@font-feature-values": { descriptors: { "font-display": { syntax: "auto", status: "standard" } } } };

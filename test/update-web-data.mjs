@@ -8,17 +8,6 @@ const cssWide = ["inherit", "initial", "unset", "revert", "revert-layer"];
 
 export const normalizeValue = (name) => name.replace(/^([A-Za-z][-A-Za-z0-9]*)\(.+\)$/, "$1()");
 
-/** Normalize function placeholders in the committed snapshot offline. */
-export function normalizeCommittedValues(metadata, index) {
-  for (const entry of metadata.properties) {
-    for (const value of entry.values ?? []) value.name = normalizeValue(value.name);
-  }
-  for (const entry of [...index.properties, ...index.descriptors]) {
-    entry.values = [...new Set(entry.values.map(normalizeValue))];
-  }
-  for (const [key, values] of Object.entries(index.sets)) index.sets[key] = [...new Set(values.map(normalizeValue))];
-}
-
 // atRule is an association, not an exclusive role. A property reference
 // identifies entries such as font-style that are also ordinary properties.
 const documentsProperty = (item) => !item.atRule ||
@@ -70,11 +59,12 @@ export function cssMetadata(data, source) {
 }
 
 /** Keep only the metadata fields that emmet2-css-data reads, with descriptions as strings. */
-export function cssCompletionData(data, source) {
+export function cssCompletionData(data, source, types) {
   const text = (description) => (typeof description === "string" ? description : description?.value);
   const entry = ({ name, description }) => ({ name: normalizeValue(name), description: text(description) });
-  const property = ({ name, atRule, description, restrictions, values }) =>
-    ({ name, atRule, description: text(description), restrictions, values: values?.map(entry) });
+  const property = ({ name, atRule, description, restrictions, values, types: existingTypes }) =>
+    ({ name, atRule, description: text(description), restrictions,
+      types: types ? types(`property:${name}`) : existingTypes, values: values?.map(entry) });
   return {
     version: data.version,
     ...Object.fromEntries(Object.keys(source.counts)
@@ -145,40 +135,67 @@ export function scanSyntax(syntax) {
   return { keywords: [...new Set(keywords)], references: [...new Set(references)] };
 }
 
-/**
- * Build the compact runtime index.  Each property lists its own keywords and
- * every shared value set reachable through property and type references.
- * A set stores only its own keywords, so shared sets such as named colors
- * appear once.  Obsolete properties remain canonical names but are marked.
- */
-export function cssIndex(data, syntaxes, atRules, html, source) {
-  const names = cssNames(data, source);
-  const entries = new Map();
-  for (const entry of data.properties) entries.set(entry.name, [...(entries.get(entry.name) ?? []), entry]);
-  const ordinary = (name) => entries.get(name).find((entry) => !entry.atRule) ?? entries.get(name)[0];
+/** Resolve top-level value types, excluding numeric arguments inside functions. */
+export function cssTypeResolver(data, syntaxes, atRules, source) {
   const definitions = new Map(Object.entries(cssSyntaxes(syntaxes, source))
     .map(([name, entry]) => [`type:${name}`, entry.syntax]));
-  for (const name of names.properties) {
-    if (ordinary(name).syntax !== undefined) definitions.set(`property:${name}`, ordinary(name).syntax);
+  for (const entry of [...data.properties].reverse()) {
+    // Old vendor and obsolete records sometimes provide restrictions but no syntax.
+    const syntax = entry.syntax ?? (entry.restrictions ?? []).map((type) => `<${type.replace(/\(.*/, "")}>`).join(" | ");
+    if (!entry.atRule || !definitions.has(`property:${entry.name}`)) definitions.set(`property:${entry.name}`, syntax);
   }
-  // One upstream record per name cannot place font-family in both @font-face and @font-palette-values.
-  // Metadata must admit every indexed descriptor, as an ordinary property or in that at-rule.
-  const descriptors = cssDescriptors(atRules, source).filter(({ atRule, name }) =>
-    entries.get(name)?.some((entry) => documentsProperty(entry) || entry.atRule === atRule));
-  const unsupported = data.properties.filter((entry) => entry.atRule && !entry.name.startsWith("-") &&
-    !descriptors.some(({ atRule, name }) => atRule === entry.atRule && name === entry.name));
-  if (unsupported.length) {
-    throw new Error(`Unexpected CSS descriptors without MDN syntax: ${unsupported.map((entry) => entry.name).join(", ")}`);
+  for (const { atRule, name, syntax } of cssDescriptors(atRules, source)) definitions.set(`${atRule}:${name}`, syntax);
+  const primitives = ["number", "length", "percentage", "angle", "time", "color", "image", "url"];
+  return (start) => {
+    const reached = new Set();
+    const types = new Set();
+    const pending = [start];
+    while (pending.length) {
+      const key = pending.pop();
+      if (reached.has(key) || key.startsWith("type:deprecated-")) continue;
+      reached.add(key);
+      const type = key.replace(/^type:/, "");
+      if (key.startsWith("type:") && primitives.includes(type)) types.add(type);
+      if (key === "type:integer") types.add("number");
+      pending.push(...scanSyntax(definitions.get(key) ?? "").references);
+    }
+    return primitives.filter((type) => types.has(type));
+  };
+}
+
+/** Read the vendored pinned inputs: MDN syntax files and the VS Code property syntax projection. */
+export async function readPinnedInputs() {
+  const source = JSON.parse(await readFile(new URL("../data/css-source.json", import.meta.url), "utf8"));
+  const mdn = {};
+  for (const path of ["css/syntaxes.json", "css/at-rules.json"]) {
+    const bytes = await readFile(new URL(`./fixtures/css-types/${path}`, import.meta.url));
+    if (createHash("sha256").update(bytes).digest("hex") !== source.mdn.files[path]) {
+      throw new Error(`Checksum mismatch: ${path}`);
+    }
+    mdn[path] = JSON.parse(bytes);
   }
+  const data = JSON.parse(await readFile(new URL("./fixtures/css-types/properties.json", import.meta.url), "utf8"));
+  if (data.properties.length !== source.counts.properties) throw new Error("Unexpected property syntax count");
+  return { data, syntaxes: mdn["css/syntaxes.json"], atRules: mdn["css/at-rules.json"], source };
+}
+
+/** Return value syntax keyed property:NAME, type:NAME and AT-RULE:NAME. */
+function valueDefinitions(properties, syntaxes, descriptors, source) {
+  const definitions = new Map(Object.entries(cssSyntaxes(syntaxes, source))
+    .map(([name, entry]) => [`type:${name}`, entry.syntax]));
+  for (const { name, syntax } of properties) if (syntax !== undefined) definitions.set(`property:${name}`, syntax);
   for (const { atRule, name, syntax } of descriptors) definitions.set(`${atRule}:${name}`, syntax);
+  return definitions;
+}
+
+/** Return scan, a key's own keywords and references, and reachable, a start key's sorted value-set keys. */
+function valueSets(definitions) {
   const scanned = new Map();
   const scan = (key) => {
     if (!scanned.has(key)) scanned.set(key, scanSyntax(definitions.get(key) ?? ""));
     return scanned.get(key);
   };
-  const sets = new Map();
-  const indexEntry = (entry, start) => {
-    const { name } = entry;
+  const reachable = (start) => {
     const reached = new Set();
     const pending = [...scan(start).references];
     while (pending.length) {
@@ -188,12 +205,42 @@ export function cssIndex(data, syntaxes, atRules, html, source) {
       reached.add(key);
       pending.push(...scan(key).references);
     }
-    const keys = [...reached].filter((key) => scan(key).keywords.length).sort();
+    return [...reached].filter((key) => scan(key).keywords.length).sort();
+  };
+  return { scan, reachable };
+}
+
+/**
+ * Build the compact runtime index.  Each property lists its own keywords and
+ * every shared value set reachable through property and type references.
+ * A set stores only its own keywords, so shared sets such as named colors
+ * appear once.  Obsolete properties remain canonical names but are marked.
+ */
+export function cssIndex(data, syntaxes, atRules, html, source) {
+  const types = cssTypeResolver(data, syntaxes, atRules, source);
+  const names = cssNames(data, source);
+  const entries = new Map();
+  for (const entry of data.properties) entries.set(entry.name, [...(entries.get(entry.name) ?? []), entry]);
+  const ordinary = (name) => entries.get(name).find((entry) => !entry.atRule) ?? entries.get(name)[0];
+  // One upstream record per name cannot place font-family in both @font-face and @font-palette-values.
+  // Metadata must admit every indexed descriptor, as an ordinary property or in that at-rule.
+  const descriptors = cssDescriptors(atRules, source).filter(({ atRule, name }) =>
+    entries.get(name)?.some((entry) => documentsProperty(entry) || entry.atRule === atRule));
+  const unsupported = data.properties.filter((entry) => entry.atRule && !entry.name.startsWith("-") &&
+    !descriptors.some(({ atRule, name }) => atRule === entry.atRule && name === entry.name));
+  if (unsupported.length) {
+    throw new Error(`Unexpected CSS descriptors without MDN syntax: ${unsupported.map((entry) => entry.name).join(", ")}`);
+  }
+  const { scan, reachable } = valueSets(valueDefinitions(names.properties.map(ordinary), syntaxes, descriptors, source));
+  const sets = new Map();
+  const indexEntry = (entry, start) => {
+    const { name } = entry;
+    const keys = reachable(start);
     for (const key of keys) sets.set(key, scan(key).keywords);
     const values = [...new Set([...(entry.values ?? []).map((value) => normalizeValue(value.name)), ...scan(start).keywords])]
       .filter((value) => !value.startsWith("-"));
     const relevance = entry.relevance ?? entries.get(name)?.find((item) => item.relevance !== undefined)?.relevance ?? 50;
-    return { name, relevance, ...(entry.status === "obsolete" ? { obsolete: true } : {}), values, sets: keys };
+    return { name, relevance, ...(entry.status === "obsolete" ? { obsolete: true } : {}), types: types(start), values, sets: keys };
   };
   return {
     properties: names.properties.map((name) => indexEntry(ordinary(name), `property:${name}`)),
@@ -207,6 +254,33 @@ export function cssIndex(data, syntaxes, atRules, html, source) {
     atRules: names.atRules,
     pseudos: names.pseudos,
     elements: htmlElements(html, source),
+  };
+}
+
+/**
+ * Regenerate the committed data offline from the pinned inputs.  Value names
+ * come from the committed snapshot; value sets and type flags from the
+ * pinned syntax, as the networked generator derives them.
+ */
+export function refreshPinnedData(metadata, index, { data, syntaxes, atRules, source }) {
+  const types = cssTypeResolver(data, syntaxes, atRules, source);
+  const entries = new Map();
+  for (const entry of data.properties) entries.set(entry.name, [...(entries.get(entry.name) ?? []), entry]);
+  const ordinary = ({ name }) => entries.get(name).find((entry) => !entry.atRule) ?? entries.get(name)[0];
+  const indexed = new Set(index.descriptors.map(({ atRule, name }) => `${atRule}:${name}`));
+  const descriptors = cssDescriptors(atRules, source).filter(({ atRule, name }) => indexed.has(`${atRule}:${name}`));
+  const { scan, reachable } = valueSets(valueDefinitions(index.properties.map(ordinary), syntaxes, descriptors, source));
+  // Derived fields come last, in the networked generator's order.
+  const refresh = (entry, start) => ({
+    ...Object.fromEntries(Object.entries(entry).filter(([key]) => !["types", "values", "sets"].includes(key))),
+    types: types(start), values: [...new Set(entry.values.map(normalizeValue))], sets: reachable(start),
+  });
+  const properties = index.properties.map((entry) => refresh(entry, `property:${entry.name}`));
+  const scoped = index.descriptors.map((entry) => refresh(entry, `${entry.atRule}:${entry.name}`));
+  const keys = [...new Set([...properties, ...scoped].flatMap((entry) => entry.sets))].sort();
+  return {
+    metadata: cssCompletionData(metadata, source, types),
+    index: { ...index, properties, descriptors: scoped, sets: Object.fromEntries(keys.map((key) => [key, scan(key).keywords])) },
   };
 }
 
@@ -226,17 +300,15 @@ async function download(base, files) {
 }
 
 if (import.meta.main) {
-  if (process.argv[2] === "--normalize-values" && process.argv.length === 3) {
+  if (process.argv[2] === "--offline" && process.argv.length === 3) {
     const read = async (name) => JSON.parse(await readFile(new URL(`../data/${name}.json`, import.meta.url), "utf8"));
-    const metadata = await read("css-data");
-    const index = await read("css-index");
-    normalizeCommittedValues(metadata, index);
-    for (const [name, value] of [["css-data", metadata], ["css-index", index]]) {
+    const refreshed = refreshPinnedData(await read("css-data"), await read("css-index"), await readPinnedInputs());
+    for (const [name, value] of [["css-data", refreshed.metadata], ["css-index", refreshed.index]]) {
       await writeFile(new URL(`../data/${name}.json`, import.meta.url), JSON.stringify(value, null, 2) + "\n");
     }
     process.exit(0);
   }
-  if (process.argv.length !== 2) throw new Error("Usage: node test/update-web-data.mjs");
+  if (process.argv.length !== 2) throw new Error("Usage: node test/update-web-data.mjs [--offline]");
   const source = JSON.parse(await readFile(new URL("../data/css-source.json", import.meta.url), "utf8"));
   const vscode = await download(`https://raw.githubusercontent.com/microsoft/vscode-custom-data/${source.commit}`, source.files);
   const mdn = await download(`https://raw.githubusercontent.com/mdn/data/${source.mdn.commit}`, source.mdn.files);
@@ -245,7 +317,8 @@ if (import.meta.main) {
     JSON.parse(vscode["web-data/data/browsers.html-data.json"]), source);
   // Validate every input before writing; local overrides are never outputs.
   await writeFile(new URL("../data/css-data.json", import.meta.url),
-    JSON.stringify(cssCompletionData(data, source), null, 2) + "\n");
+    JSON.stringify(cssCompletionData(data, source, cssTypeResolver(data, JSON.parse(mdn["css/syntaxes.json"]),
+      JSON.parse(mdn["css/at-rules.json"]), source)), null, 2) + "\n");
   await writeFile(new URL("../data/css-index.json", import.meta.url), JSON.stringify(index, null, 2) + "\n");
   await writeFile(new URL("../data/vscode-custom-data-LICENSE", import.meta.url), vscode.LICENSE);
   await writeFile(new URL("../data/mdn-data-LICENSE", import.meta.url), mdn.LICENSE);
