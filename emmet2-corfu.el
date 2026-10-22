@@ -7,12 +7,12 @@
 ;; Assisted-by: Codex:gpt-6.1-sol
 
 ;;; Commentary:
-;; While Corfu shows Emmet candidates, keep their labels in the main column,
-;; keep the popup at its first cursor position, and never let Corfu treat the
-;; typed abbreviation as complete, so a sole choice stays open.  For Emmet
-;; previews only, popupinfo's side margins are temporarily zero during display,
-;; including frame sizing.  Other tables keep the user's margin setting.
-;; Other user settings are unchanged.  Corfu is not required or enabled here.
+;; While Corfu shows Emmet candidates, keep their labels in the main column
+;; and never let Corfu treat the typed abbreviation as complete, so a sole
+;; choice stays open.  For Emmet previews only, popupinfo's side margins are
+;; temporarily zero during display, including frame sizing.  Other tables
+;; keep the user's margin setting.  Other user settings are unchanged.  Corfu
+;; is not required or enabled here.
 
 ;;; Code:
 (eval-when-compile (require 'cl-lib))
@@ -48,25 +48,6 @@
           (error (apply format arguments)))
       (apply format arguments))))
 
-(defun emmet2-corfu--anchor (show &rest arguments)
-  "Call SHOW at the Emmet session's first cursor position in ARGUMENTS."
-  (let ((adapted
-         (condition-case nil
-             (when (emmet2-corfu--emmet-p)
-               (let* ((properties (nth 4 completion-in-region--data))
-                      (anchor (plist-get properties :emmet2-corfu-anchor)))
-                 (unless anchor
-                   (setq anchor (point))
-                   (setf (nth 4 completion-in-region--data)
-                         (plist-put properties :emmet2-corfu-anchor anchor)))
-                 ;; Keep a buffer position, not a posn, so scrolling cannot leave the popup behind.
-                 (cons (or (posn-at-point (min anchor (point-max))) (car arguments)) (cdr arguments))))
-           (error nil))))
-    (if adapted
-        (condition-case nil (apply show adapted)
-          (error (apply show arguments)))
-      (apply show arguments))))
-
 (defun emmet2-corfu--try-completion (try &rest arguments)
   "Call TRY with ARGUMENTS, keeping exact Emmet input open for expansion."
   (let ((result (apply try arguments)))
@@ -98,7 +79,6 @@ ARGUMENTS pass through unchanged; foreign tables keep the user's margins."
 (defun emmet2-corfu--enable ()
   "Install table-scoped Corfu advice idempotently without loading Corfu."
   (dolist (entry '((corfu--format-candidates . emmet2-corfu--rows)
-                   (corfu--candidates-popup . emmet2-corfu--anchor)
                    (corfu--try-completion . emmet2-corfu--try-completion)
                    (corfu-popupinfo--show . emmet2-corfu--popupinfo)))
     (unless (advice-member-p (cdr entry) (car entry))
@@ -107,7 +87,6 @@ ARGUMENTS pass through unchanged; foreign tables keep the user's margins."
 (defun emmet2-corfu-unload-function ()
   "Remove the optional Corfu advice owned by this module."
   (advice-remove 'corfu--format-candidates #'emmet2-corfu--rows)
-  (advice-remove 'corfu--candidates-popup #'emmet2-corfu--anchor)
   (advice-remove 'corfu--try-completion #'emmet2-corfu--try-completion)
   (advice-remove 'corfu-popupinfo--show #'emmet2-corfu--popupinfo)
   nil)

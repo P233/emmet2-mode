@@ -57,7 +57,7 @@ load paths and package recipes discover every library. Public contracts are in
 | Semantic completion | `emmet2-completion.el`, `emmet2-css-value.el` | Shared name tables, fuzzy styles and function acceptance; adapt CSS Base value context to that shared path. |
 | Editor requests | `emmet2-expand.el` | Own the expansion options and translate host analysis plus buffer layout into language requests. |
 | Editor | `emmet2-mode.el`, `emmet2-capf.el`, `emmet2-preview.el`, `emmet2-insert.el` | Compose the package, own completion revisions, show previews, and accept results atomically. |
-| Optional Corfu adapter | `emmet2-corfu.el` | For the `emmet2` category, adapt Corfu's row formatting, popup anchor, exactness check and preview margins. Installed when an Emmet expansion table is first built and removed on unload. |
+| Optional Corfu adapter | `emmet2-corfu.el` | For the `emmet2` category, adapt Corfu's row formatting, exactness check and preview margins. Installed when an Emmet expansion table is first built and removed on unload. |
 
 ## CSS entry paths
 
@@ -453,15 +453,15 @@ values belong to the host or to the value.
 Corfu keeps candidates that differ only in text properties, as for overloaded
 LSP methods. Other frontends may merge these choices or strip identity
 properties; they can still accept the default result. `emmet2-corfu` installs
-four private Corfu overrides idempotently when CAPF offers an Emmet expansion
+three private Corfu overrides idempotently when CAPF offers an Emmet expansion
 table, without loading or enabling Corfu. Semantic name tables need no adapter.
 
 | Override | Without it in a Corfu session | Public mechanism considered | Decision and upgrade risk |
 | --- | --- | --- | --- |
 | `--rows` around `corfu--format-candidates` | Affix labels become a 22-column prefix in a 12-column menu and clip without an ellipsis. | Affixation preserves choice identity but uses the prefix column; `corfu-margin-formatters` can replace that prefix with an icon. | Keep the label in the main column. Private row layout remains a compatibility risk. |
-| `--anchor` around `corfu--candidates-popup` | The popup uses the abbreviation start rather than the session's first cursor position. | Completion metadata and Corfu options expose no table-specific popup position. | Keep the anchor as a buffer position in session properties, discarded on exit, and recompute its screen position on each display. Private position arguments remain a risk. |
 | `--try-completion` around `corfu--try-completion` | With `partial-completion` and an exact-match policy other than `show`, a sole choice can skip the menu or expand immediately. | `corfu-on-exact-match` set to `show` works but a buffer-local setting also changes other tables; metadata has no table-specific policy. | Keep Emmet input non-exact. Matching arguments remain a compatibility risk. |
 | Former `--format` around `corfu--format-candidates` | Rows and acceptance are unchanged; Corfu copies strings without line breaks. | Use Corfu's normal formatter. | Delete the interim global function rebinding: the measured 24 us per ten-row refresh, 2-3% of a keystroke, does not justify the coupling. |
+| Former `--anchor` around `corfu--candidates-popup` | The popup sits at the abbreviation start, as for every other table, instead of where the cursor was when it first appeared: a few columns apart. | Completion metadata and Corfu options expose no table-specific popup position. | Delete it: a cosmetic offset does not justify a private advice, and a stored position can fall behind scrolling or edits. |
 | `--popupinfo` around `corfu-popupinfo--show` | Multiline Emmet previews inherit the user's side margins. | The public margin option is not table-specific; setting it in the preview buffer cannot affect frame sizing in the source buffer. | Keep one narrow exception: bind `corfu-popupinfo-margin-width` to zero only while showing a candidate from the current Emmet table. Private show arguments remain a risk. |
 
 Completion styles can report the unchanged abbreviation as exact when text

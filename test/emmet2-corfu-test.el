@@ -54,24 +54,20 @@
         (should (member "text-align: center;" (mapcar #'substring-no-properties (nth 3 shown))))
         (should-not (seq-some (lambda (line) (string-search "[I]" line)) (nth 3 shown)))))))
 
-(ert-deftest emmet2-corfu-anchor-refresh-and-new-session ()
+(ert-deftest emmet2-corfu-popup-keeps-corfu-position ()
+  ;; Like any table, the popup sits at the abbreviation start while typing continues.
   (emmet2-test--with-css-completion "ta"
-    ;; SCROLL stands for the window offset that a real posn would carry.
-    (let ((start (point)) (scroll 0) shown)
+    (let ((start (- (point) 2)) shown)
       (cl-letf (((symbol-function 'posn-at-point)
-                 (lambda (&optional position _window) (list (or position (point)) scroll)))
+                 (lambda (&optional position _window) (list (or position (point)))))
                 ((symbol-function 'corfu--popup-show)
                  (lambda (&rest arguments) (setq shown arguments))))
         (corfu-auto--complete-deferred)
-        (should (equal (car shown) (list start 0)))
+        (should (equal (car shown) (list start)))
         (insert "c")
-        (setq scroll 5)
         (let ((this-command 'self-insert-command)) (corfu--post-command))
         (should completion-in-region-mode)
-        (should (equal (car shown) (list start 5)))
-        (corfu-quit)
-        (corfu-auto--complete-deferred)
-        (should (equal (car shown) (list (1+ start) 5)))))))
+        (should (equal (car shown) (list start)))))))
 
 (ert-deftest emmet2-corfu-display-honors-frame-width-and-unicode ()
   (let* ((label (propertize "界😀long-label" 'face 'completions-common-part))
@@ -91,14 +87,8 @@
 (ert-deftest emmet2-corfu-other-categories-pass-through ()
   (let* ((arguments (list '(("name" "prefix" "suffix"))))
          (corfu--metadata '(metadata (category . eglot)))
-         (completion-in-region--data '(nil nil nil nil (:other-property t)))
-         (properties (nth 4 completion-in-region--data)))
+         (completion-in-region--data '(nil nil nil nil (:other-property t))))
     (should (eq (emmet2-corfu--rows (lambda (&rest _) arguments) (car arguments)) arguments))
-    (cl-letf (((symbol-function 'posn-at-point)
-               (lambda (&rest _) (ert-fail "Foreign completion must keep its position"))))
-      (should (eq (emmet2-corfu--anchor #'identity 'original-position) 'original-position)))
-    (should (eq (nth 4 completion-in-region--data) properties))
-    (should-not (plist-member properties :emmet2-corfu-anchor))
     ;; A foreign sole exact match keeps the user's `corfu-on-exact-match' policy.
     (emmet2-corfu--enable)
     (should (eq (corfu--try-completion "foo" '("foo") nil 3) t))))
@@ -119,7 +109,6 @@
         (progn
           (dotimes (_ 3) (emmet2-corfu--enable))
           (dolist (entry '((corfu--format-candidates . emmet2-corfu--rows)
-                           (corfu--candidates-popup . emmet2-corfu--anchor)
                            (corfu--try-completion . emmet2-corfu--try-completion)
                            (corfu-popupinfo--show . emmet2-corfu--popupinfo)))
             (let ((count 0))
@@ -137,7 +126,6 @@
             (advice-remove 'corfu--format-candidates outer))
           (emmet2-mode-unload-function)
           (should-not (advice-member-p #'emmet2-corfu--rows 'corfu--format-candidates))
-          (should-not (advice-member-p #'emmet2-corfu--anchor 'corfu--candidates-popup))
           (should-not (advice-member-p #'emmet2-corfu--try-completion 'corfu--try-completion))
           (should-not (advice-member-p #'emmet2-corfu--popupinfo 'corfu-popupinfo--show))
           ;; Semantic tables no longer install the expansion adapter.
@@ -152,7 +140,6 @@
           (should (advice-member-p #'emmet2-corfu--rows 'corfu--format-candidates))
           (unload-feature 'emmet2-corfu t)
           (should-not (advice-member-p 'emmet2-corfu--rows 'corfu--format-candidates))
-          (should-not (advice-member-p 'emmet2-corfu--anchor 'corfu--candidates-popup))
           (should-not (advice-member-p 'emmet2-corfu--try-completion 'corfu--try-completion))
           (should-not (advice-member-p 'emmet2-corfu--popupinfo 'corfu-popupinfo--show))
           (with-temp-buffer
@@ -178,13 +165,10 @@
              seen)
         (cl-letf (((symbol-function 'corfu--metadata-get)
                    (pcase getter ('missing nil) ('error (lambda (_) (error "Metadata changed")))
-                          (_ metadata)))
-                  ((symbol-function 'posn-at-point) (lambda (&rest _) 'anchor)))
+                          (_ metadata))))
           (let ((result (emmet2-corfu--rows #'list rows 'added)))
             (should (eq (cadr result) 'added))
             (should (equal (caar result) (if active '("label" "" "") (car rows)))))
-          (should (equal (emmet2-corfu--anchor #'list 'position 'added)
-                         (list (if active 'anchor 'position) 'added)))
           (should (equal (emmet2-corfu--try-completion
                           (lambda (&rest args) (setq seen args) t)
                           "abbr" '("abbr") nil 4 corfu--metadata 'added)
@@ -210,10 +194,6 @@
     (should (eq (emmet2-corfu--rows
                  (lambda (value &optional _) (if (eq value rows) 'original (error "Layout changed")))
                  rows 'added) 'original))
-    (cl-letf (((symbol-function 'posn-at-point) (lambda (&rest _) 'anchor)))
-      (should (eq (emmet2-corfu--anchor
-                   (lambda (value &optional _) (if (eq value 'position) 'original (error "Position changed")))
-                   'position 'added) 'original)))
     (should (eq (emmet2-corfu--try-completion (lambda (&rest _) t) nil nil nil nil) t))
     (should (eq (emmet2-corfu--popupinfo
                  (lambda (&rest _) (if (= corfu-popupinfo-margin-width 3) 'original (error "Margins changed")))

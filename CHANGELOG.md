@@ -28,7 +28,9 @@
   directory-local variables only as JavaScript member paths, and
   `emmet2-css-scale-functions` only with Sass function names.
 - Emmet previews in `corfu-popupinfo-mode` have no side margins; other
-  popups keep `corfu-popupinfo-margin-width`.
+  popups keep `corfu-popupinfo-margin-width`. The Emmet popup sits at the
+  abbreviation start, like other completion popups, instead of where the
+  cursor was when it first appeared.
 - Package recipes should include `NOTICE`: `:files (:defaults "data" "NOTICE")`.
 
 ### Fixed
