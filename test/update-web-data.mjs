@@ -62,8 +62,8 @@ export function cssMetadata(data, source) {
 export function cssCompletionData(data, source, types) {
   const text = (description) => (typeof description === "string" ? description : description?.value);
   const entry = ({ name, description }) => ({ name: normalizeValue(name), description: text(description) });
-  const property = ({ name, atRule, description, restrictions, values, types: existingTypes }) =>
-    ({ name, atRule, description: text(description), restrictions,
+  const property = ({ name, atRule, description, values, types: existingTypes }) =>
+    ({ name, atRule, description: text(description),
       types: types ? types(`property:${name}`) : existingTypes, values: values?.map(entry) });
   return {
     version: data.version,

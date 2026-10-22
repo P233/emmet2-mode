@@ -503,7 +503,7 @@ scopes, local symbols and insertion. The completion metadata, which the
 generator limits to the fields queries read, is loaded only when the query
 library is required; its equal strings are shared and read-only. Value queries
 reuse the compact index's own and shared keyword sets and keep the metadata's
-documentation and restriction-derived functions; expansion reads only the
+documentation and syntax-derived helpers; expansion reads only the
 compact index, whose search structs replace its generated property entries.
 Search reads that index and the authored overrides on its first call, and the
 stylesheet engine's property-name set and CSS pseudo list follow it, so loading

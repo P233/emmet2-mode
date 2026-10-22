@@ -86,7 +86,7 @@ test("written metadata keeps only completion fields, with string documentation",
   Object.assign(complete, { extra: true });
   Object.assign(complete.properties[0], {
     browsers: ["FF1"], syntax: "auto", relevance: 50, status: "obsolete", baseline: { status: "high" },
-    description: { kind: "markdown", value: "Property documentation" }, restrictions: ["length"],
+    description: { kind: "markdown", value: "Property documentation" }, restrictions: ["length"], types: ["length"],
     values: [{ name: "auto", description: { kind: "markdown", value: "Automatic" }, browsers: ["FF1"] }, { name: "none" }],
   });
   Object.assign(complete.atDirectives[0], { description: "Media", descriptors: [{ name: "width" }] });
@@ -95,7 +95,7 @@ test("written metadata keeps only completion fields, with string documentation",
   assert.deepEqual(complete, before);
   assert.deepEqual(Object.keys(written), ["version", ...Object.keys(source.counts)]);
   assert.deepEqual(written.properties[0], {
-    name: "inset", description: "Property documentation", restrictions: ["length"],
+    name: "inset", description: "Property documentation", types: ["length"],
     values: [{ name: "auto", description: "Automatic" }, { name: "none" }],
   });
   assert.deepEqual(written.properties[6], { name: "src", atRule: "@font-face" });
@@ -152,6 +152,7 @@ test("shipped data matches the offline refresh from the pinned inputs", async ()
   const read = (name) => readFile(new URL(`../data/${name}.json`, import.meta.url), "utf8");
   const [metadataText, indexText] = [await read("css-data"), await read("css-index")];
   const [metadata, index] = [JSON.parse(metadataText), JSON.parse(indexText)];
+  assert.ok(metadata.properties.every((entry) => !("restrictions" in entry)));
   assert.deepEqual(metadata.properties.map(({ name, atRule }) => ({ name, atRule })),
     inputs.data.properties.map(({ name, atRule }) => ({ name, atRule })));
   const refreshed = refreshPinnedData(metadata, index, inputs);

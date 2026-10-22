@@ -136,10 +136,10 @@ compact `css-index.json` search index and both upstream licenses. The files are
 generated together from the full upstream data; tests verify the index against
 the metadata. The metadata's 888 property/descriptor records include vendor
 entries. It keeps only what `emmet2-css-data` reads: names, string
-documentation, at-rule scope, restrictions and values. Comma-separated value
-presets such as font stacks are dropped, so no value contains a comma. The index
-contains 579 ordinary properties (relevance, obsolete status, own keywords and
-the shared value sets reachable through property and type references), 35
+documentation, at-rule scope, primitive type flags and values. Comma-separated
+value presets such as font stacks are dropped, so no value contains a comma. The
+index contains 579 ordinary properties (relevance, obsolete status, own keywords
+and the shared value sets reachable through property and type references), 35
 at-rule descriptors kept apart from them, 175 shared value sets, the five
 CSS-wide keywords, 19 at-rules, 117 pseudos and 116 HTML elements. A shared set
 stores its own keywords once. Vendor names, function arguments and deprecated

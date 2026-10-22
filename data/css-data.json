@@ -5,12 +5,6 @@
       "name": "additive-symbols",
       "atRule": "@counter-style",
       "description": "@counter-style descriptor. Specifies the symbols used by the marker-construction algorithm specified by the system descriptor. Needs to be specified if the counter system is 'additive'.",
-      "restrictions": [
-        "integer",
-        "string",
-        "image",
-        "identifier"
-      ],
       "types": [
         "number",
         "image",
@@ -20,9 +14,6 @@
     {
       "name": "align-content",
       "description": "Aligns a flex container's lines within the flex container when there is extra space in the cross-axis, similar to how 'justify-content' aligns individual items within the main-axis.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -90,9 +81,6 @@
     {
       "name": "align-items",
       "description": "Aligns flex items along the cross axis of the current line of the flex container.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -150,9 +138,6 @@
     {
       "name": "justify-items",
       "description": "Defines the default justify-self for all items of the box, giving them the default way of justifying each box along the appropriate axis",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -220,9 +205,6 @@
     {
       "name": "justify-self",
       "description": "Defines the way of justifying a box inside its container along the appropriate axis.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -287,9 +269,6 @@
     {
       "name": "align-self",
       "description": "Allows the default alignment along the cross axis to be overridden for individual flex items.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -345,32 +324,18 @@
     {
       "name": "all",
       "description": "Shorthand that resets all properties except 'direction' and 'unicode-bidi'.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": []
     },
     {
       "name": "alt",
       "description": "Provides alternative text for assistive technology to replace the generated content of a ::before or ::after element.",
-      "restrictions": [
-        "string",
-        "enum"
-      ],
       "types": [],
       "values": []
     },
     {
       "name": "animation",
       "description": "Shorthand property combines six of the animation properties into a single property.",
-      "restrictions": [
-        "time",
-        "timing-function",
-        "enum",
-        "identifier",
-        "number"
-      ],
       "types": [
         "number",
         "time"
@@ -417,9 +382,6 @@
     {
       "name": "animation-delay",
       "description": "Defines when the animation will start.",
-      "restrictions": [
-        "time"
-      ],
       "types": [
         "time"
       ]
@@ -427,9 +389,6 @@
     {
       "name": "animation-direction",
       "description": "Defines whether or not the animation should play in reverse on alternate cycles.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -453,9 +412,6 @@
     {
       "name": "animation-duration",
       "description": "Defines the length of time that an animation takes to complete one cycle.",
-      "restrictions": [
-        "time"
-      ],
       "types": [
         "time"
       ]
@@ -463,9 +419,6 @@
     {
       "name": "animation-fill-mode",
       "description": "Defines what values are applied by the animation outside the time it is executing.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -489,10 +442,6 @@
     {
       "name": "animation-iteration-count",
       "description": "Defines the number of times an animation cycle is played. The default value is one, meaning the animation will play from beginning to end once.",
-      "restrictions": [
-        "number",
-        "enum"
-      ],
       "types": [
         "number"
       ],
@@ -506,10 +455,6 @@
     {
       "name": "animation-name",
       "description": "Defines a list of animations that apply. Each name is used to select the keyframe at-rule that provides the property values for the animation.",
-      "restrictions": [
-        "identifier",
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -521,9 +466,6 @@
     {
       "name": "animation-play-state",
       "description": "Defines whether the animation is running or paused.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -539,17 +481,11 @@
     {
       "name": "animation-timing-function",
       "description": "Describes how the animation will progress over one cycle of its duration.",
-      "restrictions": [
-        "timing-function"
-      ],
       "types": []
     },
     {
       "name": "backface-visibility",
       "description": "Determines whether or not the 'back' side of a transformed element is visible when facing the viewer. With an identity transform, the front side of an element faces the viewer.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -565,16 +501,6 @@
     {
       "name": "background",
       "description": "Shorthand property for setting most background properties at the same place in the style sheet.",
-      "restrictions": [
-        "enum",
-        "image",
-        "color",
-        "position",
-        "length",
-        "repeat",
-        "percentage",
-        "box"
-      ],
       "types": [
         "length",
         "percentage",
@@ -604,9 +530,6 @@
     {
       "name": "background-attachment",
       "description": "Specifies whether the background images are fixed with regard to the viewport ('fixed') or scroll along with the element ('scroll') or its contents ('local').",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -626,9 +549,6 @@
     {
       "name": "background-blend-mode",
       "description": "Defines the blending mode of each background layer.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -700,17 +620,11 @@
     {
       "name": "background-clip",
       "description": "Determines the background painting area.",
-      "restrictions": [
-        "box"
-      ],
       "types": []
     },
     {
       "name": "background-color",
       "description": "Sets the background color of an element.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -718,10 +632,6 @@
     {
       "name": "background-image",
       "description": "Sets the background image(s) of an element.",
-      "restrictions": [
-        "image",
-        "enum"
-      ],
       "types": [
         "image",
         "url"
@@ -736,19 +646,11 @@
     {
       "name": "background-origin",
       "description": "For elements rendered as a single box, specifies the background positioning area. For elements rendered as multiple boxes (e.g., inline boxes on several lines, boxes on several pages) specifies which boxes 'box-decoration-break' operates on to determine the background positioning area(s).",
-      "restrictions": [
-        "box"
-      ],
       "types": []
     },
     {
       "name": "background-position",
       "description": "Specifies the initial position of the background image(s) (after any resizing) within their corresponding background positioning area.",
-      "restrictions": [
-        "position",
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -757,10 +659,6 @@
     {
       "name": "background-position-x",
       "description": "If background images have been specified, this property specifies their initial position (after any resizing) within their corresponding background positioning area.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -783,10 +681,6 @@
     {
       "name": "background-position-y",
       "description": "If background images have been specified, this property specifies their initial position (after any resizing) within their corresponding background positioning area.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -809,19 +703,12 @@
     {
       "name": "background-repeat",
       "description": "Specifies how background images are tiled after they have been sized and positioned.",
-      "restrictions": [
-        "repeat"
-      ],
       "types": [],
       "values": []
     },
     {
       "name": "background-size",
       "description": "Specifies the size of the background images.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -844,9 +731,6 @@
     {
       "name": "behavior",
       "description": "IE only. Used to extend behaviors of the browser.",
-      "restrictions": [
-        "url"
-      ],
       "types": [
         "url"
       ]
@@ -854,10 +738,6 @@
     {
       "name": "block-size",
       "description": "Size of an element in the direction opposite that of the direction specified by 'writing-mode'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -872,12 +752,6 @@
     {
       "name": "border",
       "description": "Shorthand property for setting border width, style, and color.",
-      "restrictions": [
-        "length",
-        "line-width",
-        "line-style",
-        "color"
-      ],
       "types": [
         "length",
         "color"
@@ -886,12 +760,6 @@
     {
       "name": "border-block-end",
       "description": "Logical 'border-bottom'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "length",
-        "line-width",
-        "line-style",
-        "color"
-      ],
       "types": [
         "length",
         "color"
@@ -900,12 +768,6 @@
     {
       "name": "border-block-start",
       "description": "Logical 'border-top'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "length",
-        "line-width",
-        "line-style",
-        "color"
-      ],
       "types": [
         "length",
         "color"
@@ -914,9 +776,6 @@
     {
       "name": "border-block-end-color",
       "description": "Logical 'border-bottom-color'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -924,9 +783,6 @@
     {
       "name": "border-block-start-color",
       "description": "Logical 'border-top-color'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -934,26 +790,16 @@
     {
       "name": "border-block-end-style",
       "description": "Logical 'border-bottom-style'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "line-style"
-      ],
       "types": []
     },
     {
       "name": "border-block-start-style",
       "description": "Logical 'border-top-style'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "line-style"
-      ],
       "types": []
     },
     {
       "name": "border-block-end-width",
       "description": "Logical 'border-bottom-width'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "length",
-        "line-width"
-      ],
       "types": [
         "length"
       ]
@@ -961,10 +807,6 @@
     {
       "name": "border-block-start-width",
       "description": "Logical 'border-top-width'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "length",
-        "line-width"
-      ],
       "types": [
         "length"
       ]
@@ -972,12 +814,6 @@
     {
       "name": "border-bottom",
       "description": "Shorthand property for setting border width, style and color.",
-      "restrictions": [
-        "length",
-        "line-width",
-        "line-style",
-        "color"
-      ],
       "types": [
         "length",
         "color"
@@ -986,9 +822,6 @@
     {
       "name": "border-bottom-color",
       "description": "Sets the color of the bottom border.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -996,10 +829,6 @@
     {
       "name": "border-bottom-left-radius",
       "description": "Defines the radii of the bottom left outer border edge.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -1008,10 +837,6 @@
     {
       "name": "border-bottom-right-radius",
       "description": "Defines the radii of the bottom right outer border edge.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -1020,18 +845,11 @@
     {
       "name": "border-bottom-style",
       "description": "Sets the style of the bottom border.",
-      "restrictions": [
-        "line-style"
-      ],
       "types": []
     },
     {
       "name": "border-bottom-width",
       "description": "Sets the thickness of the bottom border.",
-      "restrictions": [
-        "length",
-        "line-width"
-      ],
       "types": [
         "length"
       ]
@@ -1039,9 +857,6 @@
     {
       "name": "border-collapse",
       "description": "Selects a table's border model.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -1057,9 +872,6 @@
     {
       "name": "border-color",
       "description": "The color of the border around all four edges of an element.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ],
@@ -1068,13 +880,6 @@
     {
       "name": "border-image",
       "description": "Shorthand property for setting 'border-image-source', 'border-image-slice', 'border-image-width', 'border-image-outset' and 'border-image-repeat'. Omitted values are set to their initial values.",
-      "restrictions": [
-        "length",
-        "percentage",
-        "number",
-        "url",
-        "enum"
-      ],
       "types": [
         "number",
         "length",
@@ -1119,10 +924,6 @@
     {
       "name": "border-image-outset",
       "description": "The values specify the amount by which the border image area extends beyond the border box on the top, right, bottom, and left sides respectively. If the fourth value is absent, it is the same as the second. If the third one is also absent, it is the same as the first. If the second one is also absent, it is the same as the first. Numbers represent multiples of the corresponding border-width.",
-      "restrictions": [
-        "length",
-        "number"
-      ],
       "types": [
         "number",
         "length"
@@ -1131,9 +932,6 @@
     {
       "name": "border-image-repeat",
       "description": "Specifies how the images for the sides and the middle part of the border image are scaled and tiled. If the second keyword is absent, it is assumed to be the same as the first.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -1157,10 +955,6 @@
     {
       "name": "border-image-slice",
       "description": "Specifies inward offsets from the top, right, bottom, and left edges of the image, dividing it into nine regions: four corners, four edges and a middle.",
-      "restrictions": [
-        "number",
-        "percentage"
-      ],
       "types": [
         "number",
         "percentage"
@@ -1175,9 +969,6 @@
     {
       "name": "border-image-source",
       "description": "Specifies an image to use instead of the border styles given by the 'border-style' properties and as an additional background layer for the element. If the value is 'none' or if the image cannot be displayed, the border styles will be used.",
-      "restrictions": [
-        "image"
-      ],
       "types": [
         "image",
         "url"
@@ -1192,11 +983,6 @@
     {
       "name": "border-image-width",
       "description": "The four values of 'border-image-width' specify offsets that are used to divide the border image area into nine parts. They represent inward distances from the top, right, bottom, and left sides of the area, respectively.",
-      "restrictions": [
-        "length",
-        "percentage",
-        "number"
-      ],
       "types": [
         "number",
         "length",
@@ -1212,12 +998,6 @@
     {
       "name": "border-inline-end",
       "description": "Logical 'border-right'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "length",
-        "line-width",
-        "line-style",
-        "color"
-      ],
       "types": [
         "length",
         "color"
@@ -1226,12 +1006,6 @@
     {
       "name": "border-inline-start",
       "description": "Logical 'border-left'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "length",
-        "line-width",
-        "line-style",
-        "color"
-      ],
       "types": [
         "length",
         "color"
@@ -1240,9 +1014,6 @@
     {
       "name": "border-inline-end-color",
       "description": "Logical 'border-right-color'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -1250,9 +1021,6 @@
     {
       "name": "border-inline-start-color",
       "description": "Logical 'border-left-color'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -1260,26 +1028,16 @@
     {
       "name": "border-inline-end-style",
       "description": "Logical 'border-right-style'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "line-style"
-      ],
       "types": []
     },
     {
       "name": "border-inline-start-style",
       "description": "Logical 'border-left-style'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "line-style"
-      ],
       "types": []
     },
     {
       "name": "border-inline-end-width",
       "description": "Logical 'border-right-width'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "length",
-        "line-width"
-      ],
       "types": [
         "length"
       ]
@@ -1287,10 +1045,6 @@
     {
       "name": "border-inline-start-width",
       "description": "Logical 'border-left-width'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "length",
-        "line-width"
-      ],
       "types": [
         "length"
       ]
@@ -1298,12 +1052,6 @@
     {
       "name": "border-left",
       "description": "Shorthand property for setting border width, style and color",
-      "restrictions": [
-        "length",
-        "line-width",
-        "line-style",
-        "color"
-      ],
       "types": [
         "length",
         "color"
@@ -1312,9 +1060,6 @@
     {
       "name": "border-left-color",
       "description": "Sets the color of the left border.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -1322,18 +1067,11 @@
     {
       "name": "border-left-style",
       "description": "Sets the style of the left border.",
-      "restrictions": [
-        "line-style"
-      ],
       "types": []
     },
     {
       "name": "border-left-width",
       "description": "Sets the thickness of the left border.",
-      "restrictions": [
-        "length",
-        "line-width"
-      ],
       "types": [
         "length"
       ]
@@ -1341,10 +1079,6 @@
     {
       "name": "border-radius",
       "description": "Defines the radii of the outer border edge.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -1353,12 +1087,6 @@
     {
       "name": "border-right",
       "description": "Shorthand property for setting border width, style and color",
-      "restrictions": [
-        "length",
-        "line-width",
-        "line-style",
-        "color"
-      ],
       "types": [
         "length",
         "color"
@@ -1367,9 +1095,6 @@
     {
       "name": "border-right-color",
       "description": "Sets the color of the right border.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -1377,18 +1102,11 @@
     {
       "name": "border-right-style",
       "description": "Sets the style of the right border.",
-      "restrictions": [
-        "line-style"
-      ],
       "types": []
     },
     {
       "name": "border-right-width",
       "description": "Sets the thickness of the right border.",
-      "restrictions": [
-        "length",
-        "line-width"
-      ],
       "types": [
         "length"
       ]
@@ -1396,9 +1114,6 @@
     {
       "name": "border-spacing",
       "description": "The lengths specify the distance that separates adjoining cell borders. If one length is specified, it gives both the horizontal and vertical spacing. If two are specified, the first gives the horizontal spacing and the second the vertical spacing. Lengths may not be negative.",
-      "restrictions": [
-        "length"
-      ],
       "types": [
         "length"
       ]
@@ -1406,21 +1121,12 @@
     {
       "name": "border-style",
       "description": "The style of the border around edges of an element.",
-      "restrictions": [
-        "line-style"
-      ],
       "types": [],
       "values": []
     },
     {
       "name": "border-top",
       "description": "Shorthand property for setting border width, style and color",
-      "restrictions": [
-        "length",
-        "line-width",
-        "line-style",
-        "color"
-      ],
       "types": [
         "length",
         "color"
@@ -1429,9 +1135,6 @@
     {
       "name": "border-top-color",
       "description": "Sets the color of the top border.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -1439,10 +1142,6 @@
     {
       "name": "border-top-left-radius",
       "description": "Defines the radii of the top left outer border edge.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -1451,10 +1150,6 @@
     {
       "name": "border-top-right-radius",
       "description": "Defines the radii of the top right outer border edge.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -1463,18 +1158,11 @@
     {
       "name": "border-top-style",
       "description": "Sets the style of the top border.",
-      "restrictions": [
-        "line-style"
-      ],
       "types": []
     },
     {
       "name": "border-top-width",
       "description": "Sets the thickness of the top border.",
-      "restrictions": [
-        "length",
-        "line-width"
-      ],
       "types": [
         "length"
       ]
@@ -1482,10 +1170,6 @@
     {
       "name": "border-width",
       "description": "Shorthand that sets the four 'border-*-width' properties. If it has four values, they set top, right, bottom and left in that order. If left is missing, it is the same as right; if bottom is missing, it is the same as top; if right is missing, it is the same as top.",
-      "restrictions": [
-        "length",
-        "line-width"
-      ],
       "types": [
         "length"
       ],
@@ -1494,10 +1178,6 @@
     {
       "name": "bottom",
       "description": "Specifies how far an absolutely positioned box's bottom margin edge is offset above the bottom edge of the box's 'containing block'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -1512,9 +1192,6 @@
     {
       "name": "box-decoration-break",
       "description": "Specifies whether individual boxes are treated as broken pieces of one continuous box, or whether each box is individually wrapped with the border and padding.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -1530,11 +1207,6 @@
     {
       "name": "box-shadow",
       "description": "Attaches one or more drop-shadows to the box. The property is a comma-separated list of shadows, each specified by 2-4 length values, an optional color, and an optional 'inset' keyword. Omitted lengths are 0; omitted colors are a user agent chosen color.",
-      "restrictions": [
-        "length",
-        "color",
-        "enum"
-      ],
       "types": [
         "length",
         "color"
@@ -1553,9 +1225,6 @@
     {
       "name": "box-sizing",
       "description": "Specifies the behavior of the 'width' and 'height' properties.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -1571,9 +1240,6 @@
     {
       "name": "break-after",
       "description": "Describes the page/column/region break behavior after the generated box.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -1617,9 +1283,6 @@
     {
       "name": "break-before",
       "description": "Describes the page/column/region break behavior before the generated box.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -1663,9 +1326,6 @@
     {
       "name": "break-inside",
       "description": "Describes the page/column/region break behavior inside the principal box.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -1689,9 +1349,6 @@
     {
       "name": "caption-side",
       "description": "Specifies the position of the caption box with respect to the table box.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -1707,10 +1364,6 @@
     {
       "name": "caret-color",
       "description": "Controls the color of the text insertion indicator.",
-      "restrictions": [
-        "color",
-        "enum"
-      ],
       "types": [
         "color"
       ],
@@ -1724,9 +1377,6 @@
     {
       "name": "clear",
       "description": "Indicates which sides of an element's box(es) may not be adjacent to an earlier floating box. The 'clear' property does not consider floats inside the element itself or in other block formatting contexts.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -1750,9 +1400,6 @@
     {
       "name": "clip",
       "description": "Deprecated. Use the 'clip-path' property when support allows. Defines the visible portion of an element's box.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -1768,12 +1415,6 @@
     {
       "name": "clip-path",
       "description": "Specifies a clipping path where everything inside the path is visible and everything outside is clipped out.",
-      "restrictions": [
-        "url",
-        "shape",
-        "geometry-box",
-        "enum"
-      ],
       "types": [
         "url"
       ],
@@ -1791,9 +1432,6 @@
     {
       "name": "clip-rule",
       "description": "Indicates the algorithm which is to be used to determine what parts of the canvas are included inside the shape.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -1809,9 +1447,6 @@
     {
       "name": "color",
       "description": "Sets the color of an element's text",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -1819,9 +1454,6 @@
     {
       "name": "color-interpolation-filters",
       "description": "Specifies the color space for imaging operations performed via filter effects.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -1841,10 +1473,6 @@
     {
       "name": "column-count",
       "description": "Describes the optimal number of columns into which the content of the element will be flowed.",
-      "restrictions": [
-        "integer",
-        "enum"
-      ],
       "types": [
         "number"
       ],
@@ -1858,9 +1486,6 @@
     {
       "name": "column-fill",
       "description": "In continuous media, this property will only be consulted if the length of columns has been constrained. Otherwise, columns will automatically be balanced.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -1876,10 +1501,6 @@
     {
       "name": "column-gap",
       "description": "Sets the gap between columns. If there is a column rule between columns, it will appear in the middle of the gap.",
-      "restrictions": [
-        "length",
-        "enum"
-      ],
       "types": [
         "length",
         "percentage"
@@ -1894,12 +1515,6 @@
     {
       "name": "column-rule",
       "description": "Shorthand for setting 'column-rule-width', 'column-rule-style', and 'column-rule-color' at the same place in the style sheet. Omitted values are set to their initial values.",
-      "restrictions": [
-        "length",
-        "line-width",
-        "line-style",
-        "color"
-      ],
       "types": [
         "length",
         "color"
@@ -1908,9 +1523,6 @@
     {
       "name": "column-rule-color",
       "description": "Sets the color of the column rule",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -1918,18 +1530,11 @@
     {
       "name": "column-rule-style",
       "description": "Sets the style of the rule between columns of an element.",
-      "restrictions": [
-        "line-style"
-      ],
       "types": []
     },
     {
       "name": "column-rule-width",
       "description": "Sets the width of the rule between columns. Negative values are not allowed.",
-      "restrictions": [
-        "length",
-        "line-width"
-      ],
       "types": [
         "length"
       ]
@@ -1937,11 +1542,6 @@
     {
       "name": "columns",
       "description": "A shorthand property which sets both 'column-width' and 'column-count'.",
-      "restrictions": [
-        "length",
-        "integer",
-        "enum"
-      ],
       "types": [
         "number",
         "length"
@@ -1956,9 +1556,6 @@
     {
       "name": "column-span",
       "description": "Describes the page/column break behavior after the generated box.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -1974,10 +1571,6 @@
     {
       "name": "column-width",
       "description": "Describes the width of columns in multicol elements.",
-      "restrictions": [
-        "length",
-        "enum"
-      ],
       "types": [
         "length"
       ],
@@ -1991,9 +1584,6 @@
     {
       "name": "contain",
       "description": "Indicates that an element and its contents are, as much as possible, independent of the rest of the document tree.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -2029,10 +1619,6 @@
     {
       "name": "content",
       "description": "Determines which page-based occurrence of a given element is applied to a counter or string value.",
-      "restrictions": [
-        "string",
-        "url"
-      ],
       "types": [
         "image",
         "url"
@@ -2066,10 +1652,6 @@
     {
       "name": "counter-increment",
       "description": "Manipulate the value of existing counters.",
-      "restrictions": [
-        "identifier",
-        "integer"
-      ],
       "types": [
         "number"
       ],
@@ -2083,10 +1665,6 @@
     {
       "name": "counter-reset",
       "description": "Property accepts one or more names of counters (identifiers), each one optionally followed by an integer. The integer gives the value that the counter is set to on each occurrence of the element.",
-      "restrictions": [
-        "identifier",
-        "integer"
-      ],
       "types": [
         "number"
       ],
@@ -2100,11 +1678,6 @@
     {
       "name": "cursor",
       "description": "Allows control over cursor appearance in an element",
-      "restrictions": [
-        "url",
-        "number",
-        "enum"
-      ],
       "types": [
         "url"
       ],
@@ -2290,9 +1863,6 @@
     {
       "name": "direction",
       "description": "Specifies the inline base direction or directionality of any bidi paragraph, embedding, isolate, or override established by the box. Note: for HTML content use the 'dir' attribute and 'bdo' element rather than this property.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -2308,9 +1878,6 @@
     {
       "name": "display",
       "description": "In combination with 'float' and 'position', determines the type of box or boxes that are generated for an element.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -2488,9 +2055,6 @@
     {
       "name": "empty-cells",
       "description": "In the separated borders model, this property controls the rendering of borders and backgrounds around cells that have no visible content.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -2509,12 +2073,6 @@
     {
       "name": "enable-background",
       "description": "Deprecated. Use 'isolation' property instead when support allows. Specifies how the accumulation of the background image is managed.",
-      "restrictions": [
-        "integer",
-        "length",
-        "percentage",
-        "enum"
-      ],
       "types": [
         "number",
         "length",
@@ -2535,19 +2093,11 @@
       "name": "fallback",
       "atRule": "@counter-style",
       "description": "@counter-style descriptor. Specifies a fallback counter style to be used when the current counter style can't create a representation for a given counter value.",
-      "restrictions": [
-        "identifier"
-      ],
       "types": []
     },
     {
       "name": "fill",
       "description": "Paints the interior of the given graphical element.",
-      "restrictions": [
-        "color",
-        "enum",
-        "url"
-      ],
       "types": [
         "color",
         "url"
@@ -2566,9 +2116,6 @@
     {
       "name": "fill-opacity",
       "description": "Specifies the opacity of the painting operation used to paint the interior the current object.",
-      "restrictions": [
-        "number(0-1)"
-      ],
       "types": [
         "number",
         "percentage"
@@ -2577,9 +2124,6 @@
     {
       "name": "fill-rule",
       "description": "Indicates the algorithm (or winding rule) which is to be used to determine what parts of the canvas are included inside the shape.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -2595,10 +2139,6 @@
     {
       "name": "filter",
       "description": "Processes an element's rendering before it is displayed in the document, by applying one or more filter effects.",
-      "restrictions": [
-        "enum",
-        "url"
-      ],
       "types": [
         "url"
       ],
@@ -2656,11 +2196,6 @@
     {
       "name": "flex",
       "description": "Specifies the components of a flexible length: the flex grow factor and flex shrink factor, and the flex basis.",
-      "restrictions": [
-        "length",
-        "number",
-        "percentage"
-      ],
       "types": [
         "number",
         "length",
@@ -2684,11 +2219,6 @@
     {
       "name": "flex-basis",
       "description": "Sets the flex basis.",
-      "restrictions": [
-        "length",
-        "number",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -2707,9 +2237,6 @@
     {
       "name": "flex-direction",
       "description": "Specifies how flex items are placed in the flex container, by setting the direction of the flex container's main axis.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -2733,9 +2260,6 @@
     {
       "name": "flex-flow",
       "description": "Specifies how flexbox items are placed in the flexbox.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -2771,9 +2295,6 @@
     {
       "name": "flex-grow",
       "description": "Sets the flex grow factor. Negative numbers are invalid.",
-      "restrictions": [
-        "number"
-      ],
       "types": [
         "number"
       ]
@@ -2781,9 +2302,6 @@
     {
       "name": "flex-shrink",
       "description": "Sets the flex shrink factor. Negative numbers are invalid.",
-      "restrictions": [
-        "number"
-      ],
       "types": [
         "number"
       ]
@@ -2791,9 +2309,6 @@
     {
       "name": "flex-wrap",
       "description": "Controls whether the flex container is single-line or multi-line, and the direction of the cross-axis, which determines the direction new lines are stacked in.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -2813,9 +2328,6 @@
     {
       "name": "float",
       "description": "Specifies how a box should be floated. It may be set for any element, but only applies to elements that generate boxes that are not absolutely positioned.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -2843,9 +2355,6 @@
     {
       "name": "flood-color",
       "description": "Indicates what color to use to flood the current filter primitive subregion.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -2853,10 +2362,6 @@
     {
       "name": "flood-opacity",
       "description": "Indicates what opacity to use to flood the current filter primitive subregion.",
-      "restrictions": [
-        "number(0-1)",
-        "percentage"
-      ],
       "types": [
         "number",
         "percentage"
@@ -2865,9 +2370,6 @@
     {
       "name": "font",
       "description": "Shorthand property for setting 'font-style', 'font-variant', 'font-weight', 'font-size', 'line-height', and 'font-family', at the same place in the style sheet. The syntax of this property is based on a traditional typographical shorthand notation to set multiple properties related to fonts.",
-      "restrictions": [
-        "font"
-      ],
       "types": [
         "number",
         "length",
@@ -2996,9 +2498,6 @@
       "name": "font-family",
       "atRule": "@font-palette-values",
       "description": "Specifies a prioritized list of font family names or generic family names. A user agent iterates through the list of family names until it matches an available font that contains a glyph for the character to be rendered.",
-      "restrictions": [
-        "font"
-      ],
       "types": [],
       "values": [
         {
@@ -3022,10 +2521,6 @@
       "name": "font-feature-settings",
       "atRule": "@font-face",
       "description": "Provides low-level control over OpenType font features. It is intended as a way of providing access to font features that are not widely used but are needed for a particular use case.",
-      "restrictions": [
-        "string",
-        "integer"
-      ],
       "types": [
         "number"
       ],
@@ -3515,9 +3010,6 @@
     {
       "name": "font-kerning",
       "description": "Kerning is the contextual adjustment of inter-glyph spacing. This property controls metric kerning, kerning that utilizes adjustment data contained in the font.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -3537,9 +3029,6 @@
     {
       "name": "font-language-override",
       "description": "The value of 'normal' implies that when rendering with OpenType fonts the language of the document is used to infer the OpenType language system, used to select language specific features when rendering.",
-      "restrictions": [
-        "string"
-      ],
       "types": [],
       "values": [
         {
@@ -3551,10 +3040,6 @@
     {
       "name": "font-size",
       "description": "Indicates the desired height of glyphs from the font. For scalable fonts, the font-size is a scale factor applied to the EM unit of the font. (Note that certain glyphs may bleed outside their EM box.) For non-scalable fonts, the font-size is converted into absolute units and matched against the declared font-size of the font, using the same absolute coordinate space for both of the matched values.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -3592,9 +3077,6 @@
     {
       "name": "font-size-adjust",
       "description": "Preserves the readability of text when font fallback occurs by adjusting the font-size so that the x-height is the same regardless of the font used.",
-      "restrictions": [
-        "number"
-      ],
       "types": [
         "number"
       ],
@@ -3609,9 +3091,6 @@
       "name": "font-stretch",
       "atRule": "@font-face",
       "description": "Selects a normal, condensed, or expanded face from a font family.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [
         "percentage"
       ],
@@ -3657,9 +3136,6 @@
       "name": "font-style",
       "atRule": "@font-face",
       "description": "Allows italic or oblique faces to be selected. Italic forms are generally cursive in nature while oblique faces are typically sloped versions of the regular face.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [
         "angle"
       ],
@@ -3681,9 +3157,6 @@
     {
       "name": "font-synthesis",
       "description": "Controls whether user agents are allowed to synthesize bold or oblique font faces when a font family lacks bold or italic faces.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -3703,9 +3176,6 @@
     {
       "name": "font-variant",
       "description": "Specifies variant representations of the font",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -3721,9 +3191,6 @@
     {
       "name": "font-variant-alternates",
       "description": "For any given character, fonts can provide a variety of alternate glyphs in addition to the default glyph for that character. This property provides control over the selection of these alternate glyphs.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -3763,9 +3230,6 @@
     {
       "name": "font-variant-caps",
       "description": "Specifies control over capitalized forms.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -3801,9 +3265,6 @@
     {
       "name": "font-variant-east-asian",
       "description": "Allows control of glyph substitute and positioning in East Asian text.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -3851,9 +3312,6 @@
     {
       "name": "font-variant-ligatures",
       "description": "Specifies control over which ligatures are enabled or disabled. A value of 'normal' implies that the defaults set by the font are used.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -3909,9 +3367,6 @@
     {
       "name": "font-variant-numeric",
       "description": "Specifies control over numerical forms.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -3955,9 +3410,6 @@
     {
       "name": "font-variant-position",
       "description": "Specifies the vertical position",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -3978,9 +3430,6 @@
       "name": "font-weight",
       "atRule": "@font-face",
       "description": "Specifies weight of glyphs in the font, their degree of blackness or stroke thickness.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [
         "number"
       ],
@@ -4042,10 +3491,6 @@
     {
       "name": "glyph-orientation-horizontal",
       "description": "Controls glyph orientation when the inline-progression-direction is horizontal.",
-      "restrictions": [
-        "angle",
-        "number"
-      ],
       "types": [
         "number",
         "angle"
@@ -4054,11 +3499,6 @@
     {
       "name": "glyph-orientation-vertical",
       "description": "Controls glyph orientation when the inline-progression-direction is vertical.",
-      "restrictions": [
-        "angle",
-        "number",
-        "enum"
-      ],
       "types": [
         "number",
         "angle"
@@ -4073,10 +3513,6 @@
     {
       "name": "grid-area",
       "description": "Determine a grid item's size and location within the grid by contributing a line, a span, or nothing (automatic) to its grid placement. Shorthand for 'grid-row-start', 'grid-column-start', 'grid-row-end', and 'grid-column-end'.",
-      "restrictions": [
-        "identifier",
-        "integer"
-      ],
       "types": [
         "number"
       ],
@@ -4094,13 +3530,6 @@
     {
       "name": "grid",
       "description": "The grid CSS property is a shorthand property that sets all of the explicit grid properties ('grid-template-rows', 'grid-template-columns', and 'grid-template-areas'), and all the implicit grid properties ('grid-auto-rows', 'grid-auto-columns', and 'grid-auto-flow'), in a single declaration.",
-      "restrictions": [
-        "identifier",
-        "length",
-        "percentage",
-        "string",
-        "enum"
-      ],
       "types": [
         "length",
         "percentage"
@@ -4109,10 +3538,6 @@
     {
       "name": "grid-auto-columns",
       "description": "Specifies the size of implicitly created columns.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -4139,9 +3564,6 @@
     {
       "name": "grid-auto-flow",
       "description": "Controls how the auto-placement algorithm works, specifying exactly how auto-placed items get flowed into the grid.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -4161,10 +3583,6 @@
     {
       "name": "grid-auto-rows",
       "description": "Specifies the size of implicitly created rows.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -4191,11 +3609,6 @@
     {
       "name": "grid-column",
       "description": "Shorthand for 'grid-column-start' and 'grid-column-end'.",
-      "restrictions": [
-        "identifier",
-        "integer",
-        "enum"
-      ],
       "types": [
         "number"
       ],
@@ -4213,11 +3626,6 @@
     {
       "name": "grid-column-end",
       "description": "Determine a grid item's size and location within the grid by contributing a line, a span, or nothing (automatic) to its grid placement.",
-      "restrictions": [
-        "identifier",
-        "integer",
-        "enum"
-      ],
       "types": [
         "number"
       ],
@@ -4235,9 +3643,6 @@
     {
       "name": "grid-column-gap",
       "description": "Specifies the gutters between grid columns. Replaced by 'column-gap' property.",
-      "restrictions": [
-        "length"
-      ],
       "types": [
         "length",
         "percentage"
@@ -4246,11 +3651,6 @@
     {
       "name": "grid-column-start",
       "description": "Determine a grid item's size and location within the grid by contributing a line, a span, or nothing (automatic) to its grid placement.",
-      "restrictions": [
-        "identifier",
-        "integer",
-        "enum"
-      ],
       "types": [
         "number"
       ],
@@ -4268,9 +3668,6 @@
     {
       "name": "grid-gap",
       "description": "Shorthand that specifies the gutters between grid columns and grid rows in one declaration. Replaced by 'gap' property.",
-      "restrictions": [
-        "length"
-      ],
       "types": [
         "length",
         "percentage"
@@ -4279,11 +3676,6 @@
     {
       "name": "grid-row",
       "description": "Shorthand for 'grid-row-start' and 'grid-row-end'.",
-      "restrictions": [
-        "identifier",
-        "integer",
-        "enum"
-      ],
       "types": [
         "number"
       ],
@@ -4301,11 +3693,6 @@
     {
       "name": "grid-row-end",
       "description": "Determine a grid item's size and location within the grid by contributing a line, a span, or nothing (automatic) to its grid placement.",
-      "restrictions": [
-        "identifier",
-        "integer",
-        "enum"
-      ],
       "types": [
         "number"
       ],
@@ -4323,9 +3710,6 @@
     {
       "name": "grid-row-gap",
       "description": "Specifies the gutters between grid rows. Replaced by 'row-gap' property.",
-      "restrictions": [
-        "length"
-      ],
       "types": [
         "length",
         "percentage"
@@ -4334,11 +3718,6 @@
     {
       "name": "grid-row-start",
       "description": "Determine a grid item's size and location within the grid by contributing a line, a span, or nothing (automatic) to its grid placement.",
-      "restrictions": [
-        "identifier",
-        "integer",
-        "enum"
-      ],
       "types": [
         "number"
       ],
@@ -4356,13 +3735,6 @@
     {
       "name": "grid-template",
       "description": "Shorthand for setting grid-template-columns, grid-template-rows, and grid-template-areas in a single declaration.",
-      "restrictions": [
-        "identifier",
-        "length",
-        "percentage",
-        "string",
-        "enum"
-      ],
       "types": [
         "length",
         "percentage"
@@ -4401,9 +3773,6 @@
     {
       "name": "grid-template-areas",
       "description": "Specifies named grid areas, which are not associated with any particular grid item, but can be referenced from the grid-placement properties.",
-      "restrictions": [
-        "string"
-      ],
       "types": [],
       "values": [
         {
@@ -4415,12 +3784,6 @@
     {
       "name": "grid-template-columns",
       "description": "specifies, as a space-separated track list, the line names and track sizing functions of the grid.",
-      "restrictions": [
-        "identifier",
-        "length",
-        "percentage",
-        "enum"
-      ],
       "types": [
         "length",
         "percentage"
@@ -4459,13 +3822,6 @@
     {
       "name": "grid-template-rows",
       "description": "specifies, as a space-separated track list, the line names and track sizing functions of the grid.",
-      "restrictions": [
-        "identifier",
-        "length",
-        "percentage",
-        "string",
-        "enum"
-      ],
       "types": [
         "length",
         "percentage"
@@ -4504,10 +3860,6 @@
     {
       "name": "height",
       "description": "Specifies the height of the content area, padding area or border area (depending on 'box-sizing') of certain boxes.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -4534,9 +3886,6 @@
     {
       "name": "hyphens",
       "description": "Controls whether hyphenation is allowed to create more break opportunities within a line of text.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -4556,9 +3905,6 @@
     {
       "name": "image-orientation",
       "description": "Specifies an orthogonal rotation to be applied to an image before it is laid out.",
-      "restrictions": [
-        "angle"
-      ],
       "types": [
         "angle"
       ],
@@ -4576,9 +3922,6 @@
     {
       "name": "image-rendering",
       "description": "Provides a hint to the user-agent about what aspects of an image are most important to preserve when the image is scaled, to aid the user-agent in the choice of an appropriate scaling algorithm.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -4609,9 +3952,6 @@
     {
       "name": "ime-mode",
       "description": "Controls the state of the input method editor for text fields.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -4639,10 +3979,6 @@
     {
       "name": "inline-size",
       "description": "Size of an element in the direction specified by 'writing-mode'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -4657,9 +3993,6 @@
     {
       "name": "isolation",
       "description": "In CSS setting to 'isolate' will turn the element into a stacking context. In SVG, it defines whether an element is isolated or not.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -4675,9 +4008,6 @@
     {
       "name": "justify-content",
       "description": "Aligns flex items along the main axis of the current line of the flex container.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -4749,10 +4079,6 @@
     {
       "name": "kerning",
       "description": "Indicates whether the user agent should adjust inter-glyph spacing based on kerning tables that are included in the relevant font or instead disable auto-kerning and set inter-character spacing to a specific length.",
-      "restrictions": [
-        "length",
-        "enum"
-      ],
       "types": [
         "length"
       ],
@@ -4766,10 +4092,6 @@
     {
       "name": "left",
       "description": "Specifies how far an absolutely positioned box's left margin edge is offset to the right of the left edge of the box's 'containing block'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -4784,9 +4106,6 @@
     {
       "name": "letter-spacing",
       "description": "Specifies the minimum, maximum, and optimal spacing between grapheme clusters.",
-      "restrictions": [
-        "length"
-      ],
       "types": [
         "length"
       ],
@@ -4800,9 +4119,6 @@
     {
       "name": "lighting-color",
       "description": "Defines the color of the light source for filter primitives 'feDiffuseLighting' and 'feSpecularLighting'.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -4810,9 +4126,6 @@
     {
       "name": "line-break",
       "description": "Specifies what set of line breaking restrictions are in effect within the element.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -4840,11 +4153,6 @@
     {
       "name": "line-height",
       "description": "Determines the block-progression dimension of the text content area of an inline box.",
-      "restrictions": [
-        "number",
-        "length",
-        "percentage"
-      ],
       "types": [
         "number",
         "length",
@@ -4860,11 +4168,6 @@
     {
       "name": "list-style",
       "description": "Shorthand for setting 'list-style-type', 'list-style-position' and 'list-style-image'",
-      "restrictions": [
-        "image",
-        "enum",
-        "url"
-      ],
       "types": [
         "image",
         "url"
@@ -4938,9 +4241,6 @@
     {
       "name": "list-style-image",
       "description": "Sets the image that will be used as the list item marker. When the image is available, it will replace the marker set with the 'list-style-type' marker.",
-      "restrictions": [
-        "image"
-      ],
       "types": [
         "image",
         "url"
@@ -4955,9 +4255,6 @@
     {
       "name": "list-style-position",
       "description": "Specifies the position of the '::marker' pseudo-element's box in the list item.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -4973,10 +4270,6 @@
     {
       "name": "list-style-type",
       "description": "Used to construct the default contents of a list item's marker",
-      "restrictions": [
-        "enum",
-        "string"
-      ],
       "types": [],
       "values": [
         {
@@ -5048,10 +4341,6 @@
     {
       "name": "margin",
       "description": "Shorthand property to set values for the thickness of the margin area. If left is omitted, it is the same as right. If bottom is omitted it is the same as top, if right is omitted it is the same as top. Negative values for margin properties are allowed, but there may be implementation-specific limits.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -5065,10 +4354,6 @@
     {
       "name": "margin-block-end",
       "description": "Logical 'margin-bottom'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -5082,10 +4367,6 @@
     {
       "name": "margin-block-start",
       "description": "Logical 'margin-top'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -5099,10 +4380,6 @@
     {
       "name": "margin-bottom",
       "description": "Shorthand property to set values for the thickness of the margin area. If left is omitted, it is the same as right. If bottom is omitted it is the same as top, if right is omitted it is the same as top. Negative values for margin properties are allowed, but there may be implementation-specific limits..",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -5116,10 +4393,6 @@
     {
       "name": "margin-inline-end",
       "description": "Logical 'margin-right'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -5133,10 +4406,6 @@
     {
       "name": "margin-inline-start",
       "description": "Logical 'margin-left'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -5150,10 +4419,6 @@
     {
       "name": "margin-left",
       "description": "Shorthand property to set values for the thickness of the margin area. If left is omitted, it is the same as right. If bottom is omitted it is the same as top, if right is omitted it is the same as top. Negative values for margin properties are allowed, but there may be implementation-specific limits..",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -5167,10 +4432,6 @@
     {
       "name": "margin-right",
       "description": "Shorthand property to set values for the thickness of the margin area. If left is omitted, it is the same as right. If bottom is omitted it is the same as top, if right is omitted it is the same as top. Negative values for margin properties are allowed, but there may be implementation-specific limits..",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -5184,10 +4445,6 @@
     {
       "name": "margin-top",
       "description": "Shorthand property to set values for the thickness of the margin area. If left is omitted, it is the same as right. If bottom is omitted it is the same as top, if right is omitted it is the same as top. Negative values for margin properties are allowed, but there may be implementation-specific limits..",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -5201,9 +4458,6 @@
     {
       "name": "marker",
       "description": "Specifies the marker symbol that shall be used for all points on the sets the value for all vertices on the given 'path' element or basic shape.",
-      "restrictions": [
-        "url"
-      ],
       "types": [
         "url"
       ],
@@ -5221,9 +4475,6 @@
     {
       "name": "marker-end",
       "description": "Specifies the marker that will be drawn at the last vertices of the given markable element.",
-      "restrictions": [
-        "url"
-      ],
       "types": [
         "url"
       ],
@@ -5241,9 +4492,6 @@
     {
       "name": "marker-mid",
       "description": "Specifies the marker that will be drawn at all vertices except the first and last.",
-      "restrictions": [
-        "url"
-      ],
       "types": [
         "url"
       ],
@@ -5261,9 +4509,6 @@
     {
       "name": "marker-start",
       "description": "Specifies the marker that will be drawn at the first vertices of the given markable element.",
-      "restrictions": [
-        "url"
-      ],
       "types": [
         "url"
       ],
@@ -5281,11 +4526,6 @@
     {
       "name": "mask-image",
       "description": "Sets the mask layer image of an element.",
-      "restrictions": [
-        "url",
-        "image",
-        "enum"
-      ],
       "types": [
         "image",
         "url"
@@ -5304,11 +4544,6 @@
     {
       "name": "mask-mode",
       "description": "Indicates whether the mask layer image is treated as luminance mask or alpha mask.",
-      "restrictions": [
-        "url",
-        "image",
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -5328,20 +4563,11 @@
     {
       "name": "mask-origin",
       "description": "Specifies the mask positioning area.",
-      "restrictions": [
-        "geometry-box",
-        "enum"
-      ],
       "types": []
     },
     {
       "name": "mask-position",
       "description": "Specifies how mask layer images are positioned.",
-      "restrictions": [
-        "position",
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -5350,19 +4576,11 @@
     {
       "name": "mask-repeat",
       "description": "Specifies how mask layer images are tiled after they have been sized and positioned.",
-      "restrictions": [
-        "repeat"
-      ],
       "types": []
     },
     {
       "name": "mask-size",
       "description": "Specifies the size of the mask layer images.",
-      "restrictions": [
-        "length",
-        "percentage",
-        "enum"
-      ],
       "types": [
         "length",
         "percentage"
@@ -5385,9 +4603,6 @@
     {
       "name": "mask-type",
       "description": "Defines whether the content of the <mask> element is treated as as luminance mask or alpha mask.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -5403,10 +4618,6 @@
     {
       "name": "max-block-size",
       "description": "Maximum size of an element in the direction opposite that of the direction specified by 'writing-mode'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -5421,10 +4632,6 @@
     {
       "name": "max-height",
       "description": "Allows authors to constrain content height to a certain range.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -5451,10 +4658,6 @@
     {
       "name": "max-inline-size",
       "description": "Maximum size of an element in the direction specified by 'writing-mode'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -5469,10 +4672,6 @@
     {
       "name": "max-width",
       "description": "Allows authors to constrain content width to a certain range.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -5499,10 +4698,6 @@
     {
       "name": "min-block-size",
       "description": "Minimal size of an element in the direction opposite that of the direction specified by 'writing-mode'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -5511,10 +4706,6 @@
     {
       "name": "min-height",
       "description": "Allows authors to constrain content height to a certain range.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -5540,10 +4731,6 @@
     {
       "name": "min-inline-size",
       "description": "Minimal size of an element in the direction specified by 'writing-mode'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -5552,10 +4739,6 @@
     {
       "name": "min-width",
       "description": "Allows authors to constrain content width to a certain range.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -5581,9 +4764,6 @@
     {
       "name": "mix-blend-mode",
       "description": "Defines the formula that must be used to mix the colors with the backdrop.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -5655,15 +4835,6 @@
     {
       "name": "motion",
       "description": "Shorthand property for setting 'motion-path', 'motion-offset' and 'motion-rotation'.",
-      "restrictions": [
-        "url",
-        "length",
-        "percentage",
-        "angle",
-        "shape",
-        "geometry-box",
-        "enum"
-      ],
       "types": [
         "length",
         "percentage",
@@ -5692,10 +4863,6 @@
     {
       "name": "motion-offset",
       "description": "A distance that describes the position along the specified motion path.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -5704,12 +4871,6 @@
     {
       "name": "motion-path",
       "description": "Specifies the motion path the element gets positioned at.",
-      "restrictions": [
-        "url",
-        "shape",
-        "geometry-box",
-        "enum"
-      ],
       "types": [
         "url"
       ],
@@ -5727,9 +4888,6 @@
     {
       "name": "motion-rotation",
       "description": "Defines the direction of the element while positioning along the motion path.",
-      "restrictions": [
-        "angle"
-      ],
       "types": [
         "angle"
       ],
@@ -5747,13 +4905,6 @@
     {
       "name": "-moz-animation",
       "description": "Shorthand property combines six of the animation properties into a single property.",
-      "restrictions": [
-        "time",
-        "enum",
-        "timing-function",
-        "identifier",
-        "number"
-      ],
       "types": [
         "number",
         "time"
@@ -5800,9 +4951,6 @@
     {
       "name": "-moz-animation-delay",
       "description": "Defines when the animation will start.",
-      "restrictions": [
-        "time"
-      ],
       "types": [
         "time"
       ]
@@ -5810,9 +4958,6 @@
     {
       "name": "-moz-animation-direction",
       "description": "Defines whether or not the animation should play in reverse on alternate cycles.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -5836,9 +4981,6 @@
     {
       "name": "-moz-animation-duration",
       "description": "Defines the length of time that an animation takes to complete one cycle.",
-      "restrictions": [
-        "time"
-      ],
       "types": [
         "time"
       ]
@@ -5846,10 +4988,6 @@
     {
       "name": "-moz-animation-iteration-count",
       "description": "Defines the number of times an animation cycle is played. The default value is one, meaning the animation will play from beginning to end once.",
-      "restrictions": [
-        "number",
-        "enum"
-      ],
       "types": [
         "number"
       ],
@@ -5863,10 +5001,6 @@
     {
       "name": "-moz-animation-name",
       "description": "Defines a list of animations that apply. Each name is used to select the keyframe at-rule that provides the property values for the animation.",
-      "restrictions": [
-        "identifier",
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -5878,9 +5012,6 @@
     {
       "name": "-moz-animation-play-state",
       "description": "Defines whether the animation is running or paused.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -5896,17 +5027,11 @@
     {
       "name": "-moz-animation-timing-function",
       "description": "Describes how the animation will progress over one cycle of its duration. See the 'transition-timing-function'.",
-      "restrictions": [
-        "timing-function"
-      ],
       "types": []
     },
     {
       "name": "-moz-appearance",
       "description": "Used in Gecko (Firefox) to display an element using a platform-native styling based on the operating system's theme.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -6118,9 +5243,6 @@
     {
       "name": "-moz-backface-visibility",
       "description": "Determines whether or not the 'back' side of a transformed element is visible when facing the viewer. With an identity transform, the front side of an element faces the viewer.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -6134,10 +5256,6 @@
     {
       "name": "-moz-background-clip",
       "description": "Determines the background painting area.",
-      "restrictions": [
-        "box",
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -6148,9 +5266,6 @@
     {
       "name": "-moz-background-inline-policy",
       "description": "In Gecko-based applications like Firefox, the -moz-background-inline-policy CSS property specifies how the background image of an inline element is determined when the content of the inline element wraps onto multiple lines. The choice of position has significant effects on repetition.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -6167,17 +5282,11 @@
     {
       "name": "-moz-background-origin",
       "description": "For elements rendered as a single box, specifies the background positioning area. For elements rendered as multiple boxes (e.g., inline boxes on several lines, boxes on several pages) specifies which boxes 'box-decoration-break' operates on to determine the background positioning area(s).",
-      "restrictions": [
-        "box"
-      ],
       "types": []
     },
     {
       "name": "-moz-border-bottom-colors",
       "description": "Sets a list of colors for the bottom border.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -6185,13 +5294,6 @@
     {
       "name": "-moz-border-image",
       "description": "Shorthand property for setting 'border-image-source', 'border-image-slice', 'border-image-width', 'border-image-outset' and 'border-image-repeat'. Omitted values are set to their initial values.",
-      "restrictions": [
-        "length",
-        "percentage",
-        "number",
-        "url",
-        "enum"
-      ],
       "types": [
         "number",
         "length",
@@ -6234,9 +5336,6 @@
     {
       "name": "-moz-border-left-colors",
       "description": "Sets a list of colors for the bottom border.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -6244,9 +5343,6 @@
     {
       "name": "-moz-border-right-colors",
       "description": "Sets a list of colors for the bottom border.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -6254,9 +5350,6 @@
     {
       "name": "-moz-border-top-colors",
       "description": "Ske Firefox, -moz-border-bottom-colors sets a list of colors for the bottom border.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -6264,9 +5357,6 @@
     {
       "name": "-moz-box-align",
       "description": "Specifies how a XUL box aligns its contents across (perpendicular to) the direction of its layout. The effect of this is only visible if there is extra space in the box.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -6294,9 +5384,6 @@
     {
       "name": "-moz-box-direction",
       "description": "Specifies whether a box lays out its contents normally (from the top or left edge), or in reverse (from the bottom or right edge).",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -6312,9 +5399,6 @@
     {
       "name": "-moz-box-flex",
       "description": "Specifies how a box grows to fill the box that contains it, in the direction of the containing box's layout.",
-      "restrictions": [
-        "number"
-      ],
       "types": [
         "number"
       ]
@@ -6322,9 +5406,6 @@
     {
       "name": "-moz-box-flexgroup",
       "description": "Flexible elements can be assigned to flex groups using the 'box-flex-group' property.",
-      "restrictions": [
-        "integer"
-      ],
       "types": [
         "number"
       ]
@@ -6332,9 +5413,6 @@
     {
       "name": "-moz-box-ordinal-group",
       "description": "Indicates the ordinal group the element belongs to. Elements with a lower ordinal group are displayed before those with a higher ordinal group.",
-      "restrictions": [
-        "integer"
-      ],
       "types": [
         "number"
       ]
@@ -6342,9 +5420,6 @@
     {
       "name": "-moz-box-orient",
       "description": "In Mozilla applications, -moz-box-orient specifies whether a box lays out its contents horizontally or vertically.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -6368,9 +5443,6 @@
     {
       "name": "-moz-box-pack",
       "description": "Specifies how a box packs its contents in the direction of its layout. The effect of this is only visible if there is extra space in the box.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -6394,9 +5466,6 @@
     {
       "name": "-moz-box-sizing",
       "description": "Box Model addition in CSS3.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -6416,9 +5485,6 @@
     {
       "name": "-moz-column-count",
       "description": "Describes the optimal number of columns into which the content of the element will be flowed.",
-      "restrictions": [
-        "integer"
-      ],
       "types": [
         "number"
       ],
@@ -6432,9 +5498,6 @@
     {
       "name": "-moz-column-gap",
       "description": "Sets the gap between columns. If there is a column rule between columns, it will appear in the middle of the gap.",
-      "restrictions": [
-        "length"
-      ],
       "types": [
         "length"
       ],
@@ -6448,12 +5511,6 @@
     {
       "name": "-moz-column-rule",
       "description": "Shorthand for setting 'column-rule-width', 'column-rule-style', and 'column-rule-color' at the same place in the style sheet. Omitted values are set to their initial values.",
-      "restrictions": [
-        "length",
-        "line-width",
-        "line-style",
-        "color"
-      ],
       "types": [
         "length",
         "color"
@@ -6462,9 +5519,6 @@
     {
       "name": "-moz-column-rule-color",
       "description": "Sets the color of the column rule",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -6472,18 +5526,11 @@
     {
       "name": "-moz-column-rule-style",
       "description": "Sets the style of the rule between columns of an element.",
-      "restrictions": [
-        "line-style"
-      ],
       "types": []
     },
     {
       "name": "-moz-column-rule-width",
       "description": "Sets the width of the rule between columns. Negative values are not allowed.",
-      "restrictions": [
-        "length",
-        "line-width"
-      ],
       "types": [
         "length"
       ]
@@ -6491,10 +5538,6 @@
     {
       "name": "-moz-columns",
       "description": "A shorthand property which sets both 'column-width' and 'column-count'.",
-      "restrictions": [
-        "length",
-        "integer"
-      ],
       "types": [
         "number",
         "length"
@@ -6509,9 +5552,6 @@
     {
       "name": "-moz-column-width",
       "description": "This property describes the width of columns in multicol elements.",
-      "restrictions": [
-        "length"
-      ],
       "types": [
         "length"
       ],
@@ -6525,10 +5565,6 @@
     {
       "name": "-moz-font-feature-settings",
       "description": "Provides low-level control over OpenType font features. It is intended as a way of providing access to font features that are not widely used but are needed for a particular use case.",
-      "restrictions": [
-        "string",
-        "integer"
-      ],
       "types": [
         "number"
       ],
@@ -6575,9 +5611,6 @@
     {
       "name": "-moz-hyphens",
       "description": "Controls whether hyphenation is allowed to create more break opportunities within a line of text.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -6597,9 +5630,6 @@
     {
       "name": "-moz-perspective",
       "description": "Applies the same transform as the perspective(<number>) transform function, except that it applies only to the positioned or transformed children of the element, not to the transform on the element itself.",
-      "restrictions": [
-        "length"
-      ],
       "types": [
         "length"
       ],
@@ -6613,11 +5643,6 @@
     {
       "name": "-moz-perspective-origin",
       "description": "Establishes the origin for the perspective property. It effectively sets the X and Y position at which the viewer appears to be looking at the children of the element.",
-      "restrictions": [
-        "position",
-        "percentage",
-        "length"
-      ],
       "types": [
         "length",
         "percentage"
@@ -6626,9 +5651,6 @@
     {
       "name": "-moz-text-align-last",
       "description": "Describes how the last line of a block or a line right before a forced line break is aligned when 'text-align' is set to 'justify'.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -6655,9 +5677,6 @@
     {
       "name": "-moz-text-decoration-color",
       "description": "Specifies the color of text decoration (underlines overlines, and line-throughs) set on the element with text-decoration-line.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -6665,9 +5684,6 @@
     {
       "name": "-moz-text-decoration-line",
       "description": "Specifies what line decorations, if any, are added to the element.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -6691,9 +5707,6 @@
     {
       "name": "-moz-text-decoration-style",
       "description": "Specifies the line style for underline, line-through and overline text decoration.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -6725,10 +5738,6 @@
     {
       "name": "-moz-text-size-adjust",
       "description": "Specifies a size adjustment for displaying text content in mobile browsers.",
-      "restrictions": [
-        "enum",
-        "percentage"
-      ],
       "types": [
         "percentage"
       ],
@@ -6746,9 +5755,6 @@
     {
       "name": "-moz-transform",
       "description": "A two-dimensional transformation is applied to an element through the 'transform' property. This property contains a list of transform functions similar to those allowed by SVG.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -6843,11 +5849,6 @@
     {
       "name": "-moz-transform-origin",
       "description": "Establishes the origin of transformation for an element.",
-      "restrictions": [
-        "position",
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -6856,12 +5857,6 @@
     {
       "name": "-moz-transition",
       "description": "Shorthand property combines four of the transition properties into a single property.",
-      "restrictions": [
-        "time",
-        "property",
-        "timing-function",
-        "enum"
-      ],
       "types": [
         "time"
       ],
@@ -6879,9 +5874,6 @@
     {
       "name": "-moz-transition-delay",
       "description": "Defines when the transition will start. It allows a transition to begin execution some period of time from when it is applied.",
-      "restrictions": [
-        "time"
-      ],
       "types": [
         "time"
       ]
@@ -6889,9 +5881,6 @@
     {
       "name": "-moz-transition-duration",
       "description": "Specifies how long the transition from the old value to the new value should take.",
-      "restrictions": [
-        "time"
-      ],
       "types": [
         "time"
       ]
@@ -6899,9 +5888,6 @@
     {
       "name": "-moz-transition-property",
       "description": "Specifies the name of the CSS property to which the transition is applied.",
-      "restrictions": [
-        "property"
-      ],
       "types": [],
       "values": [
         {
@@ -6917,9 +5903,6 @@
     {
       "name": "-moz-transition-timing-function",
       "description": "Describes how the intermediate values used during a transition will be calculated.",
-      "restrictions": [
-        "timing-function"
-      ],
       "types": []
     },
     {
@@ -6938,9 +5921,6 @@
     {
       "name": "-moz-user-select",
       "description": "Controls the appearance of selection.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -6972,9 +5952,6 @@
     {
       "name": "-ms-accelerator",
       "description": "IE only. Has the ability to turn off its system underlines for accelerator keys until the ALT key is pressed",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -6990,9 +5967,6 @@
     {
       "name": "-ms-behavior",
       "description": "IE only. Used to extend behaviors of the browser",
-      "restrictions": [
-        "url"
-      ],
       "types": [
         "url"
       ]
@@ -7000,9 +5974,6 @@
     {
       "name": "-ms-block-progression",
       "description": "Sets the block-progression value and the flow orientation",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7041,9 +6012,6 @@
     {
       "name": "-ms-content-zooming",
       "description": "Specifies whether zooming is enabled.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7059,17 +6027,11 @@
     {
       "name": "-ms-content-zoom-limit",
       "description": "Shorthand property for the -ms-content-zoom-limit-min and -ms-content-zoom-limit-max properties.",
-      "restrictions": [
-        "percentage"
-      ],
       "types": []
     },
     {
       "name": "-ms-content-zoom-limit-max",
       "description": "Specifies the maximum zoom factor.",
-      "restrictions": [
-        "percentage"
-      ],
       "types": [
         "percentage"
       ]
@@ -7077,9 +6039,6 @@
     {
       "name": "-ms-content-zoom-limit-min",
       "description": "Specifies the minimum zoom factor.",
-      "restrictions": [
-        "percentage"
-      ],
       "types": [
         "percentage"
       ]
@@ -7121,9 +6080,6 @@
     {
       "name": "-ms-content-zoom-snap-type",
       "description": "Specifies how zooming is affected by defined snap-points.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7143,19 +6099,11 @@
     {
       "name": "-ms-filter",
       "description": "IE only. Used to produce visual effects.",
-      "restrictions": [
-        "string"
-      ],
       "types": []
     },
     {
       "name": "-ms-flex",
       "description": "specifies the parameters of a flexible length: the positive and negative flexibility, and the preferred size.",
-      "restrictions": [
-        "length",
-        "number",
-        "percentage"
-      ],
       "types": [
         "number",
         "length",
@@ -7175,9 +6123,6 @@
     {
       "name": "-ms-flex-align",
       "description": "Aligns flex items along the cross axis of the current line of the flex container.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7205,9 +6150,6 @@
     {
       "name": "-ms-flex-direction",
       "description": "Specifies how flex items are placed in the flex container, by setting the direction of the flex container's main axis.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7231,9 +6173,6 @@
     {
       "name": "-ms-flex-flow",
       "description": "Specifies how flexbox items are placed in the flexbox.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7265,9 +6204,6 @@
     {
       "name": "-ms-flex-item-align",
       "description": "Allows the default alignment along the cross axis to be overridden for individual flex items.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7299,9 +6235,6 @@
     {
       "name": "-ms-flex-line-pack",
       "description": "Aligns a flex container's lines within the flex container when there is extra space in the cross-axis, similar to how 'justify-content' aligns individual items within the main-axis.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7333,9 +6266,6 @@
     {
       "name": "-ms-flex-order",
       "description": "Controls the order in which children of a flex container appear within the flex container, by assigning them to ordinal groups.",
-      "restrictions": [
-        "integer"
-      ],
       "types": [
         "number"
       ]
@@ -7343,9 +6273,6 @@
     {
       "name": "-ms-flex-pack",
       "description": "Aligns flex items along the main axis of the current line of the flex container.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7373,9 +6300,6 @@
     {
       "name": "-ms-flex-wrap",
       "description": "Controls whether the flex container is single-line or multi-line, and the direction of the cross-axis, which determines the direction new lines are stacked in.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7395,9 +6319,6 @@
     {
       "name": "-ms-flow-from",
       "description": "Makes a block container a region and associates it with a named flow.",
-      "restrictions": [
-        "identifier"
-      ],
       "types": [],
       "values": [
         {
@@ -7409,9 +6330,6 @@
     {
       "name": "-ms-flow-into",
       "description": "Places an element or its contents into a named flow.",
-      "restrictions": [
-        "identifier"
-      ],
       "types": [],
       "values": [
         {
@@ -7423,11 +6341,6 @@
     {
       "name": "-ms-grid-column",
       "description": "Used to place grid items and explicitly defined grid cells in the Grid.",
-      "restrictions": [
-        "integer",
-        "string",
-        "enum"
-      ],
       "types": [
         "number"
       ],
@@ -7446,9 +6359,6 @@
     {
       "name": "-ms-grid-column-align",
       "description": "Aligns the columns in a grid.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7480,9 +6390,6 @@
     {
       "name": "-ms-grid-column-span",
       "description": "Specifies the number of columns to span.",
-      "restrictions": [
-        "integer"
-      ],
       "types": [
         "number"
       ]
@@ -7490,9 +6397,6 @@
     {
       "name": "-ms-grid-layer",
       "description": "Grid-layer is similar in concept to z-index, but avoids overloading the meaning of the z-index property, which is applicable only to positioned elements.",
-      "restrictions": [
-        "integer"
-      ],
       "types": [
         "number"
       ]
@@ -7500,11 +6404,6 @@
     {
       "name": "-ms-grid-row",
       "description": "grid-row is used to place grid items and explicitly defined grid cells in the Grid.",
-      "restrictions": [
-        "integer",
-        "string",
-        "enum"
-      ],
       "types": [
         "number"
       ],
@@ -7523,9 +6422,6 @@
     {
       "name": "-ms-grid-row-align",
       "description": "Aligns the rows in a grid.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7557,9 +6453,6 @@
     {
       "name": "-ms-grid-row-span",
       "description": "Specifies the number of rows to span.",
-      "restrictions": [
-        "integer"
-      ],
       "types": [
         "number"
       ]
@@ -7567,9 +6460,6 @@
     {
       "name": "-ms-high-contrast-adjust",
       "description": "Specifies if properties should be adjusted in high contrast mode.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7585,9 +6475,6 @@
     {
       "name": "-ms-hyphenate-limit-chars",
       "description": "Specifies the minimum number of characters in a hyphenated word.",
-      "restrictions": [
-        "integer"
-      ],
       "types": [
         "number"
       ],
@@ -7601,9 +6488,6 @@
     {
       "name": "-ms-hyphenate-limit-lines",
       "description": "Indicates the maximum number of successive hyphenated lines in an element.",
-      "restrictions": [
-        "integer"
-      ],
       "types": [
         "number"
       ],
@@ -7617,10 +6501,6 @@
     {
       "name": "-ms-hyphenate-limit-zone",
       "description": "Specifies the maximum amount of unfilled space (before justification) that may be left in the line box before hyphenation is triggered to pull part of a word from the next line back up into the current line.",
-      "restrictions": [
-        "percentage",
-        "length"
-      ],
       "types": [
         "length",
         "percentage"
@@ -7629,9 +6509,6 @@
     {
       "name": "-ms-hyphens",
       "description": "Controls whether hyphenation is allowed to create more break opportunities within a line of text.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7651,9 +6528,6 @@
     {
       "name": "-ms-ime-mode",
       "description": "Controls the state of the input method editor for text fields.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7681,9 +6555,6 @@
     {
       "name": "-ms-interpolation-mode",
       "description": "Gets or sets the interpolation (resampling) method used to stretch images.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7720,11 +6591,6 @@
     {
       "name": "-ms-layout-grid-char",
       "description": "Sets or retrieves the size of the character grid used for rendering the text content of an element.",
-      "restrictions": [
-        "enum",
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -7743,9 +6609,6 @@
     {
       "name": "-ms-layout-grid-line",
       "description": "Sets or retrieves the gridline value used for rendering the text content of an element.",
-      "restrictions": [
-        "length"
-      ],
       "types": [
         "length"
       ],
@@ -7763,9 +6626,6 @@
     {
       "name": "-ms-layout-grid-mode",
       "description": "Gets or sets whether the text layout grid uses two dimensions.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7789,9 +6649,6 @@
     {
       "name": "-ms-layout-grid-type",
       "description": "Sets or retrieves the type of grid used for rendering the text content of an element.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7811,9 +6668,6 @@
     {
       "name": "-ms-line-break",
       "description": "Specifies what set of line breaking restrictions are in effect within the element.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7841,9 +6695,6 @@
     {
       "name": "-ms-overflow-style",
       "description": "Specify whether content is clipped when it overflows the element's content area.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7867,9 +6718,6 @@
     {
       "name": "-ms-perspective",
       "description": "Applies the same transform as the perspective(<number>) transform function, except that it applies only to the positioned or transformed children of the element, not to the transform on the element itself.",
-      "restrictions": [
-        "length"
-      ],
       "types": [
         "length"
       ],
@@ -7883,11 +6731,6 @@
     {
       "name": "-ms-perspective-origin",
       "description": "Establishes the origin for the perspective property. It effectively sets the X and Y position at which the viewer appears to be looking at the children of the element.",
-      "restrictions": [
-        "position",
-        "percentage",
-        "length"
-      ],
       "types": [
         "length",
         "percentage"
@@ -7896,11 +6739,6 @@
     {
       "name": "-ms-perspective-origin-x",
       "description": "Establishes the origin for the perspective property. It effectively sets the X  position at which the viewer appears to be looking at the children of the element.",
-      "restrictions": [
-        "position",
-        "percentage",
-        "length"
-      ],
       "types": [
         "length",
         "percentage"
@@ -7909,11 +6747,6 @@
     {
       "name": "-ms-perspective-origin-y",
       "description": "Establishes the origin for the perspective property. It effectively sets the Y position at which the viewer appears to be looking at the children of the element.",
-      "restrictions": [
-        "position",
-        "percentage",
-        "length"
-      ],
       "types": [
         "length",
         "percentage"
@@ -7922,9 +6755,6 @@
     {
       "name": "-ms-progress-appearance",
       "description": "Gets or sets a value that specifies whether a progress control displays as a bar or a ring.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -7938,9 +6768,6 @@
     {
       "name": "-ms-scrollbar-3dlight-color",
       "description": "Determines the color of the top and left edges of the scroll box and scroll arrows of a scroll bar.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -7948,9 +6775,6 @@
     {
       "name": "-ms-scrollbar-arrow-color",
       "description": "Determines the color of the arrow elements of a scroll arrow.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -7958,9 +6782,6 @@
     {
       "name": "-ms-scrollbar-base-color",
       "description": "Determines the color of the main elements of a scroll bar, which include the scroll box, track, and scroll arrows.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -7968,9 +6789,6 @@
     {
       "name": "-ms-scrollbar-darkshadow-color",
       "description": "Determines the color of the gutter of a scroll bar.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -7978,9 +6796,6 @@
     {
       "name": "-ms-scrollbar-face-color",
       "description": "Determines the color of the scroll box and scroll arrows of a scroll bar.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -7988,9 +6803,6 @@
     {
       "name": "-ms-scrollbar-highlight-color",
       "description": "Determines the color of the top and left edges of the scroll box and scroll arrows of a scroll bar.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -7998,9 +6810,6 @@
     {
       "name": "-ms-scrollbar-shadow-color",
       "description": "Determines the color of the bottom and right edges of the scroll box and scroll arrows of a scroll bar.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -8008,9 +6817,6 @@
     {
       "name": "-ms-scrollbar-track-color",
       "description": "Determines the color of the track element of a scroll bar.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -8018,10 +6824,6 @@
     {
       "name": "-ms-scroll-chaining",
       "description": "Gets or sets a value that indicates the scrolling behavior that occurs when a user hits the content boundary during a manipulation.",
-      "restrictions": [
-        "enum",
-        "length"
-      ],
       "types": [],
       "values": [
         {
@@ -8035,9 +6837,6 @@
     {
       "name": "-ms-scroll-limit",
       "description": "Gets or sets a shorthand value that sets values for the -ms-scroll-limit-x-min, -ms-scroll-limit-y-min, -ms-scroll-limit-x-max, and -ms-scroll-limit-y-max properties.",
-      "restrictions": [
-        "length"
-      ],
       "types": [],
       "values": [
         {
@@ -8048,9 +6847,6 @@
     {
       "name": "-ms-scroll-limit-x-max",
       "description": "Gets or sets a value that specifies the maximum value for the scrollLeft property.",
-      "restrictions": [
-        "length"
-      ],
       "types": [
         "length"
       ],
@@ -8063,9 +6859,6 @@
     {
       "name": "-ms-scroll-limit-x-min",
       "description": "Gets or sets a value that specifies the minimum value for the scrollLeft property.",
-      "restrictions": [
-        "length"
-      ],
       "types": [
         "length"
       ]
@@ -8073,9 +6866,6 @@
     {
       "name": "-ms-scroll-limit-y-max",
       "description": "Gets or sets a value that specifies the maximum value for the scrollTop property.",
-      "restrictions": [
-        "length"
-      ],
       "types": [
         "length"
       ],
@@ -8088,9 +6878,6 @@
     {
       "name": "-ms-scroll-limit-y-min",
       "description": "Gets or sets a value that specifies the minimum value for the scrollTop property.",
-      "restrictions": [
-        "length"
-      ],
       "types": [
         "length"
       ]
@@ -8098,10 +6885,6 @@
     {
       "name": "-ms-scroll-rails",
       "description": "Gets or sets a value that indicates whether or not small motions perpendicular to the primary axis of motion will result in either changes to both the scrollTop and scrollLeft properties or a change to the primary axis (for instance, either the scrollTop or scrollLeft properties will change, but not both).",
-      "restrictions": [
-        "enum",
-        "length"
-      ],
       "types": [],
       "values": [
         {
@@ -8115,9 +6898,6 @@
     {
       "name": "-ms-scroll-snap-points-x",
       "description": "Gets or sets a value that defines where snap-points will be located along the x-axis.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8128,9 +6908,6 @@
     {
       "name": "-ms-scroll-snap-points-y",
       "description": "Gets or sets a value that defines where snap-points will be located along the y-axis.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8141,9 +6918,6 @@
     {
       "name": "-ms-scroll-snap-type",
       "description": "Gets or sets a value that defines what type of snap-point should be used for the current element. There are two type of snap-points, with the primary difference being whether or not the user is guaranteed to always stop on a snap-point.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8163,9 +6937,6 @@
     {
       "name": "-ms-scroll-snap-x",
       "description": "Gets or sets a shorthand value that sets values for the -ms-scroll-snap-type and -ms-scroll-snap-points-x properties.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8185,9 +6956,6 @@
     {
       "name": "-ms-scroll-snap-y",
       "description": "Gets or sets a shorthand value that sets values for the -ms-scroll-snap-type and -ms-scroll-snap-points-y properties.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8207,9 +6975,6 @@
     {
       "name": "-ms-scroll-translation",
       "description": "Gets or sets a value that specifies whether vertical-to-horizontal scroll wheel translation occurs on the specified element.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8223,9 +6988,6 @@
     {
       "name": "-ms-text-align-last",
       "description": "Describes how the last line of a block or a line right before a forced line break is aligned when 'text-align' is set to 'justify'.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8252,9 +7014,6 @@
     {
       "name": "-ms-text-autospace",
       "description": "Determines whether or not a full-width punctuation mark character should be trimmed if it appears at the beginning of a line, so that its 'ink' lines up with the first glyph in the line above and below.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8286,10 +7045,6 @@
     {
       "name": "-ms-text-combine-horizontal",
       "description": "This property specifies the combination of multiple characters into the space of a single character.",
-      "restrictions": [
-        "enum",
-        "integer"
-      ],
       "types": [
         "number"
       ],
@@ -8311,9 +7066,6 @@
     {
       "name": "-ms-text-justify",
       "description": "Selects the justification algorithm used when 'text-align' is set to 'justify'. The property applies to block containers, but the UA may (but is not required to) also support it on inline elements.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8345,9 +7097,6 @@
     {
       "name": "-ms-text-kashida-space",
       "description": "Sets or retrieves the ratio of kashida expansion to white space expansion when justifying lines of text in the object.",
-      "restrictions": [
-        "percentage"
-      ],
       "types": [
         "percentage"
       ]
@@ -8355,9 +7104,6 @@
     {
       "name": "-ms-text-overflow",
       "description": "Text can overflow for example when it is prevented from wrapping",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8373,10 +7119,6 @@
     {
       "name": "-ms-text-size-adjust",
       "description": "Specifies a size adjustment for displaying text content in mobile browsers.",
-      "restrictions": [
-        "enum",
-        "percentage"
-      ],
       "types": [
         "percentage"
       ],
@@ -8394,9 +7136,6 @@
     {
       "name": "-ms-text-underline-position",
       "description": "Sets the position of an underline specified on the same element: it does not affect underlines specified by ancestor elements.This property is typically used in vertical writing contexts such as in Japanese documents where it often desired to have the underline appear 'over' (to the right of) the affected run of text",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8420,9 +7159,6 @@
     {
       "name": "-ms-touch-action",
       "description": "Gets or sets a value that indicates whether and how a given region can be manipulated by the user.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8458,9 +7194,6 @@
     {
       "name": "-ms-touch-select",
       "description": "Gets or sets a value that toggles the 'gripper' visual elements that enable touch text selection.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8476,9 +7209,6 @@
     {
       "name": "-ms-transform",
       "description": "A two-dimensional transformation is applied to an element through the 'transform' property. This property contains a list of transform functions similar to those allowed by SVG.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8569,11 +7299,6 @@
     {
       "name": "-ms-transform-origin",
       "description": "Establishes the origin of transformation for an element.",
-      "restrictions": [
-        "position",
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -8582,10 +7307,6 @@
     {
       "name": "-ms-transform-origin-x",
       "description": "The x coordinate of the origin for transforms applied to an element with respect to its border box.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -8594,10 +7315,6 @@
     {
       "name": "-ms-transform-origin-y",
       "description": "The y coordinate of the origin for transforms applied to an element with respect to its border box.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -8606,10 +7323,6 @@
     {
       "name": "-ms-transform-origin-z",
       "description": "The z coordinate of the origin for transforms applied to an element with respect to its border box.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -8618,9 +7331,6 @@
     {
       "name": "-ms-user-select",
       "description": "Controls the appearance of selection.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8637,9 +7347,6 @@
     {
       "name": "-ms-word-break",
       "description": "Specifies line break opportunities for non-CJK scripts.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8659,9 +7366,6 @@
     {
       "name": "-ms-word-wrap",
       "description": "Specifies whether the UA may break within a word to prevent overflow when an otherwise-unbreakable string is too long to fit.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8677,9 +7381,6 @@
     {
       "name": "-ms-wrap-flow",
       "description": "An element becomes an exclusion when its 'wrap-flow' property has a computed value other than 'auto'.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8715,10 +7416,6 @@
     {
       "name": "-ms-wrap-margin",
       "description": "Gets or sets a value that is used to offset the inner wrap shape from other shapes.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length"
       ]
@@ -8726,9 +7423,6 @@
     {
       "name": "-ms-wrap-through",
       "description": "Specifies if an element inherits its parent wrapping context. In other words if it is subject to the exclusions defined outside the element.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8744,9 +7438,6 @@
     {
       "name": "-ms-writing-mode",
       "description": "Shorthand property for both 'direction' and 'block-progression'.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8778,12 +7469,6 @@
     {
       "name": "-ms-zoom",
       "description": "Sets or retrieves the magnification scale of the object.",
-      "restrictions": [
-        "enum",
-        "integer",
-        "number",
-        "percentage"
-      ],
       "types": [
         "number",
         "percentage"
@@ -8797,9 +7482,6 @@
     {
       "name": "-ms-zoom-animation",
       "description": "Gets or sets a value that indicates whether an animation is used when zooming.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -8813,11 +7495,6 @@
     {
       "name": "nav-down",
       "description": "Provides an way to control directional focus navigation.",
-      "restrictions": [
-        "enum",
-        "identifier",
-        "string"
-      ],
       "types": [],
       "values": [
         {
@@ -8837,9 +7514,6 @@
     {
       "name": "nav-index",
       "description": "Provides an input-method-neutral way of specifying the sequential navigation order (also known as 'tabbing order').",
-      "restrictions": [
-        "number"
-      ],
       "types": [
         "number"
       ],
@@ -8853,11 +7527,6 @@
     {
       "name": "nav-left",
       "description": "Provides an way to control directional focus navigation.",
-      "restrictions": [
-        "enum",
-        "identifier",
-        "string"
-      ],
       "types": [],
       "values": [
         {
@@ -8877,11 +7546,6 @@
     {
       "name": "nav-right",
       "description": "Provides an way to control directional focus navigation.",
-      "restrictions": [
-        "enum",
-        "identifier",
-        "string"
-      ],
       "types": [],
       "values": [
         {
@@ -8901,11 +7565,6 @@
     {
       "name": "nav-up",
       "description": "Provides an way to control directional focus navigation.",
-      "restrictions": [
-        "enum",
-        "identifier",
-        "string"
-      ],
       "types": [],
       "values": [
         {
@@ -8926,11 +7585,6 @@
       "name": "negative",
       "atRule": "@counter-style",
       "description": "@counter-style descriptor. Defines how to alter the representation when the counter value is negative.",
-      "restrictions": [
-        "image",
-        "identifier",
-        "string"
-      ],
       "types": [
         "image",
         "url"
@@ -8939,13 +7593,6 @@
     {
       "name": "-o-animation",
       "description": "Shorthand property combines six of the animation properties into a single property.",
-      "restrictions": [
-        "time",
-        "enum",
-        "timing-function",
-        "identifier",
-        "number"
-      ],
       "types": [
         "number",
         "time"
@@ -8992,9 +7639,6 @@
     {
       "name": "-o-animation-delay",
       "description": "Defines when the animation will start.",
-      "restrictions": [
-        "time"
-      ],
       "types": [
         "time"
       ]
@@ -9002,9 +7646,6 @@
     {
       "name": "-o-animation-direction",
       "description": "Defines whether or not the animation should play in reverse on alternate cycles.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -9028,9 +7669,6 @@
     {
       "name": "-o-animation-duration",
       "description": "Defines the length of time that an animation takes to complete one cycle.",
-      "restrictions": [
-        "time"
-      ],
       "types": [
         "time"
       ]
@@ -9038,9 +7676,6 @@
     {
       "name": "-o-animation-fill-mode",
       "description": "Defines what values are applied by the animation outside the time it is executing.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -9064,10 +7699,6 @@
     {
       "name": "-o-animation-iteration-count",
       "description": "Defines the number of times an animation cycle is played. The default value is one, meaning the animation will play from beginning to end once.",
-      "restrictions": [
-        "number",
-        "enum"
-      ],
       "types": [
         "number"
       ],
@@ -9081,10 +7712,6 @@
     {
       "name": "-o-animation-name",
       "description": "Defines a list of animations that apply. Each name is used to select the keyframe at-rule that provides the property values for the animation.",
-      "restrictions": [
-        "identifier",
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -9096,9 +7723,6 @@
     {
       "name": "-o-animation-play-state",
       "description": "Defines whether the animation is running or paused.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -9114,17 +7738,11 @@
     {
       "name": "-o-animation-timing-function",
       "description": "Describes how the animation will progress over one cycle of its duration. See the 'transition-timing-function'.",
-      "restrictions": [
-        "timing-function"
-      ],
       "types": []
     },
     {
       "name": "object-fit",
       "description": "Specifies how the contents of a replaced element should be scaled relative to the box established by its used height and width.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -9152,11 +7770,6 @@
     {
       "name": "object-position",
       "description": "Determines the alignment of the replaced element inside its box.",
-      "restrictions": [
-        "position",
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -9165,13 +7778,6 @@
     {
       "name": "-o-border-image",
       "description": "Shorthand property for setting 'border-image-source', 'border-image-slice', 'border-image-width', 'border-image-outset' and 'border-image-repeat'. Omitted values are set to their initial values.",
-      "restrictions": [
-        "length",
-        "percentage",
-        "number",
-        "image",
-        "enum"
-      ],
       "types": [
         "number",
         "length",
@@ -9212,9 +7818,6 @@
     {
       "name": "-o-object-fit",
       "description": "Specifies how the contents of a replaced element should be scaled relative to the box established by its used height and width.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -9242,11 +7845,6 @@
     {
       "name": "-o-object-position",
       "description": "Determines the alignment of the replaced element inside its box.",
-      "restrictions": [
-        "position",
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -9255,9 +7853,6 @@
     {
       "name": "opacity",
       "description": "Opacity of an element's text, where 1 is opaque and 0 is entirely transparent.",
-      "restrictions": [
-        "number(0-1)"
-      ],
       "types": [
         "number",
         "percentage"
@@ -9266,9 +7861,6 @@
     {
       "name": "order",
       "description": "Controls the order in which children of a flex container appear within the flex container, by assigning them to ordinal groups.",
-      "restrictions": [
-        "integer"
-      ],
       "types": [
         "number"
       ]
@@ -9276,9 +7868,6 @@
     {
       "name": "orphans",
       "description": "Specifies the minimum number of line boxes in a block container that must be left in a fragment before a fragmentation break.",
-      "restrictions": [
-        "integer"
-      ],
       "types": [
         "number"
       ]
@@ -9286,9 +7875,6 @@
     {
       "name": "-o-table-baseline",
       "description": "Determines which row of a inline-table should be used as baseline of inline-table.",
-      "restrictions": [
-        "integer"
-      ],
       "types": [
         "number"
       ]
@@ -9296,10 +7882,6 @@
     {
       "name": "-o-tab-size",
       "description": "This property determines the width of the tab character (U+0009), in space characters (U+0020), when rendered.",
-      "restrictions": [
-        "integer",
-        "length"
-      ],
       "types": [
         "number",
         "length"
@@ -9308,9 +7890,6 @@
     {
       "name": "-o-text-overflow",
       "description": "Text can overflow for example when it is prevented from wrapping",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -9326,9 +7905,6 @@
     {
       "name": "-o-transform",
       "description": "A two-dimensional transformation is applied to an element through the 'transform' property. This property contains a list of transform functions similar to those allowed by SVG.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -9419,11 +7995,6 @@
     {
       "name": "-o-transform-origin",
       "description": "Establishes the origin of transformation for an element.",
-      "restrictions": [
-        "positon",
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -9432,12 +8003,6 @@
     {
       "name": "-o-transition",
       "description": "Shorthand property combines four of the transition properties into a single property.",
-      "restrictions": [
-        "time",
-        "property",
-        "timing-function",
-        "enum"
-      ],
       "types": [
         "time"
       ],
@@ -9455,9 +8020,6 @@
     {
       "name": "-o-transition-delay",
       "description": "Defines when the transition will start. It allows a transition to begin execution some period of time from when it is applied.",
-      "restrictions": [
-        "time"
-      ],
       "types": [
         "time"
       ]
@@ -9465,9 +8027,6 @@
     {
       "name": "-o-transition-duration",
       "description": "Specifies how long the transition from the old value to the new value should take.",
-      "restrictions": [
-        "time"
-      ],
       "types": [
         "time"
       ]
@@ -9475,9 +8034,6 @@
     {
       "name": "-o-transition-property",
       "description": "Specifies the name of the CSS property to which the transition is applied.",
-      "restrictions": [
-        "property"
-      ],
       "types": [],
       "values": [
         {
@@ -9493,18 +8049,11 @@
     {
       "name": "-o-transition-timing-function",
       "description": "Describes how the intermediate values used during a transition will be calculated.",
-      "restrictions": [
-        "timing-function"
-      ],
       "types": []
     },
     {
       "name": "offset-block-end",
       "description": "Logical 'bottom'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -9519,10 +8068,6 @@
     {
       "name": "offset-block-start",
       "description": "Logical 'top'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -9537,10 +8082,6 @@
     {
       "name": "offset-inline-end",
       "description": "Logical 'right'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -9555,10 +8096,6 @@
     {
       "name": "offset-inline-start",
       "description": "Logical 'left'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -9573,13 +8110,6 @@
     {
       "name": "outline",
       "description": "Shorthand property for 'outline-style', 'outline-width', and 'outline-color'.",
-      "restrictions": [
-        "length",
-        "line-width",
-        "line-style",
-        "color",
-        "enum"
-      ],
       "types": [
         "length",
         "color"
@@ -9598,10 +8128,6 @@
     {
       "name": "outline-color",
       "description": "The color of the outline.",
-      "restrictions": [
-        "enum",
-        "color"
-      ],
       "types": [
         "color"
       ],
@@ -9615,9 +8141,6 @@
     {
       "name": "outline-offset",
       "description": "Offset the outline and draw it beyond the border edge.",
-      "restrictions": [
-        "length"
-      ],
       "types": [
         "length"
       ]
@@ -9625,10 +8148,6 @@
     {
       "name": "outline-style",
       "description": "Style of the outline.",
-      "restrictions": [
-        "line-style",
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -9640,10 +8159,6 @@
     {
       "name": "outline-width",
       "description": "Width of the outline.",
-      "restrictions": [
-        "length",
-        "line-width"
-      ],
       "types": [
         "length"
       ]
@@ -9651,9 +8166,6 @@
     {
       "name": "overflow",
       "description": "Shorthand for setting 'overflow-x' and 'overflow-y'.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -9681,9 +8193,6 @@
     {
       "name": "overflow-wrap",
       "description": "Specifies whether the UA may break within a word to prevent overflow when an otherwise-unbreakable string is too long to fit within the line box.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -9703,9 +8212,6 @@
     {
       "name": "overflow-x",
       "description": "Specifies the handling of overflow in the horizontal direction.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -9729,9 +8235,6 @@
     {
       "name": "overflow-y",
       "description": "Specifies the handling of overflow in the vertical direction.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -9756,12 +8259,6 @@
       "name": "pad",
       "atRule": "@counter-style",
       "description": "@counter-style descriptor. Specifies a \"fixed-width\" counter style, where representations shorter than the pad value are padded with a particular <symbol>",
-      "restrictions": [
-        "integer",
-        "image",
-        "string",
-        "identifier"
-      ],
       "types": [
         "number",
         "image",
@@ -9771,10 +8268,6 @@
     {
       "name": "padding",
       "description": "Shorthand property to set values for the thickness of the padding area. If left is omitted, it is the same as right. If bottom is omitted it is the same as top, if right is omitted it is the same as top. The value may not be negative.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -9784,10 +8277,6 @@
     {
       "name": "padding-bottom",
       "description": "Shorthand property to set values for the thickness of the padding area. If left is omitted, it is the same as right. If bottom is omitted it is the same as top, if right is omitted it is the same as top. The value may not be negative.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -9796,10 +8285,6 @@
     {
       "name": "padding-block-end",
       "description": "Logical 'padding-bottom'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -9808,10 +8293,6 @@
     {
       "name": "padding-block-start",
       "description": "Logical 'padding-top'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -9820,10 +8301,6 @@
     {
       "name": "padding-inline-end",
       "description": "Logical 'padding-right'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -9832,10 +8309,6 @@
     {
       "name": "padding-inline-start",
       "description": "Logical 'padding-left'. Mapping depends on the parent element's 'writing-mode', 'direction', and 'text-orientation'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -9844,10 +8317,6 @@
     {
       "name": "padding-left",
       "description": "Shorthand property to set values for the thickness of the padding area. If left is omitted, it is the same as right. If bottom is omitted it is the same as top, if right is omitted it is the same as top. The value may not be negative.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -9856,10 +8325,6 @@
     {
       "name": "padding-right",
       "description": "Shorthand property to set values for the thickness of the padding area. If left is omitted, it is the same as right. If bottom is omitted it is the same as top, if right is omitted it is the same as top. The value may not be negative.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -9868,10 +8333,6 @@
     {
       "name": "padding-top",
       "description": "Shorthand property to set values for the thickness of the padding area. If left is omitted, it is the same as right. If bottom is omitted it is the same as top, if right is omitted it is the same as top. The value may not be negative.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -9880,9 +8341,6 @@
     {
       "name": "page-break-after",
       "description": "Defines rules for page breaks after an element.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -9910,9 +8368,6 @@
     {
       "name": "page-break-before",
       "description": "Defines rules for page breaks before an element.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -9940,9 +8395,6 @@
     {
       "name": "page-break-inside",
       "description": "Defines rules for page breaks inside an element.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -9958,9 +8410,6 @@
     {
       "name": "paint-order",
       "description": "Controls the order that the three paint operations that shapes and text are rendered with: their fill, their stroke and any markers they might have.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -9981,10 +8430,6 @@
     {
       "name": "perspective",
       "description": "Applies the same transform as the perspective(<number>) transform function, except that it applies only to the positioned or transformed children of the element, not to the transform on the element itself.",
-      "restrictions": [
-        "length",
-        "enum"
-      ],
       "types": [
         "length"
       ],
@@ -9998,11 +8443,6 @@
     {
       "name": "perspective-origin",
       "description": "Establishes the origin for the perspective property. It effectively sets the X and Y position at which the viewer appears to be looking at the children of the element.",
-      "restrictions": [
-        "position",
-        "percentage",
-        "length"
-      ],
       "types": [
         "length",
         "percentage"
@@ -10011,9 +8451,6 @@
     {
       "name": "pointer-events",
       "description": "Specifies under what circumstances a given element can be the target element for a pointer event.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -10057,9 +8494,6 @@
     {
       "name": "position",
       "description": "The position CSS property sets how an element is positioned in a document. The top, right, bottom, and left properties determine the final location of positioned elements.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -10096,11 +8530,6 @@
       "name": "prefix",
       "atRule": "@counter-style",
       "description": "@counter-style descriptor. Specifies a <symbol> that is prepended to the marker representation.",
-      "restrictions": [
-        "image",
-        "string",
-        "identifier"
-      ],
       "types": [
         "image",
         "url"
@@ -10109,9 +8538,6 @@
     {
       "name": "quotes",
       "description": "Specifies quotation marks for any number of embedded quotations.",
-      "restrictions": [
-        "string"
-      ],
       "types": [],
       "values": [
         {
@@ -10124,10 +8550,6 @@
       "name": "range",
       "atRule": "@counter-style",
       "description": "@counter-style descriptor. Defines the ranges over which the counter style is defined.",
-      "restrictions": [
-        "integer",
-        "enum"
-      ],
       "types": [
         "number"
       ],
@@ -10145,9 +8567,6 @@
     {
       "name": "resize",
       "description": "Specifies whether or not an element is resizable by the user, and if so, along which axis/axes.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -10171,10 +8590,6 @@
     {
       "name": "right",
       "description": "Specifies how far an absolutely positioned box's right margin edge is offset to the left of the right edge of the box's 'containing block'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -10189,9 +8604,6 @@
     {
       "name": "ruby-align",
       "description": "Specifies how text is distributed within the various ruby boxes when their contents do not exactly fill their respective boxes.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -10239,9 +8651,6 @@
     {
       "name": "ruby-overhang",
       "description": "Determines whether, and on which side, ruby text is allowed to partially overhang any adjacent text in addition to its own base, when the ruby text is wider than the ruby base.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -10265,9 +8674,6 @@
     {
       "name": "ruby-position",
       "description": "Used by the parent of elements with display: ruby-text to control the position of the ruby text with respect to its base.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -10290,9 +8696,6 @@
     {
       "name": "ruby-span",
       "description": "Determines whether, and on which side, ruby text is allowed to partially overhang any adjacent text in addition to its own base, when the ruby text is wider than the ruby base.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -10308,9 +8711,6 @@
     {
       "name": "scrollbar-3dlight-color",
       "description": "Determines the color of the top and left edges of the scroll box and scroll arrows of a scroll bar.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -10318,9 +8718,6 @@
     {
       "name": "scrollbar-arrow-color",
       "description": "Determines the color of the arrow elements of a scroll arrow.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -10328,9 +8725,6 @@
     {
       "name": "scrollbar-base-color",
       "description": "Determines the color of the main elements of a scroll bar, which include the scroll box, track, and scroll arrows.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -10338,9 +8732,6 @@
     {
       "name": "scrollbar-darkshadow-color",
       "description": "Determines the color of the gutter of a scroll bar.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -10348,9 +8739,6 @@
     {
       "name": "scrollbar-face-color",
       "description": "Determines the color of the scroll box and scroll arrows of a scroll bar.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -10358,9 +8746,6 @@
     {
       "name": "scrollbar-highlight-color",
       "description": "Determines the color of the top and left edges of the scroll box and scroll arrows of a scroll bar.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -10368,9 +8753,6 @@
     {
       "name": "scrollbar-shadow-color",
       "description": "Determines the color of the bottom and right edges of the scroll box and scroll arrows of a scroll bar.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -10378,9 +8760,6 @@
     {
       "name": "scrollbar-track-color",
       "description": "Determines the color of the track element of a scroll bar.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -10388,9 +8767,6 @@
     {
       "name": "scroll-behavior",
       "description": "Specifies the scrolling behavior for a scrolling box, when scrolling happens due to navigation or CSSOM scrolling APIs.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -10406,12 +8782,6 @@
     {
       "name": "scroll-snap-coordinate",
       "description": "Defines the x and y coordinate within the element which will align with the nearest ancestor scroll container's snap-destination for the respective axis.",
-      "restrictions": [
-        "position",
-        "length",
-        "percentage",
-        "enum"
-      ],
       "types": [
         "length",
         "percentage"
@@ -10426,11 +8796,6 @@
     {
       "name": "scroll-snap-destination",
       "description": "Define the x and y coordinate within the scroll container's visual viewport which element snap points will align with.",
-      "restrictions": [
-        "position",
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -10439,9 +8804,6 @@
     {
       "name": "scroll-snap-points-x",
       "description": "Defines the positioning of snap points along the x axis of the scroll container it is applied to.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -10457,9 +8819,6 @@
     {
       "name": "scroll-snap-points-y",
       "description": "Defines the positioning of snap points along the y axis of the scroll container it is applied to.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -10475,9 +8834,6 @@
     {
       "name": "scroll-snap-type",
       "description": "Defines how strictly snap points are enforced on the scroll container.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -10497,9 +8853,6 @@
     {
       "name": "shape-image-threshold",
       "description": "Defines the alpha channel threshold used to extract the shape using an image. A value of 0.5 means that the shape will enclose all the pixels that are more than 50% opaque.",
-      "restrictions": [
-        "number"
-      ],
       "types": [
         "number",
         "percentage"
@@ -10508,11 +8861,6 @@
     {
       "name": "shape-margin",
       "description": "Adds a margin to a 'shape-outside'. This defines a new shape that is the smallest contour that includes all the points that are the 'shape-margin' distance outward in the perpendicular direction from a point on the underlying shape.",
-      "restrictions": [
-        "url",
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -10521,12 +8869,6 @@
     {
       "name": "shape-outside",
       "description": "Specifies an orthogonal rotation to be applied to an image before it is laid out.",
-      "restrictions": [
-        "image",
-        "box",
-        "shape",
-        "enum"
-      ],
       "types": [
         "image",
         "url"
@@ -10545,9 +8887,6 @@
     {
       "name": "shape-rendering",
       "description": "Provides hints about what tradeoffs to make as it renders vector graphics elements such as <path> elements and basic shapes such as circles and rectangles.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -10572,9 +8911,6 @@
       "name": "size",
       "atRule": "@page",
       "description": "The size CSS at-rule descriptor, used with the @page at-rule, defines the size and orientation of the box which is used to represent a page. Most of the time, this size corresponds to the target size of the printed page if applicable.",
-      "restrictions": [
-        "length"
-      ],
       "types": [
         "length"
       ]
@@ -10583,11 +8919,6 @@
       "name": "src",
       "atRule": "@font-face",
       "description": "@font-face descriptor. Specifies the resource containing font data. It is required, whether the font is downloadable or locally installed.",
-      "restrictions": [
-        "enum",
-        "url",
-        "identifier"
-      ],
       "types": [
         "url"
       ],
@@ -10609,9 +8940,6 @@
     {
       "name": "stop-color",
       "description": "Indicates what color to use at that gradient stop.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -10619,9 +8947,6 @@
     {
       "name": "stop-opacity",
       "description": "Defines the opacity of a given gradient stop.",
-      "restrictions": [
-        "number(0-1)"
-      ],
       "types": [
         "number",
         "percentage"
@@ -10630,11 +8955,6 @@
     {
       "name": "stroke",
       "description": "Paints along the outline of the given graphical element.",
-      "restrictions": [
-        "color",
-        "enum",
-        "url"
-      ],
       "types": [
         "color",
         "url"
@@ -10653,12 +8973,6 @@
     {
       "name": "stroke-dasharray",
       "description": "Controls the pattern of dashes and gaps used to stroke paths.",
-      "restrictions": [
-        "length",
-        "percentage",
-        "number",
-        "enum"
-      ],
       "types": [
         "number",
         "length",
@@ -10674,10 +8988,6 @@
     {
       "name": "stroke-dashoffset",
       "description": "Specifies the distance into the dash pattern to start the dash.",
-      "restrictions": [
-        "percentage",
-        "length"
-      ],
       "types": [
         "number",
         "length",
@@ -10687,9 +8997,6 @@
     {
       "name": "stroke-linecap",
       "description": "Specifies the shape to be used at the end of open subpaths when they are stroked.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -10709,9 +9016,6 @@
     {
       "name": "stroke-linejoin",
       "description": "Specifies the shape to be used at the corners of paths or basic shapes when they are stroked.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -10731,9 +9035,6 @@
     {
       "name": "stroke-miterlimit",
       "description": "When two line segments meet at a sharp angle and miter joins have been specified for 'stroke-linejoin', it is possible for the miter to extend far beyond the thickness of the line stroking the path.",
-      "restrictions": [
-        "number"
-      ],
       "types": [
         "number"
       ]
@@ -10741,9 +9042,6 @@
     {
       "name": "stroke-opacity",
       "description": "Specifies the opacity of the painting operation used to stroke the current object.",
-      "restrictions": [
-        "number(0-1)"
-      ],
       "types": [
         "number",
         "percentage"
@@ -10752,10 +9050,6 @@
     {
       "name": "stroke-width",
       "description": "Specifies the width of the stroke on the current object.",
-      "restrictions": [
-        "percentage",
-        "length"
-      ],
       "types": [
         "number",
         "length",
@@ -10766,11 +9060,6 @@
       "name": "suffix",
       "atRule": "@counter-style",
       "description": "@counter-style descriptor. Specifies a <symbol> that is appended to the marker representation.",
-      "restrictions": [
-        "image",
-        "string",
-        "identifier"
-      ],
       "types": [
         "image",
         "url"
@@ -10780,10 +9069,6 @@
       "name": "system",
       "atRule": "@counter-style",
       "description": "@counter-style descriptor. Specifies which algorithm will be used to construct the counter's representation based on the counter value.",
-      "restrictions": [
-        "enum",
-        "integer"
-      ],
       "types": [
         "number"
       ],
@@ -10822,11 +9107,6 @@
       "name": "symbols",
       "atRule": "@counter-style",
       "description": "@counter-style descriptor. Specifies the symbols used by the marker-construction algorithm specified by the system descriptor.",
-      "restrictions": [
-        "image",
-        "string",
-        "identifier"
-      ],
       "types": [
         "image",
         "url"
@@ -10835,9 +9115,6 @@
     {
       "name": "table-layout",
       "description": "Controls the algorithm used to lay out the table cells, rows, and columns.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -10853,10 +9130,6 @@
     {
       "name": "tab-size",
       "description": "Determines the width of the tab character (U+0009), in space characters (U+0020), when rendered.",
-      "restrictions": [
-        "integer",
-        "length"
-      ],
       "types": [
         "number",
         "length"
@@ -10865,9 +9138,6 @@
     {
       "name": "text-align",
       "description": "Describes how inline contents of a block are horizontally aligned if the contents do not completely fill the line box.",
-      "restrictions": [
-        "string"
-      ],
       "types": [],
       "values": [
         {
@@ -10899,9 +9169,6 @@
     {
       "name": "text-align-last",
       "description": "Describes how the last line of a block or a line right before a forced line break is aligned when 'text-align' is set to 'justify'.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -10929,9 +9196,6 @@
     {
       "name": "text-anchor",
       "description": "Used to align (start-, middle- or end-alignment) a string of text relative to a given point.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -10951,10 +9215,6 @@
     {
       "name": "text-decoration",
       "description": "Decorations applied to font used for an element's text.",
-      "restrictions": [
-        "enum",
-        "color"
-      ],
       "types": [
         "length",
         "percentage",
@@ -11002,9 +9262,6 @@
     {
       "name": "text-decoration-color",
       "description": "Specifies the color of text decoration (underlines overlines, and line-throughs) set on the element with text-decoration-line.",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -11012,9 +9269,6 @@
     {
       "name": "text-decoration-line",
       "description": "Specifies what line decorations, if any, are added to the element.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -11038,9 +9292,6 @@
     {
       "name": "text-decoration-style",
       "description": "Specifies the line style for underline, line-through and overline text decoration.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -11072,10 +9323,6 @@
     {
       "name": "text-indent",
       "description": "Specifies the indentation applied to lines of inline content in a block. The indentation only affects the first line of inline content in the block unless the 'hanging' keyword is specified, in which case it affects all lines except the first.",
-      "restrictions": [
-        "percentage",
-        "length"
-      ],
       "types": [
         "length",
         "percentage"
@@ -11085,9 +9332,6 @@
     {
       "name": "text-justify",
       "description": "Selects the justification algorithm used when 'text-align' is set to 'justify'. The property applies to block containers, but the UA may (but is not required to) also support it on inline elements.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -11125,9 +9369,6 @@
     {
       "name": "text-orientation",
       "description": "Specifies the orientation of text within a line.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -11147,10 +9388,6 @@
     {
       "name": "text-overflow",
       "description": "Text can overflow for example when it is prevented from wrapping.",
-      "restrictions": [
-        "enum",
-        "string"
-      ],
       "types": [],
       "values": [
         {
@@ -11166,9 +9403,6 @@
     {
       "name": "text-rendering",
       "description": "The creator of SVG content might want to provide a hint to the implementation about what tradeoffs to make as it renders text. The 'text-rendering' property provides these hints.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -11191,10 +9425,6 @@
     {
       "name": "text-shadow",
       "description": "Enables shadow effects to be applied to the text of the element.",
-      "restrictions": [
-        "length",
-        "color"
-      ],
       "types": [
         "length",
         "color"
@@ -11209,9 +9439,6 @@
     {
       "name": "text-transform",
       "description": "Controls capitalization effects of an element's text.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -11235,9 +9462,6 @@
     {
       "name": "text-underline-position",
       "description": "Sets the position of an underline specified on the same element: it does not affect underlines specified by ancestor elements. This property is typically used in vertical writing contexts such as in Japanese documents where it often desired to have the underline appear 'over' (to the right of) the affected run of text",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -11256,10 +9480,6 @@
     {
       "name": "top",
       "description": "Specifies how far an absolutely positioned box's top margin edge is offset below the top edge of the box's 'containing block'.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -11274,9 +9494,6 @@
     {
       "name": "touch-action",
       "description": "Determines whether touch input may trigger default behavior supplied by user agent.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -11316,9 +9533,6 @@
     {
       "name": "transform",
       "description": "A two-dimensional transformation is applied to an element through the 'transform' property. This property contains a list of transform functions similar to those allowed by SVG.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -11413,11 +9627,6 @@
     {
       "name": "transform-origin",
       "description": "Establishes the origin of transformation for an element.",
-      "restrictions": [
-        "position",
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -11426,9 +9635,6 @@
     {
       "name": "transform-style",
       "description": "Defines how nested elements are rendered in 3D space.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -11444,12 +9650,6 @@
     {
       "name": "transition",
       "description": "Shorthand property combines four of the transition properties into a single property.",
-      "restrictions": [
-        "time",
-        "property",
-        "timing-function",
-        "enum"
-      ],
       "types": [
         "time"
       ],
@@ -11467,9 +9667,6 @@
     {
       "name": "transition-delay",
       "description": "Defines when the transition will start. It allows a transition to begin execution some period of time from when it is applied.",
-      "restrictions": [
-        "time"
-      ],
       "types": [
         "time"
       ]
@@ -11477,9 +9674,6 @@
     {
       "name": "transition-duration",
       "description": "Specifies how long the transition from the old value to the new value should take.",
-      "restrictions": [
-        "time"
-      ],
       "types": [
         "time"
       ]
@@ -11487,9 +9681,6 @@
     {
       "name": "transition-property",
       "description": "Specifies the name of the CSS property to which the transition is applied.",
-      "restrictions": [
-        "property"
-      ],
       "types": [],
       "values": [
         {
@@ -11505,17 +9696,11 @@
     {
       "name": "transition-timing-function",
       "description": "Describes how the intermediate values used during a transition will be calculated.",
-      "restrictions": [
-        "timing-function"
-      ],
       "types": []
     },
     {
       "name": "unicode-bidi",
       "description": "The level of embedding with respect to the bidirectional algorithm.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -11548,9 +9733,6 @@
       "name": "unicode-range",
       "atRule": "@font-face",
       "description": "@font-face descriptor. Defines the set of Unicode codepoints that may be supported by the font face for which it is declared.",
-      "restrictions": [
-        "unicode-range"
-      ],
       "types": [],
       "values": [
         {
@@ -11842,9 +10024,6 @@
     {
       "name": "user-select",
       "description": "Controls the appearance of selection.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -11871,10 +10050,6 @@
     {
       "name": "vertical-align",
       "description": "Affects the vertical positioning of the inline boxes generated by an inline-level element inside a line box.",
-      "restrictions": [
-        "percentage",
-        "length"
-      ],
       "types": [
         "length",
         "percentage"
@@ -11924,9 +10099,6 @@
     {
       "name": "visibility",
       "description": "Specifies whether the boxes generated by an element are rendered. Invisible boxes still affect layout (set the 'display' property to 'none' to suppress box generation altogether).",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -11946,13 +10118,6 @@
     {
       "name": "-webkit-animation",
       "description": "Shorthand property combines six of the animation properties into a single property.",
-      "restrictions": [
-        "time",
-        "enum",
-        "timing-function",
-        "identifier",
-        "number"
-      ],
       "types": [
         "number",
         "time"
@@ -11999,9 +10164,6 @@
     {
       "name": "-webkit-animation-delay",
       "description": "Defines when the animation will start.",
-      "restrictions": [
-        "time"
-      ],
       "types": [
         "time"
       ]
@@ -12009,9 +10171,6 @@
     {
       "name": "-webkit-animation-direction",
       "description": "Defines whether or not the animation should play in reverse on alternate cycles.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -12035,9 +10194,6 @@
     {
       "name": "-webkit-animation-duration",
       "description": "Defines the length of time that an animation takes to complete one cycle.",
-      "restrictions": [
-        "time"
-      ],
       "types": [
         "time"
       ]
@@ -12045,9 +10201,6 @@
     {
       "name": "-webkit-animation-fill-mode",
       "description": "Defines what values are applied by the animation outside the time it is executing.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -12071,10 +10224,6 @@
     {
       "name": "-webkit-animation-iteration-count",
       "description": "Defines the number of times an animation cycle is played. The default value is one, meaning the animation will play from beginning to end once.",
-      "restrictions": [
-        "number",
-        "enum"
-      ],
       "types": [
         "number"
       ],
@@ -12088,10 +10237,6 @@
     {
       "name": "-webkit-animation-name",
       "description": "Defines a list of animations that apply. Each name is used to select the keyframe at-rule that provides the property values for the animation.",
-      "restrictions": [
-        "identifier",
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -12103,9 +10248,6 @@
     {
       "name": "-webkit-animation-play-state",
       "description": "Defines whether the animation is running or paused.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -12121,17 +10263,11 @@
     {
       "name": "-webkit-animation-timing-function",
       "description": "Describes how the animation will progress over one cycle of its duration. See the 'transition-timing-function'.",
-      "restrictions": [
-        "timing-function"
-      ],
       "types": []
     },
     {
       "name": "-webkit-appearance",
       "description": "Changes the appearance of buttons and other controls to resemble native controls.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -12271,10 +10407,6 @@
     {
       "name": "-webkit-backdrop-filter",
       "description": "Applies a filter effect where the first filter in the list takes the element's background image as the input image.",
-      "restrictions": [
-        "enum",
-        "url"
-      ],
       "types": [
         "url"
       ],
@@ -12332,9 +10464,6 @@
     {
       "name": "-webkit-backface-visibility",
       "description": "Determines whether or not the 'back' side of a transformed element is visible when facing the viewer. With an identity transform, the front side of an element faces the viewer.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -12348,16 +10477,10 @@
     {
       "name": "-webkit-background-clip",
       "description": "Determines the background painting area.",
-      "restrictions": [
-        "box"
-      ],
       "types": []
     },
     {
       "name": "-webkit-background-composite",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -12371,21 +10494,11 @@
     {
       "name": "-webkit-background-origin",
       "description": "For elements rendered as a single box, specifies the background positioning area. For elements rendered as multiple boxes (e.g., inline boxes on several lines, boxes on several pages) specifies which boxes 'box-decoration-break' operates on to determine the background positioning area(s).",
-      "restrictions": [
-        "box"
-      ],
       "types": []
     },
     {
       "name": "-webkit-border-image",
       "description": "Shorthand property for setting 'border-image-source', 'border-image-slice', 'border-image-width', 'border-image-outset' and 'border-image-repeat'. Omitted values are set to their initial values.",
-      "restrictions": [
-        "length",
-        "percentage",
-        "number",
-        "url",
-        "enum"
-      ],
       "types": [
         "number",
         "length",
@@ -12428,9 +10541,6 @@
     {
       "name": "-webkit-box-align",
       "description": "Specifies the alignment of nested elements within an outer flexible box element.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -12458,9 +10568,6 @@
     {
       "name": "-webkit-box-direction",
       "description": "In webkit applications, -webkit-box-direction specifies whether a box lays out its contents normally (from the top or left edge), or in reverse (from the bottom or right edge).",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -12476,9 +10583,6 @@
     {
       "name": "-webkit-box-flex",
       "description": "Specifies an element's flexibility.",
-      "restrictions": [
-        "number"
-      ],
       "types": [
         "number"
       ]
@@ -12486,9 +10590,6 @@
     {
       "name": "-webkit-box-flex-group",
       "description": "Flexible elements can be assigned to flex groups using the 'box-flex-group' property.",
-      "restrictions": [
-        "integer"
-      ],
       "types": [
         "number"
       ]
@@ -12496,9 +10597,6 @@
     {
       "name": "-webkit-box-ordinal-group",
       "description": "Indicates the ordinal group the element belongs to. Elements with a lower ordinal group are displayed before those with a higher ordinal group.",
-      "restrictions": [
-        "integer"
-      ],
       "types": [
         "number"
       ]
@@ -12506,9 +10604,6 @@
     {
       "name": "-webkit-box-orient",
       "description": "In webkit applications, -webkit-box-orient specifies whether a box lays out its contents horizontally or vertically.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -12532,9 +10627,6 @@
     {
       "name": "-webkit-box-pack",
       "description": "Specifies alignment of child elements within the current element in the direction of orientation.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -12585,9 +10677,6 @@
     {
       "name": "-webkit-box-sizing",
       "description": "Box Model addition in CSS3.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -12603,9 +10692,6 @@
     {
       "name": "-webkit-break-after",
       "description": "Describes the page/column break behavior before the generated box.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -12655,9 +10741,6 @@
     {
       "name": "-webkit-break-before",
       "description": "Describes the page/column break behavior before the generated box.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -12707,9 +10790,6 @@
     {
       "name": "-webkit-break-inside",
       "description": "Describes the page/column break behavior inside the generated box.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -12736,9 +10816,6 @@
     {
       "name": "-webkit-column-break-after",
       "description": "Describes the page/column break behavior before the generated box.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -12788,9 +10865,6 @@
     {
       "name": "-webkit-column-break-before",
       "description": "Describes the page/column break behavior before the generated box.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -12840,9 +10914,6 @@
     {
       "name": "-webkit-column-break-inside",
       "description": "Describes the page/column break behavior inside the generated box.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -12869,9 +10940,6 @@
     {
       "name": "-webkit-column-count",
       "description": "Describes the optimal number of columns into which the content of the element will be flowed.",
-      "restrictions": [
-        "integer"
-      ],
       "types": [
         "number"
       ],
@@ -12885,9 +10953,6 @@
     {
       "name": "-webkit-column-gap",
       "description": "Sets the gap between columns. If there is a column rule between columns, it will appear in the middle of the gap.",
-      "restrictions": [
-        "length"
-      ],
       "types": [
         "length"
       ],
@@ -12901,12 +10966,6 @@
     {
       "name": "-webkit-column-rule",
       "description": "This property is a shorthand for setting 'column-rule-width', 'column-rule-style', and 'column-rule-color' at the same place in the style sheet. Omitted values are set to their initial values.",
-      "restrictions": [
-        "length",
-        "line-width",
-        "line-style",
-        "color"
-      ],
       "types": [
         "length",
         "color"
@@ -12915,9 +10974,6 @@
     {
       "name": "-webkit-column-rule-color",
       "description": "Sets the color of the column rule",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -12925,18 +10981,11 @@
     {
       "name": "-webkit-column-rule-style",
       "description": "Sets the style of the rule between columns of an element.",
-      "restrictions": [
-        "line-style"
-      ],
       "types": []
     },
     {
       "name": "-webkit-column-rule-width",
       "description": "Sets the width of the rule between columns. Negative values are not allowed.",
-      "restrictions": [
-        "length",
-        "line-width"
-      ],
       "types": [
         "length"
       ]
@@ -12944,10 +10993,6 @@
     {
       "name": "-webkit-columns",
       "description": "A shorthand property which sets both 'column-width' and 'column-count'.",
-      "restrictions": [
-        "length",
-        "integer"
-      ],
       "types": [
         "number",
         "length"
@@ -12962,9 +11007,6 @@
     {
       "name": "-webkit-column-span",
       "description": "Describes the page/column break behavior after the generated box.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -12980,9 +11022,6 @@
     {
       "name": "-webkit-column-width",
       "description": "This property describes the width of columns in multicol elements.",
-      "restrictions": [
-        "length"
-      ],
       "types": [
         "length"
       ],
@@ -12996,10 +11035,6 @@
     {
       "name": "-webkit-filter",
       "description": "Processes an element's rendering before it is displayed in the document, by applying one or more filter effects.",
-      "restrictions": [
-        "enum",
-        "url"
-      ],
       "types": [
         "url"
       ],
@@ -13057,9 +11092,6 @@
     {
       "name": "-webkit-flow-from",
       "description": "Makes a block container a region and associates it with a named flow.",
-      "restrictions": [
-        "identifier"
-      ],
       "types": [],
       "values": [
         {
@@ -13071,9 +11103,6 @@
     {
       "name": "-webkit-flow-into",
       "description": "Places an element or its contents into a named flow.",
-      "restrictions": [
-        "identifier"
-      ],
       "types": [],
       "values": [
         {
@@ -13085,10 +11114,6 @@
     {
       "name": "-webkit-font-feature-settings",
       "description": "This property provides low-level control over OpenType font features. It is intended as a way of providing access to font features that are not widely used but are needed for a particular use case.",
-      "restrictions": [
-        "string",
-        "integer"
-      ],
       "types": [
         "number"
       ],
@@ -13135,9 +11160,6 @@
     {
       "name": "-webkit-hyphens",
       "description": "Controls whether hyphenation is allowed to create more break opportunities within a line of text.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -13169,9 +11191,6 @@
     },
     {
       "name": "-webkit-margin-bottom-collapse",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -13187,9 +11206,6 @@
     },
     {
       "name": "-webkit-margin-collapse",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -13205,10 +11221,6 @@
     },
     {
       "name": "-webkit-margin-start",
-      "restrictions": [
-        "percentage",
-        "length"
-      ],
       "types": [
         "length",
         "percentage"
@@ -13221,9 +11233,6 @@
     },
     {
       "name": "-webkit-margin-top-collapse",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -13240,19 +11249,11 @@
     {
       "name": "-webkit-mask-clip",
       "description": "Determines the mask painting area, which determines the area that is affected by the mask.",
-      "restrictions": [
-        "box"
-      ],
       "types": []
     },
     {
       "name": "-webkit-mask-image",
       "description": "Sets the mask layer image of an element.",
-      "restrictions": [
-        "url",
-        "image",
-        "enum"
-      ],
       "types": [
         "image",
         "url"
@@ -13271,27 +11272,16 @@
     {
       "name": "-webkit-mask-origin",
       "description": "Specifies the mask positioning area.",
-      "restrictions": [
-        "box"
-      ],
       "types": []
     },
     {
       "name": "-webkit-mask-repeat",
       "description": "Specifies how mask layer images are tiled after they have been sized and positioned.",
-      "restrictions": [
-        "repeat"
-      ],
       "types": []
     },
     {
       "name": "-webkit-mask-size",
       "description": "Specifies the size of the mask layer images.",
-      "restrictions": [
-        "length",
-        "percentage",
-        "enum"
-      ],
       "types": [
         "length",
         "percentage"
@@ -13339,10 +11329,6 @@
     },
     {
       "name": "-webkit-padding-start",
-      "restrictions": [
-        "percentage",
-        "length"
-      ],
       "types": [
         "length",
         "percentage"
@@ -13351,9 +11337,6 @@
     {
       "name": "-webkit-perspective",
       "description": "Applies the same transform as the perspective(<number>) transform function, except that it applies only to the positioned or transformed children of the element, not to the transform on the element itself.",
-      "restrictions": [
-        "length"
-      ],
       "types": [
         "length"
       ],
@@ -13367,11 +11350,6 @@
     {
       "name": "-webkit-perspective-origin",
       "description": "Establishes the origin for the perspective property. It effectively sets the X and Y position at which the viewer appears to be looking at the children of the element.",
-      "restrictions": [
-        "position",
-        "percentage",
-        "length"
-      ],
       "types": [
         "length",
         "percentage"
@@ -13380,9 +11358,6 @@
     {
       "name": "-webkit-region-fragment",
       "description": "The 'region-fragment' property controls the behavior of the last region associated with a named flow.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -13397,18 +11372,12 @@
     },
     {
       "name": "-webkit-tap-highlight-color",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
     },
     {
       "name": "-webkit-text-fill-color",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
@@ -13416,9 +11385,6 @@
     {
       "name": "-webkit-text-size-adjust",
       "description": "Specifies a size adjustment for displaying text content in mobile browsers.",
-      "restrictions": [
-        "percentage"
-      ],
       "types": [
         "percentage"
       ],
@@ -13435,12 +11401,6 @@
     },
     {
       "name": "-webkit-text-stroke",
-      "restrictions": [
-        "length",
-        "line-width",
-        "color",
-        "percentage"
-      ],
       "types": [
         "length",
         "color"
@@ -13448,29 +11408,18 @@
     },
     {
       "name": "-webkit-text-stroke-color",
-      "restrictions": [
-        "color"
-      ],
       "types": [
         "color"
       ]
     },
     {
       "name": "-webkit-text-stroke-width",
-      "restrictions": [
-        "length",
-        "line-width",
-        "percentage"
-      ],
       "types": [
         "length"
       ]
     },
     {
       "name": "-webkit-touch-callout",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -13481,9 +11430,6 @@
     {
       "name": "-webkit-transform",
       "description": "A two-dimensional transformation is applied to an element through the 'transform' property. This property contains a list of transform functions similar to those allowed by SVG.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -13578,11 +11524,6 @@
     {
       "name": "-webkit-transform-origin",
       "description": "Establishes the origin of transformation for an element.",
-      "restrictions": [
-        "position",
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -13591,10 +11532,6 @@
     {
       "name": "-webkit-transform-origin-x",
       "description": "The x coordinate of the origin for transforms applied to an element with respect to its border box.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -13603,10 +11540,6 @@
     {
       "name": "-webkit-transform-origin-y",
       "description": "The y coordinate of the origin for transforms applied to an element with respect to its border box.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -13615,10 +11548,6 @@
     {
       "name": "-webkit-transform-origin-z",
       "description": "The z coordinate of the origin for transforms applied to an element with respect to its border box.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -13627,9 +11556,6 @@
     {
       "name": "-webkit-transform-style",
       "description": "Defines how nested elements are rendered in 3D space.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -13641,12 +11567,6 @@
     {
       "name": "-webkit-transition",
       "description": "Shorthand property combines four of the transition properties into a single property.",
-      "restrictions": [
-        "time",
-        "property",
-        "timing-function",
-        "enum"
-      ],
       "types": [
         "time"
       ],
@@ -13664,9 +11584,6 @@
     {
       "name": "-webkit-transition-delay",
       "description": "Defines when the transition will start. It allows a transition to begin execution some period of time from when it is applied.",
-      "restrictions": [
-        "time"
-      ],
       "types": [
         "time"
       ]
@@ -13674,9 +11591,6 @@
     {
       "name": "-webkit-transition-duration",
       "description": "Specifies how long the transition from the old value to the new value should take.",
-      "restrictions": [
-        "time"
-      ],
       "types": [
         "time"
       ]
@@ -13684,9 +11598,6 @@
     {
       "name": "-webkit-transition-property",
       "description": "Specifies the name of the CSS property to which the transition is applied.",
-      "restrictions": [
-        "property"
-      ],
       "types": [],
       "values": [
         {
@@ -13702,16 +11613,10 @@
     {
       "name": "-webkit-transition-timing-function",
       "description": "Describes how the intermediate values used during a transition will be calculated.",
-      "restrictions": [
-        "timing-function"
-      ],
       "types": []
     },
     {
       "name": "-webkit-user-drag",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -13728,9 +11633,6 @@
     {
       "name": "-webkit-user-modify",
       "description": "Determines whether a user can edit the content of an element.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -13747,9 +11649,6 @@
     {
       "name": "-webkit-user-select",
       "description": "Controls the appearance of selection.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -13766,9 +11665,6 @@
     {
       "name": "widows",
       "description": "Specifies the minimum number of line boxes of a block container that must be left in a fragment after a break.",
-      "restrictions": [
-        "integer"
-      ],
       "types": [
         "number"
       ]
@@ -13776,10 +11672,6 @@
     {
       "name": "width",
       "description": "Specifies the width of the content area, padding area or border area (depending on 'box-sizing') of certain boxes.",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length",
         "percentage"
@@ -13806,10 +11698,6 @@
     {
       "name": "will-change",
       "description": "Provides a rendering hint to the user agent, stating what kinds of changes the author expects to perform on the element.",
-      "restrictions": [
-        "enum",
-        "identifier"
-      ],
       "types": [],
       "values": [
         {
@@ -13829,9 +11717,6 @@
     {
       "name": "word-break",
       "description": "Specifies line break opportunities for non-CJK scripts.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -13851,10 +11736,6 @@
     {
       "name": "word-spacing",
       "description": "Specifies additional spacing between \"words\".",
-      "restrictions": [
-        "length",
-        "percentage"
-      ],
       "types": [
         "length"
       ],
@@ -13868,9 +11749,6 @@
     {
       "name": "word-wrap",
       "description": "Specifies whether the UA may break within a word to prevent overflow when an otherwise-unbreakable string is too long to fit.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -13886,9 +11764,6 @@
     {
       "name": "writing-mode",
       "description": "This is a shorthand property for both 'direction' and 'block-progression'.",
-      "restrictions": [
-        "enum"
-      ],
       "types": [],
       "values": [
         {
@@ -13916,9 +11791,6 @@
     {
       "name": "z-index",
       "description": "For a positioned box, the 'z-index' property specifies the stack level of the box in the current stacking context and whether the box establishes a local stacking context.",
-      "restrictions": [
-        "integer"
-      ],
       "types": [
         "number"
       ],
@@ -13932,12 +11804,6 @@
     {
       "name": "zoom",
       "description": "Non-standard. Specifies the magnification scale of the object. See 'transform: scale()' for a standards-based alternative.",
-      "restrictions": [
-        "enum",
-        "integer",
-        "number",
-        "percentage"
-      ],
       "types": [
         "number",
         "percentage"

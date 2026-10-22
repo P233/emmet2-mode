@@ -73,7 +73,9 @@ Kinds are `property`, `value`, `at-rule` and `pseudo`; results are ranked
 case) adds descriptors such as `src` alongside ordinary properties. An unknown
 kind signals an error.
 
-Values share compact search's keyword sets, plus restriction-derived functions.
+Values share compact search's keyword sets, plus syntax-derived numeric, color
+and URL helpers. Numeric types offer math functions and a zero value, using
+`0s` for time and `0deg` for angles without lengths or percentages.
 Ordinary and unknown properties include the CSS-wide keywords, `var()` and
 `env()`; descriptors use their enclosing `:at-rule`, with `env()` but without
 CSS-wide keywords, `var()` or a same-named property's values. Lists and pairs
