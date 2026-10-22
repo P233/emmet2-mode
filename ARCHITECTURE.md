@@ -300,12 +300,13 @@ previous candidates.
 
 Candidate queries, display batches, previews and acceptance recheck source and
 host. Source changes invalidate the previous input revision. Only candidate
-queries can replace it, when the abbreviation changes at the same source anchor,
-in the same host and with the same settings. Switching mode or settings,
-narrowing away, disabling the mode or leaving the original point or end
-invalidate the current input revision. Display and acceptance never replace an
-input revision; acceptance rejects stale or foreign choices, and an old choice
-identity cannot select a new input revision's result.
+queries can replace it at the same source anchor, in the same host and with the
+same settings, including when point moves within the abbreviation or an edit
+leaves its text unchanged. Switching mode or settings, narrowing away,
+disabling the mode or leaving the abbreviation invalidates the input revision.
+Display and acceptance never replace an input revision; acceptance rejects
+stale or foreign choices, and an old choice identity cannot select a new input
+revision's result.
 
 Candidate text remains the typed abbreviation; the choice identity tells
 canonical results apart. Presentation never changes insertion text or field
@@ -354,7 +355,8 @@ sentinel.
 Enabling the mode adds `emmet2-capf` locally at depth -50 and, in CSS Base
 modes without a provider, `emmet2-css-value-capf` at -60; disabling removes
 both and discards the last choice batch; unloading discards it in every
-buffer. `emmet2-complete` temporarily selects only the Emmet CAPF and calls
+buffer. `emmet2-complete` temporarily selects a self-contained explicit CAPF
+entry, which binds the request policy on every frontend recheck, and calls
 `completion-at-point`, as Cape's interactive CAPFs do; it neither selects a
 candidate nor changes frontend settings, and it delegates analysis and grammar
 initialization to CAPF once, without a separate preflight. Built-in CSS still

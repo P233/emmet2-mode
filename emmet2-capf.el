@@ -274,8 +274,6 @@ affects only tables that emmet2-mode builds."
                          (if (and (emmet2-capf--same-context-p analysis next)
                                   (equal settings (emmet2-capf--settings next))
                                   (<= (plist-get next :beg) (point) (plist-get next :end))
-                                  (not (= (buffer-chars-modified-tick) (plist-get snapshot :tick)))
-                                  (not (equal (abbreviation) (plist-get next :abbr)))
                                   (or (not automatic) (emmet2-capf--confident-p next)))
                              (progn
                                (setq state (list next (emmet2-insert-snapshot next)
@@ -354,6 +352,11 @@ affects only tables that emmet2-mode builds."
                              (entry (choice candidate (expanded))))
                    (emmet2-insert (emmet2-insert-snapshot (car state)) (plist-get entry :result))))))))))))
 
+(defun emmet2-capf--explicit-entry ()
+  "Return Emmet completion data with explicit policy on every frontend query."
+  (let ((emmet2-capf--explicit t))
+    (emmet2-capf)))
+
 ;;;###autoload
 (defun emmet2-complete ()
   "Request Emmet choices at point through `completion-at-point'.
@@ -366,8 +369,7 @@ its popup.  Signal `user-error' when there is nothing to complete or the
 expansion fails."
   (interactive)
   (emmet2-capf--guard nil nil
-    (let ((completion-at-point-functions '(emmet2-capf))
-          (emmet2-capf--explicit t))
+    (let ((completion-at-point-functions '(emmet2-capf--explicit-entry)))
       (unless (completion-at-point)
         (user-error "There is no Emmet completion at point")))))
 
