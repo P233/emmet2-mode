@@ -22,26 +22,31 @@ engine and result helpers (`emmet2-engine-*`, `emmet2-result-*`),
 `emmet2-extensions-css-kind`, `emmet2-css-search-value-names`,
 `emmet2-css-search-descriptor-p` and `emmet2-css-search-read-data`.
 
-| Function | Arguments |
-| --- | --- |
-| `emmet2-css-data-query` | `(KIND &key query property at-rule vendor)` |
-| `emmet2-css-search` | `(QUERY &optional LIMIT BARE AT-RULE)` |
-| `emmet2-css-search-values` | `(PROPERTY QUERY &optional LIMIT AT-RULE)` |
-| `emmet2-css-search-value-types` | `(PROPERTY &optional AT-RULE)` |
-| `emmet2-fuzzy-match` | `(QUERY CANDIDATE &optional PARTIAL)` |
-| `emmet2-fuzzy-filter` | `(QUERY CANDIDATES &optional KEY)` |
-| `emmet2-extensions-css` | `(ABBREVIATION &key css-in-js (syntax 'scss) (indent "\t") (base-indent "") at-rule scale-functions)` |
-| `emmet2-extensions-css-choices` | `(ABBREVIATION &key css-in-js (syntax 'scss) (limit 10) at-rule scale-functions)` |
-| `emmet2-extensions-markup` | `(ABBREVIATION &key jsx variant (class-style 'css-modules) (css-modules-object "styles") (class-names-constructor "clsx") (indent "\t") (base-indent "") (seed 0))` |
-| `emmet2-extract` | `(REGION-BEG REGION-END &optional SYNTAX)`; SYNTAX is nil, `css`, `css-selector` or `markup-text` |
-| `emmet2-capf-discard` | `()`; discard the current buffer's last choice batch and automatic error history. |
-| `emmet2-context-analyze` | `(&optional AUTOMATIC)` |
-| `emmet2-expand-analysis` | `(ANALYSIS)` |
-| `emmet2-insert-render-options` | `(ANALYSIS)`, returning `(:indent STRING :base-indent STRING)` |
-| `emmet2-insert-snapshot` | `(ANALYSIS)` |
-| `emmet2-insert` | `(SNAPSHOT RESULT)` |
-| `emmet2-preview` | `(TEXT SYNTAX)` |
-| `emmet2-completion-capf` | `(BEGIN END ENTRIES &key (category 'emmet2-value) (identity #'identity) (fuzzy t) annotation prefix)` |
+Require the library named for each function. Requiring `emmet2-mode` also
+loads context analysis, expansion, insertion, extraction and CSS search, and
+autoloads its commands; `emmet2-capf`, `emmet2-preview`, `emmet2-css-data` and
+`emmet2-completion` need their own `require`.
+
+| Function | Library | Arguments |
+| --- | --- | --- |
+| `emmet2-css-data-query` | `emmet2-css-data` | `(KIND &key query property at-rule vendor)` |
+| `emmet2-css-search` | `emmet2-css-search` | `(QUERY &optional LIMIT BARE AT-RULE)` |
+| `emmet2-css-search-values` | `emmet2-css-search` | `(PROPERTY QUERY &optional LIMIT AT-RULE)` |
+| `emmet2-css-search-value-types` | `emmet2-css-search` | `(PROPERTY &optional AT-RULE)` |
+| `emmet2-fuzzy-match` | `emmet2-fuzzy` | `(QUERY CANDIDATE &optional PARTIAL)` |
+| `emmet2-fuzzy-filter` | `emmet2-fuzzy` | `(QUERY CANDIDATES &optional KEY)` |
+| `emmet2-extensions-css` | `emmet2-extensions` | `(ABBREVIATION &key css-in-js (syntax 'scss) (indent "\t") (base-indent "") at-rule scale-functions)` |
+| `emmet2-extensions-css-choices` | `emmet2-extensions` | `(ABBREVIATION &key css-in-js (syntax 'scss) (limit 10) at-rule scale-functions)` |
+| `emmet2-extensions-markup` | `emmet2-extensions` | `(ABBREVIATION &key jsx variant (class-style 'css-modules) (css-modules-object "styles") (class-names-constructor "clsx") (indent "\t") (base-indent "") (seed 0))` |
+| `emmet2-extract` | `emmet2-extract` | `(REGION-BEG REGION-END &optional SYNTAX)`; SYNTAX is nil, `css`, `css-selector` or `markup-text` |
+| `emmet2-capf-discard` | `emmet2-capf` | `()`; discard the current buffer's last choice batch and automatic error history. |
+| `emmet2-context-analyze` | `emmet2-context` | `(&optional AUTOMATIC)` |
+| `emmet2-expand-analysis` | `emmet2-expand` | `(ANALYSIS)` |
+| `emmet2-insert-render-options` | `emmet2-insert` | `(ANALYSIS)`, returning `(:indent STRING :base-indent STRING)` |
+| `emmet2-insert-snapshot` | `emmet2-insert` | `(ANALYSIS)` |
+| `emmet2-insert` | `emmet2-insert` | `(SNAPSHOT RESULT)` |
+| `emmet2-preview` | `emmet2-preview` | `(TEXT SYNTAX)` |
+| `emmet2-completion-capf` | `emmet2-completion` | `(BEGIN END ENTRIES &key (category 'emmet2-value) (identity #'identity) (fuzzy t) annotation prefix)` |
 
 `emmet2-extract` scans at most 8192 characters on each side of point on the
 current line and declines tokens clipped by that window. Use `markup-text`
