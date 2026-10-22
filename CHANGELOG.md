@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Added
+
+- `emmet2-capf-discard` discards the current buffer's last choice batch and
+  automatic error history, for hosts that manage their own cleanup.
+- `emmet2-css-search-value-types` returns the primitive value types of a
+  property or descriptor, such as `("length" "percentage")` for `gap`.
+- `emmet2-extract` accepts the `markup-text` syntax for explicit requests that
+  allow a leading text group, and `emmet2-extensions-markup` accepts `:seed`.
+
 ### Changed
 
 - CSS default units follow each property's value types: `trd0` gives
@@ -17,7 +26,7 @@
   `{%` and `{#` are never taken.
 - Lorem text depends on the abbreviation and its position, so repeated
   `lorem` abbreviations no longer produce the same text. Preview and insertion
-  still match; `emmet2-extensions-markup` takes a `:seed`.
+  still match.
 - A repeat count above 1000, as in `li*1001`, offers no choice instead of
   blocking Emacs.
 - Unquoted attribute values keep their parentheses:
@@ -26,7 +35,8 @@
   starts with `*`, as in `li{*note}`, is text.
 - `emmet2-css-modules-object` and `emmet2-class-names-constructor` are safe as
   directory-local variables only as JavaScript member paths, and
-  `emmet2-css-scale-functions` only with Sass function names.
+  `emmet2-css-scale-functions` only with Sass function names. A
+  `.dir-locals.el` value outside these forms now asks for confirmation.
 - Emmet previews in `corfu-popupinfo-mode` have no side margins; other
   popups keep `corfu-popupinfo-margin-width`. The Emmet popup sits at the
   abbreviation start, like other completion popups, instead of where the
