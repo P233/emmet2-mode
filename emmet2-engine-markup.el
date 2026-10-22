@@ -154,7 +154,7 @@ fields, repeaters and whitespace have precedence at every token boundary."
                   (while (digit (peek)) (cl-incf pos))
                   (when (> pos begin) (setq base (string-to-number (substring text begin pos))))))
               (setq type 'number value (vector width reverse base parent))))
-           ((eat ?*)
+           ((and (= expression 0) (= quote 0) (eat ?*))
             (let ((begin pos))
               (while (digit (peek)) (cl-incf pos))
               (setq type 'repeat value (emmet2-markup--repeat
@@ -199,8 +199,7 @@ fields, repeaters and whitespace have precedence at every token boundary."
                   ('placeholder 'placeholder)
                   ('repeat 'repeater)
                   ((or 'operator 'quote 'bracket)
-                   ;; Emmet 2.4.11's stringifier emits } for a group close.
-                   (char-to-string (if (eq (aref token 1) ?\)) ?\} (aref token 1))))
+                   (char-to-string (aref token 1)))
                   (_ (aref token 1)))) tokens)
       '("")))
 
@@ -795,6 +794,12 @@ NODE is at INDEX in vector SIBLINGS under PARENT."
       (unless value
         (setq value (if (or (emmet2-markup--attribute-boolean attr) (member (downcase name) emmet2-markup--booleans))
                         (list name) '((0 . "")))))
+      (unless expression
+        (setq value (mapcar (lambda (token)
+                             (if (stringp token)
+                                 (string-replace "\"" "&quot;" token)
+                               (cons (car token) (string-replace "\"" "&quot;" (cdr token)))))
+                           value)))
       (emmet2-markup--push out (concat " " name "=" (if expression "{" "\"")))
       (emmet2-markup--emit-tokens out value)
       (emmet2-markup--push out (if expression "}" "\"")))))

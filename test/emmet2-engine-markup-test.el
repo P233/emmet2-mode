@@ -5,6 +5,7 @@
 (require 'ert)
 (require 'emmet2-engine-markup)
 (require 'emmet2-lorem-contract)
+(require 'emmet2-core-contract)
 
 (ert-deftest emmet2-markup-lorem-structural-contract ()
   (dolist (seed '(0 1 -1 1073741824 4294967295))
@@ -64,9 +65,10 @@
                                (list :classAttribute (alist-get 'classAttribute jsx)
                                      :cssModulesObject (alist-get 'cssModulesObject jsx)
                                      :classConstructor (alist-get 'classConstructor jsx))))
-               (if failure (list 'emmet2-parse-error (alist-get 'message failure) (alist-get 'position failure))
-                 (list :text (alist-get 'text result) :fields (alist-get 'fields result)
-                       :cursor (alist-get 'cursor result)))))) (or ids emmet2-markup-test--ids))))
+               (or (cdr (assoc id emmet2-core-test--reviewed-changes))
+                   (if failure (list 'emmet2-parse-error (alist-get 'message failure) (alist-get 'position failure))
+                     (list :text (alist-get 'text result) :fields (alist-get 'fields result)
+                           :cursor (alist-get 'cursor result))))))) (or ids emmet2-markup-test--ids))))
 
 (ert-deftest emmet2-markup-current-core-oracle ()
   ;; This corpus covers all shipped aliases, but is not the full grammar suite.
@@ -196,13 +198,27 @@
                 calls)))
     (should (< (inline-checks 400) (* 6 (inline-checks 100))))))
 
-(ert-deftest emmet2-markup-pinned-conversion-error-does-not-leak-state ()
-  ;; Upstream tokenizes a leading * inside text as a repeater, then fails in
-  ;; stringify.  Preserve the backend-error distinction outside parse goldens.
+(ert-deftest emmet2-markup-literal-asterisks-do-not-leak-state ()
   (let ((before (emmet2-engine-markup-expand "ul>li.i$*")))
-    (should (equal (should-error (emmet2-engine-markup-expand "div{*2}") :type 'emmet2-backend-error)
-                   '(emmet2-backend-error "Unknown token Repeater")))
+    (dolist (case '(("div{*2}" . "<div>*2</div>")
+                    ("li{**bold**}" . "<li>**bold**</li>")
+                    ("p{*note}" . "<p>*note</p>")
+                    ("p{ *2}" . "<p> *2</p>")))
+      (should (equal (plist-get (emmet2-engine-markup-expand (car case)) :text) (cdr case))))
     (should (equal (emmet2-engine-markup-expand "ul>li.i$*") before))))
+
+(ert-deftest emmet2-markup-attributes-preserve-brackets-and-escape-quotes ()
+  (dolist (case '(("a[href=javascript:void(0)]" . "<a href=\"javascript:void(0)\"></a>")
+                  ("button[@click=toggle()]" . "<button @click=\"toggle()\"></button>")
+                  ("div[style=width:calc(1px)]" . "<div style=\"width:calc(1px)\"></div>")
+                  ("div[data-x='{\"a\":1}']" . "<div data-x=\"{&quot;a&quot;:1}\"></div>")))
+    (dolist (preset '(html jsx))
+      (should (equal (plist-get (emmet2-engine-markup-expand (car case) :preset preset) :text)
+                     (cdr case)))))
+  (let* ((result (emmet2-engine-markup-expand "div[data-x='${1:a\"b}']"))
+         (field (car (plist-get result :fields))))
+    (should (equal (nth 3 field) "a&quot;b"))
+    (should (equal (substring (plist-get result :text) (car field) (cadr field)) "a&quot;b"))))
 
 (provide 'emmet2-engine-markup-test)
 ;;; emmet2-engine-markup-test.el ends here

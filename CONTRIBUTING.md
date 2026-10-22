@@ -120,6 +120,12 @@ reviewing both `test/fixtures/core-inputs.json` and the regenerated
 coverage. Lorem uses 42 structural cases and five seeds instead of random text
 goldens.
 
+Reviewed output corrections are recorded in
+`emmet2-core-test--reviewed-changes`, keeping the upstream oracle frozen.
+Parentheses in attribute names and values keep their own character. Literal
+asterisks in text and escaped quotes in attributes have handwritten regression
+tests in `emmet2-engine-markup-test.el` rather than retaining upstream defects.
+
 `data/css-source.json` pins VS Code Custom Data (CSS and HTML) and MDN data's
 CSS type syntaxes and at-rule descriptors by commit, hashes, schema and input
 counts.
