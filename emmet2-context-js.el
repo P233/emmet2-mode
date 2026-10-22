@@ -192,6 +192,9 @@ Return the source parser, or nil without a JS region or grammar.
                 (treesit-parser-root-node projection))))
           (emmet2-context-js--parser language nil))))))
 
+(defconst emmet2-context-js--element-types '("jsx_element" "jsx_self_closing_element")
+  "Node types of a complete JSX element.")
+
 (defun emmet2-context-js--closed-unit-p (node start end)
   "Whether NODE spans START..END as a closed statement or JSX element.
 Require a real terminal delimiter or, for semicolon-free code, a real last
@@ -200,14 +203,14 @@ be the abbreviation itself; projection checks the remaining syntax."
   (let ((child (and (equal (treesit-node-type node) "expression_statement")
                     (treesit-node-child node 0 t))))
     ;; A JSX unit parsed alone is wrapped in an unterminated statement.
-    (when (member (treesit-node-type child) '("jsx_element" "jsx_self_closing_element"))
+    (when (member (treesit-node-type child) emmet2-context-js--element-types)
       (setq node child)))
   (and node
        (= (treesit-node-start node) start) (= (treesit-node-end node) end)
-       (member (treesit-node-type node)
-               '("lexical_declaration" "variable_declaration" "function_declaration"
-                 "class_declaration" "export_statement" "expression_statement"
-                 "jsx_element" "jsx_self_closing_element"))
+       (or (member (treesit-node-type node) emmet2-context-js--element-types)
+           (member (treesit-node-type node)
+                   '("lexical_declaration" "variable_declaration" "function_declaration"
+                     "class_declaration" "export_statement" "expression_statement")))
        (let ((last (treesit-node-child
                     (or (treesit-node-child-by-field-name node "declaration") node) -1)))
          (when (member (treesit-node-type last) '("statement_block" "class_body" "jsx_closing_element"))
@@ -225,7 +228,7 @@ no syntax errors."
          (node (treesit-node-on position (min (point-max) (1+ position)) parser t)))
     (while (and (treesit-node-parent node)
                 (not (treesit-node-eq (treesit-node-parent node) root))
-                (not (and (member (treesit-node-type node) '("jsx_element" "jsx_self_closing_element"))
+                (not (and (member (treesit-node-type node) emmet2-context-js--element-types)
                           (not (treesit-node-check node 'has-error)))))
       (setq node (treesit-node-parent node)))
     (when (and (not (treesit-node-check node 'has-error))
