@@ -17,7 +17,9 @@
 (require 'emmet2-css)
 (require 'emmet2-insert)
 
-(defgroup emmet2 nil "Emmet abbreviation expansion." :group 'convenience)
+(defgroup emmet2 nil "Emmet abbreviation expansion."
+  :group 'convenience
+  :link '(url-link :tag "Homepage" "https://github.com/P233/emmet2-mode"))
 
 (defun emmet2--js-member-path-p (value)
   "Whether VALUE is an ASCII JavaScript identifier or dotted member path."
