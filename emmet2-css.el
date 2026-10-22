@@ -150,7 +150,7 @@ none of the hyphenated words, as in ff-inter."
                   (let* ((choices (emmet2-css-search name limit nil at-rule)) (best (car choices))
                          ;; A bare best property sharing the query's initial adds its keywords, up to half the list.
                          (keywords (and (> limit 1) best (null (cdr best))
-                                        (eq (downcase (aref name 0)) (aref (car best) 0))
+                                        (eq (with-case-table ascii-case-table (downcase (aref name 0))) (aref (car best) 0))
                                         (seq-take (emmet2-css-search-keywords (car best) at-rule) (/ limit 2)))))
                     (seq-take (mapcar (lambda (choice) (emmet2-css--choice choice important))
                                       (append (and best (list best))
@@ -204,7 +204,7 @@ word or unit outside the CSS data."
                                    (concat function "(" arg ")")))
                                (split-string suffix "[()]" t) " ")))))
     (when (string-match "\\`[A-Z]" suffix)
-      (setq suffix (concat (downcase (substring suffix 0 1)) (substring suffix 1))))
+      (setq suffix (concat (with-case-table ascii-case-table (downcase (substring suffix 0 1))) (substring suffix 1))))
     (list (emmet2-engine-stylesheet-declaration
            name (or value suffix) :literal (and value t)
            :important (emmet2-css--property-important property) :at-rule at-rule))))

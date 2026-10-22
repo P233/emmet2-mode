@@ -17,6 +17,14 @@
 ;;; Code:
 
 (require 'cl-lib)
+(require 'json)
+
+(defun emmet2-engine-read-json (file &rest options)
+  "Read packaged UTF-8 JSON FILE with `json-parse-buffer' OPTIONS."
+  (with-temp-buffer
+    (let ((coding-system-for-read 'utf-8-unix))
+      (insert-file-contents file))
+    (apply #'json-parse-buffer options)))
 
 (define-error 'emmet2-error "Emmet expansion failed")
 (define-error 'emmet2-parse-error "Invalid Emmet abbreviation" 'emmet2-error)

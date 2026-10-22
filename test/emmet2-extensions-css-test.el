@@ -6,7 +6,29 @@
 (require 'emmet2-extensions)
 (require 'emmet2-css)
 (require 'emmet2-expand)
+(require 'emmet2-fuzzy)
+(require 'emmet2-css-search)
 
+
+(ert-deftest emmet2-css-ascii-folding-ignores-turkish-language ()
+  (let ((language current-language-environment)
+        ;; Later paragraphs capitalize words such as inventore, which a Turkish fold dots.
+        (expected (emmet2-extensions-markup "p*5>lorem10")))
+    (unwind-protect
+        (progn
+          (set-language-environment "Turkish")
+          (should (equal (emmet2-css-search (string-to-multibyte "dI") 1) '(("display" . "inline"))))
+          (should (equal (emmet2-css-search-values "display" (string-to-multibyte "I") 1) '("inline")))
+          (should (equal (emmet2-css-search-values "display" "ib" 1)
+                         (let ((case-fold-search nil)) (emmet2-css-search-values "display" "ib" 1))))
+          (should (string-prefix-p "backgroundImage: "
+                                   (plist-get (emmet2-extensions-css "bgilg" :css-in-js t) :text)))
+          (should (equal expected (emmet2-extensions-markup "p*5>lorem10")))
+          (should-not (string-search "İ" (plist-get expected :text)))
+          (should (equal (plist-get (emmet2-fuzzy-match "al" "İstanbul") :positions) '(3 7)))
+          (should (= (plist-get (emmet2-fuzzy-match "iя" "IЯ") :score) 1.0))
+          (should (equal (emmet2-fuzzy-filter "I" '("inline" "block")) '("inline"))))
+      (set-language-environment language))))
 
 (ert-deftest emmet2-css-documentation-functions-have-empty-fields ()
   (should (member "content[counter()]" (emmet2-extensions-css-choices "ctc")))

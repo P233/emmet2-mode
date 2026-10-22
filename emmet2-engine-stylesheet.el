@@ -340,7 +340,7 @@ is no keyword of the property or a unit outside `emmet2-stylesheet--units'."
                            (aref value 1)))
                  (types (and (equal unit "") (emmet2-css-search-value-types name at-rule)))
                  (decimal (string-search "." (aref value 2))))
-            (when (and strict (not (equal unit "")) (not (member (downcase unit) emmet2-stylesheet--units)))
+            (when (and strict (not (equal unit "")) (not (member (with-case-table ascii-case-table (downcase unit)) emmet2-stylesheet--units)))
               (signal 'emmet2-parse-error (list (format "Unknown CSS unit: %s" unit) (or (aref token 2) 0))))
             (aset value 1
                   (cond ((not (equal unit "")) unit)
@@ -476,7 +476,7 @@ Generate text and field offsets together, with independent group scope."
     (when css-in-js
       (unless name (signal 'emmet2-parse-error '("Expected a declaration for CSS-in-JS" 0)))
       (unless (string-prefix-p "--" name)
-        (setq name (replace-regexp-in-string "-[a-z]" (lambda (part) (upcase (substring part 1))) name t t))
+        (setq name (replace-regexp-in-string "-[a-z]" (lambda (part) (with-case-table ascii-case-table (upcase (substring part 1)))) name t t))
         (when (string-prefix-p "Ms" name) (setq name (concat "ms" (substring name 2)))))
       (unless (string-match-p "\\`[a-zA-Z_$][a-zA-Z0-9_$]*\\'" name)
         (setq name (concat "\"" (mapconcat #'emmet2-engine-js-character name) "\""))))

@@ -6,6 +6,25 @@
 
 (require 'ert)
 (require 'emmet2-css-data)
+(require 'emmet2-engine-markup)
+
+(ert-deftest emmet2-css-data-packaged-json-ignores-language-coding ()
+  (let ((language current-language-environment)
+        (expected emmet2-css-data--data)
+        (emmet2-css-data--data nil))
+    (unwind-protect
+        (progn
+          (set-language-environment "Korean")
+          (load "emmet2-css-data" nil t)
+          (should (equal emmet2-css-data--data expected))
+          (should (equal (json-encode (emmet2-css-search--read "data/css-index.json"))
+                         (let ((coding-system-for-read 'utf-8-unix))
+                           (with-temp-buffer
+                             (insert-file-contents (expand-file-name "data/css-index.json" emmet2-test-root))
+                             (json-encode (json-parse-buffer :array-type 'list))))))
+          (should (equal (json-encode (emmet2-markup--read-data "lorem/russian.json"))
+                         (json-encode (cdr (assoc "ru" emmet2-markup--vocabularies))))))
+      (set-language-environment language))))
 
 (ert-deftest emmet2-css-data-searches-real-names-and-scoped-values ()
   (should (equal (caar (emmet2-css-data-query 'property :query "ins")) "inset"))

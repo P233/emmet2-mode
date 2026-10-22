@@ -28,9 +28,7 @@
 
 (defun emmet2-markup--read-data (name)
   "Read packaged JSON NAME during module initialization."
-  (with-temp-buffer
-    (insert-file-contents (expand-file-name name emmet2-markup--data-directory))
-    (json-parse-buffer)))
+  (emmet2-engine-read-json (expand-file-name name emmet2-markup--data-directory)))
 
 (defconst emmet2-markup--snippets
   (let ((table (make-hash-table :test #'equal)))
@@ -639,7 +637,9 @@ may be phrases."
                  (unless (string-suffix-p "," (aref words i))
                    (aset words i (concat (aref words i) ",")))))
              (when (> size 0)
-               (aset words 0 (concat (upcase (substring (aref words 0) 0 1))
+               (aset words 0 (concat (if (< (aref (aref words 0) 0) 128)
+                                        (with-case-table ascii-case-table (upcase (substring (aref words 0) 0 1)))
+                                      (upcase (substring (aref words 0) 0 1)))
                                      (substring (aref words 0) 1))))
              (concat (mapconcat #'identity words " ")
                      (or ending (char-to-string (aref "?!..." (emmet2-markup--random state 0 4)))))))

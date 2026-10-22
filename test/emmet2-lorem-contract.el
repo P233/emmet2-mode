@@ -10,12 +10,18 @@
 (defun emmet2-lorem-test--json (path)
   "Read test JSON PATH independently of either engine."
   (with-temp-buffer
-    (insert-file-contents (expand-file-name path emmet2-test-root))
+    (let ((coding-system-for-read 'utf-8-unix))
+      (insert-file-contents (expand-file-name path emmet2-test-root)))
     (json-parse-buffer :object-type 'alist :array-type 'list)))
 
 (defun emmet2-lorem-test--entries (sentence vocabulary)
   "Read SENTENCE as vocabulary entries, preserving multiword phrases."
-  (let ((text (downcase (string-trim (replace-regexp-in-string "," "" sentence)))) entries)
+  (let ((text (mapconcat (lambda (character)
+                           (char-to-string
+                            (if (< character 128)
+                                (with-case-table ascii-case-table (downcase character))
+                              (downcase character))))
+                         (string-trim (replace-regexp-in-string "," "" sentence)))) entries)
     (while (not (string-empty-p text))
       (let ((word (cl-find-if (lambda (word) (or (equal text word) (string-prefix-p (concat word " ") text)))
                               vocabulary)))

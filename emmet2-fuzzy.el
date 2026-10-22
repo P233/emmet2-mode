@@ -39,9 +39,13 @@ one character at a time."
                     (eq (downcase character) character))))
       (setq index (1+ index)))
     (if (= index size) text
-      (let ((folded (downcase text)))
-        (if (= (length folded) size) folded
-          (apply #'string (mapcar #'downcase text)))))))
+      (if (let ((case-fold-search nil)) (string-match-p "[^[:ascii:]]" text))
+          (apply #'string (mapcar (lambda (character)
+                                   (if (< character 128)
+                                       (with-case-table ascii-case-table (downcase character))
+                                     (downcase character)))
+                                 text))
+        (with-case-table ascii-case-table (downcase text))))))
 
 (defun emmet2-fuzzy--find (character text start &optional original)
   "Return the first index from START where TEXT has CHARACTER, or nil.

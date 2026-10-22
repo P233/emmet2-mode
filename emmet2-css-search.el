@@ -93,10 +93,9 @@ tables are copied.  The shared strings must stay read-only."
 
 (defun emmet2-css-search--read (name)
   "Read packaged JSON data NAME, sharing its equal strings."
-  (with-temp-buffer
-    (insert-file-contents (expand-file-name name emmet2-css-search--directory))
-    (emmet2-css-search--share (json-parse-buffer :array-type 'list)
-                              (make-hash-table :test #'equal))))
+  (emmet2-css-search--share
+   (emmet2-engine-read-json (expand-file-name name emmet2-css-search--directory) :array-type 'list)
+   (make-hash-table :test #'equal)))
 
 (cl-defstruct (emmet2-css-search--property (:constructor emmet2-css-search--property) (:copier nil))
   name words prior keywords own sets types descriptor letters)
@@ -110,7 +109,7 @@ so a single-word lowercase NAME can be its own word."
   (with-memoization (gethash (list name) pool)
     (with-memoization (gethash name pool) name)
     (vconcat (mapcar (lambda (word) (with-memoization (gethash word pool) word))
-                     (split-string (downcase name) "-" t)))))
+                     (split-string (with-case-table ascii-case-table (downcase name)) "-" t)))))
 
 (defun emmet2-css-search--letters (text)
   "Return the set of lowercase ASCII letters and digits in TEXT as a fixnum."
@@ -135,7 +134,7 @@ are shared through POOL under (NAME . SCORE), and their words as in
              (value (with-memoization (gethash (cons name score) pool)
                       (emmet2-css-search--value
                        :name name :words (emmet2-css-search--words name pool) :prior score)))
-             (initial (downcase (aref name 0)))
+             (initial (with-case-table ascii-case-table (downcase (aref name 0))))
              (cell (assq initial bucket)))
         (if cell (push value (cdr cell)) (push (list initial value) bucket))))))
 
@@ -307,7 +306,7 @@ Callers must not modify the returned data."
 
 (defun emmet2-css-search--entry (name at-rule)
   "Return NAME's descriptor in AT-RULE, or its ordinary property entry."
-  (or (and at-rule (cl-find name (gethash (downcase at-rule) (emmet2-css-search--descriptors))
+  (or (and at-rule (cl-find name (gethash (with-case-table ascii-case-table (downcase at-rule)) (emmet2-css-search--descriptors))
                             :key #'emmet2-css-search--property-name :test #'equal))
       (gethash name (emmet2-css-search--canonical))))
 
@@ -496,7 +495,7 @@ LIMIT defaults to ten.  AT-RULE admits its descriptors.  Signal
                  (string-match-p "\\`[a-zA-Z][-a-zA-Z0-9]*\\'" query))
         (let* ((boundary (and (not bare) (<= ?a (aref query 0) ?z)
                               (string-match "[A-Z]" query 1) (match-beginning 0)))
-               (text (downcase query)) (n (length text)) (letters (emmet2-css-search--letters text))
+               (text (with-case-table ascii-case-table (downcase query))) (n (length text)) (letters (emmet2-css-search--letters text))
                (compact (and (not bare) (<= n 8) (not (string-search "-" text))))
                (head (if boundary (substring text 0 boundary) text))
                (tables (emmet2-css-search--prepare head))
@@ -504,7 +503,7 @@ LIMIT defaults to ten.  AT-RULE admits its descriptors.  Signal
                (heads-scratch (emmet2-css-search--scratch (length head)))
                (values-scratch (emmet2-css-search--scratch n))
                (alias-head (emmet2-css-search--weight 'alias))
-               (descriptors (and at-rule (gethash (downcase at-rule) (emmet2-css-search--descriptors))))
+               (descriptors (and at-rule (gethash (with-case-table ascii-case-table (downcase at-rule)) (emmet2-css-search--descriptors))))
                (shadowed (mapcar (lambda (entry)
                                   (gethash (emmet2-css-search--property-name entry) (emmet2-css-search--canonical)))
                                 descriptors))
@@ -555,16 +554,17 @@ and CSS-wide keywords for ordinary properties.  QUERY abbreviates a keyword
 from its first letter, as ib for inline-block.  LIMIT defaults to ten.
 AT-RULE selects a descriptor's values when PROPERTY is declared there.
 Return nil for an unknown PROPERTY."
-  (emmet2-engine-with-expansion
-    (when-let* ((entry (emmet2-css-search--entry property at-rule))
-                (limit (or limit 10))
-                (_ (and (> limit 0) (<= (length query) (emmet2-css-search--max-query-length))
-                        (string-match-p "\\`[a-zA-Z][-a-zA-Z]*\\'" query))))
-      (let ((text (downcase query)))
-        (mapcar #'cddr (emmet2-css-search--value-matches text entry (emmet2-css-search--prepare text)
-                                                         (make-hash-table :test #'equal)
-                                                         (emmet2-css-search--scratch (length text))
-                                                         nil limit 0))))))
+  (let ((case-fold-search nil))
+    (emmet2-engine-with-expansion
+      (when-let* ((entry (emmet2-css-search--entry property at-rule))
+                  (limit (or limit 10))
+                  (_ (and (> limit 0) (<= (length query) (emmet2-css-search--max-query-length))
+                          (string-match-p "\\`[a-zA-Z][-a-zA-Z]*\\'" query))))
+        (let ((text (with-case-table ascii-case-table (downcase query))))
+          (mapcar #'cddr (emmet2-css-search--value-matches text entry (emmet2-css-search--prepare text)
+                                                           (make-hash-table :test #'equal)
+                                                           (emmet2-css-search--scratch (length text))
+                                                           nil limit 0)))))))
 
 (defun emmet2-css-search-value-names (property &optional at-rule)
   "Return fresh PROPERTY value names, including shared and substitution values.

@@ -23,12 +23,11 @@
 (require 'emmet2-css-search)
 
 (defconst emmet2-css-data--data
-  (with-temp-buffer
-    (insert-file-contents
-     (expand-file-name "data/css-data.json"
-                       (file-name-directory (or load-file-name buffer-file-name))))
-    (emmet2-css-search--share (json-parse-buffer :object-type 'alist :array-type 'list)
-                              (make-hash-table :test #'equal)))
+  (emmet2-css-search--share
+   (emmet2-engine-read-json
+    (expand-file-name "data/css-data.json" (file-name-directory (or load-file-name buffer-file-name)))
+    :object-type 'alist :array-type 'list)
+   (make-hash-table :test #'equal))
   "Immutable CSS completion metadata loaded once with this library.
 test/update-web-data.mjs writes only the fields completion reads, with
 string documentation.  Equal strings are shared and read-only.")
@@ -45,7 +44,7 @@ string documentation.  Equal strings are shared and read-only.")
 
 (defun emmet2-css-data--values (property at-rule)
   "Return CSS values for PROPERTY within AT-RULE, without host symbols."
-  (let* ((property (downcase (or property "")))
+  (let* ((property (with-case-table ascii-case-table (downcase (or property ""))))
          (entry (cl-find-if
                  (lambda (item)
                    (and (equal (alist-get 'name item) property)
@@ -85,7 +84,7 @@ ties.  DOCUMENTATION may be nil.
 All context is explicit: no buffer, parser, mode or completion frontend is
 required.  Returned lists and pairs are fresh; name and documentation strings
 are shared, read-only metadata.  No query results are retained."
-  (let* ((rule (and at-rule (downcase at-rule)))
+  (let* ((rule (and at-rule (with-case-table ascii-case-table (downcase at-rule))))
          (entries
           (pcase kind
             ('property
