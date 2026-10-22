@@ -1,5 +1,70 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- CSS default units follow each property's value types: `trd0` gives
+  `transition-duration: 0s;`, `trd300` gives `300ms`, `trd.3` gives `0.3s`,
+  `rotate45` gives `45deg`, `tab-size4` gives `tab-size: 4;` and
+  `font-stretch50` gives `50%`. Properties that accept a number but no length,
+  such as `opacity`, keep bare numbers; other values keep `px` and `rem`.
+- CSS value completion offers numeric, color and URL helpers from the same
+  types: `gap` and `opacity` offer `0` and `calc()`, `transition-duration`
+  offers `0s`, and `mask-mode` no longer offers `url()` or gradients.
+- Explicit requests in HTML accept a leading text group such as `{Hello $}*3`
+  at the start of a line or after a space. Template openings such as `{{`,
+  `{%` and `{#` are never taken.
+- Lorem text depends on the abbreviation and its position, so repeated
+  `lorem` abbreviations no longer produce the same text. Preview and insertion
+  still match; `emmet2-extensions-markup` takes a `:seed`.
+- A repeat count above 1000, as in `li*1001`, offers no choice instead of
+  blocking Emacs.
+- Unquoted attribute values keep their parentheses:
+  `a[href=javascript:void(0)]` gives `void(0)`, where Emmet 2.4.11 writes
+  `void(0}`. Quotes inside attribute values become `&quot;`, and text that
+  starts with `*`, as in `li{*note}`, is text.
+- `emmet2-css-modules-object` and `emmet2-class-names-constructor` are safe as
+  directory-local variables only as JavaScript member paths, and
+  `emmet2-css-scale-functions` only with Sass function names.
+- Emmet previews in `corfu-popupinfo-mode` have no side margins; other
+  popups keep `corfu-popupinfo-margin-width`.
+- Package recipes should include `NOTICE`: `:files (:defaults "data" "NOTICE")`.
+
+### Fixed
+
+- Completion recovers after electric-pair overtypes a closer, point moves
+  inside the abbreviation or an edit elsewhere leaves it unchanged. Input with
+  a space, such as `w[calc(100% - 2rem)]`, no longer leaves Corfu on
+  "No match".
+- `emmet2-complete` stays open at positions that only accept explicit
+  requests.
+- An abbreviation that does not parse yet, such as `a[b='c`, shows no error
+  while you type; choices return once it parses.
+- Multi-line JSX abbreviations such as `ul>li>a{Item 1}`, leading groups such
+  as `(ul>li)*2` and abbreviations after a tag whose prop holds an element are
+  recognized in TSX, JavaScript and web-mode JSX.
+- CSS functions expand with empty fields: `trfrx` gives
+  `transform: rotateX();` instead of `rotateX('angle')`, and `ctc` offers
+  `content: counter();` instead of `counter(name)`.
+- CSS data loads in non-UTF-8 language environments such as Korean, and the
+  Turkish environment no longer breaks `dI`, CSS-in-JS property names or lorem
+  capitals.
+- Choices for inputs ending in `-`, such as `word-`, and position aliases such
+  as `posab` expand as offered. Input ending in `,` or `+` offers no choice.
+  Value errors point into the abbreviation.
+- `(emmet2-css-data-query KIND :query nil)` returns every name.
+- Unloading `emmet2-completion` removes its completion style and category.
+- JSX in web-mode uses `web-mode-markup-indent-offset`, and `html-ts-mode`
+  uses its own indentation offset.
+- Tag detection no longer takes seconds on long runs of spaces, and extraction
+  on a minified line scans at most 8192 characters on each side of point.
+  Expansion preserves the caller's match data.
+- Other automatic completion failures are reported once per message, at most
+  every five seconds.
+- A parse error that the caller handles no longer stops in the debugger under
+  `debug-on-error`.
+
 ## v2.0.0 (2026-10-09)
 
 emmet2-mode 2.0 is a rewrite in Emacs Lisp. Changes are relative to 0.2. See
