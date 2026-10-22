@@ -38,8 +38,7 @@ styles and value completion are unaffected."
             (cond
              ((derived-mode-p 'web-mode)
               (list (cond ((eq (plist-get analysis :lang) 'css) 'web-mode-css-indent-offset)
-                          ((or (eq (plist-get analysis :lang) 'css-in-js)
-                               (eq (plist-get analysis :syntax) 'jsx)) 'web-mode-code-indent-offset)
+                          ((eq (plist-get analysis :lang) 'css-in-js) 'web-mode-code-indent-offset)
                           (t 'web-mode-markup-indent-offset))))
              ((derived-mode-p 'typescript-ts-mode 'tsx-ts-mode)
               '(typescript-ts-indent-offset typescript-ts-mode-indent-offset))
@@ -47,6 +46,7 @@ styles and value completion are unaffected."
               (if (eq (plist-get analysis :lang) 'markup)
                   '(js-jsx-indent-level js-indent-level) '(js-indent-level)))
              ((derived-mode-p 'css-base-mode) '(css-indent-offset))
+             ((derived-mode-p 'html-ts-mode) '(html-ts-indent-offset html-ts-mode-indent-offset))
              ((derived-mode-p 'sgml-mode) '(sgml-basic-offset))))
            (width (cl-loop for variable in variables
                            when (and (boundp variable) (integerp (symbol-value variable)))

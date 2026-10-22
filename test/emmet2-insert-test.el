@@ -329,6 +329,27 @@
         (should (equal options '(:indent "    " :base-indent "\t   ")))
         (should (= position (point))) (should (equal before (buffer-string)))))))
 
+(ert-deftest emmet2-render-selects-web-markup-and-code-widths ()
+  (with-temp-buffer
+    (setq buffer-file-name "/tmp/emmet2-indent.jsx")
+    (insert "ul>li") (web-mode)
+    (setq-local web-mode-markup-indent-offset 2
+                web-mode-code-indent-offset 6
+                web-mode-css-indent-offset 4
+                indent-tabs-mode nil)
+    (dolist (case '((markup jsx 2) (markup html 2) (css-in-js jsx 6) (css css 4)))
+      (let ((analysis (list :beg 1 :lang (nth 0 case) :syntax (nth 1 case))))
+        (should (equal (plist-get (emmet2-insert-render-options analysis) :indent)
+                       (make-string (nth 2 case) ?\s)))))))
+
+(ert-deftest emmet2-render-selects-html-ts-width ()
+  (require 'html-ts-mode)
+  (with-temp-buffer
+    (insert "ul>li") (setq major-mode 'html-ts-mode)
+    (setq-local html-ts-indent-offset 3 indent-tabs-mode nil)
+    (should (equal (emmet2-insert-render-options '(:beg 1 :lang markup :syntax html))
+                   '(:indent "   " :base-indent "")))))
+
 (ert-deftest emmet2-complete-real-layout-and-no-second-indentation ()
   (dolist (mode '(web-mode tsx-ts-mode))
     (with-temp-buffer
