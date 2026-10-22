@@ -83,6 +83,8 @@
   every five seconds.
 - A parse error that the caller handles no longer stops in the debugger under
   `debug-on-error`.
+- The Sass templates are complete: `@for` gives `@for $ from 1 through  {`,
+  and `@import ""` ends with a semicolon.
 - Built-in snippets write valid JSX: in React JSX, `img:s` gives `srcSet`,
   `ifr` gives `frameBorder`, and `meta:compat`, `time` and `doc` use
   `httpEquiv`, `dateTime` and `charSet`. `c` gives `{/*  */}` in JSX.

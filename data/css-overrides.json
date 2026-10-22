@@ -119,7 +119,7 @@
       "cursor": 8
     },
     "@for": {
-      "text": "@for $ from 1 {\n\t\n}",
+      "text": "@for $ from 1 through  {\n\t\n}",
       "cursor": 6
     },
     "@forward": {
@@ -139,7 +139,7 @@
       "cursor": 4
     },
     "@import": {
-      "text": "@import \"\"",
+      "text": "@import \"\";",
       "cursor": 9
     },
     "@mixin": {

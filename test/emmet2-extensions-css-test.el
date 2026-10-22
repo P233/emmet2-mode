@@ -67,6 +67,7 @@
 ;; Each fixture id becomes its own ERT test, even where abbreviations repeat.
 (defconst emmet2-css-test--legacy-changes
   '(("css-015" . "grid-template-columns: ;")
+    ("css-074" . "@import \"\";")
     ("css-082" . ":focus")
     ("css-083" . ":hover::after")
     ("css-084" . ":focus")
@@ -81,9 +82,9 @@
     ("css-093" . ":nth-child(2n-1)"))
   "Reviewed differences from the frozen legacy baseline.
 Without Emmet's snippet table, gtc gets no default such as repeat(); search
-still chooses grid-template-columns.  Pseudo completion leaves the selector
-open for chaining, without adding a rule block, content declaration or
-implicit ampersand.")
+still chooses grid-template-columns.  @import ends with a semicolon, as @use
+does.  Pseudo completion leaves the selector open for chaining, without
+adding a rule block, content declaration or implicit ampersand.")
 
 (dolist (entry (with-temp-buffer
                  (insert-file-contents (expand-file-name "test/fixtures/css-legacy.json" emmet2-test-root))
@@ -365,7 +366,8 @@ implicit ampersand.")
       (should (equal (plist-get (emmet2-extensions-css (car pair) :syntax 'css) :text) (cdr pair)))))
   (dolist (abbreviation '("@us" "@if"))
     (should-error (emmet2-extensions-css abbreviation :syntax 'css) :type 'emmet2-parse-error))
-  (should (equal (plist-get (emmet2-extensions-css "@fo") :text) "@for $ from 1 {\n\t\n}"))
+  (should (equal (plist-get (emmet2-extensions-css "@fo") :text) "@for $ from 1 through  {\n\t\n}"))
+  (should (equal (emmet2-extensions-css "@im") '(:text "@import \"\";" :fields ((9 9 1 "")) :cursor 9)))
   (should (equal (plist-get (emmet2-extensions-css "@kf" :syntax 'scss) :text) "@keyframes ")))
 
 (ert-deftest emmet2-css-layout-does-not-rewrite-literal-tabs ()
