@@ -1314,7 +1314,7 @@
         (erase-buffer)
         (insert (nth 1 case) (nth 2 case)) (funcall (car case)) (emmet2-mode 1)
         (goto-char (1+ (length (nth 1 case))))
-        (let ((completion-in-region-function #'corfu--in-region) reports)
+        (let ((completion-in-region-function #'corfu--in-region-1) reports)
           (cl-letf (((symbol-function 'message)
                      (lambda (format &rest args) (when format (push (apply #'format format args) reports)))))
             (cl-loop for character in (string-to-list (nth 3 case)) for typed from 1 do
