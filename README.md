@@ -236,6 +236,9 @@ stylesheet build must provide the functions, for example from
   prefix threshold, then try `M-x emmet2-complete`, which reports errors. For
   another style object, add its attribute or function to
   `emmet2-css-in-js-attributes` or `emmet2-css-in-js-functions`.
+- In `tsx-ts-mode`, `typescript-ts-mode` and `js-ts-mode`, an abbreviation that
+  appears all at once, as when yanked, offers automatic choices only after a
+  short pause; typing it, or `M-x emmet2-complete`, offers them at once.
 - `M-x emmet2-complete` reports a missing grammar, as in
   `Missing tree-sitter grammar: javascript`. Install it with
   `M-x treesit-install-language-grammar`.
