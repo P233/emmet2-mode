@@ -66,8 +66,9 @@ no buffer state.")
 
 (defun emmet2-context-js--owner (&optional create)
   "Return this buffer's context owner, allocating it when CREATE is non-nil.
-Indirect buffers copy local variables but share their base's parser storage;
-verify owner identity and give each view its own tag, without shared cleanup."
+Cloned indirect buffers copy local variables, and on Emacs 30 they also share
+their base's parsers; verify owner identity and give each view its own tag,
+without shared cleanup."
   (if (and (emmet2-context-js--state-p emmet2-context-js--state)
            (eq (emmet2-context-js--state-buffer emmet2-context-js--state) (current-buffer)))
       emmet2-context-js--state
